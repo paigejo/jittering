@@ -228,7 +228,193 @@ makeIntegrationIllustration = function(numPointsUrban=11, MInnerUrban=3, MOuterU
   # print(xtable(t(tab), digits=3))
 }
 
+makeRedBlueSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=10, h2=-115, c1=100, c2=100, l1=44, l2=59, p1=0, p2=2.3)
+  else
+    scale_colour_continuous_sequential(h1=10, h2=-115, c1=100, c2=100, l1=44, l2=59, p1=0, p2=2.3, n_interp=n)
+}
 
+makeGreenBlueSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=128, h2=250, c1=117, cmax=74, c2=107, l1=71, l2=55, p1=2, p2=2)
+  else
+    scale_colour_continuous_sequential(h1=128, h2=250, c1=117, cmax=74, c2=107, l1=71, l2=55, p1=2, p2=2, n_interp=n)
+}
+
+makeGreenBlueDivergingColors = function(n, valRange=NULL, center=NULL, rev=FALSE, ggplot=FALSE, p1=1) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  # if(!ggplot)
+  #   sequential_hcl(n, h1=128, h2=250, c1=117, cmax=74, c2=107, l1=71, l2=55, p1=2, p2=2)
+  # else
+  #   scale_colour_continuous_sequential(h1=128, h2=250, c1=117, cmax=74, c2=107, l1=71, l2=55, p1=2, p2=2, n_interp=n)
+  
+  if(is.null(valRange) && is.null(center)) {
+    if(!ggplot)
+      diverging_hcl(n, h1=128, h2=250, c1=100, l1=71, l2=95, p1=p1, rev=rev)
+    else
+      scale_colour_continuous_diverging(h1=128, h2=250, c1=100, l1=71, l2=95, p1=p1, rev=rev, n_interp=n)
+  }
+  else {
+    # in this case we want white to be at the center of valRange if center is NULL
+    if(!ggplot) {
+      propUp = (valRange[2] - center) / diff(valRange)
+      propDown = 1 - propUp
+      totalColors = ceiling(2 * max(propUp, propDown) * n)
+      tempColors = makeGreenBlueDivergingColors(totalColors, rev=rev, p1=p1)
+      totalMissingColors = totalColors - n
+      
+      if(propUp >= propDown)
+        tempColors[-(1:totalMissingColors)]
+      else
+        tempColors[1:n]
+    } else {
+      if(is.null(center))
+        center = min(valRange) + abs(diff(valRange))/2
+      scale_colour_continuous_diverging(h1=128, h2=250, c1=100, l1=71, l2=95, p1=p1, rev=rev, n_interp=n, mid=center)
+    }
+  }
+}
+
+makePurpleYellowSequentialColors = function(n, rev=FALSE, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=-100, h2=100, c1=60, cmax=74, c2=100, l1=15, l2=95, p1=2, p2=0.9, rev=rev)
+  else
+    scale_colour_continuous_sequential(h1=-100, h2=100, c1=60, cmax=74, c2=100, l1=15, l2=95, p1=2, p2=0.9, rev=rev, n_interp=n)
+}
+
+makeRedBlueDivergingColors = function(n, valRange=NULL, center=NULL, rev=FALSE, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(is.null(valRange) && is.null(center)) {
+    # diverging_hcl(n, h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, p2=0.6)
+    if(!ggplot)
+      diverging_hcl(n, h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev)
+    else
+      scale_colour_continuous_diverging(h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev, n_interp=n)
+  }
+  else {
+    # in this case we want white to be at the center of valRange if center is NULL
+    if(!ggplot) {
+      propUp = (valRange[2] - center) / diff(valRange)
+      propDown = 1 - propUp
+      totalColors = ceiling(2 * max(propUp, propDown) * n)
+      tempColors = makeRedBlueDivergingColors(totalColors, rev=rev)
+      totalMissingColors = totalColors - n
+      
+      if(propUp >= propDown)
+        tempColors[-(1:totalMissingColors)]
+      else
+        tempColors[1:n]
+    } else {
+      if(is.null(center))
+        center = min(valRange) + abs(diff(valRange))/2
+      scale_colour_continuous_diverging(h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev, n_interp=n, mid=center)
+    }
+  }
+}
+
+makeRedGrayBlueDivergingColors = function(n, valRange=NULL, center=NULL, rev=FALSE, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(is.null(valRange) && is.null(center)) {
+    if(!ggplot)
+      diverging_hcl(n, h1=10, h2=-115, c1=90, l1=40, l2=90, p1=0.9, rev=rev)
+    if(!ggplot)
+      scale_colour_continuous_diverging(n.interp, h1=10, h2=-115, c1=90, l1=40, l2=90, p1=0.9, rev=rev)
+    # diverging_hcl(n, h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, p2=0.6)
+  }
+  else {
+    # in this case we want white to be at the center of valRange if center is NULL
+    if(!ggplot) {
+      propUp = (valRange[2] - center) / diff(valRange)
+      propDown = 1 - propUp
+      totalColors = ceiling(2 * max(propUp, propDown) * n)
+      tempColors = makeRedGrayBlueDivergingColors(totalColors, rev=rev)
+      totalMissingColors = totalColors - n
+      
+      if(propUp >= propDown)
+        tempColors[-(1:totalMissingColors)]
+      else
+        tempColors[1:n]
+    } else {
+      if(is.null(center))
+        center = min(valRange) + abs(diff(valRange))/2
+      scale_colour_continuous_diverging(n.interp, h1=10, h2=-115, c1=90, l1=40, l2=90, p1=0.9, rev=rev, mid=center)
+    }
+  }
+}
+
+makeBlueSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  # sequential_hcl(n, h1=260, c1=80, l1=30, l2=90, p1=1.5, rev=TRUE)
+  if(!ggplot)
+    sequential_hcl(n, h1=245, c1=50, cmax=75, l1=20, l2=98, p1=0.8, rev=TRUE)
+  else
+    scale_colour_continuous_sequential(h1=245, c1=50, cmax=75, l1=20, l2=98, p1=0.8, rev=TRUE, n_interp=n)
+}
+
+makeGreenSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  # sequential_hcl(n, h1=260, c1=80, l1=30, l2=90, p1=1.5, rev=TRUE)
+  if(!ggplot)
+    sequential_hcl(n, h1=128, c1=100, l1=72, l2=95, p1=1.0, rev=TRUE)
+  else
+    scale_colour_continuous_sequential(h1=128, c1=100, l1=72, l2=95, p1=1.0, rev=TRUE, n_interp=n)
+}
+
+makeBlueYellowSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=300, h2=75, c1=40, c2=95, l1=15, l2=90, p1=1.0, p2=1.1)
+  else
+    scale_colour_continuous_sequential(h1=300, h2=75, c1=40, c2=95, l1=15, l2=90, p1=1.0, p2=1.1, n_interp=n)
+}
+
+makeYellowRedSequentialColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=15, h2=79, c1=100, c2=52, l1=55, l2=95, p1=1.2)
+  else
+    scale_colour_continuous_sequential(h1=15, h2=79, c1=100, c2=52, l1=55, l2=95, p1=1.2, n_interp=n)
+}
+
+makeRedGreenDivergingColors = function(n, ggplot=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  if(!ggplot)
+    sequential_hcl(n, h1=265, h2=101, c1=100, l1=50, l2=92, p1=0.6, p2=1.5)
+  else
+    scale_colour_continuous_sequential(h1=265, h2=101, c1=100, l1=50, l2=92, p1=0.6, p2=1.5, n_interp=n)
+}
+
+# given continuous color scale and range, chooses colors based on a set of values
+getColorsFromScale = function(vals, valRange=range(vals), cols, scaleFun=function(x) {x}, 
+                              forceValuesInRange=FALSE) {
+  if(forceValuesInRange) {
+    vals[vals < valRange[1]] = valRange[1]
+    vals[vals > valRange[2]] = valRange[2]
+  }
+  
+  valRange = scaleFun(valRange)
+  vals = scaleFun(vals)
+  vals = vals - valRange[1]
+  vals = vals/(valRange[2] - valRange[1])
+  col = cols[round(vals*(length(cols)-1))+1]
+  
+  col
+}
 
 
 
