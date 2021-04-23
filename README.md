@@ -1,5 +1,5 @@
-# jittering
-Accounting for jittered DHS observation locations
+# Jittering
+Spatial analysis with jittered DHS observation locations.
 
 ## Repository Structure
 + The ``code`` directory stores all R and C++ code, as well as compiled C++ code for Template Model Builder (TMB)
