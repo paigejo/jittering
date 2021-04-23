@@ -1,5 +1,5 @@
 # Jittering
-Spatial analysis with jittered DHS observation locations.
+Spatial analysis with jittered Demographic Health Surveys (DHS) observation locations.
 
 ## Repository Structure
 + The ``code`` directory stores all R and C++ code, as well as compiled C++ code for Template Model Builder (TMB)
@@ -10,4 +10,4 @@ Spatial analysis with jittered DHS observation locations.
 + The `Figures` directory stores all figures produced
 
 ## Other Notes
-Some code may depend on Demographic Health Survey (DHS) data, or on code in the https://github.com/paigejo/continuousNugget repository.
+Some code may depend on DHS data, or on code in the https://github.com/paigejo/continuousNugget repository.
