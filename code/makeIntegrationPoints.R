@@ -1,3 +1,7 @@
+# functions for constructing jittering integration points for both DHS and MICS 
+# data
+
+##### Jittering for DHS ----
 
 # constructs the points over which to integrate the likelihood 
 # with respect to the jittering distribution, and their weights, 
@@ -16,7 +20,7 @@
 #                       center of mass within the integration area 
 #                       or the midpoint of the radius and angle
 # verbose: whether to run the function in verbose mode
-getIntegrationPoints = function(urban=TRUE, numPoints=ifelse(urban, 11, 16), 
+getIntegrationPointsDHS = function(urban=TRUE, numPoints=ifelse(urban, 11, 16), 
                                 scalingFactor=1, 
                                 JInner=3, JOuter=ifelse(urban, 0, 1), 
                                 integrationPointType=c("mean", "midpoint"), 
@@ -201,7 +205,7 @@ getIntegrationPoints = function(urban=TRUE, numPoints=ifelse(urban, 11, 16),
 #   integrationPointType: 'mean' is center of mass, 'midpoint' is the 
 #                         median angle and median radius within the 
 #                         integration area
-makeAllIntegrationPoints = function(coords, urbanVals, 
+makeAllIntegrationPointsDHS = function(coords, urbanVals, 
                                     numPointsUrban=11, numPointsRural=16, 
                                     scalingFactor=1, 
                                     JInnerUrban=3, JOuterUrban=0, 
@@ -300,9 +304,29 @@ makeJitterDataForTMB = function(integrationPointInfo, ys, urbanicity, ns, spdeMe
        AUrban=AUrban, ARural=ARural)
 }
 
+##### Jittering for MICS ----
 
-
-
+# constructs the points over which to integrate the likelihood 
+# with respect to the jittering distribution, and their weights, 
+# where the weights are related to the jittering distribution
+# Arguments: 
+# urban: whether or not to generate integration points from the 
+#        urban or rural jittering distributions.
+# numPoints: the number of integration points. 1 goes in the first 
+#            ring, and the rest are evenly split among the other 
+#            rings
+# scalingFactor: adjust typical DHS jitter distance by a scaling factor
+# JInner: the number of `inner' rings within 5km, including the first central ring
+# JOuter: the number of `outer' rings beyond 5km. In urban case, only 
+#         M=JInner+JOuter is used
+# integrationPointType: either the integration point is set as the 
+#                       center of mass within the integration area 
+#                       or the midpoint of the radius and angle
+# verbose: whether to run the function in verbose mode
+getIntegrationPointsMICS = function(urban=TRUE, integrationResolution=25, 
+                                   integrationPointType=c("mean", "midpoint"), 
+                                   verbose=TRUE) {
+}
 
 
 
