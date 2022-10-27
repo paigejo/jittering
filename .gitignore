@@ -1,0 +1,9 @@
+figures
+savedOutput/global/*
+data
+documents
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.tif
