@@ -1,6 +1,6 @@
 figures
 savedOutput/global/*
-data
+data/*
 documents
 .Rproj.user
 .Rhistory
