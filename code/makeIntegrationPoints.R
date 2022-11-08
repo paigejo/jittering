@@ -310,22 +310,68 @@ makeJitterDataForTMB = function(integrationPointInfo, ys, urbanicity, ns, spdeMe
 # with respect to the jittering distribution, and their weights, 
 # where the weights are related to the jittering distribution
 # Arguments: 
-# urban: whether or not to generate integration points from the 
-#        urban or rural jittering distributions.
-# numPoints: the number of integration points. 1 goes in the first 
-#            ring, and the rest are evenly split among the other 
-#            rings
-# scalingFactor: adjust typical DHS jitter distance by a scaling factor
-# JInner: the number of `inner' rings within 5km, including the first central ring
-# JOuter: the number of `outer' rings beyond 5km. In urban case, only 
-#         M=JInner+JOuter is used
-# integrationPointType: either the integration point is set as the 
-#                       center of mass within the integration area 
-#                       or the midpoint of the radius and angle
-# verbose: whether to run the function in verbose mode
-getIntegrationPointsMICS = function(urban=TRUE, integrationResolution=25, 
-                                   integrationPointType=c("mean", "midpoint"), 
-                                   verbose=TRUE) {
+# area
+getIntegrationPointsMICS = function(area, kmresFine=1, numPts=25, propUrb=NULL, 
+                                    proj=projNigeria, spatialAsCovariate=FALSE, 
+                                    lambda=NULL, domainDiameter=NULL) {
+  
+  # project area to easting/northing in km, and make a fine easting/northing
+  # grid of points
+  projArea = projNigeriaArea(area)
+  xCoords = seq(projArea@bbox[1,1], projArea@bbox[1,2], by=kmres)
+  yCoords = seq(projArea@bbox[2,1], projArea@bbox[2,2], by=kmres)
+  ENCoords = make.surface.grid(list(x=xCoords, y=yCoords))
+  
+  # convert the grid of points back to longitude/latitude and get covariate
+  # values
+  LLCoords = projNigeria(ENCoords, inverse=TRUE)
+  X = getDesignMat(LLCoords, normalized=TRUE)
+  Xtemp = getDesignMat(LLCoords, normalized=FALSE)
+  pop = Xtemp[,2]
+  urb = Xtemp[,3]/100
+  
+  # add spatial coordinates as covariates if user requests
+  if(spatialAsCovariate) {
+    if(is.null(domainDiameter)) {
+      # adm0Boundary = gBoundary(adm0)
+      # adm0BoundaryCoords = do.call("rbind", lapply(adm0Boundary@lines[[1]]@Lines, function(x) {x@coords}))
+      # domainDiameter = max(rdist.earth(adm0BoundaryCoords, miles=FALSE))
+      domainDiameter = 1463.733 # in km
+    }
+    
+    # normalize spatial coordinates based on prior median effective range
+    if(is.null(lambda)) {
+      priorSD = (domainDiameter / 5) / 2
+      lambda = 1 / priorSD
+    }
+    
+    ENCoordsNorm = sweep(ENCoords, 2, colMeans(ENCoords), FUN="-")
+    ENCoordsNorm = ENCoordsNorm * lambda
+    X = cbind(X, ENCoordsNorm)
+  }
+  
+  # adjust populations to match propUrb
+  if(!is.null(propUrb)) {
+    
+  }
+  
+  # do the weighted K-medoids (technically PAM): 
+  # Maechler, M., P. Rousseeuw, A. Struyf, M. Hubert and K. Hornik (2011).
+  # cluster: Cluster Analysis Basics and Extensions. R package version 1.14.1
+  distMat = rdist(X, X)
+  medoidI = wcKMedoids(distMat, numPts, weights=pop, method="PAM")
+  
+  # assign fine grid points to each medoid
+  distToMedoids = distMat[,medoidI]
+  medoidAssigned = apply(distToMedoids, 1, which.min)
+  pointIAssigned = medoidI[medoidAssigned]
+  
+  # calculate weights of the medoids
+  totalPop = aggregate(pop, by=list(medoid=medoidAssigned), FUN=sum)
+  weights = totalPop[,2] / sum(totalPop[,2])
+  
+  # return results
+  list(pts=X[pointIAssigned,], weights=weights)
 }
 
 

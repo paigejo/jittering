@@ -162,12 +162,18 @@ adm2 = adm2compressed
 sen = sencompressed
 admFinal = admFinalcompressed
 
+## construct domain polygon ----
+areas = sapply(adm0Full@polygons[[1]]@Polygons, function(x) {x@area})
+maxI = which.max(areas)
+adm0Poly = adm0Full@polygons[[1]]@Polygons[[maxI]]@coords
+
 # save results
 save(adm0, adm1, adm2, adm0Full, adm1Full, adm2Full, 
-     sen, senFull, admFinal, admFinalFull, 
+     sen, senFull, admFinal, admFinalFull, adm0Poly, 
      file="savedOutput/global/NigeriaMapData.RData")
 
 # Read and clean MICS data ----
+# https://www.unicef.org/nigeria/media/1406/file/Nigeria-MICS-2016-17.pdf.pdf
 library(dplyr)
 library(haven)
 dat = read_sav("data/NigeriaMICS5/NigeriaMICS2016-17SPSS/wm.sav")
@@ -420,6 +426,204 @@ ed$east = tmp[,1]
 ed$north = tmp[,2]
 save(ed, file="savedOutput/global/ed.RData")
 
+# Cleaning urban proportions ----
+urbPropsRaw = read.csv2("data/urbProp2017.csv", header=TRUE)
+urbProps = urbPropsRaw
+
+# update state names (fill in gaps)
+lastStateName = ""
+for(i in 1:nrow(urbProps)) {
+  thisState = urbProps[i,1]
+  
+  if(thisState != "") {
+    lastStateName = thisState
+  } else {
+    urbProps[i,1] = lastStateName
+  }
+}
+
+# to title case
+library(stringr)
+urbProps$State = str_to_title(urbProps$State)
+urbProps$LGA = str_to_title(urbProps$LGA)
+urbProps$State[urbProps$State == "Fct Abuja"] = "FCT Abuja"
+
+# extract rows with "Total" in State name. Make separate State level props table
+statePropIs = grepl("Total", urbProps$State)
+stateProps = urbProps[statePropIs,]
+urbProps = urbProps[!statePropIs,]
+
+stateProps = stateProps[-nrow(stateProps),]
+stateProps$LGA = NULL
+
+# adjust state prop names to remove "Total"
+newStates = gsub(" Total", "", stateProps$State)
+stateProps$State = newStates
+stateProps$State[stateProps$State == "Fct Abuja"] = "FCT Abuja"
+
+# make sure the state and LGA names match GADM names
+gadmStateNames = sort(adm1@data$NAME_1)
+propStateNames = sort(stateProps$State)
+unmatchedNames = gadmStateNames != propStateNames
+cbind(gadm=gadmStateNames, prop=propStateNames)[unmatchedNames,]
+
+gadmNames = sort(adm2@data$NAME_2)
+propNames = sort(urbProps$LGA)
+unmatchedNames = gadmNames != propNames
+cbind(gadm=gadmNames, prop=propNames)[unmatchedNames,]
+
+gadmNames[grepl("Danko", gadmNames)]
+urbProps$LGA[urbProps$LGA == "Wasagu/Danko"] = "Danko Wasagu"
+
+propNames = sort(propNames)
+unmatchedNames = gadmNames != propNames
+cbind(gadm=gadmNames, prop=propNames)
+
+propNames[grepl("Egbado", propNames)]
+urbProps$LGA = gsub("Egbado", "Yewa", urbProps$LGA)
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+urbProps$LGA = gsub("  ", " ", urbProps$LGA)
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+urbProps$LGA[urbProps$LGA == "Onuimo"] = "Unuimo"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+temp = adm2@data[adm2@data$NAME_1 == "Adamawa",]
+temp[order(temp$NAME_2),]
+urbProps$LGA[urbProps$LGA == "Toungo"] = "Teungo"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+adm2@data[adm2@data$NAME_2 == "Mainland",]
+urbProps$LGA[urbProps$LGA == "Lagos Mainland"] = "Mainland"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+adm2@data[adm2@data$NAME_2 == "Lake Chad",]
+urbProps[urbProps$State == "Borno",]
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames, prop=propNames)
+
+urbProps$LGA[urbProps$LGA == "Kano Municipal"] = "Kano"
+
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Aiyekire(Gbonyin)"] = "Gboyin"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Birnin-Magaji"] = "Birnin-Magaji/Kiyaw"
+urbProps$LGA[urbProps$LGA == "Birnin Kebbi"] = "Birnin Kudu"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+adm2@data[adm2@data$NAME_2 == "Abuja",]
+urbProps[urbProps$State == "FCT Abuja",]
+adm2@data[adm2@data$NAME_1 == "Federal Capital Territory",]
+urbProps$LGA[urbProps$LGA == "Amac"] = "Abuja"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Munya"] = "Muya"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Dan Musa"] = "Danmusa"
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Buruku"] = "Bukuru"
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Bursari"] = "Borsari"
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Birninwa"] = "Biriniwa"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps[urbProps$LGA == "Ayedade",]
+cbind(adm2@data$NAME_2[adm2@data$NAME_1 == "Osun"], 
+      urbProps$LGA[urbProps$State == "Osun"])
+urbProps$LGA[urbProps$LGA == "Ayedade"] = "Aiyedade"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Akoko Edo"] = "Akoko-Edo"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Umunneochi"] = "Umu Nneochi"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Sagamu"] = "Shagamu"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps$LGA[urbProps$LGA == "Isiukwuato"] = "Isuikwuato"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
+urbProps = urbProps[order(urbProps$LGA),]
+urbProps = urbProps[urbProps$LGA != "* Disputed Areas",]
+
+all.equal(sort(stateProps$State), sort(unique(urbProps$State)))
+
+# set all Lagos LGAs to be entirely urban
+
+save(urbProps, stateProps, file="savedOutput/global/urbProps.RData")
+
+# Cleaning population totals ----
+popTabRaw = read.csv2("data/popTabNGA_DHS2017.csv", header=TRUE)
+popTab = popTabRaw
+
+# make sure state names align with GADM
+gadmNames = sort(unique(adm1@data$NAME_1))
+tabNames = sort(unique(popTab$state))
+
+sum(gadmNames != tabNames)
+which(gadmNames != tabNames)
+cbind(GADM=gadmNames, tabNames=tabNames)
+
+popTab = popTab[order(popTab$state),]
+popTab$state = gadmNames
+
+# project population forward to 2017 based on growth rates
+growth = (1 + popTab$growthRate/100)^11
+propUrb = popTab$pctUrban2017/100
+popTab$popTotal = round(popTab$popTotal * growth)
+popTab$popRural = round(popTab$popTotal * (1 - propUrb))
+popTab$popUrban = popTab$popTotal - popTab$popRural
+
+poppa = popTab
+names(poppa) = c("area", "growthRateSince2006", "popUrb", "popRur", "popTotal", "pctTotal", "pctUrb")
+poppa = poppa[,c(1, 3:7, 2)]
+poppaNGA = poppa
+save(poppaNGA, file="savedOutput/global/poppaNGA.RData")
+
 # Covariates ----
 ## Load covariates ----
 pop = raster("data/covariates/WorldPopDataNigeria/worldpop/nga_ppp_2020_constrained.tif")
@@ -428,14 +632,23 @@ pop = mask(pop, adm0)
 writeRaster(pop, file="savedOutput/global/pop.tif", format="GTiff")
 urb = raster("data/covariates/Urbanization/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0.tif")
 urb = projectRaster(urb, crs=CRS(SRS_string="EPSG:4326"))
-writeRaster(urb, file="savedOutput/global/urbTemp.tif", format="GTiff")
+writeRaster(urb, file="savedOutput/global/urbTemp.tif", format="GTiff", overwrite=TRUE)
 urb = crop(urb, adm0)
 urb = mask(urb, adm0)
-writeRaster(urb, file="savedOutput/global/urb.tif", format="GTiff")
+writeRaster(urb, file="savedOutput/global/urb.tif", format="GTiff", overwrite=TRUE)
 access = raster("data/covariates/2015_accessibility_to_cities_v1/2015_accessibility_to_cities_v1.0.tif")
 access = crop(access, adm0)
 access = mask(access, adm0)
-writeRaster(access, file="savedOutput/global/access.tif", format="GTiff")
+writeRaster(access, file="savedOutput/global/access.tif", format="GTiff", overwrite=TRUE)
+
+# alternative try and getting urbanicity, since above is entirely NAs...
+urb = raster("data/covariates/Urbanization/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0.tif")
+# urb = projectRaster(urb, crs=CRS(SRS_string="EPSG:4326"))
+adm0FullProjUrb = spTransform(adm0Full, CRS(urb@crs@projargs))
+urb = crop(urb, adm0FullProjUrb)
+urb = projectRaster(urb, crs=CRS(SRS_string="EPSG:4326"), method="ngb")
+urb = mask(urb, adm0)
+writeRaster(urb, file="savedOutput/global/urb.tif", format="GTiff", overwrite=TRUE)
 
 # elevation requires a bit of extra work
 elev = readBin(con = "data/covariates/Elevation/g10g" ,what = "integer",n= 129600000, size = 2, signed = TRUE,
@@ -550,13 +763,105 @@ plot(minDistRiverLakes)
 writeRaster(pop, file="savedOutput/global/pop.tif", format="GTiff")
 writeRaster(urb, file="savedOutput/global/urb.tif", format="GTiff")
 writeRaster(access, file="savedOutput/global/access.tif", format="GTiff")
-writeRaster(elev, file="savedOutput/global/elev.tif", format="GTiff")
-writeRaster(minDistRiverLakes, file="savedOutput/global/minDistRiverLakes.tif", format="GTiff")
+writeRaster(elev, file="savedOutput/global/elev.tif", format="GTiff", overwrite=TRUE)
+writeRaster(minDistRiverLakes, file="savedOutput/global/minDistRiverLakes.tif", format="GTiff", overwrite=TRUE)
 pop = raster("savedOutput/global/pop.tif")
 urb = raster("savedOutput/global/urb.tif")
 access = raster("savedOutput/global/access.tif")
 elev = raster("savedOutput/global/elev.tif")
 minDistRiverLakes = raster("savedOutput/global/minDistRiverLakes.tif")
+
+if(FALSE) {
+  # file paths are different on the cluster. Adjust for laptop accordingly:
+  pop@file@name = "~/git/jittering/savedOutput/global/pop.tif"
+  urb@file@name = "~/git/jittering/savedOutput/global/urb.tif"
+  access@file@name = "~/git/jittering/savedOutput/global/access.tif"
+  elev@file@name = "~/git/jittering/savedOutput/global/elev.tif"
+  minDistRiverLakes@file@name = "~/git/jittering/savedOutput/global/minDistRiverLakes.tif"
+}
+
 save(pop, urb, access, elev, minDistRiverLakes, file="savedOutput/global/covariates.RData")
 
+## stratify population ----
+# start by getting Admin2/LGA areas of each point in population raster
+popMat = rasterToPoints(pop) # NAs are not converted
+popCoords = popMat[,1:2]
+lgaNamesFull = getRegion2(popCoords, project=FALSE, mapDat=adm2Full, nameVar="NAME_2")
+lgaNames = lgaNamesFull$regionNames
+mean(lgaNamesFull$multipleRegs) # 0.001441374 x 100% of points are in multiple LGAs due to overlapping LGA geometries
 
+# get urbanicities associated with population density at each point on 0-1 scale
+urbVals = extract(urb, SpatialPoints(popCoords, CRS(SRS_string=pop@crs@projargs)))/100
+
+# get urban proportions according to 
+
+# load urban props for each LGA
+out = load("savedOutput/global/urbProps.RData")
+
+
+## transform rasters ----
+popVals = getValues(pop)
+urbVals = getValues(urb)
+accessVals = getValues(access)
+elevVals = getValues(elev)
+distRiverLakesVals = getValues(minDistRiverLakes)
+
+popValsNorm = log1p(popVals)
+popValsNorm = (popValsNorm - mean(popValsNorm, na.rm=TRUE))/sd(popValsNorm, na.rm=TRUE)
+
+urbValsNorm = log1p(urbVals)
+urbValsNorm = (urbValsNorm - mean(urbValsNorm, na.rm=TRUE))/sd(urbValsNorm, na.rm=TRUE)
+
+accessValsNorm = log1p(accessVals)
+accessValsNorm = (accessValsNorm - mean(accessValsNorm, na.rm=TRUE))/sd(accessValsNorm, na.rm=TRUE)
+
+elevValsNorm = log1p(elevVals)
+elevValsNorm = (elevValsNorm - mean(elevValsNorm, na.rm=TRUE))/sd(elevValsNorm, na.rm=TRUE)
+
+distRiverLakesValsNorm = log1p(distRiverLakesVals)
+distRiverLakesValsNorm = (distRiversLakesValsNorm - mean(distRiversLakesValsNorm, na.rm=TRUE))/sd(distRiversLakesValsNorm, na.rm=TRUE)
+
+popNorm = pop
+values(popNorm) = popValsNorm
+urbNorm = urb
+values(urbNorm) = urbValsNorm
+accessNorm = access
+values(accessNorm) = accessValsNorm
+elevNorm = elev
+values(elevNorm) = elevValsNorm
+minDistRiverLakesNorm = minDistRiverLakes
+values(minDistRiverLakesNorm) = distRiverLakesValsNorm
+
+writeRaster(popNorm, file="savedOutput/global/popNorm.tif", format="GTiff", overwrite=TRUE)
+writeRaster(urbNorm, file="savedOutput/global/urbNorm.tif", format="GTiff", overwrite=TRUE)
+writeRaster(accessNorm, file="savedOutput/global/accessNorm.tif", format="GTiff", overwrite=TRUE)
+writeRaster(elevNorm, file="savedOutput/global/elevNorm.tif", format="GTiff", overwrite=TRUE)
+writeRaster(minDistRiverLakesNorm, file="savedOutput/global/minDistRiverLakesNorm.tif", format="GTiff", overwrite=TRUE)
+popNorm = raster("savedOutput/global/popNorm.tif")
+urbNorm = raster("savedOutput/global/urbNorm.tif")
+accessNorm = raster("savedOutput/global/accessNorm.tif")
+elevNorm = raster("savedOutput/global/elevNorm.tif")
+minDistRiverLakesNorm = raster("savedOutput/global/minDistRiverLakesNorm.tif")
+save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
+
+
+# Matching urban proportions ----
+
+# first calculate population per LGA
+out = load("savedOutput/global/covariates.RData")
+adm2FullProj = projNigeriaArea(adm2Full)
+adm1FullProj = projNigeriaArea(adm1Full)
+lgaArea = getArea(adm2FullProj, "NAME_2", TRUE) / 1000^2
+stateArea = getArea(adm1FullProj, "NAME_1", TRUE) / 1000^2
+lgaAreaList = list(subarea = names(lgaArea), spatialArea = lgaArea)
+stateAreaList = list(area = names(stateArea), spatialArea = stateArea)
+poppsubNGA = SUMMER::getPoppsub(kmRes=1, pop=pop, domainPoly=adm0Poly, eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+                            poppa=poppaNGA, areapa=stateAreaList, areapsub=lgaAreaList, subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                            stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+                            areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+                            mean.neighbor=50, delta=.1)
+SUMMER::poppRegionFromPopMat()
+
+# Use SUMMER's built in urban matching functions
+
+poppsub = SUMMER::setThresholdsByRegion

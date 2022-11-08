@@ -24,6 +24,8 @@ if(FALSE) {
   install.packages("abind")
   install.packages("devtools")
   install.packages("ggplot2")
+  install.packages("rgeos")
+  install.packages("WeightedCluster")
   
   library(devtools)
   install_github("https://github.com/richardli/SUMMER/tree/dev")
@@ -55,6 +57,8 @@ library(abind)
 library(SUMMER)
 # library(Rcpp)
 library(ggplot2)
+library(rgeos)
+library(WeightedCluster)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -101,8 +105,13 @@ out=load("savedOutput/global/NigeriaMapData.RData")
 out=load("savedOutput/global/edMICS.RData")
 out=load("savedOutput/global/ed.RData")
 out=load("savedOutput/global/covariates.RData")
+out=load("savedOutput/global/urbProps.RData")
+out=load("savedOutput/global/poppaNGA.RData")
 lonLimNGA = adm0@bbox[1,]
 latLimNGA = adm0@bbox[2,]
+adm0FullProjNGA = projNigeriaArea(adm0Full)
+eastLimNGA = adm0FullProjNGA@bbox[1,]
+northLimNGA = adm0FullProjNGA@bbox[2,]
 
 # determine version of PROJ.4
 ver = rgdal::rgdal_extSoftVersion()

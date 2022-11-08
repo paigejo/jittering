@@ -929,34 +929,35 @@ addBinomialVar = function(probMatrix, ns) {
   sweep(simulatedObservations, 1, 1/ns, "*")
 }
 
-getArea = function(areaLevel=c("Region", "County", "Constituency"), thisMap = NULL, nameVar=NULL, sortAreas=FALSE) {
-  areaLevel = match.arg(areaLevel)
+getArea = function(thisMap = NULL, nameVar="NAME_1", sortAreas=FALSE, project=FALSE) {
   require(shapefiles)
   
-  # load shape files
-  require(maptools)
-  if(is.null(thisMap)) {
-    if(areaLevel == "Region"){
-      thisMap = readShapePoly("../U5MR/mapData/kenya_region_shapefile/kenya_region_shapefile.shp", delete_null_obj=TRUE, force_ring=TRUE, repair=TRUE)
-    } else if(areaLevel == "County"){
-      out = load("../U5MR/adminMapData.RData")
-      thisMap = adm1
-    } else if(areaLevel == "Constituency") {
-      stop("Please specify input thisMap to getArea")
-    } else {
-      stop(paste0("Unrecognized area level: ", areaLevel))
-    }
-  }
-  
   getOneArea = function(poly) {
-    areas = sapply(poly@Polygons, function(x) {x@area})
-    correctPolyI = which.max(areas)
-    poly = poly@Polygons[[correctPolyI]]
-    # thisCentroid = centroid(poly@coords)
-    # allPoints = rbind(thisCentroid, 
-    #                   poly@coords)
-    allPoints = poly@coords
-    allProjected = projKenya(allPoints[,1], allPoints[,2], inverse=FALSE)
+    if("Polygons" %in% slotNames(poly)) {
+      areas = sapply(poly@Polygons, function(x) {x@area})
+      
+      correctPolyI = which.max(areas) # sum or max?
+      poly = poly@Polygons[[correctPolyI]]
+      # thisCentroid = centroid(poly@coords)
+      # allPoints = rbind(thisCentroid, 
+      #                   poly@coords)
+      allPoints = poly@coords
+    } else {
+      areas = sapply(poly, function(x) {x@area})
+      
+      correctPolyI = which.max(areas) # sum or max?
+      poly = poly[[correctPolyI]]
+      # thisCentroid = centroid(poly@coords)
+      # allPoints = rbind(thisCentroid, 
+      #                   poly@coords)
+      allPoints = poly@coords
+    }
+    
+    if(project) {
+      allProjected = projNigeria(allPoints[,1], allPoints[,2], inverse=FALSE)
+    } else {
+      allProjected = allPoints
+    }
     
     # downsample spatial polygons as necessary
     if(nrow(allProjected) >= 6000) {
@@ -974,18 +975,6 @@ getArea = function(areaLevel=c("Region", "County", "Constituency"), thisMap = NU
   }
   # calculate areas in km^2
   areas = sapply(thisMap@polygons, getOneArea)
-  
-  # sort results by area name
-  if(is.null(nameVar)) {
-    if(areaLevel == "Region") {
-      nameVar = "name"
-      
-    } else if(areaLevel == "County") {
-      nameVar = "NAME_1"
-    } else if(areaLevel == "Constituency") {
-      nameVar = "CONSTITUEN"
-    }
-  }
   
   areaNames = as.character(thisMap@data[[nameVar]])
   if(sortAreas) {
@@ -1049,6 +1038,8 @@ getAreaPerObservationTicks = function(areaLevel=c("Region", "County"), dataType=
     c(10, 25, 50, 100, 200, 400, 800, 1600, 2400)
   }
 }
+
+
 
 getRadius = function(areaLevel=c("Region", "County")) {
   require(geosphere)
@@ -1558,3 +1549,47 @@ projNigeria = function(lon, lat=NULL, inverse=FALSE) {
   
   out
 }
+
+projNigeriaArea = function(area, inverse=FALSE) {
+  
+  # determine version of PROJ
+  ver = rgdal::rgdal_extSoftVersion()
+  theseNames = names(ver)
+  thisI = which(grepl("PROJ", theseNames))
+  PROJ6 <- as.numeric(substr(ver[thisI], 1, 1)) >= 6
+  
+  if(!inverse) {
+    # from lon/lat coords to easting/northing
+    projArea = sp::spTransform(area, CRS("+init=epsg:26391 +units=m"))
+    
+    # convert coordinates from m to km
+    projArea@bbox = projArea@bbox/1000
+    projArea@polygons = lapply(projArea@polygons, function(x) {lapply(x@Polygons, function(x) {
+      out = x; 
+      # out@coords = projNigeria(x@coords)
+      out@area = out@area / 1000^2
+      out
+      })})
+  }
+  else {
+    # from easting/northing coords to lon/lat
+    
+    # first convert from km to m
+    area@bbox = area@bbox*1000
+    area@polygons = lapply(area@polygons, function(x) {lapply(x@Polygons, function(x) {
+      out = x; 
+      # out@coords = projNigeria(x@coords, inverse=TRUE)
+      out@area = out@area * 1000^2
+      out
+    })})
+    
+    if(!PROJ6) {
+      projArea = spTransform(area, CRS("+proj=longlat"))
+    } else {
+      projArea = spTransform(area, CRS(SRS_string="EPSG:4326"))
+    }
+  }
+  
+  projArea
+}
+

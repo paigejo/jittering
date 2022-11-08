@@ -229,8 +229,21 @@ makeIntegrationIllustration = function(numPointsUrban=11, MInnerUrban=3, MOuterU
 }
 
 # plot rasters and Nigeria DHS and MICS data
-plotDatasets = function() {
+plotDatasets = function(kmres=5) {
   # plot rasters ----
+  
+  # project area to easting/northing in km, and make a fine easting/northing
+  # grid of points
+  projArea = projNigeriaArea(adm0)
+  xCoords = seq(projArea@bbox[1,1], projArea@bbox[1,2], by=kmres)
+  yCoords = seq(projArea@bbox[2,1], projArea@bbox[2,2], by=kmres)
+  ENCoords = make.surface.grid(list(x=xCoords, y=yCoords))
+  
+  # convert the grid of points back to longitude/latitude and get covariate
+  # values
+  LLCoords = projNigeria(ENCoords, inverse=TRUE)
+  X = getDesignMat(LLCoords, normalized=FALSE)
+  
   
   quilt.plot(1:2, 1:2, rep(NA, 2), nx=2, ny=2, add.legend = FALSE, 
              xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
