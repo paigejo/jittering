@@ -1550,6 +1550,7 @@ projNigeria = function(lon, lat=NULL, inverse=FALSE) {
   out
 }
 
+# area: shapefile of the area to transform
 projNigeriaArea = function(area, inverse=FALSE) {
   
   # determine version of PROJ

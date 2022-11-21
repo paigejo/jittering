@@ -310,9 +310,22 @@ makeJitterDataForTMB = function(integrationPointInfo, ys, urbanicity, ns, spdeMe
 # with respect to the jittering distribution, and their weights, 
 # where the weights are related to the jittering distribution
 # Arguments: 
-# area
+# area: shapefile of the area to transform
+# kmresFine: km resolution for the fine grid used to produce the final set of 
+#   integration points
+# numPts: number of integration points for the area (produces fewer if there are 
+#   fewer than that many fine scale grid points)
+# propUrb: Proportion of area's population that is urban 
+# proj: projection to use for the points
+# projArea: projection to use for the areas
+# spatialAsCovariate: whether to use easting/northing as a covariate
+# lambda: spatial scaling coefficient. Default is 1 / priorSD for 
+#   priorSD = (domainDiameter / 5) / 2
+# domainDiameter: used for calculating default lambda. Default is 1463.733 km, 
+#   Nigeria's diameter
 getIntegrationPointsMICS = function(area, kmresFine=1, numPts=25, propUrb=NULL, 
-                                    proj=projNigeria, spatialAsCovariate=FALSE, 
+                                    proj=projNigeria, projArea=projNigeriaArea, 
+                                    spatialAsCovariate=FALSE, 
                                     lambda=NULL, domainDiameter=NULL) {
   
   # project area to easting/northing in km, and make a fine easting/northing
@@ -372,6 +385,95 @@ getIntegrationPointsMICS = function(area, kmresFine=1, numPts=25, propUrb=NULL,
   
   # return results
   list(pts=X[pointIAssigned,], weights=weights)
+}
+
+# construct integration points as well as weights. 
+# Output: 3 pairs of matrices of dimension nCoordsInStratum x nIntegrationPointsInStratum, 
+#         each pair contains one urban matrix and one equivalent rural matrix
+#   x: x/easting coordinates
+#   y: y/northing coordinates
+#   w: integration weights
+# Input: 
+#   coords: 2 column matrix of observation easting/northing coordinates
+#   urbanVals: vector of observation urbanicity classifications
+#   numPointsUrban: number of urban numerical integration points
+#   numPointsRural: number of rural numerical integration points
+#   scalingFactor: factor by which to scale the jittering distribution. 
+#                  1 corresponds to standard DHS jittering, larger than 1 
+#                  corresponds to more jittering than DHS
+#   JInnerUrban: number of inner integration rings for urban points
+#   JOuterUrban: number of outer integration rings for urban points
+#   JInnerRural: number of inner integration rings for rural points
+#   JOuterRural: number of outer integration rings for rural points
+#   integrationPointType: 'mean' is center of mass, 'midpoint' is the 
+#                         median angle and median radius within the 
+#                         integration area
+# makeAllIntegrationPointsDHS = function(coords, urbanVals,
+#                                        numPointsUrban=11, numPointsRural=16,
+#                                        scalingFactor=1,
+#                                        JInnerUrban=3, JOuterUrban=0,
+#                                        JInnerRural=3, JOuterRural=1,
+#                                        integrationPointType=c("mean", "midpoint")) {
+
+# area: shapefile of the area to transform
+# kmresFine: km resolution for the fine grid used to produce the final set of 
+#   integration points
+# numPts: number of integration points for the area (produces fewer if there are 
+#   fewer than that many fine scale grid points)
+# propUrb: Proportion of area's population that is urban 
+# proj: projection to use for the points
+# projArea: projection to use for the areas
+# spatialAsCovariate: whether to use easting/northing as a covariate
+# lambda: spatial scaling coefficient. Default is 1 / priorSD for 
+#   priorSD = (domainDiameter / 5) / 2
+# domainDiameter: used for calculating default lambda. Default is 1463.733 km, 
+#   Nigeria's diameter
+makeAllIntegrationPointsMICS = function(poppa=poppaNGA, poppsub=poppsubNGA, 
+                                        kmresFine=1, numPts=25, 
+                                        proj=projNigeria, projArea=projNigeriaArea, 
+                                        spatialAsCovariate=FALSE, 
+                                        lambda=NULL, domainDiameter=NULL) {
+  
+  # TODO: complete this function
+  
+  # calculate integration points and weights relative to individual points
+  outUrban = getIntegrationPoints(urban=TRUE, numPointsUrban, 
+                                  scalingFactor, 
+                                  JInnerUrban, JOuterUrban, 
+                                  integrationPointType, 
+                                  verbose=FALSE)
+  
+  outRural = getIntegrationPoints(urban=FALSE, numPointsRural, 
+                                  scalingFactor, 
+                                  JInnerRural, JOuterRural, 
+                                  integrationPointType, 
+                                  verbose=FALSE)
+  
+  # concatenate integration points and weights into a single vector
+  xsUrbanVec = unlist(sapply(outUrban$pts, function(x) {x[,1]}))
+  ysUrbanVec = unlist(sapply(outUrban$pts, function(x) {x[,2]}))
+  wsUrbanVec = rep(outUrban$ws, outUrban$ms)
+  xsRuralVec = unlist(sapply(outRural$pts, function(x) {x[,1]}))
+  ysRuralVec = unlist(sapply(outRural$pts, function(x) {x[,2]}))
+  wsRuralVec = rep(outRural$ws, outRural$ms)
+  
+  # separate coordinates in urban and rural
+  coordsUrban = coords[urbanVals,]
+  coordsRural = coords[!urbanVals,]
+  nUrban = nrow(coordsUrban)
+  nRural = nrow(coordsRural)
+  
+  # calculate the six matrices
+  xUrban = outer(coordsUrban[,1], xsUrbanVec, "+")
+  yUrban = outer(coordsUrban[,2], ysUrbanVec, "+")
+  wUrban = matrix(wsUrbanVec, ncol=length(wsUrbanVec), nrow=nUrban, byrow=TRUE)
+  xRural = outer(coordsRural[,1], xsRuralVec, "+")
+  yRural = outer(coordsRural[,2], ysRuralVec, "+")
+  wRural = matrix(wsRuralVec, ncol=length(wsRuralVec), nrow=nRural, byrow=TRUE)
+  
+  # return list of all matrices
+  list(xUrban=xUrban, yUrban=yUrban, wUrban=wUrban, 
+       xRural=xRural, yRural=yRural, wRural=wRural)
 }
 
 

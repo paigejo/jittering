@@ -425,6 +425,16 @@ makeBlueSequentialColors = function(n, ggplot=FALSE) {
     scale_colour_continuous_sequential(h1=245, c1=50, cmax=75, l1=20, l2=98, p1=0.8, rev=TRUE, n_interp=n)
 }
 
+makeGreenSequentialColors = function(n, ggplot=FALSE, rev=FALSE) {
+  # library("colorspace")
+  # pal <-choose_palette()
+  # sequential_hcl(n, h1=260, c1=80, l1=30, l2=90, p1=1.5, rev=TRUE)
+  if(!ggplot)
+    sequential_hcl(n, h1=128, c1=100, l1=72, l2=95, p1=1.0, rev=rev)
+  else
+    scale_colour_continuous_sequential(h1=128, c1=100, l1=72, l2=95, p1=1.0, rev=rev, n_interp=n)
+}
+
 makeBlueGreenYellowSequentialColors = function(n, ggplot=FALSE, rev=FALSE) {
   # library("colorspace")
   # pal <-choose_palette()

@@ -592,7 +592,8 @@ urbProps = urbProps[urbProps$LGA != "* Disputed Areas",]
 
 all.equal(sort(stateProps$State), sort(unique(urbProps$State)))
 
-# set all Lagos LGAs to be entirely urban
+urbProps$propTotal = urbProps$propTotal/sum(urbProps$propTotal)
+stateProps$propTotal = stateProps$propTotal/sum(stateProps$propTotal)
 
 save(urbProps, stateProps, file="savedOutput/global/urbProps.RData")
 
@@ -845,7 +846,7 @@ minDistRiverLakesNorm = raster("savedOutput/global/minDistRiverLakesNorm.tif")
 save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
 
 
-# Matching urban proportions ----
+# Calculate population totals ----
 
 # first calculate population per LGA
 out = load("savedOutput/global/covariates.RData")
@@ -855,12 +856,62 @@ lgaArea = getArea(adm2FullProj, "NAME_2", TRUE) / 1000^2
 stateArea = getArea(adm1FullProj, "NAME_1", TRUE) / 1000^2
 lgaAreaList = list(subarea = names(lgaArea), spatialArea = lgaArea)
 stateAreaList = list(area = names(stateArea), spatialArea = stateArea)
-poppsubNGA = SUMMER::getPoppsub(kmRes=1, pop=pop, domainPoly=adm0Poly, eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
-                            poppa=poppaNGA, areapa=stateAreaList, areapsub=lgaAreaList, subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
-                            stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
-                            areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
-                            mean.neighbor=50, delta=.1)
-SUMMER::poppRegionFromPopMat()
+# poppsubNGA = SUMMER::getPoppsub(kmRes=1, pop=pop, domainMapDat=adm0Full, eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+#                             poppa=poppaNGA, areapa=stateAreaList, areapsub=lgaAreaList, subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+#                             stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+#                             areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+#                             mean.neighbor=50, delta=.1)
+
+# load urban props for each LGA
+out = load("savedOutput/global/urbProps.RData")
+
+totalPop = sum(poppaNGA$popTotal)
+
+# subarea   area popUrb popRur popTotal pctUrb pctTotal
+subareas = urbProps$LGA
+areas = urbProps$State
+propUrb = urbProps$propUrb
+propTotal = urbProps$propTotal
+
+popTotal = totalPop * propTotal
+popUrb = round(popTotal * propTotal)
+popTotal = round(popTotal)
+popRur = popTotal - popUrb
+
+poppsubNGA = data.frame(subarea=subareas, area=areas, 
+                     popUrb=popUrb, popRur=popRur, popTotal=popTotal, 
+                     pctUrb=100*propUrb, pctTotal=100*propTotal)
+
+
+
+poppsubNGA[poppsubNGA$popTotal == 0,]
+
+# below code results in zero population areas, so must use above code instead
+# poppsubNGA = SUMMER::getPoppsub(kmRes=.2, pop=pop, domainMapDat=adm0Full, eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+#                                 poppa=poppaNGA, areapa=stateAreaList, areapsub=lgaAreaList, subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+#                                 stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+#                                 areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+#                                 mean.neighbor=50, delta=.1)
+
+save(poppsubNGA, file="savedOutput/global/poppsubNGA.RData")
+
+
+out=load("savedOutput/global/poppsubNGA.RData")
+popMatNGA = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
+                                eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+                                poppa=poppaNGA, poppsub=poppsubNGA, 
+                                areapa=stateAreaList, areapsub=lgaAreaList, 
+                                subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+                                areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+                                mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+                                extractMethod="simple")
+
+save(popMatNGA, file="savedOutput/global/popMatNGA.RData")
+
+# SUMMER::poppRegionFromPopMat()
+
+# Matching urban proportions ----
 
 # Use SUMMER's built in urban matching functions
 

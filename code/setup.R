@@ -59,6 +59,7 @@ library(SUMMER)
 library(ggplot2)
 library(rgeos)
 library(WeightedCluster)
+library(shapefiles)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -107,6 +108,7 @@ out=load("savedOutput/global/ed.RData")
 out=load("savedOutput/global/covariates.RData")
 out=load("savedOutput/global/urbProps.RData")
 out=load("savedOutput/global/poppaNGA.RData")
+out=load("savedOutput/global/poppsubNGA.RData")
 lonLimNGA = adm0@bbox[1,]
 latLimNGA = adm0@bbox[2,]
 adm0FullProjNGA = projNigeriaArea(adm0Full)
