@@ -595,7 +595,38 @@ all.equal(sort(stateProps$State), sort(unique(urbProps$State)))
 urbProps$propTotal = urbProps$propTotal/sum(urbProps$propTotal)
 stateProps$propTotal = stateProps$propTotal/sum(stateProps$propTotal)
 
+# add in Lake Chad, the zero population LGA
+urbProps = rbind(data.frame(State="Borno", LGA="Lake Chad", propUrb=0, propTotal=0), 
+                 urbProps)
+
+cbind(sort(urbProps$LGA), sort(adm2@data$NAME_2))
+all.equal(sort(urbProps$LGA), sort(adm2@data$NAME_2))
+all.equal(sort(gadmNames), sort(adm2@data$NAME_2))
+cbind(sort(urbProps$LGA), sort(adm2@data$NAME_2))[sort(urbProps$LGA) !=sort(adm2@data$NAME_2),]
+
+urbProps = urbProps[order(urbProps$LGA),]
+urbProps$LGA = sort(adm2@data$NAME_2)
+
+# make sure all LGA names are unique
+nameCounts = aggregate(urbProps$LGA, by=list(LGA=urbProps$LGA), FUN=length)
+doubleCounts = nameCounts$LGA[nameCounts$x > 1]
+urbProps[urbProps$LGA %in% doubleCounts,]
+
+# add state name to end of LGA name for non-unique LGAs
+urbProps[urbProps$LGA %in% doubleCounts,]$LGA = paste(urbProps[urbProps$LGA %in% doubleCounts,]$LGA, urbProps[urbProps$LGA %in% doubleCounts,]$State, sep=",")
+adm2@data$NAME_2[adm2@data$NAME_2 %in% doubleCounts] = paste(adm2@data$NAME_2[adm2@data$NAME_2 %in% doubleCounts], adm2@data$NAME_1[adm2@data$NAME_2 %in% doubleCounts], sep=",")
+adm2Full@data$NAME_2[adm2Full@data$NAME_2 %in% doubleCounts] = paste(adm2Full@data$NAME_2[adm2Full@data$NAME_2 %in% doubleCounts], adm2Full@data$NAME_1[adm2Full@data$NAME_2 %in% doubleCounts], sep=",")
+
+all.equal(sort(adm2@data$NAME_2), sort(urbProps$LGA))
+
+urbProps$State[urbProps$State == "FCT Abuja"] = "Federal Capital Territory"
+stateProps$State[stateProps$State == "FCT Abuja"] = "Federal Capital Territory"
+
 save(urbProps, stateProps, file="savedOutput/global/urbProps.RData")
+
+save(adm0, adm1, adm2, adm0Full, adm1Full, adm2Full, 
+     sen, senFull, admFinal, admFinalFull, adm0Poly, 
+     file="savedOutput/global/NigeriaMapData.RData")
 
 # Cleaning population totals ----
 popTabRaw = read.csv2("data/popTabNGA_DHS2017.csv", header=TRUE)
@@ -846,7 +877,7 @@ minDistRiverLakesNorm = raster("savedOutput/global/minDistRiverLakesNorm.tif")
 save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
 
 
-# Calculate population totals ----
+# Calculate LGA pop totals ----
 
 # first calculate population per LGA
 out = load("savedOutput/global/covariates.RData")
@@ -874,7 +905,7 @@ propUrb = urbProps$propUrb
 propTotal = urbProps$propTotal
 
 popTotal = totalPop * propTotal
-popUrb = round(popTotal * propTotal)
+popUrb = round(popTotal * propUrb)
 popTotal = round(popTotal)
 popRur = popTotal - popUrb
 
@@ -895,24 +926,129 @@ poppsubNGA[poppsubNGA$popTotal == 0,]
 
 save(poppsubNGA, file="savedOutput/global/poppsubNGA.RData")
 
+# Calculate MICS stratum pop totals ----
+
+poppStratMICS = poppaNGA
+poppStratMICS = poppStratMICS[! (poppStratMICS$area %in% c("Kano", "Lagos")),]
+
+strataMICS = admFinalFull@data[["NAME_FINAL"]]
+KanoStrataMICS = strataMICS[grepl("Kano", strataMICS)]
+LagosStrataMICS = strataMICS[grepl("Lagos", strataMICS)]
+
+theseStrata = c(KanoStrataMICS, LagosStrataMICS)
+poppsubStrata = getMICSstratumNigeria(poppsubNGA$subarea, poppsubNGA$area)
+for(i in 1:length(theseStrata)) {
+  thisStratum = theseStrata[i]
+  thisPoppStratRow = poppaNGA[1,]
+  
+  # get set of subareas in this stratum
+  thisPoppsub = poppsubNGA[poppsubStrata == thisStratum,]
+  
+  # aggregate population totals in the stratum and calculate appropriate summary statistics
+  thisPoppStratRow$area = thisStratum
+  thisPoppStratRow$popUrb = sum(thisPoppsub$popUrb)
+  thisPoppStratRow$popRur = sum(thisPoppsub$popRur)
+  thisPoppStratRow$popTotal = sum(thisPoppsub$popTotal)
+  thisPoppStratRow$pctUrb = 100 * thisPoppStratRow$popUrb / thisPoppStratRow$popTotal
+  thisPoppStratRow$growthRateSince2006 = NA
+  
+  poppStratMICS = rbind(poppStratMICS, 
+                        thisPoppStratRow)
+}
+poppStratMICS$pctTotal = 100 * poppStratMICS$popTotal / sum(poppStratMICS$popTotal)
+names(poppStratMICS)[1] = "strat"
+
+save(poppStratMICS, file="savedOutput/global/poppStratMICS.RData")
+
+# Threshold pop totals ----
+
+poppsubNGAThresh = poppsubNGA
+
+absDiff = 50 - abs(poppsubNGAThresh$pctUrb - 50)
+absDiff[absDiff == 0] = 50
+head(poppsubNGAThresh[order(absDiff),], 50)
+
+minPop = apply(poppsubNGAThresh[,3:4], 1, min)
+minPop[minPop == 0] = poppsubNGAThresh[minPop == 0,5]
+head(poppsubNGAThresh[order(minPop),], 50)
+head(absDiff[order(minPop)], 50)
+
+thresh = .3 # < .3% is rounded to 0% and >99.7% rounded to 100%
+poppsubNGAThresh$pctUrb[poppsubNGAThresh$pctUrb < thresh] = 0
+poppsubNGAThresh$pctUrb[poppsubNGAThresh$pctUrb > 100 - thresh] = 100
+propUrb = poppsubNGAThresh$pctUrb / 100
+poppsubNGAThresh$popUrb = round(poppsubNGAThresh$popTotal * propUrb)
+poppsubNGAThresh$popRur = poppsubNGAThresh$popTotal - poppsubNGAThresh$popUrb
+
+save(poppsubNGAThresh, file="savedOutput/global/poppsubNGAThresh.RData")
+
+# use thresholded poppsub to get poppstrat
+poppStratMICSthresh = poppaNGA
+poppStratMICSthresh = poppStratMICSthresh[! (poppStratMICSthresh$area %in% c("Kano", "Lagos")),]
+
+strataMICS = admFinalFull@data[["NAME_FINAL"]]
+KanoStrataMICS = strataMICS[grepl("Kano", strataMICS)]
+LagosStrataMICS = strataMICS[grepl("Lagos", strataMICS)]
+
+theseStrata = c(KanoStrataMICS, LagosStrataMICS)
+poppsubStrata = getMICSstratumNigeria(poppsubNGA$subarea, poppsubNGA$area)
+for(i in 1:length(theseStrata)) {
+  thisStratum = theseStrata[i]
+  thisPoppStratRow = poppaNGA[1,]
+  
+  # get set of subareas in this stratum
+  thisPoppsub = poppsubNGA[poppsubStrata == thisStratum,]
+  
+  # aggregate population totals in the stratum and calculate appropriate summary statistics
+  thisPoppStratRow$area = thisStratum
+  thisPoppStratRow$popUrb = sum(thisPoppsub$popUrb)
+  thisPoppStratRow$popRur = sum(thisPoppsub$popRur)
+  thisPoppStratRow$popTotal = sum(thisPoppsub$popTotal)
+  thisPoppStratRow$pctUrb = 100 * thisPoppStratRow$popUrb / thisPoppStratRow$popTotal
+  thisPoppStratRow$growthRateSince2006 = NA
+  
+  poppStratMICSthresh = rbind(poppStratMICSthresh, 
+                        thisPoppStratRow)
+}
+poppStratMICSthresh$pctTotal = 100 * poppStratMICSthresh$popTotal / sum(poppStratMICSthresh$popTotal)
+poppStratMICSThresh = poppStratMICSthresh
+names(poppStratMICSThresh)[1] = "strat"
+
+save(poppStratMICSThresh, file="savedOutput/global/poppStratMICSThresh.RData")
+
+sum(poppStratMICSthresh$popTotal)
+sum(poppStratMICS$popTotal)
+sum(poppaNGA$popTotal)
+sum(poppsubNGA$popTotal)
+sum(poppsubNGAThresh$popTotal)
+
+# Make popMats ----
 
 out=load("savedOutput/global/poppsubNGA.RData")
 popMatNGA = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
                                 eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
                                 poppa=poppaNGA, poppsub=poppsubNGA, 
-                                areapa=stateAreaList, areapsub=lgaAreaList, 
                                 subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
                                 stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
                                 areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
                                 mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
                                 extractMethod="simple")
 
+stratumMICS = getMICSstratumNigeria(popMatNGA$subarea, popMatNGA$area)
+popMatNGA$stratumMICS = stratumMICS
 save(popMatNGA, file="savedOutput/global/popMatNGA.RData")
 
-# SUMMER::poppRegionFromPopMat()
+out=load("savedOutput/global/poppsubNGAThresh.RData")
+popMatNGAThresh = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
+                                          eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+                                          poppa=poppaNGA, poppsub=poppsubNGAThresh, 
+                                          subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                          stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+                                          areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+                                          mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+                                          extractMethod="simple")
 
-# Matching urban proportions ----
+stratumMICS = getMICSstratumNigeria(popMatNGAThresh$subarea, popMatNGAThresh$area)
+popMatNGAThresh$stratumMICS = stratumMICS
+save(popMatNGAThresh, file="savedOutput/global/popMatNGAThresh.RData")
 
-# Use SUMMER's built in urban matching functions
-
-poppsub = SUMMER::setThresholdsByRegion

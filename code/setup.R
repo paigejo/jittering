@@ -26,9 +26,14 @@ if(FALSE) {
   install.packages("ggplot2")
   install.packages("rgeos")
   install.packages("WeightedCluster")
+  install.packages("colorspace")
   
   library(devtools)
-  install_github("https://github.com/richardli/SUMMER/tree/dev")
+  if(FALSE) {
+    install_github("https://github.com/richardli/SUMMER/tree/dev")
+    install_github("https://github.com/paigejo/SUMMER/")
+    load_all("~/git/SUMMER/")
+  }
 }
 
 # load required packages and R scripts
@@ -60,6 +65,8 @@ library(ggplot2)
 library(rgeos)
 library(WeightedCluster)
 library(shapefiles)
+library(devtools)
+library(colorspace)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -86,6 +93,7 @@ if(inf$platform == "x86_64-apple-darwin17.0 (64-bit)") {
   inla.setOption(num.threads=1) # consider raising
   options(error=recover)
 }
+options(warn=1)
 
 setwd("~/git/jittering")
 source("code/genericSpatialPlottingFunctions.R")
@@ -109,6 +117,8 @@ out=load("savedOutput/global/covariates.RData")
 out=load("savedOutput/global/urbProps.RData")
 out=load("savedOutput/global/poppaNGA.RData")
 out=load("savedOutput/global/poppsubNGA.RData")
+out=load("savedOutput/global/poppsubNGAThresh.RData")
+out=load("savedOutput/global/popMatNGA.RData")
 lonLimNGA = adm0@bbox[1,]
 latLimNGA = adm0@bbox[2,]
 adm0FullProjNGA = projNigeriaArea(adm0Full)

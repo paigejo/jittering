@@ -7,14 +7,14 @@ using Eigen::SparseMatrix;
 
 // helper function for detecting NAs in the data supplied from R
 template<class Type>
-  bool isNA(Type x){
-    return R_IsNA(asDouble(x));
-  }
+bool isNA(Type x){
+  return R_IsNA(asDouble(x));
+}
 
 // PC prior on BYM2 phi parameter (on logit scale)
 template<class Type>
-  Type dPCPriPhi(Type logitPhi, Type lambda, Type tr, std::vector<Type> gammaTildesm1, Type logDet, 
-                  int give_log=0)
+Type dPCPriPhi(Type logitPhi, Type lambda, Type tr, std::vector<Type> gammaTildesm1, Type logDet, 
+               int give_log=0)
 {
   Type phi = (Type) (1 / (1 + exp(logitPhi)));
   
@@ -61,17 +61,17 @@ Type dPCPriTau(Type logTau, Type lambda)
 }
 
 ///////////////////////////
-  // the main function     //
-  // to calculate the jnll //
-  ///////////////////////////
-  template<class Type>
-  Type objective_function<Type>::operator() ()
+// the main function     //
+// to calculate the jnll //
+///////////////////////////
+template<class Type>
+Type objective_function<Type>::operator() ()
 {
   
   // ~~~~~~~~~------------------------------------------------------~~
-    // FIRST, we define params/values/data that will be passed in from R
+  // FIRST, we define params/values/data that will be passed in from R
   // ~~~~~~~~~~~------------------------------------------------------
-    
+  
   // normalization flag - used for speed-up
   DATA_INTEGER( flag ); // flag == 0 => no data contribution added to jnll
   
@@ -87,10 +87,10 @@ Type dPCPriTau(Type logTau, Type lambda)
   DATA_VECTOR( y_iRural );
   DATA_VECTOR( n_iUrban );   // Trials per cluster
   DATA_VECTOR( n_iRural );
-  DATA_VECTOR( aUrban ); // area index associated with each cluster
-  DATA_VECTOR( aRural );
+  DATA_VECTOR( AprojUrban ); // nObsUrban x nArea matrix with ij-th entry = 1 if cluster j associated with area i and 0 o.w.
+  DATA_VECTOR( AprojRural ); // nObsRural x nArea matrix with ij-th entry = 1 if cluster j associated with area i and 0 o.w.
   DATA_MATRIX( X_betaUrban );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix
-  DATA_MATRIX( X_betaRural );
+  DATA_MATRIX( X_betaRural );  // first nObsRural rows correspond to first int pt
   DATA_MATRIX( wUrban ); // nObsUrban x nIntegrationPointsUrban weight matrix
   DATA_MATRIX( wRural ); // nObsRural x nIntegrationPointsRural weight matrix
   
@@ -109,7 +109,7 @@ Type dPCPriTau(Type logTau, Type lambda)
   
   // Fixed effects
   PARAMETER( alpha ); // Intercept
-  PARAMETER_VECTOR( beta ); // parameters
+  PARAMETER_VECTOR( beta ); // fixed effect/covariate effect sizes
   // Log of INLA tau param (generalized precision of BYM2)
   PARAMETER( log_tau );
   // Logit of phi (proportion of variance that is structured)
@@ -120,10 +120,10 @@ Type dPCPriTau(Type logTau, Type lambda)
   PARAMETER_VECTOR( Epsilon_bym2 );
   
   // ~~~~~~~~~------------------------------------------------~~
-    // SECOND, we define all other objects that we need internally
+  // SECOND, we define all other objects that we need internally
   // ~~~~~~~~~------------------------------------------------~~
-    
-    // objective function -- joint negative log-likelihood/posterior
+  
+  // objective function -- joint negative log-likelihood/posterior
   Type jnll = 0;
   
   // Transform some of our parameters
@@ -141,8 +141,8 @@ Type dPCPriTau(Type logTau, Type lambda)
   vector<Type> projepsilon_iRural(num_iRural);
   
   // linear combination of fixed effects
-  fe_iUrban = X_betaUrban * Type(beta); // initialize
-  fe_iRural = X_betaRural * Type(beta);
+  fe_iUrban = X_betaUrban * Type(beta) + Type(alpha); // initialize
+  fe_iRural = X_betaRural * Type(beta) + Type(alpha);
   
   // Project GP approx from mesh points to data points
   // projepsilon_iUrban = AprojUrban * Epsilon_s.matrix();
@@ -151,105 +151,104 @@ Type dPCPriTau(Type logTau, Type lambda)
   projepsilon_iRural = AprojRural * Epsilon_bym2;
   
   // ~~~~~~~~~------------------------------------------------~~-
-    // THIRD, we calculate the contribution to the likelihood from:
-    // 1) GP field first, for 'flag' normalization purposes
-// 2) priors
-// 3) GP field
-// ~~~~~~~~~------------------------------------------------~~-
-
-/////////
-// (1) //
-/////////
-
-// add in BYM2 latent model component to the posterior
-jnll += GMRF(Q_bym2)(Epsilon_s, false);
-
-// calculate log determinant, and add it to the posterior
-Type logDet = sum(log(1 + phi*gammaTildesm1));
-jnll += logDet
-
-/////////
-// (2) //
-/////////
-// Prior contributions to joint likelihood
-
-// add in priors for BYM2 parameter
-jnll -= dPCPriTau(log_tau, lambdaTau);
-jnll -= dPCPriPhi(logit_phi, lambdaPhi, tr, gammaTildesm1, logDet);
-
-// prior for intercept
-jnll -= dnorm(beta[0], alpha_pri[0], alpha_pri[1], true); // N(mean, sd)
-
-// prior for other covariates
-for(int i = 0; i < beta.size(); i++) {
-  jnll -= dnorm(beta[i], beta_pri[0], beta_pri[1], true); // N(mean, sd)
-}
-
-/////////
+  // THIRD, we calculate the contribution to the likelihood from:
+  // 1) GP field first, for 'flag' normalization purposes
+  // 2) priors
+  // 3) GP field
+  // ~~~~~~~~~------------------------------------------------~~-
+  
+  /////////
+  // (1) //
+  /////////
+  
+  // add in BYM2 latent model component to the posterior
+  jnll += GMRF(Q_bym2)(Epsilon_s, false);
+  
+  // calculate log determinant, and add it to the posterior
+  Type logDet = sum(log(1 + phi*gammaTildesm1));
+  jnll += logDet
+  
+  /////////
+  // (2) //
+  /////////
+  // Prior contributions to joint likelihood
+  
+  // add in priors for BYM2 parameter
+  jnll -= dPCPriTau(log_tau, lambdaTau);
+  jnll -= dPCPriPhi(logit_phi, lambdaPhi, tr, gammaTildesm1, logDet);
+  
+  // prior for intercept
+  jnll -= dnorm(alpha, alpha_pri[0], alpha_pri[1], true); // N(mean, sd)
+  
+  // prior for other covariates
+  for(int i = 0; i < beta.size(); i++) {
+    jnll -= dnorm(beta[i], beta_pri[0], beta_pri[1], true); // N(mean, sd)
+  }
+  
+  /////////
   // (3) //
   /////////
   // jnll contribution from each datapoint i
-int thisIndex;
-Type thisLatentField;
-Type thisWeight;
-Type thislik;
-for (int i = 0; i < num_iUrban; i++){
-  thislik = 0;
-  
-  for (int j = 0; j < n_integrationPointsUrban; j++){
-    thisIndex = i + num_iUrban * j;
-    
-    // latent field estimate at each obs
-    thisLatentField = fe_iUrban(thisIndex) + projepsilon_iUrban(thisIndex);
-    
-    // and add data contribution to jnll
-    if(!isNA(y_iUrban(i))){
-      // get integration weight
-      thisWeight = wUrban(i,j);
-      
-      // Uses the dbinom_robust function, which takes the logit probability
-      thislik += thisWeight*dbinom_robust( y_iUrban(i), n_iUrban(i), thisLatentField, false);
-      
-    } // !isNA
-    
-  } // for( j )
-    
-    jnll -= log(thislik);
-} // for( i )
-  
-  for (int i = 0; i < num_iRural; i++){
+  int thisIndex;
+  Type thisLatentField;
+  Type thisWeight;
+  Type thislik;
+  for (int intI = 0; intI < n_integrationPointsUrban; intI++) {
     thislik = 0;
     
-    for (int j = 0; j < n_integrationPointsRural; j++){
-      thisIndex = i + num_iRural * j;
+    for (int obsI = 0; obsI < num_iUrban; obsI++) {
+      thisIndex = num_iUrban * intI + obsI;
+      
+      // latent field estimate at each obs
+      thisLatentField = fe_iUrban(thisIndex) + projepsilon_iUrban(obsI);
+      
+      // and add data contribution to jnll
+      if(!isNA(y_iUrban(obsI))){
+        // get integration weight
+        thisWeight = wUrban(obsI,intI);
+        
+        // Uses the dbinom_robust function, which takes the logit probability
+        thislik += thisWeight*dbinom_robust( y_iUrban(obsI), n_iUrban(obsI), thisLatentField, false);
+        
+      } // !isNA
+      
+    } // for( intI )
+    
+    jnll -= log(thislik);
+  } // for( obsI )
+  
+  for (int intI = 0; intI < n_integrationPointsRural; intI++) {
+    thislik = 0;
+    
+    for (int obsI = 0; obsI < num_iRural; obsI++) {
+      thisIndex = num_iRural * intI + obsI;
       
       // latent field estimate at each obs
       thisLatentField = fe_iRural(thisIndex) + projepsilon_iRural(thisIndex);
       
       // and add data contribution to jnll
-      if(!isNA(y_iRural(i))){
+      if(!isNA(y_iRural(obsI))){
         // get integration weight
-        thisWeight = wRural(i,j);
+        thisWeight = wRural(obsI,intI);
         
         // Uses the dbinom_robust function, which takes the logit probability
-        thislik += thisWeight*dbinom_robust( y_iRural(i), n_iRural(i), thisLatentField, false);
+        thislik += thisWeight*dbinom_robust( y_iRural(obsI), n_iRural(obsI), thisLatentField, false);
         
       } // !isNA
       
-    } // for( j )
-      
-      jnll -= log(thislik);
-  } // for( i )
+    } // for( intI )
     
-    
-    // ~~~~~~~~~~~
+    jnll -= log(thislik);
+  } // for( obsI )
+  
+  // ~~~~~~~~~~~
   // ADREPORT: used to return estimates and cov for transforms?
   // ~~~~~~~~~~~
   if(options[1]==1){
     ADREPORT(sp_range);
     ADREPORT(sp_sigma);
   }
-
-return jnll;
-
-  }
+  
+  return jnll;
+  
+}

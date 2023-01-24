@@ -245,6 +245,38 @@ getUrbanRural = function(utmGrid) {
   urban
 }
 
+# subareas: Admin2 names
+# areas: Admin1 names
+getMICSstratumNigeria = function(subareas, areas) {
+  # load table giving what Admin2 areas are in what senatorial district and make 
+  # sure the Admin2 names match the GADM names in Kano and Lagos
+  adm2ToSen = read.csv2("data/admin2ToSen.csv")
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Kano Municipal"] = "Kano"
+  adm2ToSen$admin2RefName[(adm2ToSen$admin2RefName == "Nasarawa") & (adm2ToSen$admin1Name_en == "Kano")] = "Nasarawa,Kano"
+  
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Lagos Mainland"] = "Mainland"
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Ajeromi-Ifelodun"] = "Ajeromi/Ifelodun"
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Amuwo-Odofin"] = "Amuwo Odofin"
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Ibeju/Lekki"] = "Ibeju-Lekki"
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Ifako-Ijaye"] = "Ifako/Ijaye"
+  adm2ToSen$admin2RefName[adm2ToSen$admin2RefName == "Oshodi-Isolo"] = "Oshodi/Isolo"
+  adm2ToSen$admin2RefName[(adm2ToSen$admin2RefName == "Surulere") & (adm2ToSen$admin1Name_en == "Lagos")] = "Surulere,Lagos"
+  
+  kanoSens = c("Kano South", "Kano Central", "Kano North")
+  lagosSens = c("Lagos West", "Lagos Central", "Lagos East")
+  allSens = c(kanoSens, lagosSens)
+  
+  # match Admin2 area names to row of adm2ToSen table to get associated 
+  # senatorial district. Stratum is Admin1 area unless Admin2 area is in Kano
+  rowIs = match(subareas, adm2ToSen$admin2RefName)
+  senDistrict = adm2ToSen$SenDist_en[rowIs]
+  goodSen = senDistrict %in% allSens
+  stratumMICS = areas
+  stratumMICS[goodSen] = senDistrict[goodSen]
+  
+  stratumMICS
+}
+
 # set thresholds within each county based on percent population urban
 setThresholds = function() {
   require(raster)
@@ -1591,6 +1623,28 @@ projNigeriaArea = function(area, inverse=FALSE) {
     }
   }
   
+  warning("projArea does not project polygon coordinates")
   projArea
+}
+
+projNigeriaBBox = function(bbox, inverse=FALSE, nlon=100, nlat=100) {
+  lonRange = sort(bbox[1,])
+  latRange = sort(bbox[2,])
+  
+  lonPts = seq(lonRange[1], lonRange[2], l=nlon)
+  latPts = seq(latRange[1], latRange[2], l=nlat)
+  
+  allPointsLL = rbind(cbind(lonPts, latPts[1]), 
+                      cbind(lonPts, latPts[length(latPts)]), 
+                      cbind(lonPts[1], latPts), 
+                      cbind(lonPts[length(lonPts)], latPts))
+  
+  projPts = projNigeria(allPointsLL, inverse=inverse)
+  
+  eastRange = range(projPts[,1])
+  northRange = range(projPts[,2])
+  
+  rbind(eastRange, 
+        northRange)
 }
 

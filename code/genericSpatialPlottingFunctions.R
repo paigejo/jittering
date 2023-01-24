@@ -33,7 +33,7 @@ plotWithColor = function(x, y, z, zlim=NULL, colScale=tim.colors(),
     z = z[!nas]
   }
   
-  # do setup for ploting data if necessary
+  # do setup for plotting data if necessary
   if(is.null(zlim)) {
     nas = !is.finite(scaleFun(z))
     zlim = range(z[!nas])
@@ -111,6 +111,7 @@ plotWithColor = function(x, y, z, zlim=NULL, colScale=tim.colors(),
     # par( oma=c( 0,0,0,3))
     
     # set list of arguments to image.plot
+    
     legendArgs$zlim=scaleFun(zlim)
     legendArgs$nlevel=length(colScale)
     legendArgs$legend.only=TRUE
@@ -120,17 +121,239 @@ plotWithColor = function(x, y, z, zlim=NULL, colScale=tim.colors(),
     if(is.null(legendArgs$axis.args))
       legendArgs$axis.args=list(at=ticks, labels=tickLabels)
     else {
-      legendArgs$axis.args$at=ticks
-      legendArgs$axis.args$labels=tickLabels
+      if(is.null(legendArgs$axis.args$at)) {
+        legendArgs$axis.args$at=ticks
+      }
+      if(is.null(legendArgs$axis.args$labels)) {
+        legendArgs$axis.args$labels=tickLabels
+      }
     }
     legendArgs$legend.mar=legend.mar
     legendArgs$legend.width=legend.width
+    
     do.call("image.plot", legendArgs)
     
     # image.plot(zlim=zlim, nlevel=length(cols), legend.only=TRUE, horizontal=FALSE, 
     #            col=cols, add = TRUE)
   }
   invisible(NULL)
+}
+
+# x, y: horizontal and vertical spatial coordinates
+# z: response
+# zlim: range of the response
+# cols: color vector representing the color scale
+# plotArgs: arguments to the plot function
+# scaleFun, scaleFunInverse: how to scale the color scale and its inverse. For example, log and exp
+# asp: aspect ratio
+# addColorBar: whether to add the color bar/legend
+# forceColorsInRange: whether or not to force colors in the plotted range. Useful if 
+#   you have a value outside of the range or that is NA after being transformed via the scale 
+#   that you still want to plot at the edge of the color scale
+# legend.mar, n.ticks, legend.width, legendArgs (as legend.args): see ?image.plot
+# min.n: approximate number of ticks in color scale. See ?pretty
+# orderI: a specific ordering to plot the points in
+# ordering: in what order to plot the points, where the ordering is based on the response z
+# setGridResMethod: if nx and ny are both NULL, this is the method used to set them automatically.
+#     Rice: From Rice 1944. Set number of bins within the domain of the data to be 
+#           2*n^(1/3)
+#     Sturges: From Sturges 1926. Set number of bins within the domain of the data to be 
+#              ceiling(log2(n)) + 1. Decide nx, ny proportionally to xlim, ylim
+#     minDist: Best for if the data is already on a grid. Calculates the minimum distance 
+#              between x values and between y values and sets nx and ny accordingly. 
+#              Recommended for data on an exact grid.
+# xyResRatio: x resolution divided by y resolution (e.g. if 2, twice as many rows per 
+#             unit length as columns). Used if Defaults to 1, and used only if 
+#             setGridResMethod != "minDist" or one of nx or ny has been specified
+# minDistTol: for setGridResMethod == "minDist", removes distances lower than the tolerance 
+#             times the x and y limit widths when checking for the lowest distances.
+myQuiltPlot = function(x, y, z, zlim=NULL, colScale=tim.colors(), nx=64, ny=NULL, 
+                       xlim=NULL, ylim=NULL, legend.mar=7, add=FALSE, plot=TRUE, 
+                       scaleFun = function(x) {x}, scaleFunInverse = function(x) {x}, 
+                       n.ticks=5, min.n=5, ticks=NULL, tickLabels=NULL, legend.width=1.2, addColorBar=TRUE, 
+                       legendArgs=list(), leaveRoomForLegend=TRUE, forceColorsInRange=FALSE, orderI=NULL, 
+                       FUN=function(x){mean(x, na.rm=TRUE)}, na.rm=FALSE, setGridResMethod=c("Rice", "Sturges", "minDist"), 
+                       xyResRatio=1, minDistTol=1e-3, ...) {
+  setGridResMethod = match.arg(setGridResMethod)
+  
+  ## code from fields:::quilt.plot
+  x <- as.matrix(x)
+  if (ncol(x) == 2) {
+    z <- y
+  }
+  if (ncol(x) == 1) {
+    x <- cbind(x, y)
+  }
+  if (ncol(x) == 3) {
+    z <- x[, 3]
+    x <- x[, 1:2]
+  }
+  
+  ## modifications to fields code:
+  
+  if(is.null(xlim)) {
+    xlim = range(x[,1], na.rm=TRUE)
+  }
+  if(is.null(ylim)) {
+    ylim = range(x[,2], na.rm=TRUE)
+  }
+  
+  if(is.null(nx) || is.null(ny)) {
+    ensureNxyProp = setGridResMethod != "minDist"
+  }
+  else {
+    ensureNxyProp = FALSE
+  }
+  
+  # if nx or ny is set and ensureNxyProp is TRUE, set the unset of nx or ny accordingly
+  if(ensureNxyProp) {
+    if(!is.null(nx) && is.null(ny)) {
+      LyLxRatio = diff(ylim)/diff(xlim)
+      ny = round(nx * LyLxRatio/xyResRatio)
+    }
+    else if(is.null(nx) && !is.null(ny)) {
+      LyLxRatio = diff(ylim)/diff(xlim)
+      nx = round(xyResRatio * ny/LyLxRatio)
+    }
+    
+    print(paste0("xyResRatio auto set nx and ny to ", nx, " and ", ny))
+  }
+  
+  if(setGridResMethod == "minDist") {
+    #     minDist: Best for if the data is already on a grid. Calculates the minimum distance 
+    #              between x values and between y values and sets nx and ny accordingly. 
+    #              Recommended for data on an exact grid.
+    
+    if(is.null(nx)) {
+      minDistTolX = diff(xlim) * minDistTol
+      dists = diff(sort(unique(x[,1])))
+      minDistX = min(dists[dists > minDistTolX])
+      nx = round(diff(xlim) / minDistX)
+    }
+    if(is.null(ny)) {
+      minDistTolY = diff(ylim) * minDistTol
+      dists = diff(sort(unique(x[,2])))
+      minDistY = min(dists[dists > minDistTolY])
+      ny = round(diff(ylim) / minDistY)
+    }
+    
+    print(paste0("method ", setGridResMethod, " auto set nx and ny to ", nx, " and ", ny))
+  }
+  
+  ## first determine nx, ny automatically if they are null
+  if(is.null(nx) && is.null(ny)) {
+    # setGridResMethod=c("Rice", "Sturges", "minDist")
+    #     Rice: From Rice 1944. Set number of bins within the domain of the data to be 
+    #           
+    #     Sturges: From Sturges 1926. Set number of bins within the domain of the data to be 
+    #              ceiling(log2(n)) + 1. Decide nx, ny proportionally to xlim, ylim
+    
+    n = nrow(x)
+    if(setGridResMethod == "Rice") {
+      nBins = 2*n^(1/3)
+    }
+    else if(setGridResMethod == "Sturges") {
+      nBins = ceiling(log2(n)) + 1
+    }
+    LxShort = diff(range(x[,1]))
+    LyShort = diff(range(x[,2]))
+    nxShort = sqrt(LxShort/LyShort * xyResRatio * nBins)
+    nyShort = nxShort * (LyShort / LxShort) / xyResRatio
+    nx = round(nxShort * diff(xlim)/LxShort)
+    ny = round(nyShort * diff(ylim)/LyShort)
+    
+    print(paste0("method ", setGridResMethod, " auto set nx and ny to ", nx, " and ", ny))
+  }
+  
+  # artificially add NA points at boundaries so grids match up when adding multiple grids
+  z = c(z, rep(NA, 4))
+  x = rbind(x, 
+            c(xlim[1], ylim[1]), 
+            c(xlim[1], ylim[2]), 
+            c(xlim[2], ylim[1]), 
+            c(xlim[2], ylim[2]))
+  out.p <- as.image(z, x = x, nx = nx, ny = ny, grid = NULL, 
+                   FUN = FUN, na.rm = na.rm, boundary.grid = FALSE)
+  
+  # do setup for plotting data if necessary
+  if(is.null(zlim)) {
+    nas = !is.finite(scaleFun(out.p$z))
+    zlim = range(out.p$z[!nas])
+  }
+  
+  if(forceColorsInRange) {
+    out.p$z[out.p$z < zlim[1]] = zlim[1]
+    out.p$z[out.p$z > zlim[2]] = zlim[2]
+  }
+  
+  
+    # if (add.legend) {
+    #   image.plot(out.p, nlevel = nlevel, col = col, add = add, 
+    #              ...)
+    # }
+    # else {
+    #   image(out.p, col = col, add = add, ...)
+    # }
+  
+  out.p$z = scaleFun(out.p$z)
+  
+  if(plot) {
+    image.args = c(list(out.p, col=colScale, add=add, xlim=xlim, 
+                        ylim=ylim, zlim=scaleFun(zlim)), list(...))
+    do.call("image", image.args)
+    
+    if(addColorBar) {
+      # add legend
+      # par( oma=c(0,0,0,2))
+      if(is.null(tickLabels))
+        setTickLabels = TRUE
+      
+      if(is.null(ticks)) {
+        if(setTickLabels)
+          tickLabels = pretty(zlim, n=n.ticks, min.n=min.n)
+        ticks = scaleFun(tickLabels)
+      }
+      else {
+        if(setTickLabels)
+          tickLabels = ticks
+        ticks = scaleFun(ticks)
+      }
+      if(setTickLabels)
+        tickLabels = tickLabels[is.finite(ticks)]
+      ticks = ticks[is.finite(ticks)]
+      
+      # par( oma=c( 0,0,0,3))
+      
+      # set list of arguments to image.plot
+      
+      legendArgs$zlim=scaleFun(zlim)
+      legendArgs$nlevel=length(colScale)
+      legendArgs$legend.only=TRUE
+      legendArgs$horizontal=FALSE
+      legendArgs$col=colScale
+      legendArgs$add = TRUE
+      if(is.null(legendArgs$axis.args))
+        legendArgs$axis.args=list(at=ticks, labels=tickLabels)
+      else {
+        if(is.null(legendArgs$axis.args$at)) {
+          legendArgs$axis.args$at=ticks
+        }
+        if(is.null(legendArgs$axis.args$labels)) {
+          legendArgs$axis.args$labels=tickLabels
+        }
+      }
+      legendArgs$legend.mar=legend.mar
+      legendArgs$legend.width=legend.width
+      
+      do.call("image.plot", legendArgs)
+      
+      # image.plot(zlim=zlim, nlevel=length(cols), legend.only=TRUE, horizontal=FALSE, 
+      #            col=cols, add = TRUE)
+    }
+  }
+  
+  
+  invisible(out.p)
 }
 
 # TODO: make nice version of quilt.plot including scales for color scale
