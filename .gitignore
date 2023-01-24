@@ -4,6 +4,6 @@ data/*
 documents
 .Rproj.user
 .Rhistory
-.RData
+*.RData
 .Ruserdata
-.tif
+*.tif
