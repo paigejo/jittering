@@ -16,9 +16,14 @@
 # --exclusive=user # don't allow other users to share nodes with these jobs
 # --constraint="switch3&intel&pec6420" # use sinfo -o "%20N  %10c  %10m  %25f  %10G " to show features
 
+# for interactive job:
+# https://www.hpc.ntnu.no/idun/getting-started-on-idun/running-jobs/
+# srun --account=ie-imf --nodes=1 --partition=CPUQ --time=02:00:00 --pty bash 
 module purge
-module load R/4.0.3-foss-2020b
-module swap JasPer/2.0.14-GCCcore-10.2.0 JasPer/2.0.24-GCCcore-10.2.0
-module load GDAL/3.2.1-foss-2020b
+# module load R/4.0.3-foss-2020b
+module load R/4.2.1-foss-2022a
+# module swap JasPer/2.0.14-GCCcore-10.2.0 JasPer/2.0.24-GCCcore-10.2.0
+# module load GDAL/3.2.1-foss-2020b
+module load GDAL/3.5.0-foss-2022a
 
 Rscript --verbose runValidation.R ${SLURM_ARRAY_TASK_ID} > runValidation_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout

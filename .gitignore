@@ -7,3 +7,5 @@ documents
 *.RData
 .Ruserdata
 *.tif
+code/*.o
+code/*.so
