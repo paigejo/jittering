@@ -854,7 +854,7 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   #      MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
   #                           hessian=TRUE, DLL='modBYM2JitterFusionNugget'))
   varname = paste0("dat", model, collapse="")
-  dat = get(varname)
+  dat = get(varname)[[fold]]
   
   edInSample = dat$edInSample
   edMICSInSample = dat$edMICSInSample
