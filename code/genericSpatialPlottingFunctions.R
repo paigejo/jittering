@@ -173,7 +173,7 @@ myQuiltPlot = function(x, y, z, zlim=NULL, colScale=tim.colors(), nx=64, ny=NULL
                        n.ticks=5, min.n=5, ticks=NULL, tickLabels=NULL, legend.width=1.2, addColorBar=TRUE, 
                        legendArgs=list(), leaveRoomForLegend=TRUE, forceColorsInRange=FALSE, orderI=NULL, 
                        FUN=function(x){mean(x, na.rm=TRUE)}, na.rm=FALSE, setGridResMethod=c("Rice", "Sturges", "minDist"), 
-                       xyResRatio=1, minDistTol=1e-3, ...) {
+                       xyResRatio=1, minDistTol=1e-3, legendOnly=FALSE, ...) {
   setGridResMethod = match.arg(setGridResMethod)
   
   ## code from fields:::quilt.plot
@@ -298,9 +298,11 @@ myQuiltPlot = function(x, y, z, zlim=NULL, colScale=tim.colors(), nx=64, ny=NULL
   out.p$z = scaleFun(out.p$z)
   
   if(plot) {
-    image.args = c(list(out.p, col=colScale, add=add, xlim=xlim, 
-                        ylim=ylim, zlim=scaleFun(zlim)), list(...))
-    do.call("image", image.args)
+    if(!legendOnly) {
+      image.args = c(list(out.p, col=colScale, add=add, xlim=xlim, 
+                          ylim=ylim, zlim=scaleFun(zlim)), list(...))
+      do.call("image", image.args)
+    }
     
     if(addColorBar) {
       # add legend
@@ -408,7 +410,7 @@ plotMapDat = function(mapDat, plotVar=NULL, varAreas, regionNames=sort(unique(va
   # do setup for plotting data by area if necessary
   if(!is.null(plotVar)) {
     if(is.null(zlim)) {
-      zlim = range(plotVar)
+      zlim = range(plotVar, na.rm=TRUE)
     }
     
     if(forceColorsInRange) {
@@ -658,6 +660,7 @@ makeGreenSequentialColors = function(n, ggplot=FALSE, rev=FALSE) {
     scale_colour_continuous_sequential(h1=128, c1=100, l1=72, l2=95, p1=1.0, rev=rev, n_interp=n)
 }
 
+# based on viridis
 makeBlueGreenYellowSequentialColors = function(n, ggplot=FALSE, rev=FALSE) {
   # library("colorspace")
   # pal <-choose_palette()

@@ -87,9 +87,9 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR( y_iRural );
   DATA_VECTOR( n_iUrban );   // Trials per cluster
   DATA_VECTOR( n_iRural );
-  DATA_VECTOR( AprojUrban ); // nObsUrban x nArea matrix with ij-th entry = 1 if cluster j associated with area i and 0 o.w.
-  DATA_VECTOR( AprojRural ); // nObsRural x nArea matrix with ij-th entry = 1 if cluster j associated with area i and 0 o.w.
-  DATA_MATRIX( X_betaUrban );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix
+  DATA_VECTOR( AprojUrban ); // nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  DATA_VECTOR( AprojRural ); // nObsRural x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  DATA_MATRIX( X_betaUrban );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
   DATA_MATRIX( X_betaRural );  // first nObsRural rows correspond to first int pt
   DATA_MATRIX( wUrban ); // nObsUrban x nIntegrationPointsUrban weight matrix
   DATA_MATRIX( wRural ); // nObsRural x nIntegrationPointsRural weight matrix
@@ -208,7 +208,9 @@ Type objective_function<Type>::operator() ()
         thisWeight = wUrban(obsI,intI);
         
         // Uses the dbinom_robust function, which takes the logit probability
-        thislik += thisWeight*dbinom_robust( y_iUrban(obsI), n_iUrban(obsI), thisLatentField, false);
+        if(thisWeight > 0) {
+          thislik += thisWeight*dbinom_robust( y_iUrban(obsI), n_iUrban(obsI), thisLatentField, false);
+        }
         
       } // !isNA
       
@@ -232,7 +234,9 @@ Type objective_function<Type>::operator() ()
         thisWeight = wRural(obsI,intI);
         
         // Uses the dbinom_robust function, which takes the logit probability
-        thislik += thisWeight*dbinom_robust( y_iRural(obsI), n_iRural(obsI), thisLatentField, false);
+        if(thisWeight > 0) {
+          thislik += thisWeight*dbinom_robust( y_iRural(obsI), n_iRural(obsI), thisLatentField, false);
+        }
         
       } // !isNA
       

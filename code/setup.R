@@ -1,5 +1,5 @@
 # setup script for the jittering project
-# install requied packages if necessary
+# install required packages if necessary
 if(FALSE) {
   install.packages("Matrix")
   install.packages("spam")
@@ -27,11 +27,14 @@ if(FALSE) {
   install.packages("rgeos")
   install.packages("WeightedCluster")
   install.packages("colorspace")
+  install.packages("TMB")
   
   library(devtools)
   if(FALSE) {
-    install_github("https://github.com/richardli/SUMMER/tree/dev")
+    install_github("https://github.com/richardli/SUMMER/")
     install_github("https://github.com/paigejo/SUMMER/")
+    install_local("~/git/SUMMER/")
+    document("~/git/SUMMER/")
     load_all("~/git/SUMMER/")
   }
 }
@@ -67,6 +70,7 @@ library(WeightedCluster)
 library(shapefiles)
 library(devtools)
 library(colorspace)
+library(TMB)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -102,7 +106,8 @@ source('code/plotGenerator.R')
 source('code/modSPDEJitter.R')
 source('code/modBYM2.R')
 source('code/utilityFuns.R')
-source('code/plotGenerator.R')
+source('code/covariates.R')
+source('code/modAgg.R')
 
 ## load in global variables made from the following script: 
 if(FALSE) {
@@ -119,17 +124,16 @@ out=load("savedOutput/global/poppaNGA.RData")
 out=load("savedOutput/global/poppsubNGA.RData")
 out=load("savedOutput/global/poppsubNGAThresh.RData")
 out=load("savedOutput/global/popMatNGA.RData")
+out=load("savedOutput/global/popMatNGAThresh.RData")
 lonLimNGA = adm0@bbox[1,]
 latLimNGA = adm0@bbox[2,]
 adm0FullProjNGA = projNigeriaArea(adm0Full)
 eastLimNGA = adm0FullProjNGA@bbox[1,]
 northLimNGA = adm0FullProjNGA@bbox[2,]
 
-# determine version of PROJ.4
-ver = rgdal::rgdal_extSoftVersion()
-theseNames = names(ver)
-thisI = which(grepl("PROJ", theseNames))
-PROJ6 <- as.numeric(substr(ver[thisI], 1, 1)) >= 6
+# determine version of PROJ
+ver = terra::gdal(lib="proj")
+PROJ6 <- as.numeric(substr(ver, 1, 1)) >= 6
 
 
 

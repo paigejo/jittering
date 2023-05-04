@@ -75,6 +75,7 @@ adm2ToSen$admin2Name_en[adm2ToSen$admin1Name_en == "Lagos"] = sort(gadmNamesLago
 
 ## make a new SpatialPolygonsDataFrame from the 6 senatorial districts ----
 sen = adm2compressed[-(1:775),]
+require(maptools)
 for(i in 1:length(allSens)) {
   thisSen = allSens[i]
   thisAdm1 = ifelse(i <= 3, "Kano", "Lagos")
@@ -167,6 +168,13 @@ areas = sapply(adm0Full@polygons[[1]]@Polygons, function(x) {x@area})
 maxI = which.max(areas)
 adm0Poly = adm0Full@polygons[[1]]@Polygons[[maxI]]@coords
 
+## Fix doubled names of admin2 areas ----
+counts = table(adm2@data$NAME_2)
+doubledNames = names(counts)[counts > 1]
+doubledNamesI = which(adm2@data$NAME_2 %in% doubledNames)
+adm2@data$NAME_2[doubledNamesI] = paste0(adm2@data$NAME_2[doubledNamesI], ",", adm2@data$NAME_1[doubledNamesI])
+adm2Full@data$NAME_2[doubledNamesI] = paste0(adm2Full@data$NAME_2[doubledNamesI], ",", adm2Full@data$NAME_1[doubledNamesI])
+
 # save results
 save(adm0, adm1, adm2, adm0Full, adm1Full, adm2Full, 
      sen, senFull, admFinal, admFinalFull, adm0Poly, 
@@ -242,7 +250,9 @@ edMICS[(wb4 > 2) & (wb4 < 4)] = TRUE
 mean(is.na(edMICS)) # Nice! We match the missing data rate of 5%
 
 # fill in literacy NAs in a similar way
+literacyMICS[!is.na(literacyMICS)] = FALSE
 literacyMICS[(wb4 == 2) | (wb4 == 3)] = TRUE
+literacyMICS = as.logical(literacyMICS)
 mean(is.na(literacyMICS)) # Nice! We match the missing data rate of 5%
 
 datMICSwm = data.frame(clustID=clustID, hhID=houseID, age=ageMICS, 
@@ -282,14 +292,48 @@ save(datMICS, file="savedOutput/global/datMICS.RData")
 # subset by 20-29 year age
 lowAge = 20
 highAge = 29
+ageMICS = datMICS$age
 correctAge = (ageMICS >= lowAge) & (ageMICS <= highAge)
 correctAge[is.na(correctAge)] = FALSE
 
 datMICS = datMICS[correctAge,]
+
+# aggregate women's secondary education by cluster
 edMICS = datMICS[!is.na(datMICS$secondaryEd),]
+ysMICSagg = aggregate(edMICS$secondaryEd, by=list(edMICS$clustID), FUN=sum)
+nsMICSagg = aggregate(edMICS$secondaryEd, by=list(edMICS$clustID), FUN=length)
+matchI = match(ysMICSagg$Group.1, edMICS$clustID)
+edMICSagg = edMICS[matchI,]
+edMICSagg$hhID = NULL
+edMICSagg$age = NULL
+edMICSagg$secondaryEd = NULL
+edMICSagg$literacy = NULL
+edMICSagg$fullHouseID = NULL
+edMICSagg$ys = ysMICSagg$x
+edMICSagg$ns = nsMICSagg$x
+
+# aggregate women's literacy by cluster
+litMICS = datMICS[!is.na(datMICS$literacy),]
+ysMICSagg = aggregate(litMICS$literacy, by=list(litMICS$clustID), FUN=sum)
+nsMICSagg = aggregate(litMICS$literacy, by=list(litMICS$clustID), FUN=length)
+matchI = match(ysMICSagg$Group.1, litMICS$clustID)
+litMICSagg = litMICS[matchI,]
+litMICSagg$hhID = NULL
+litMICSagg$age = NULL
+litMICSagg$secondaryEd = NULL
+litMICSagg$literacy = NULL
+litMICSagg$fullHouseID = NULL
+litMICSagg$ys = ysMICSagg$x
+litMICSagg$ns = nsMICSagg$x
+
+edMICS = edMICSagg
+litMICS = litMICSagg
 save(edMICS, file="savedOutput/global/edMICS.RData")
+save(litMICS, file="savedOutput/global/litMICS.RData")
 
 # Read DHS data ----
+# final report:
+# https://dhsprogram.com/pubs/pdf/FR359/FR359.pdf
 library(haven)
 library(fields)
 library(zoo)
@@ -587,17 +631,52 @@ urbProps$LGA[urbProps$LGA == "Isiukwuato"] = "Isuikwuato"
 propNames = sort(urbProps$LGA)
 cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
 
+urbProps$LGA[urbProps$LGA == "Ado-Odo/Ota"] = "Ado Odo/Ota"
+urbProps$LGA[urbProps$LGA == "Ado Ekiti"] = "Ado-Ekiti"
+
+propNames = sort(urbProps$LGA)
+cbind(gadm=gadmNames[!(gadmNames == "Lake Chad")], prop=propNames[-1])
+
 urbProps = urbProps[order(urbProps$LGA),]
 urbProps = urbProps[urbProps$LGA != "* Disputed Areas",]
 
 all.equal(sort(stateProps$State), sort(unique(urbProps$State)))
 
-urbProps$propTotal = urbProps$propTotal/sum(urbProps$propTotal)
-stateProps$propTotal = stateProps$propTotal/sum(stateProps$propTotal)
-
 # add in Lake Chad, the zero population LGA
 urbProps = rbind(data.frame(State="Borno", LGA="Lake Chad", propUrb=0, propTotal=0), 
                  urbProps)
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+
+urbProps$LGA[urbProps$LGA == "Obingwa"] = "Obi Ngwa"
+urbProps$LGA[(urbProps$LGA == "Obi") & (urbProps$State == "Benue")] = "Obi,Benue"
+urbProps$LGA[(urbProps$LGA == "Obi") & (urbProps$State == "Nasarawa")] = "Obi,Nasarawa"
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+
+urbProps$LGA[urbProps$LGA == "Nasarawa-Eggon"] = "Nasarawa,Eggon"
+urbProps$LGA[(urbProps$LGA == "Nasarawa") & (urbProps$State == "Nasarawa")] = "Nasarawa,Nasarawa"
+urbProps$LGA[(urbProps$LGA == "Nasarawa") & (urbProps$State == "Kano")] = "Nasarawa,Kano"
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+
+urbProps$LGA[urbProps$LGA == "Langtan South"] = "Langtang South"
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+
+urbProps$LGA[urbProps$LGA == "Birnin-Gwari"] = "Birnin Gwari"
+urbProps$LGA[(urbProps$LGA == "Birnin Kudu") & (urbProps$State == "Kebbi")] = "Birnin Kebbi"
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+
+urbProps$LGA[urbProps$LGA == "Abeokuta  South"] = "Abeokuta South"
+
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),]
+cbind(adm2@data[c("NAME_1", "NAME_2")][order(adm2@data$NAME_2),], urbProps[order(urbProps$LGA),1:2])[sort(urbProps$LGA) != sort(adm2@data$NAME_2),c(1,3)]
+
+notLakChad = urbProps$LGA != "Lake Chad"
+urbProps$propTotal[notLakChad] = urbProps$propTotal[notLakChad]/sum(urbProps$propTotal[notLakChad])
+stateProps$propTotal = stateProps$propTotal/sum(stateProps$propTotal)
 
 cbind(sort(urbProps$LGA), sort(adm2@data$NAME_2))
 all.equal(sort(urbProps$LGA), sort(adm2@data$NAME_2))
@@ -659,9 +738,21 @@ save(poppaNGA, file="savedOutput/global/poppaNGA.RData")
 # Covariates ----
 ## Load covariates ----
 pop = raster("data/covariates/WorldPopDataNigeria/worldpop/nga_ppp_2020_constrained.tif")
+# each degree is roughly 110 km (in both latitude and longitude)
+# 0.0008333333*110 = 0.09166666
+# 5/(0.0008333333*110) = 54.54546
+# 1/(0.0008333333*110) = 10.90909
+# 0.5/(0.0008333333*110) = 5.454546
+# aggregate by 55 times in each direction to reach 5km resolution
+# aggregate by 11 times in each direction to reach 1km resolution
+# aggregate by 6 times in each direction to reach 500m resolution
+pop5km = terra::aggregate(pop, fact=55, na.rm=TRUE, fun="sum")
+# pop1km = terra::aggregate(pop, fact=11, na.rm=TRUE, fun="sum")
+# pop0.5km = terra::aggregate(pop, fact=6, na.rm=TRUE, fun="sum")
+pop = pop5km
 pop = crop(pop, adm0)
 pop = mask(pop, adm0)
-writeRaster(pop, file="savedOutput/global/pop.tif", format="GTiff")
+writeRaster(pop, file="savedOutput/global/pop.tif", format="GTiff", overwrite=TRUE)
 urb = raster("data/covariates/Urbanization/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0/GHS_BUILT_LDS2014_GLOBE_R2018A_54009_250_V2_0.tif")
 urb = projectRaster(urb, crs=CRS(SRS_string="EPSG:4326"))
 writeRaster(urb, file="savedOutput/global/urbTemp.tif", format="GTiff", overwrite=TRUE)
@@ -832,6 +923,7 @@ out = load("savedOutput/global/urbProps.RData")
 
 
 ## transform rasters ----
+out = load("savedOutput/global/covariates.RData")
 popVals = getValues(pop)
 urbVals = getValues(urb)
 accessVals = getValues(access)
@@ -839,19 +931,21 @@ elevVals = getValues(elev)
 distRiverLakesVals = getValues(minDistRiverLakes)
 
 popValsNorm = log1p(popVals)
-popValsNorm = (popValsNorm - mean(popValsNorm, na.rm=TRUE))/sd(popValsNorm, na.rm=TRUE)
+popMean = mean(popValsNorm, na.rm=TRUE)
+popSD = sd(popValsNorm, na.rm=TRUE)
+popValsNorm = (popValsNorm - popMean)/popSD
 
-urbValsNorm = log1p(urbVals)
+urbValsNorm = urbVals
 urbValsNorm = (urbValsNorm - mean(urbValsNorm, na.rm=TRUE))/sd(urbValsNorm, na.rm=TRUE)
 
 accessValsNorm = log1p(accessVals)
 accessValsNorm = (accessValsNorm - mean(accessValsNorm, na.rm=TRUE))/sd(accessValsNorm, na.rm=TRUE)
 
-elevValsNorm = log1p(elevVals)
+elevValsNorm = sqrt(elevVals)
 elevValsNorm = (elevValsNorm - mean(elevValsNorm, na.rm=TRUE))/sd(elevValsNorm, na.rm=TRUE)
 
-distRiverLakesValsNorm = log1p(distRiverLakesVals)
-distRiverLakesValsNorm = (distRiversLakesValsNorm - mean(distRiversLakesValsNorm, na.rm=TRUE))/sd(distRiversLakesValsNorm, na.rm=TRUE)
+distRiverLakesValsNorm = distRiverLakesVals
+distRiverLakesValsNorm = (distRiverLakesValsNorm - mean(distRiverLakesValsNorm, na.rm=TRUE))/sd(distRiverLakesValsNorm, na.rm=TRUE)
 
 popNorm = pop
 values(popNorm) = popValsNorm
@@ -875,7 +969,7 @@ accessNorm = raster("savedOutput/global/accessNorm.tif")
 elevNorm = raster("savedOutput/global/elevNorm.tif")
 minDistRiverLakesNorm = raster("savedOutput/global/minDistRiverLakesNorm.tif")
 save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
-
+save(popMean, popSD, file="savedOutput/global/popMeanSD.RData")
 
 # Calculate LGA pop totals ----
 
@@ -924,6 +1018,8 @@ poppsubNGA[poppsubNGA$popTotal == 0,]
 #                                 areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
 #                                 mean.neighbor=50, delta=.1)
 
+
+poppsubNGA = poppsubNGA[order(poppsubNGA$subarea),]
 save(poppsubNGA, file="savedOutput/global/poppsubNGA.RData")
 
 # Calculate MICS stratum pop totals ----
@@ -980,6 +1076,7 @@ propUrb = poppsubNGAThresh$pctUrb / 100
 poppsubNGAThresh$popUrb = round(poppsubNGAThresh$popTotal * propUrb)
 poppsubNGAThresh$popRur = poppsubNGAThresh$popTotal - poppsubNGAThresh$popUrb
 
+poppsubNGAThresh = poppsubNGAThresh[order(poppsubNGAThresh$subarea),]
 save(poppsubNGAThresh, file="savedOutput/global/poppsubNGAThresh.RData")
 
 # use thresholded poppsub to get poppstrat
@@ -1025,30 +1122,88 @@ sum(poppsubNGAThresh$popTotal)
 # Make popMats ----
 
 out=load("savedOutput/global/poppsubNGA.RData")
+# popMatNGA = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
+#                                 eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+#                                 poppa=poppaNGA, poppsub=poppsubNGA, 
+#                                 subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+#                                 stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+#                                 areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+#                                 mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+#                                 extractMethod="simple")
 popMatNGA = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
-                                eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
-                                poppa=poppaNGA, poppsub=poppsubNGA, 
-                                subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
-                                stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
-                                areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
-                                mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
-                                extractMethod="simple")
+                                          eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+                                          poppa=poppaNGA, poppsub=poppsubNGA, 
+                                          subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                          stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+                                          areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+                                          mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+                                          extractMethod="bilinear")
 
 stratumMICS = getMICSstratumNigeria(popMatNGA$subarea, popMatNGA$area)
 popMatNGA$stratumMICS = stratumMICS
 save(popMatNGA, file="savedOutput/global/popMatNGA.RData")
 
 out=load("savedOutput/global/poppsubNGAThresh.RData")
+# popMatNGAThresh = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
+#                                           eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+#                                           poppa=poppaNGA, poppsub=poppsubNGAThresh, 
+#                                           subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+#                                           stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+#                                           areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+#                                           mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+#                                           extractMethod="simple")
 popMatNGAThresh = SUMMER::makePopIntegrationTab(kmRes=5, pop=pop, domainMapDat=adm0Full, 
-                                          eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
-                                          poppa=poppaNGA, poppsub=poppsubNGAThresh, 
-                                          subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
-                                          stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
-                                          areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
-                                          mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
-                                          extractMethod="simple")
+                                                eastLim=eastLimNGA, northLim=northLimNGA, mapProjection=projNigeria, 
+                                                poppa=poppaNGA, poppsub=poppsubNGAThresh, 
+                                                subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                                stratifyByUrban=TRUE, areaMapDat=adm1Full, areaNameVar="NAME_1", 
+                                                areaPolygonSubsetI=NULL, subareaPolygonSubsetI=NULL, 
+                                                mean.neighbor=50, delta=.1, fixZeroPopDensitySubareas=TRUE, 
+                                                extractMethod="bilinear")
 
 stratumMICS = getMICSstratumNigeria(popMatNGAThresh$subarea, popMatNGAThresh$area)
 popMatNGAThresh$stratumMICS = stratumMICS
 save(popMatNGAThresh, file="savedOutput/global/popMatNGAThresh.RData")
 
+popMeanCal = mean(log1p(popMatNGA$pop))
+popMeanCalThresh = mean(log1p(popMatNGAThresh$pop))
+popSDCal = sd(log1p(popMatNGA$pop))
+popSDCalThresh = sd(log1p(popMatNGAThresh$pop))
+save(popMeanCal, popMeanCalThresh, popSDCal, popSDCalThresh, file="savedOutput/global/popMeanSDCal.RData")
+
+
+# Make polygon neighborhood graph objects for BYM2 model ----
+require(spdep)
+admFinalMat <- poly2nb(SpatialPolygons(admFinal@polygons))
+admFinalMat <- nb2mat(admFinalMat, zero.policy = TRUE)
+colnames(admFinalMat) = admFinal$NAME_FINAL
+
+cent <- getSpPPolygonsLabptSlots(admFinal)
+cols <- rainbow(min(10,
+                    dim(admFinalMat)[1]))
+
+# plot neighborhood structure for testing
+pdf('figures/test/admFinal_neighb.pdf', height = 4, width = 4)
+{
+  plot(admFinal, col = cols, border = F, axes = F,)
+  for(i in 1:dim(cent)[1]){
+    neighbs <- which(admFinalMat[i,] != 0)
+    if(length(neighbs) != 0){
+      for(j in 1:length(neighbs)){
+        ends <- cent[neighbs,]
+        segments(x0 = cent[i, 1],
+                 y0 = cent[i, 2],
+                 x1 = cent[neighbs[j], 1],
+                 y1 = cent[neighbs[j], 2],
+                 col = 'black')
+      }
+    }
+  }
+}
+dev.off()
+
+save(admFinalMat, file="savedOutput/global/admFinalMat.RData")
+
+# EAs per area (No household per area info published) ----
+# apparently, average household size is 5.0 based on the 2017 MICS
+# sum(poppsubNGA$popTotal)/5 = 39737530

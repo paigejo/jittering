@@ -326,269 +326,6 @@ setThresholds = function() {
   list(counties=counties, threshes=threshes)
 }
 
-# for plotting administration data assuming plotVar is in alphabetical order of the area names
-# project: if FALSE, plot with lon/lat coordinates.  Otherwise, plot with projected coords 
-#          using projKenya function.  This can be used when plotting the projected `east' 
-#          and `north' variables in kenyaEAs for instance.
-# ...: arguments to polygon function
-plotMapDat = function(plotVar=NULL, varCounties=NULL, zlim=NULL, project=FALSE, cols=tim.colors(), 
-                      legend.mar=7, new=FALSE, plotArgs=NULL, main=NULL, xlim=NULL, xlab=NULL, scaleFun = function(x) {x}, scaleFunInverse = function(x) {x}, 
-                      ylim=NULL, ylab=NULL, n.ticks=5, min.n=5, ticks=NULL, tickLabels=NULL, asp=1, legend.width=1.2, mapDat = NULL, addColorBar=TRUE, 
-                      legendArgs=list(), leaveRoomForLegend=TRUE, kenyaLatRange=c(-4.6, 5), kenyaLonRange=c(33.5, 42.0), forceColorsInRange=FALSE, 
-                      crosshatchNADensity=10, ...) {
-  # load necessary data
-  if(is.null(mapDat)) {
-    if(length(plotVar) == 47) {
-      mapDat = adm1compressed
-    } else if(length(plotVar) == 300) {
-      mapDat = adm2compressed
-    } else if(length(plotVar) == 8) {
-      # shape file found at: https://jlinden.carto.com/tables/kenya_region_shapefile/public
-      require(maptools)
-      mapDat = readShapePoly("../U5MR/mapData/kenya_region_shapefile/kenya_region_shapefile.shp", delete_null_obj=TRUE, force_ring=TRUE, repair=TRUE)
-    } else {
-      mapDat = adm0
-      warning("mapDat not tested for adm0")
-    }
-  }
-  if(is.null(varCounties)) {
-    if(length(mapDat) == 8) {
-      varCounties = sort(as.character(poppr$Region))
-      
-      if(!is.null(mapDat@data$NAME_1)) {
-        regionNames = mapDat@data$NAME_1
-      } else if(!is.null(mapDat@data$name_1)) {
-        regionNames = as.character(mapDat@data$name_1)
-      } else {
-        stop("mapDat has unrecognized region names")
-      }
-    } else if(length(mapDat) == 300) {
-      varCounties = sort(as.character(mapDat@data$NAME_2))
-      
-      if(!is.null(mapDat@data$NAME_2)) {
-        regionNames = as.character(mapDat@data$NAME_2)
-      } else {
-        stop("mapDat has unrecognized region names")
-      }
-    } else {
-      varCounties=sort(as.character(unique(mort$admin1)))
-      
-      if(!is.null(mapDat@data$NAME_1)) {
-        regionNames = mapDat@data$NAME_1
-      } else if(!is.null(mapDat@data$name_1)) {
-        regionNames = as.character(mapDat@data$name_1)
-      } else {
-        stop("mapDat has unrecognized region names")
-      }
-    }
-  }
-  
-  # do setup for ploting data by county if necessary
-  if(!is.null(plotVar)) {
-    if(is.null(zlim)) {
-      zlim = range(plotVar)
-    }
-    
-    if(forceColorsInRange) {
-      plotVar[plotVar > zlim[2]] = zlim[2]
-      plotVar[plotVar < zlim[1]] = zlim[1]
-    }
-    
-    # make sure county names are consistent for mapDat == adm1
-    regionNames[regionNames == "Elgeyo-Marakwet"] = "Elgeyo Marakwet"
-    regionNames[regionNames == "Trans Nzoia"] = "Trans-Nzoia"
-    
-    # make sure county names are consistent for plotting regions rather than counties
-    regionNames[regionNames == "North-Eastern"] = "North Eastern"
-  }
-  
-  # generate new plot if necessary
-  if(new) {
-    # set graphical parameters so the legend won't overlap with plot
-    currPar = par()
-    newPar = currPar
-    newMar = newPar$mar
-    newMar[4] = max(newMar[4], legend.mar)
-    newPar$mar = newMar
-    if(currPar$mar[4] != newMar[4])
-      suppressWarnings({par(newPar)})
-    
-    if(project) {
-      if(is.null(xlab))
-        xlab = "East (km)"
-      if(is.null(xlim))
-        xlim = eastLim
-      if(is.null(ylab))
-        ylab = "North (km)"
-      if(is.null(ylim))
-        ylim = northLim
-    }
-    else {
-      if(is.null(xlab))
-        xlab = "Longitude"
-      if(is.null(xlim))
-        xlim = kenyaLonRange
-      if(is.null(ylab))
-        ylab = "Latitude"
-      if(is.null(ylim))
-        ylim = kenyaLatRange
-    }
-    if(is.null(main))
-      main = ""
-    
-    if(is.null(plotArgs)) {
-      plotArgs = list(main=main, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, asp=asp)
-    } else {
-      plotArgs$main = main
-      plotArgs$xlab = xlab
-      plotArgs$ylab = ylab
-      plotArgs$xlim = xlim
-      plotArgs$ylim = ylim
-      plotArgs$asp = asp
-    }
-    # par( oma=c( 0,0,0,6)) # leave room for the legend
-    do.call("plot", c(list(1, 2, type="n"), plotArgs))
-  }
-  
-  # add polygons to plot
-  polys = mapDat@polygons
-  plotCounty = function(i) {
-    countyPolys = polys[[i]]@Polygons
-    
-    if(is.null(plotVar)) {
-      if(!project)
-        sapply(1:length(countyPolys), function(x) {do.call("polygon", c(list(countyPolys[[x]]@coords), list(...)))})
-      else
-        sapply(1:length(countyPolys), function(x) {do.call("polygon", c(list(projKenya(countyPolys[[x]]@coords)), list(...)))})
-    }
-    else {
-      # get index of plotVar corresponding to this county
-      thisI = which(varCounties == regionNames[i])
-      
-      # if there is no matching region name, do nothing
-      if(length(thisI) == 0) {
-        return(NULL)
-      }
-      
-      # get color to plot
-      vals = c(zlim, scaleFun(plotVar[thisI]))
-      vals = vals-zlim[1]
-      vals = vals/(zlim[2] - zlim[1])
-      col = cols[round(vals[3]*(length(cols)-1))+1]
-      if(is.na(vals[3])) {
-        thisDensity = crosshatchNADensity
-      } else {
-        thisDensity = NULL
-      }
-      
-      if(!project)
-        sapply(1:length(countyPolys), function(x) {do.call("polygon", c(list(countyPolys[[x]]@coords, col=col, density=thisDensity), list(...)))})
-      else
-        sapply(1:length(countyPolys), function(x) {do.call("polygon", c(list(projKenya(countyPolys[[x]]@coords), col=col, density=thisDensity), list(...)))})
-    }
-    
-  }
-  
-  sapply(1:length(polys), plotCounty)
-  
-  if(!is.null(plotVar) && addColorBar) {
-    # add legend
-    # par( oma=c(0,0,0,2))
-    if(is.null(ticks))
-      ticks = scaleFun(pretty(scaleFunInverse(zlim), n=n.ticks, min.n=min.n))
-    else
-      ticks = scaleFun(ticks)
-    if(is.null(tickLabels))
-      tickLabels = scaleFunInverse(ticks)
-    
-    # par( oma=c( 0,0,0,3))
-    
-    # set list of arguments to image.plot
-    legendArgs$zlim=zlim
-    legendArgs$nlevel=length(cols)
-    legendArgs$legend.only=TRUE
-    legendArgs$horizontal=FALSE
-    legendArgs$col=cols
-    legendArgs$add = TRUE
-    if(is.null(legendArgs$axis.args))
-      legendArgs$axis.args=list(at=ticks, labels=tickLabels)
-    else {
-      legendArgs$axis.args$at=ticks
-      legendArgs$axis.args$labels=tickLabels
-    }
-    legendArgs$legend.mar=legend.mar
-    legendArgs$legend.width=legend.width
-    do.call("image.plot", legendArgs)
-    
-    # image.plot(zlim=zlim, nlevel=length(cols), legend.only=TRUE, horizontal=FALSE, 
-    #            col=cols, add = TRUE)
-  }
-  invisible(NULL)
-}
-
-# for plotting administration area names (for use with plotMapDat)
-# varAreas: the names of the areas we wish to plot
-# mapDat: spatial polygon file containing information on the areas
-# ...: additional arguments to the text function
-addMapLabels = function(varAreas=NULL, mapDat = NULL, offsets=NULL, areaVarName=c("NAME_1", "NAME_2"), ...) {
-  if(is.null(varAreas) && is.null(mapDat)) {
-    stop("Must include either varAreas or mapDat")
-  }
-  
-  areaVarName = match.arg(areaVarName)
-  
-  # load necessary data
-  if(is.null(mapDat)) {
-    if(length(varAreas) == 47) {
-      # out = load("../U5MR/adminMapData.RData")
-      mapDat = adm1
-    } else if(length(varAreas) == 8) {
-      # shape file found at: https://jlinden.carto.com/tables/kenya_region_shapefile/public
-      require(maptools)
-      mapDat = readShapePoly("../U5MR/mapData/kenya_region_shapefile/kenya_region_shapefile.shp", delete_null_obj=TRUE, force_ring=TRUE, repair=TRUE)
-    } else if(length(varAreas) == 300) {
-      mapDat = adm2
-    } else {
-      out = load("../U5MR/adminMapData.RData")
-      mapDat = adm0
-    }
-  }
-  if(is.null(varAreas)) {
-    if(length(mapDat) == 8) {
-      varAreas = sort(as.character(poppr$Region))
-    } else if(length(mapDat) == 300) {
-      varAreas = sort(as.character(mapDat@data$NAME_2))
-    } else if(length(mapDat) == 47) {
-      varAreas=sort(as.character(unique(mort$admin1)))
-    } else {
-      stop("unspecified varAreas (default for input mapDat not implemented)")
-    }
-  }
-  
-  # determine the names of the mapDat areas
-  regionNames = as.character(mapDat@data[[areaVarName]])
-  
-  # make sure county names are consistent for mapDat == adm1
-  regionNames[regionNames == "Elgeyo-Marakwet"] = "Elgeyo Marakwet"
-  regionNames[regionNames == "Trans Nzoia"] = "Trans-Nzoia"
-  
-  # make sure county names are consistent for plotting regions rather than counties
-  regionNames[regionNames == "North-Eastern"] = "North Eastern"
-  
-  # plot map labels
-  xs = coordinates(mapDat)
-  includeI = match(varAreas, regionNames)
-  xs = xs[includeI,]
-  
-  if(!is.null(offsets)) {
-    xs = xs + offsets
-  }
-  
-  text(xs, as.character(varAreas), ...)
-  
-  invisible(NULL)
-}
-
 # generate the population density surface along with urbanicity estimates. 
 # If any constituencies have no pixel centroids in them, they are added as 
 # separate areal units in the pixellated grid.
@@ -1306,12 +1043,32 @@ adjustPopulationPerCountyTable = function(dataType=c("children", "women")) {
 # adapted from logitnorm package.  Calculates the mean of a distribution whose 
 # logit is Gaussian. Each row of muSigmaMat has a mean and standard deviation 
 # on the logit scale
-logitNormMean = function(muSigmaMat, parClust=NULL, logisticApproximation=TRUE, ...) {
+logitNormMean = function(muSigmaMat, parClust=NULL, logisticApproximation=TRUE, splineApproximation=FALSE, ...) {
   if(length(muSigmaMat) > 2) {
-    if(is.null(parClust))
+    if(is.null(parClust) && !splineApproximation) {
       apply(muSigmaMat, 1, logitNormMean, logisticApproximation=logisticApproximation, ...)
-    else
+    }
+    else if(splineApproximation) {
+      # not parallel and using spline approximation
+      uniqueSigmas = sort(unique(muSigmaMat[,2]))
+      muSigmaIndsList = lapply(uniqueSigmas, function(s) {
+        inds = which(muSigmaMat[,2] == s)
+        list(mu=muSigmaMat[inds,1], inds=inds, sigma=s)
+      })
+      outList = lapply(muSigmaIndsList, function(l) {
+        mus = l$mu
+        sigma = l$sigma
+        logitNormMeanSplineApprox(mus, sigma, ...)
+      })
+      outVals = 1:nrow(muSigmaMat)
+      for(i in 1:length(muSigmaIndsList)) {
+        inds = muSigmaIndsList[[i]]$inds
+        outVals[inds] = outList[[i]]$vals
+      }
+      outVals
+    } else {
       parApply(parClust, muSigmaMat, 1, logitNormMean, logisticApproximation=logisticApproximation, ...)
+    }
   }
   else {
     mu = muSigmaMat[1]
@@ -1332,6 +1089,28 @@ logitNormMean = function(muSigmaMat, parClust=NULL, logisticApproximation=TRUE, 
       }
     }
   }
+}
+
+# Approximates logitNormMean at a single value of sigma and many mus using spline 
+# on a logit scale. npts determines number of values of mu in the range of mu 
+# over which the monotonic spline function is generated.
+# Note: Uses a monotonic cubic spline. See ?splinefun for method="Hyman", and:
+# Hyman, J. M. (1983). Accurate monotonicity preserving cubic interpolation. 
+# SIAM Journal on Scientific and Statistical Computing, 4, 645–654. 
+# doi:10.1137/0904045.
+logitNormMeanSplineApprox = function(mus, sigma, npts=250, ...) {
+  
+  rangeExpitMu = expit(range(mus))
+  seqMus = logit(seq(rangeExpitMu[1], rangeExpitMu[2], l=npts))
+  
+  muSigmaMat = cbind(seqMus, sigma)
+  vals = logit(logitNormMean(muSigmaMat, logisticApproximation=FALSE, splineApproximation=FALSE))
+  
+  spFun = splinefun(seqMus, vals, method="hyman")
+  
+  outVals = expit(spFun(mus))
+  
+  list(vals = outVals, fun=spFun, range=logit(rangeExpitMu))
 }
 
 getPixelIndex = function(eastNorth, popMat=NULL, clusterAreas=NULL, enforceSameArea=TRUE) {
@@ -1457,15 +1236,31 @@ getCustomScaleTicks = function(usr, scaleFun=sqrt, nint=5, log=FALSE) {
 
 # i: either the first index of the two input parameters, or the job index if rev==TRUE
 # j: the second index of the two input parameters
-# maxJ: maximum of j for each i if rev==FALSE
+# maxJ: maximum of j for each i if rev==FALSE (can be a vector of length maxI)
 # rev: if TRUE, performs inverse operation of if rev==FALSE given the job index i
 getJobIndices = function(i=1, j=1:100, maxJ=100, rev=FALSE) {
+  
   if(rev) {
-    outI = ((i-1) %/% maxJ) + 1
-    outJ = ((i-1) %% maxJ) + 1
+    if(length(maxJ) == 1) {
+      outI = ((i-1) %/% maxJ) + 1
+      outJ = ((i-1) %% maxJ) + 1
+    } else {
+      cumJs = c(0, cumsum(maxJ))
+      firstCumJbiggerI = match(TRUE, cumJs >= i)
+      outI = firstCumJbiggerI-1
+      outJ = i - cumJs[firstCumJbiggerI-1]
+    }
     return(cbind(i=outI, j=outJ))
   } else {
-    c(jobIndex=(i-1)*maxJ + j)
+    if(length(maxJ) == 1) {
+      c(jobIndex=(i-1)*maxJ + j)
+    } else {
+      if(any(j > maxJ[i])) {
+        stop(paste0("maxJ for this i is ", maxJ[i], " but maximum j is ", max(j)))
+      }
+      startI = sum(c(0, maxJ)[1:i])
+      c(jobIndex=startI + j)
+    }
   }
 }
 
@@ -1623,7 +1418,7 @@ projNigeriaArea = function(area, inverse=FALSE) {
     }
   }
   
-  warning("projArea does not project polygon coordinates")
+  # warning("projArea does not project polygon coordinates")
   projArea
 }
 
@@ -1646,5 +1441,31 @@ projNigeriaBBox = function(bbox, inverse=FALSE, nlon=100, nlat=100) {
   
   rbind(eastRange, 
         northRange)
+}
+
+# this is specifically for Nigeria
+adm2ToStratumMICS = function(adm2Names) {
+  adm2ToSen = read.csv2("data/admin2ToSen.csv")
+  
+  # make sure adm2 names in Kano and Lagos match with GADM names
+  klNamesTab = c(sort(adm2ToSen$admin2Name_en[adm2ToSen$admin1Name_en == "Kano"]), 
+                 sort(adm2ToSen$admin2Name_en[adm2ToSen$admin1Name_en == "Lagos"]))
+  klNamesGADM = c(sort(adm2@data$NAME_2[adm2@data$NAME_1 == "Kano"]), 
+                  sort(adm2@data$NAME_2[adm2@data$NAME_1 == "Lagos"]))
+  adm2ToSen$admin2Name_en[match(klNamesTab, adm2ToSen$admin2Name_en)] = klNamesGADM
+  
+  # kanoSens = c("Kano South", "Kano Central", "Kano North")
+  # lagosSens = c("Lagos West", "Lagos Central", "Lagos East")
+  
+  # first get the GADM admin1 name from poppsubNGA
+  poppsubIs = match(adm2Names, poppsubNGAThresh$subarea)
+  strata = poppsubNGAThresh$area[poppsubIs]
+  useSen = strata %in% c("Kano", "Lagos")
+  
+  # then select the senatorial district if need be
+  adm2ToSenIs = match(adm2Names[useSen], adm2ToSen$admin2Name_en)
+  strata[useSen] = adm2ToSen$SenDist_en[adm2ToSenIs]
+  
+  strata
 }
 
