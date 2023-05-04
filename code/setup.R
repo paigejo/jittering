@@ -108,6 +108,7 @@ source('code/modBYM2.R')
 source('code/utilityFuns.R')
 source('code/covariates.R')
 source('code/modAgg.R')
+source('code/validation.R')
 
 ## load in global variables made from the following script: 
 if(FALSE) {

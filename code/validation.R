@@ -28,7 +28,7 @@ stratKmics = function(K=10, seed=123) {
     if(thisN == 0) {
       return(foldVec)
     } else if(thisN < K) {
-      warning(paste("Some folds will have no data for strat ", thisStrat, ", urb=", thisUrb, " with ", thisN, " pts."))
+      warning(paste0("Some folds will have no data for strat ", thisStrat, ", urb=", thisUrb, " with ", thisN, " pts."))
     }
     
     nBigFolds = ((thisN-1) %% K) + 1
@@ -109,7 +109,7 @@ stratKdhs = function(K=10, seed=123) {
     if(thisN == 0) {
       return(foldVec)
     } else if(thisN < K) {
-      warning(paste("Some folds will have no data for strat ", thisStrat, ", urb=", thisUrb, " with ", thisN, " pts."))
+      warning(paste0("Some folds will have no data for strat ", thisStrat, ", urb=", thisUrb, " with ", thisN, " pts."))
     }
     
     nBigFolds = ((thisN-1) %% K) + 1
@@ -845,7 +845,7 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   } else if(fnameRoot == "MDM") {
     fnameRoot = "M_DM"
   }
-  fname = paste("savedOutput/validation/dat", fnameRoot, ".RData", collapse="")
+  fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
   out = load(fname)
   
   # get the data from the appropriate variable. The data is in the following format:
@@ -991,7 +991,7 @@ predClusters = function(nsim=1000, SD0, obj, fold,
   }
   
   # load relevant data and model fit
-  out = load(paste("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
+  out = load(paste0("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
   out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   
   # generate predictions
