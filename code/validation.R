@@ -872,7 +872,7 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
     # now fit the model. First we load DLLs and build the functions then we optimize
-    dyn.load(dynlib(MakeADFunInputs$DLL))
+    dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
     obj <- do.call("MakeADFun", MakeADFunInputs)
     objFull <- do.call("MakeADFun", MakeADFunInputsFull)
     
