@@ -443,3 +443,5 @@ plotPreds(SD0, obj, popMat=popMatNGAThresh,
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
           plotNameRoot="edFusion", plotNameRootAreal="Admin2")
+
+

@@ -19,7 +19,7 @@
 # for interactive job:
 # https://www.hpc.ntnu.no/idun/getting-started-on-idun/running-jobs/
 # srun --account=ie-imf --nodes=1 --partition=CPUQ --time=02:00:00 --pty bash 
-module purge
+# module purge
 # module load R/4.0.3-foss-2020b
 module load R/4.2.1-foss-2022a
 # module swap JasPer/2.0.14-GCCcore-10.2.0 JasPer/2.0.24-GCCcore-10.2.0
