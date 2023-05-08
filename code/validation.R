@@ -229,6 +229,7 @@ getValidationDataM_d = function(fold) {
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
+  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -263,7 +264,24 @@ getValidationDataM_d = function(fold) {
     gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
     lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
     lambdaTau=lambdaTau, # determines PC prior for tau
+    lambdaTauEps=lambdaTauEps, 
     options=0 # 1 for adreport of log tau and logit phi
+  )
+  
+  # initial parameters
+  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+  initAlpha = logit(initRurP)
+  initBeta1 = logit(initUrbP) - initAlpha
+  
+  tmb_params <- list(alpha = initAlpha, # intercept
+                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     logit_phi = 0, # SPDE parameter related to the range
+                     log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
   )
   
   # return TMB inputs and in/out of sample datasets. Here are the TMB inputs:
@@ -340,6 +358,7 @@ getValidationDataM_D = function(fold) {
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
+  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -373,8 +392,25 @@ getValidationDataM_D = function(fold) {
     tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
     gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
     lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
-    lambdaTau=lambdaTau, # determines PC prior for tau
+    lambdaTau=lambdaTau, # determines PC prior for tau, BYM2 precision
+    lambdaTauEps=lambdaTauEps, # determines PC prior for tauEps, nugget precision
     options=0 # 1 for adreport of log tau and logit phi
+  )
+  
+  # initial parameters
+  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+  initAlpha = logit(initRurP)
+  initBeta1 = logit(initUrbP) - initAlpha
+  
+  tmb_params <- list(alpha = initAlpha, # intercept
+                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     logit_phi = 0, # SPDE parameter related to the range
+                     log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
   )
   
   # return TMB inputs and in/out of sample datasets. Here are the TMB inputs:
@@ -591,6 +627,24 @@ getValidationDataM_dm = function(fold) {
     options=0 # 1 for adreport of log tau and logit phi
   )
   
+  # initial parameters
+  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+  initAlpha = logit(initRurP)
+  initBeta1 = logit(initUrbP) - initAlpha
+  
+  tmb_params <- list(alpha = initAlpha, # intercept
+                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     logit_phi = 0, # SPDE parameter related to the range
+                     log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                     nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                     nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+  )
+  
   # return TMB inputs and in/out of sample datasets. Here are the TMB inputs:
   # obj <- MakeADFun(data=data_full,
   #                  parameters=tmb_params,
@@ -795,6 +849,24 @@ getValidationDataM_DM = function(fold) {
     lambdaTau=lambdaTau, # determines PC prior for tau
     lambdaTauEps=lambdaTauEps, 
     options=0 # 1 for adreport of log tau and logit phi
+  )
+  
+  # initial parameters
+  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+  initAlpha = logit(initRurP)
+  initBeta1 = logit(initUrbP) - initAlpha
+  
+  tmb_params <- list(alpha = initAlpha, # intercept
+                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     logit_phi = 0, # SPDE parameter related to the range
+                     log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                     Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                     nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                     nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
   )
   
   # return TMB inputs and in/out of sample datasets. Here are the TMB inputs:

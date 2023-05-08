@@ -36,7 +36,7 @@ if(FALSE) {
   # compile model ----
   dyn.unload( dynlib("code/modBYM2JitterDHS"))
   compile( "code/modBYM2JitterDHS.cpp")
-  compile("code/modBYM2JitterDHS.cpp","-O0 -g") # for using gbdsource
+  # compile("code/modBYM2JitterDHS.cpp","-O0 -g") # for using gbdsource
 }
 
 # load in TMB function inputs
@@ -50,17 +50,27 @@ out = load("savedOutput/global/admFinalMat.RData")
 bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                          constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
 lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
+lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
 
 # Specify starting values for TMB params ----
-tmb_params <- list(alpha = 0, # intercept
-                   beta = rep(0, ncol(intPtsDHS$covsUrb)), 
+# initial parameters
+initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
+initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
+initAlpha = logit(initRurP)
+initBeta1 = logit(initUrbP) - initAlpha
+
+tmb_params <- list(alpha = initAlpha, # intercept
+                   beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
                    log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
-                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)) # RE on mesh vertices
+                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
 ## specify random effects
-rand_effs <- c('Epsilon_bym2')
+rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data ----
 
@@ -84,6 +94,7 @@ data_full = list(
   gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
   lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
   lambdaTau=lambdaTau, # determines PC prior for tau
+  lambdaTauEps=lambdaTauEps, # determines PC prior for tauEps, the nugget precision
   options=0 # 1 for adreport of log tau and logit phi
 )
 
