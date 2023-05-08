@@ -1,6 +1,7 @@
 # srun --partition=CPUQ --time=02:00:00 --mem-per-cpu=20000 --pty bash
 
 source("setup.R")
+options(error=traceback)
 index = as.numeric(commandArgs(trailingOnly = TRUE)) # test with index == something
 # index=53
 # i: 1-4 corresponding to M_d, M_D, M_dm, and M_DM
