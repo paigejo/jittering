@@ -275,7 +275,7 @@ getValidationDataM_d = function(fold) {
   initBeta1 = logit(initUrbP) - initAlpha
   
   tmb_params <- list(alpha = initAlpha, # intercept
-                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                      log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                      logit_phi = 0, # SPDE parameter related to the range
                      log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
@@ -404,7 +404,7 @@ getValidationDataM_D = function(fold) {
   initBeta1 = logit(initUrbP) - initAlpha
   
   tmb_params <- list(alpha = initAlpha, # intercept
-                     beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                     beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                      log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                      logit_phi = 0, # SPDE parameter related to the range
                      log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
@@ -435,8 +435,8 @@ getValidationDataM_dm = function(fold) {
   inSampleLIndsDHS = edVal$fold != fold
   inSampleLIndsUrbDHS = (edVal$fold != fold) & (edVal$urban)
   inSampleLIndsRurDHS = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2DHS = inSampleLInds[edVal$urban]
-  inSampleLIndsRur2DHS = inSampleLInds[!edVal$urban]
+  inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
+  inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
   outOfSampleLIndsDHS = edVal$fold == fold
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
@@ -454,8 +454,8 @@ getValidationDataM_dm = function(fold) {
   inSampleLIndsMICS = edMICSval$fold != foldMICS
   inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
   inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
-  inSampleLIndsUrb2MICS = inSampleLInds[edMICSval$urban]
-  inSampleLIndsRur2MICS = inSampleLInds[!edMICSval$urban]
+  inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+  inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
   outOfSampleLIndsMICS = edMICSval$fold == foldMICS
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
@@ -495,8 +495,8 @@ getValidationDataM_dm = function(fold) {
   mode(ARurDHS) = "numeric"
   
   # remove rows of out of sample covariates
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),-1]
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),]
   
   # modify the integration points to be in the correct format for TMB
   
@@ -668,8 +668,8 @@ getValidationDataM_DM = function(fold) {
   inSampleLIndsDHS = edVal$fold != fold
   inSampleLIndsUrbDHS = (edVal$fold != fold) & (edVal$urban)
   inSampleLIndsRurDHS = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2DHS = inSampleLInds[edVal$urban]
-  inSampleLIndsRur2DHS = inSampleLInds[!edVal$urban]
+  inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
+  inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
   outOfSampleLIndsDHS = edVal$fold == fold
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
@@ -685,8 +685,8 @@ getValidationDataM_DM = function(fold) {
   inSampleLIndsMICS = edMICSval$fold != foldMICS
   inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
   inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
-  inSampleLIndsUrb2MICS = inSampleLInds[edMICSval$urban]
-  inSampleLIndsRur2MICS = inSampleLInds[!edMICSval$urban]
+  inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+  inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
   outOfSampleLIndsMICS = edMICSval$fold == foldMICS
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
@@ -726,8 +726,8 @@ getValidationDataM_DM = function(fold) {
   mode(ARurDHS) = "numeric"
   
   # remove rows of out of sample covariates
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),-1]
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),]
   
   # modify the integration points to be in the correct format for TMB
   
@@ -945,6 +945,43 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
+    # browser()
+    if(FALSE) {
+      dimLen = function(x) {
+        out = dim(x)
+        if(is.null(out)) {
+          length(x)
+        } else {
+          out
+        }
+      }
+      
+      tempDataFull = tempMakeADFunInputs$data
+      tempPar = tempMakeADFunInputs$parameters
+      
+      sapply(MakeADFunInputs$data, dimLen)
+      sapply(tempDataFull, dimLen)
+      sapply(MakeADFunInputs$data, class)
+      sapply(tempDataFull, class)
+      lapply(MakeADFunInputs$data, str)
+      sapply(tempDataFull, str)
+      sapply(MakeADFunInputs$parameters, dimLen)
+      sapply(tempPar, dimLen)
+      # Browse[1]>       sapply(MakeADFunInputs$parameters, dimLen)
+      # alpha          beta       log_tau     logit_phi    log_tauEps  Epsilon_bym2 
+      # 1             5             1             1             1            41 
+      # nuggetUrbMICS nuggetRurMICS  nuggetUrbDHS  nuggetRurDHS 
+      # 662          1307           569           810 
+      # Browse[1]>       sapply(tempPar, dimLen)
+      # alpha          beta       log_tau     logit_phi    log_tauEps  Epsilon_bym2 
+      # 1             5             1             1             1            41 
+      # nuggetUrbMICS nuggetRurMICS  nuggetUrbDHS  nuggetRurDHS 
+      # 734          1449           569           810 
+      sapply(MakeADFunInputs$data, anyNA)
+      sapply(MakeADFunInputs$parameters, anyNA)
+      
+      head(tempDataFull$X_betaUrbanMICS)
+    }
     obj <- do.call("MakeADFun", MakeADFunInputs)
     objFull <- do.call("MakeADFun", MakeADFunInputsFull)
     
