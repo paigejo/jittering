@@ -1,2 +1,2 @@
 #!/bin/bash
-sbatch --array=1-62 runValidation.sbatch
+sbatch --array=1-80 runValidation.sbatch

@@ -7,7 +7,7 @@ index = as.numeric(commandArgs(trailingOnly = TRUE)) # test with index == someth
 # index=43
 # i: 1-4 corresponding to M_d, M_D, M_dm, and M_DM
 # j: 1-11 for M_d and M_D and 1-20 for M_dm and M_DM
-jobInds = getJobIndices(index, maxJ=c(11, 11, 20, 20), rev=TRUE)
+jobInds = getJobIndices(index, maxJ=20, rev=TRUE)
 i = jobInds[1]
 j = jobInds[2]
 
