@@ -1106,7 +1106,7 @@ logitNormMeanSplineApprox = function(mus, sigma, npts=250, ...) {
   muSigmaMat = cbind(seqMus, sigma)
   vals = logit(logitNormMean(muSigmaMat, logisticApproximation=FALSE, splineApproximation=FALSE))
   
-  spFun = splinefun(seqMus, vals, method="hyman")
+  spFun = splinefun(seqMus, vals)
   
   outVals = expit(spFun(mus))
   

@@ -161,7 +161,7 @@ stratKdhs = function(K=10, seed=123) {
 
 # submodels of the BYM2 model
 
-getValidationDataM_d = function(fold) {
+getValidationDataM_d = function(fold, inSample=TRUE) {
   # first load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
@@ -208,6 +208,7 @@ getValidationDataM_d = function(fold) {
   # save everything
   intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2, times=KurbDHS),-1] # don't include intercepts
   intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2, times=KrurDHS),-1]
+  
   # save(AUrbDHS, ARurDHS, intPtsDHS, 
   #      ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
   #      file="savedOutput/global/edInputsDHS.RData")
@@ -216,10 +217,13 @@ getValidationDataM_d = function(fold) {
   # out = load("savedOutput/global/edInputsDHS.RData")
   
   # modify weights based on fold indices ----
+  intPtsDHS$wRural = intPtsDHS$wRural[inSampleLIndsRur2,]
+  intPtsDHS$wUrban = intPtsDHS$wUrban[inSampleLIndsUrb2,]
   intPtsDHS$wUrban[,1] = 1
   intPtsDHS$wUrban[,-1] = 0
   intPtsDHS$wRural[,1] = 1
   intPtsDHS$wRural[,-1] = 0
+  
   
   # set priors ----
   alpha_pri = c(0, 100^2)
@@ -296,7 +300,7 @@ getValidationDataM_d = function(fold) {
                             hessian=TRUE, DLL='modBYM2JitterDHS'))
 }
 
-getValidationDataM_D = function(fold) {
+getValidationDataM_D = function(fold, inSample=TRUE) {
   # first load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
@@ -438,6 +442,10 @@ getValidationDataM_dm = function(fold) {
   inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
   inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
   outOfSampleLIndsDHS = edVal$fold == fold
+  outOfSampleLIndsUrbDHS = (edVal$fold == fold) & (edVal$urban)
+  outOfSampleLIndsRurDHS = (edVal$fold == fold) & (!edVal$urban)
+  outOfSampleLIndsUrb2DHS = outOfSampleLIndsDHS[edVal$urban]
+  outOfSampleLIndsRur2DHS = outOfSampleLIndsDHS[!edVal$urban]
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
   
@@ -457,6 +465,10 @@ getValidationDataM_dm = function(fold) {
   inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
   inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
   outOfSampleLIndsMICS = edMICSval$fold == foldMICS
+  outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
+  outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
+  outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+  outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
   
@@ -479,6 +491,8 @@ getValidationDataM_dm = function(fold) {
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
+  AUrbDHSoutOfSample = t(AUrbDHS[,outOfSampleLIndsUrb2DHS])
+  ARurDHSoutOfSample = t(ARurDHS[,outOfSampleLIndsRur2DHS])
   AUrbDHS = AUrbDHS[,inSampleLIndsUrb2DHS]
   ARurDHS = ARurDHS[,inSampleLIndsRur2DHS]
   
@@ -488,6 +502,11 @@ getValidationDataM_dm = function(fold) {
   nsUrbDHS = edInSample$n[edInSample$urban]
   nsRurDHS = edInSample$n[!edInSample$urban]
   
+  ysUrbDHSoutOfSample = edOutOfSample$y[edOutOfSample$urban]
+  ysRurDHSoutOfSample = edOutOfSample$y[!edOutOfSample$urban]
+  nsUrbDHSoutOfSample = edOutOfSample$n[edOutOfSample$urban]
+  nsRurDHSoutOfSample = edOutOfSample$n[!edOutOfSample$urban]
+  
   # make sure A matrices are nArea x nObs, as TMB expects
   AUrbDHS = t(AUrbDHS)
   ARurDHS = t(ARurDHS)
@@ -495,8 +514,10 @@ getValidationDataM_dm = function(fold) {
   mode(ARurDHS) = "numeric"
   
   # remove rows of out of sample covariates
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),]
+  intPtsDHS$covsUrbOutOfSample = intPtsDHS$covsUrb[rep(outOfSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
+  intPtsDHS$covsRurOutOfSample = intPtsDHS$covsRur[rep(outOfSampleLIndsRur2DHS, times=KrurDHS),-1]
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),-1]
   
   # modify the integration points to be in the correct format for TMB
   
@@ -521,6 +542,36 @@ getValidationDataM_dm = function(fold) {
   intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   XRur = XRur[stratIndexRur,] # now XRur is [K * nObsRur] x nVar
   
+  # now do the same for the out of sample data if need be
+  if(fold > 10) {
+    # first extract only the relevant covariates for the in sample data
+    XUrbOutOfSample = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
+    stratUrb = XUrbOutOfSample$strat
+    XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    AUrbMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[edMICSOutOfSample$urban], admFinal$NAME_FINAL)
+    numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
+    stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
+    obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
+    intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
+    XUrbOutOfSample = XUrbOutOfSample[stratIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    
+    XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
+    stratRur = XRurOutOfSample$strat
+    XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], admFinal$NAME_FINAL)
+    numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
+    stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
+    obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
+    intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
+    XRurOutOfSample = XRurOutOfSample[stratIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+  }
+  else {
+    AUrbMICSOutOfSample = NULL
+    XUrbOutOfSample = NULL
+    ARurMICSOutOfSample = NULL
+    XRurOutOfSample = NULL
+  }
+  
   # w matrices are nStrata x K. They should be nObs x K
   wUrban = intPtsMICS$wUrban
   stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb))
@@ -529,6 +580,20 @@ getValidationDataM_dm = function(fold) {
   wRural = intPtsMICS$wRural
   stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur))
   wRural = wRural[stratIndexRurW,]
+  
+  if(fold > 10) {
+    # Do the same with the out of sample observations
+    wUrbanOutOfSample = intPtsMICS$wUrban
+    stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample))
+    wUrbanOutOfSample = wUrban[stratIndexUrbW,]
+    
+    wRuralOutOfSample = intPtsMICS$wRural
+    stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample))
+    wRuralOutOfSample = wRural[stratIndexRurW,]
+  } else {
+    wUrbanOutOfSample = NULL
+    wRuralOutOfSample = NULL
+  }
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
   stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
@@ -540,7 +605,16 @@ getValidationDataM_dm = function(fold) {
   ysRurMICS = edMICSInSample[!edMICSInSample$urban,]$ys
   nsRurMICS = edMICSInSample[!edMICSInSample$urban,]$ns
   
+  ysUrbMICSoutOfSample = edMICSOutOfSample$y[edMICSOutOfSample$urban]
+  ysRurMICSoutOfSample = edMICSOutOfSample$y[!edMICSOutOfSample$urban]
+  nsUrbMICSoutOfSample = edMICSOutOfSample$n[edMICSOutOfSample$urban]
+  nsRurMICSoutOfSample = edMICSOutOfSample$n[!edMICSOutOfSample$urban]
+  
   # make sure A matrices are nArea x nObs, as TMB expects
+  if(fold > 10) {
+    AUrbMICSOutOfSample = t(AUrbMICSOutOfSample)
+    ARurMICSOutOfSample = t(ARurMICSOutOfSample)
+  }
   AUrbMICS = t(AUrbMICS)
   ARurMICS = t(ARurMICS)
   mode(AUrbMICS) = "numeric"
@@ -553,19 +627,49 @@ getValidationDataM_dm = function(fold) {
   intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
   intPtsMICS$wUrban = wUrban
   intPtsMICS$wRural = wRural
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
+  
+  intPtsMICS$XUrbOutOfSample = XUrbOutOfSample[,-(2:3)] # don't include strata or intercept
+  intPtsMICS$XRurOutOfSample = XRurOutOfSample[,-(2:3)]
+  if(fold > 10) {
+    intPtsMICS$XUrbOutOfSample = as.matrix(intPtsMICS$XUrbOutOfSample)
+    intPtsMICS$XRurOutOfSample = as.matrix(intPtsMICS$XRurOutOfSample)
+  }
+  intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
+  intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
   
   # put weight only on the simulated locations for both DHS and MICS data
+  intPtsDHS$wUrbanOutOfSample = intPtsDHS$wUrban[outOfSampleLIndsUrb2DHS,]
+  intPtsDHS$wRuralOutOfSample = intPtsDHS$wRural[outOfSampleLIndsRur2DHS,]
+  if(fold < 11) {
+    intPtsDHS$wUrbanOutOfSample[,1] = 1
+    intPtsDHS$wUrbanOutOfSample[,-1] = 0
+    intPtsDHS$wRuralOutOfSample[,1] = 1
+    intPtsDHS$wRuralOutOfSample[,-1] = 0
+  }
+  
+  intPtsDHS$wUrban = intPtsDHS$wUrban[inSampleLIndsUrb2DHS,]
+  intPtsDHS$wRural = intPtsDHS$wRural[inSampleLIndsRur2DHS,]
+  intPtsDHS$wUrban[,-1] = 0
+  intPtsDHS$wUrban[,1] = 1
+  intPtsDHS$wRural[,-1] = 0
+  intPtsDHS$wRural[,1] = 1
+  
+  intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
+  intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
+  
+  intPtsMICS$wUrban = wUrban
+  intPtsMICS$wRural = wRural
   intPtsMICS$wUrban[,-1] = 0
   intPtsMICS$wUrban[,1] = 1
   intPtsMICS$wRural[,-1] = 0
   intPtsMICS$wRural[,1] = 1
   
-  intPtsDHS$wUrban[,-1] = 0
-  intPtsDHS$wUrban[,1] = 1
-  intPtsDHS$wRural[,-1] = 0
-  intPtsDHS$wRural[,1] = 1
+  if(fold > 10) {
+    intPtsMICS$wUrbanOutOfSample[,-1] = 0
+    intPtsMICS$wUrbanOutOfSample[,1] = 1
+    intPtsMICS$wRuralOutOfSample[,-1] = 0
+    intPtsMICS$wRuralOutOfSample[,1] = 1
+  }
   
   # update the MICS covariates to the ones from the simulated locations for the first 
   # column
@@ -573,6 +677,14 @@ getValidationDataM_dm = function(fold) {
   intPtsMICS$XUrb[1:sum(edMICSInSample$urban),] = matrix(unlist(urbCovsMICS), ncol=ncol(urbCovsMICS))
   rurCovsMICS = edMICSInSample[!edMICSInSample$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
   intPtsMICS$XRur[1:sum(!edMICSInSample$urban),] = matrix(unlist(rurCovsMICS), ncol=ncol(rurCovsMICS))
+  
+  if(fold > 10) {
+    # same for the out of sample simulated locations
+    urbCovsMICSOutOfSample = edMICSOutOfSample[edMICSOutOfSample$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+    intPtsMICS$XUrbOutOfSample[1:sum(edMICSOutOfSample$urban),] = matrix(unlist(urbCovsMICSOutOfSample), ncol=ncol(urbCovsMICSOutOfSample))
+    rurCovsMICSOutOfSample = edMICSOutOfSample[!edMICSOutOfSample$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+    intPtsMICS$XRurOutOfSample[1:sum(!edMICSOutOfSample$urban),] = matrix(unlist(rurCovsMICSOutOfSample), ncol=ncol(rurCovsMICSOutOfSample))
+  }
   
   # set priors ----
   alpha_pri = c(0, 100^2)
@@ -627,6 +739,30 @@ getValidationDataM_dm = function(fold) {
     options=0 # 1 for adreport of log tau and logit phi
   )
   
+  dataOutOfSample = list(
+    y_iUrbanDHS=ysUrbDHSoutOfSample, # same as above but for DHS survey
+    y_iRuralDHS=ysRurDHSoutOfSample, # 
+    n_iUrbanDHS=nsUrbDHSoutOfSample, # number binomial trials
+    n_iRuralDHS=nsRurDHSoutOfSample, # 
+    AprojUrbanDHS=AUrbDHSoutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralDHS=ARurDHSoutOfSample, # 
+    X_betaUrbanDHS=intPtsDHS$covsUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+    X_betaRuralDHS=intPtsDHS$covsRurOutOfSample, # 
+    wUrbanDHS=intPtsDHS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
+    wRuralDHS=intPtsDHS$wRuralOutOfSample, 
+    
+    y_iUrbanMICS=ysUrbMICSoutOfSample, # same as above but for MICS survey
+    y_iRuralMICS=ysRurMICSoutOfSample, # 
+    n_iUrbanMICS=nsUrbMICSoutOfSample, # number binomial trials
+    n_iRuralMICS=nsRurMICSoutOfSample, # 
+    AprojUrbanMICS=AUrbMICSOutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralMICS=ARurMICSOutOfSample, # 
+    X_betaUrbanMICS=intPtsMICS$XUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+    X_betaRuralMICS=intPtsMICS$XRurOutOfSample, # 
+    wUrbanMICS=intPtsMICS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
+    wRuralMICS=intPtsMICS$wRuralOutOfSample
+  )
+  
   # initial parameters
   initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
   initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
@@ -655,7 +791,8 @@ getValidationDataM_dm = function(fold) {
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        edMICSInSample=edMICSInSample, edMICSOutOfSample=edMICSOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'))
+                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'), 
+       dataOutOfSample=dataOutOfSample)
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
@@ -671,6 +808,10 @@ getValidationDataM_DM = function(fold) {
   inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
   inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
   outOfSampleLIndsDHS = edVal$fold == fold
+  outOfSampleLIndsUrbDHS = (edVal$fold == fold) & (edVal$urban)
+  outOfSampleLIndsRurDHS = (edVal$fold == fold) & (!edVal$urban)
+  outOfSampleLIndsUrb2DHS = outOfSampleLIndsDHS[edVal$urban]
+  outOfSampleLIndsRur2DHS = outOfSampleLIndsDHS[!edVal$urban]
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
   
@@ -688,6 +829,10 @@ getValidationDataM_DM = function(fold) {
   inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
   inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
   outOfSampleLIndsMICS = edMICSval$fold == foldMICS
+  outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
+  outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
+  outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+  outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
   
@@ -710,6 +855,8 @@ getValidationDataM_DM = function(fold) {
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
+  AUrbDHSoutOfSample = t(AUrbDHS[,outOfSampleLIndsUrb2DHS])
+  ARurDHSoutOfSample = t(ARurDHS[,outOfSampleLIndsRur2DHS])
   AUrbDHS = AUrbDHS[,inSampleLIndsUrb2DHS]
   ARurDHS = ARurDHS[,inSampleLIndsRur2DHS]
   
@@ -719,6 +866,11 @@ getValidationDataM_DM = function(fold) {
   nsUrbDHS = edInSample$n[edInSample$urban]
   nsRurDHS = edInSample$n[!edInSample$urban]
   
+  ysUrbDHSoutOfSample = edOutOfSample$y[edOutOfSample$urban]
+  ysRurDHSoutOfSample = edOutOfSample$y[!edOutOfSample$urban]
+  nsUrbDHSoutOfSample = edOutOfSample$n[edOutOfSample$urban]
+  nsRurDHSoutOfSample = edOutOfSample$n[!edOutOfSample$urban]
+  
   # make sure A matrices are nArea x nObs, as TMB expects
   AUrbDHS = t(AUrbDHS)
   ARurDHS = t(ARurDHS)
@@ -726,12 +878,14 @@ getValidationDataM_DM = function(fold) {
   mode(ARurDHS) = "numeric"
   
   # remove rows of out of sample covariates
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),]
+  intPtsDHS$covsUrbOutOfSample = intPtsDHS$covsUrb[rep(outOfSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
+  intPtsDHS$covsRurOutOfSample = intPtsDHS$covsRur[rep(outOfSampleLIndsRur2DHS, times=KrurDHS),-1]
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[rep(inSampleLIndsUrb2DHS, times=KurbDHS),-1] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),-1]
   
   # modify the integration points to be in the correct format for TMB
   
-  # first extract only the relevant covariates
+  # first extract only the relevant covariates for the in sample data
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
   stratUrb = XUrb$strat
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -752,7 +906,37 @@ getValidationDataM_DM = function(fold) {
   intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   XRur = XRur[stratIndexRur,] # now XRur is [K * nObsRur] x nVar
   
-  # w matrices are nStrata x K. They should be nObs x K
+  # now do the same for the out of sample data if need be
+  if(fold > 10) {
+    # first extract only the relevant covariates for the in sample data
+    XUrbOutOfSample = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
+    stratUrb = XUrbOutOfSample$strat
+    XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    AUrbMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[edMICSOutOfSample$urban], admFinal$NAME_FINAL)
+    numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
+    stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
+    obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
+    intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
+    XUrbOutOfSample = XUrbOutOfSample[stratIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    
+    XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
+    stratRur = XRurOutOfSample$strat
+    XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], admFinal$NAME_FINAL)
+    numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
+    stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
+    obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
+    intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
+    XRurOutOfSample = XRurOutOfSample[stratIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+  }
+  else {
+    AUrbMICSOutOfSample = NULL
+    XUrbOutOfSample = NULL
+    ARurMICSOutOfSample = NULL
+    XRurOutOfSample = NULL
+  }
+  
+  # w matrices are nStrata x K. They should be nObs x K. Start with the in sample observations
   wUrban = intPtsMICS$wUrban
   stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb))
   wUrban = wUrban[stratIndexUrbW,]
@@ -760,6 +944,20 @@ getValidationDataM_DM = function(fold) {
   wRural = intPtsMICS$wRural
   stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur))
   wRural = wRural[stratIndexRurW,]
+  
+  if(fold > 10) {
+    # Do the same with the out of sample observations
+    wUrbanOutOfSample = intPtsMICS$wUrban
+    stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample))
+    wUrbanOutOfSample = wUrban[stratIndexUrbW,]
+    
+    wRuralOutOfSample = intPtsMICS$wRural
+    stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample))
+    wRuralOutOfSample = wRural[stratIndexRurW,]
+  } else {
+    wUrbanOutOfSample = NULL
+    wRuralOutOfSample = NULL
+  }
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
   stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
@@ -771,7 +969,16 @@ getValidationDataM_DM = function(fold) {
   ysRurMICS = edMICSInSample[!edMICSInSample$urban,]$ys
   nsRurMICS = edMICSInSample[!edMICSInSample$urban,]$ns
   
+  ysUrbMICSoutOfSample = edMICSOutOfSample$y[edMICSOutOfSample$urban]
+  ysRurMICSoutOfSample = edMICSOutOfSample$y[!edMICSOutOfSample$urban]
+  nsUrbMICSoutOfSample = edMICSOutOfSample$n[edMICSOutOfSample$urban]
+  nsRurMICSoutOfSample = edMICSOutOfSample$n[!edMICSOutOfSample$urban]
+  
   # make sure A matrices are nArea x nObs, as TMB expects
+  if(fold > 10) {
+    AUrbMICSOutOfSample = t(AUrbMICSOutOfSample)
+    ARurMICSOutOfSample = t(ARurMICSOutOfSample)
+  }
   AUrbMICS = t(AUrbMICS)
   ARurMICS = t(ARurMICS)
   mode(AUrbMICS) = "numeric"
@@ -784,19 +991,44 @@ getValidationDataM_DM = function(fold) {
   intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
   intPtsMICS$wUrban = wUrban
   intPtsMICS$wRural = wRural
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
+  
+  intPtsMICS$XUrbOutOfSample = XUrbOutOfSample[,-(2:3)] # don't include strata or intercept
+  intPtsMICS$XRurOutOfSample = XRurOutOfSample[,-(2:3)]
+  if(fold > 10) {
+    intPtsMICS$XUrbOutOfSample = as.matrix(intPtsMICS$XUrbOutOfSample)
+    intPtsMICS$XRurOutOfSample = as.matrix(intPtsMICS$XRurOutOfSample)
+  }
+  intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
+  intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
   
   # put weight only on the simulated locations for both DHS and MICS data
-  intPtsMICS$wUrban[,-1] = 0
-  intPtsMICS$wUrban[,1] = 1
-  intPtsMICS$wRural[,-1] = 0
-  intPtsMICS$wRural[,1] = 1
+  intPtsDHS$wUrbanOutOfSample = intPtsDHS$wUrban[outOfSampleLIndsUrb2DHS,]
+  intPtsDHS$wRuralOutOfSample = intPtsDHS$wRural[outOfSampleLIndsRur2DHS,]
+  # intPtsDHS$wUrbanOutOfSample[,1] = 1
+  # intPtsDHS$wUrbanOutOfSample[,-1] = 0
+  # intPtsDHS$wRuralOutOfSample[,1] = 1
+  # intPtsDHS$wRuralOutOfSample[,-1] = 0
   
-  intPtsDHS$wUrban[,-1] = 0
-  intPtsDHS$wUrban[,1] = 1
-  intPtsDHS$wRural[,-1] = 0
-  intPtsDHS$wRural[,1] = 1
+  intPtsDHS$wUrban = intPtsDHS$wUrban[inSampleLIndsUrb2DHS,]
+  intPtsDHS$wRural = intPtsDHS$wRural[inSampleLIndsRur2DHS,]
+  # intPtsDHS$wUrban[,-1] = 0
+  # intPtsDHS$wUrban[,1] = 1
+  # intPtsDHS$wRural[,-1] = 0
+  # intPtsDHS$wRural[,1] = 1
+  
+  intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
+  intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
+  # intPtsMICS$wUrbanOutOfSample[,1] = 1
+  # intPtsMICS$wUrbanOutOfSample[,-1] = 0
+  # intPtsMICS$wRuralOutOfSample[,1] = 1
+  # intPtsMICS$wRuralOutOfSample[,-1] = 0
+  
+  intPtsMICS$wUrban = wUrban
+  intPtsMICS$wRural = wRural
+  # intPtsMICS$wUrban[,-1] = 0
+  # intPtsMICS$wUrban[,1] = 1
+  # intPtsMICS$wRural[,-1] = 0
+  # intPtsMICS$wRural[,1] = 1
   
   # set priors ----
   alpha_pri = c(0, 100^2)
@@ -851,6 +1083,30 @@ getValidationDataM_DM = function(fold) {
     options=0 # 1 for adreport of log tau and logit phi
   )
   
+  dataOutOfSample = list(
+    y_iUrbanDHS=ysUrbDHSoutOfSample, # same as above but for DHS survey
+    y_iRuralDHS=ysRurDHSoutOfSample, # 
+    n_iUrbanDHS=nsUrbDHSoutOfSample, # number binomial trials
+    n_iRuralDHS=nsRurDHSoutOfSample, # 
+    AprojUrbanDHS=AUrbDHSoutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralDHS=ARurDHSoutOfSample, # 
+    X_betaUrbanDHS=intPtsDHS$covsUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+    X_betaRuralDHS=intPtsDHS$covsRurOutOfSample, # 
+    wUrbanDHS=intPtsDHS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
+    wRuralDHS=intPtsDHS$wRuralOutOfSample, 
+    
+    y_iUrbanMICS=ysUrbMICSoutOfSample, # same as above but for MICS survey
+    y_iRuralMICS=ysRurMICSoutOfSample, # 
+    n_iUrbanMICS=nsUrbMICSoutOfSample, # number binomial trials
+    n_iRuralMICS=nsRurMICSoutOfSample, # 
+    AprojUrbanMICS=AUrbMICSOutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralMICS=ARurMICSOutOfSample, # 
+    X_betaUrbanMICS=intPtsMICS$XUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+    X_betaRuralMICS=intPtsMICS$XRurOutOfSample, # 
+    wUrbanMICS=intPtsMICS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
+    wRuralMICS=intPtsMICS$wRuralOutOfSample
+  )
+  
   # initial parameters
   initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
   initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
@@ -879,7 +1135,8 @@ getValidationDataM_DM = function(fold) {
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        edMICSInSample=edMICSInSample, edMICSOutOfSample=edMICSOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'))
+                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'), 
+       dataOutOfSample=dataOutOfSample)
 }
 
 # This function generates and saves all the validation datasets and input 
@@ -932,6 +1189,17 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   edMICSInSample = dat$edMICSInSample
   edOutOfSample = dat$edOutOfSample
   edMICSOutOfSample = dat$edMICSOutOfSample
+  dat$MakeADFunInputs$parameters <- list(alpha = -1.49, # intercept
+                       beta = c(.6, -.62, .19, .13, .12), 
+                       log_tau = log(1/.36), # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = logit(.52), # SPDE parameter related to the range
+                       log_tauEps = log(1/1.57), # Log tau (i.e. log spatial precision, Epsilon)
+                       Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+    )
   MakeADFunInputs = dat$MakeADFunInputs
   MakeADFunInputsFull = MakeADFunInputs
   MakeADFunInputsFull$random = NULL
@@ -1068,16 +1336,33 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
     }
     
     if(!SD0$pdHess) {
-      stop("Hessian not PD")
+      # stop("Hessian not PD")
+      warning("Hessian not PD...")
+      hessPD = FALSE
+    } else {
+      hessPD = TRUE
     }
     
     # save fit model before generating predictions
-    save(SD0, obj, objFull, totalTime, sdTime, file=paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
+    save(SD0, obj, objFull, totalTime, sdTime, hessPD, file=paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   } else {
     out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   }
   
-  list(SD0, obj, objFull, totalTime, sdTime)
+  # predict at the left out clusters
+  if(hessPD) {
+    preds = predClusters(nsim=1000, fold, SD0, obj, 
+                         model=model, 
+                         quantiles=c(0.025, 0.1, 0.9, 0.975))
+  } else {
+    preds = NULL
+  }
+  
+  save(SD0, obj, objFull, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
+  
+  allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE)
+  
+  list(SD0, obj, objFull, totalTime, sdTime, hessPD, allScores)
 }
 
 # make predictions for a set of clusters of one type (MICS or DHS)
@@ -1086,13 +1371,14 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
 # fold: cross validation fold from 1-20
 # ptType: The type of integration points. either MICS or DHS
 # model: which model we're making predictions with
-predClusters = function(nsim=1000, SD0, obj, fold, 
+predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
   
+  # set the file name root depending on the model
   fnameRoot = model
   if(fnameRoot == "MD") {
     fnameRoot = "M_D"
@@ -1100,11 +1386,240 @@ predClusters = function(nsim=1000, SD0, obj, fold,
     fnameRoot = "M_DM"
   }
   
-  # load relevant data and model fit
-  out = load(paste0("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
-  out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
+  # for loading the info for predicting at the left out data locations, if the 
+  # model doesn't use MICS data use the M_DM info to make the predictions for 
+  # curiosity's sake.
+  fnameRootLeftOut = ifelse(fnameRoot %in% c("Md", "M_D"), "M_DM", fnameRoot)
+  modelLeftOut = ifelse(fnameRoot %in% c("Md", "MD"), "MDM", model)
   
-  # generate predictions
+  # load relevant data and model fit
+  out = load(paste0("savedOutput/validation/dat", fnameRootLeftOut, ".RData", collapse=""))
+  leftOutDat = get(paste0("dat", modelLeftOut))[[fold]]$dataOutOfSample
+  out = load(paste0("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
+  load("~/git/jittering/savedOutput/validation/edMICSval.RData")
+  load("~/git/jittering/savedOutput/validation/edval.RData")
+  
+  varname = paste0("dat", model)
+  dat = get(varname)[[fold]]
+  
+  foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD")), 11, fold)
+  out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", foldMod, ".RData"))
+  
+  # generate predictions at the left out clusters
+  
+  # generate draws
+  rmvnorm_prec <- function(mu, chol_prec, n.sims) {
+    z <- matrix(rnorm(length(mu) * n.sims), ncol=n.sims)
+    L <- chol_prec #Cholesky(prec, super=TRUE)
+    z <- Matrix::solve(L, z, system = "Lt") ## z = Lt^-1 %*% z
+    z <- Matrix::solve(L, z, system = "Pt") ## z = Pt    %*% z
+    z <- as.matrix(z)
+    mu + z
+  }
+  
+  sigmaEpsSq_tmb_draws = NULL
+  if(SD0$pdHess) {
+    L <- Cholesky(SD0[['jointPrecision']], super = T)
+    mu = summary(SD0)[,1]
+    t.draws <- rmvnorm_prec(mu = mu , chol_prec = L, n.sims = nsim)
+    
+    # extract fixed effects and random effects from draws
+    parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
+    epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
+    alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
+    beta_tmb_draws    <- t.draws[parnames == 'beta',]
+    sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
+    phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
+    
+    fixedMat = rbind(alpha_tmb_draws, 
+                     beta_tmb_draws, 
+                     sigmaSq_tmb_draws, 
+                     phi_tmb_draws)
+    betaNames = colnames(obj$env$.data$X_betaUrbanDHS)
+    row.names(fixedMat) = c("(Int)", 
+                            betaNames, 
+                            "sigmaSq", 
+                            "phi")
+    
+    hasNugget = "log_tauEps" %in% row.names(summary(SD0))
+    if(hasNugget) {
+      sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
+      fixedMat = rbind(fixedMat, 
+                       sigmaEpsSq_tmb_draws)
+      row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+    }
+    
+    # Make parameter summary tables
+    parMeans = rowMeans(fixedMat)
+    parQuants = t(apply(fixedMat, 1, quantile, probs=quantiles))
+    parSummary = cbind(parMeans, parQuants)
+    colnames(parSummary)[1] = "Est"
+    colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
+    print(xtable(parSummary, digits=2))
+    
+    # add effects to predictions
+    if(fold <= 10) {
+      Aurb = leftOutDat$AprojUrbanDHS
+      Arur = leftOutDat$AprojRuralDHS
+      Xurb = leftOutDat$X_betaUrbanDHS
+      Xrur = leftOutDat$X_betaRuralDHS
+      wUrb = leftOutDat$wUrbanDHS
+      wRur = leftOutDat$wRuralDHS
+      yUrb = leftOutDat$y_iUrbanDHS
+      yRur = leftOutDat$y_iRuralDHS
+      nUrb = leftOutDat$n_iUrbanDHS
+      nRur = leftOutDat$n_iRuralDHS
+    } else {
+      Aurb = leftOutDat$AprojUrbanMICS
+      Arur = leftOutDat$AprojRuralMICS
+      Xurb = leftOutDat$X_betaUrbanMICS
+      Xrur = leftOutDat$X_betaRuralMICS
+      wUrb = leftOutDat$wUrbanMICS
+      wRur = leftOutDat$wRuralMICS
+      yUrb = leftOutDat$y_iUrbanMICS
+      yRur = leftOutDat$y_iRuralMICS
+      nUrb = leftOutDat$n_iUrbanMICS
+      nRur = leftOutDat$n_iRuralMICS
+    }
+    
+    # expand A matrices to size of Xmat (project to integration points instead of clusters)
+    Kurb = nrow(Xurb) / nrow(Aurb)
+    Krur = nrow(Xrur) / nrow(Arur)
+    bigAurb = matrix(rep(Aurb, times=Kurb), ncol=ncol(Aurb))
+    bigArur = matrix(rep(Arur, times=Krur), ncol=ncol(Arur))
+    
+    # get latent preds at cluster integration points
+    clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
+    clustIntDrawsUrb <- sweep(clustIntDrawsUrb, 2, alpha_tmb_draws, '+')
+    clustIntDrawsUrb <- clustIntDrawsUrb + (Xurb %*% beta_tmb_draws)
+    
+    clustIntDrawsRur <- as.matrix(bigArur %*% epsilon_tmb_draws)
+    clustIntDrawsRur <- sweep(clustIntDrawsRur, 2, alpha_tmb_draws, '+')
+    clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
+    
+    # convert predictions to probability scale
+    if(!hasNugget) {
+      probIntDrawsUrb = expit(clustIntDrawsUrb)
+      probIntDrawsRur = expit(clustIntDrawsRur)
+    }
+    else {
+      probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
+      probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
+    }
+    
+    # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)
+    # We will make block diagonal Wurb and Wrur matrices, where element ij is the integration weight for cluster i associated with integration point j
+    buildRowUrb = c(rep(1, Kurb), rep(0, nrow(Xurb)))
+    Wurb = matrix(c(rep(buildRowUrb, times=length(yUrb)-1), rep(1, Kurb)), byrow=TRUE, ncol=nrow(Xurb))
+    Wurb = sweep(Wurb, 2, c(t(wUrb)), FUN="*")
+    probDrawsUrb = Wurb %*% probIntDrawsUrb
+    
+    buildRowRur = c(rep(1, Krur), rep(0, nrow(Xrur)))
+    Wrur = matrix(c(rep(buildRowRur, times=length(yRur)-1), rep(1, Krur)), byrow=TRUE, ncol=nrow(Xrur))
+    Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
+    probDrawsRur = Wrur %*% probIntDrawsRur
+    
+    predsUrb = rowMeans(probDrawsUrb)
+    predsRur = rowMeans(probDrawsRur)
+    quantsUrb = apply(probDrawsUrb, 1, quantile, probs=quantiles, na.rm=TRUE)
+    quantsRur = apply(probDrawsRur, 1, quantile, probs=quantiles, na.rm=TRUE)
+  }
+  else {
+    # in the case that the hessian is not PD
+    stop("Hessian not PD")
+    browser()
+    Eps = SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
+    alpha = SD0$par.fixed[grepl("alpha", names(SD0$par.fixed))]
+    beta = SD0$par.fixed[grepl("beta", names(SD0$par.fixed))]
+    
+    # set "draws" to be just the fixed values
+    epsilon_tmb_draws = Eps
+    alpha_tmb_draws = alpha
+    beta_tmb_draws = beta
+    phi_tmb_draws = expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))])
+    sigmaSq_tmb_draws = 1/exp(SD0$par.fixed[grepl("log_tau", names(SD0$par.fixed))])
+    
+    # add effects to predictions
+    gridDraws_tmb <- Amat %*% Eps
+    gridDraws_tmb <- gridDraws_tmb + alpha
+    gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta)
+    
+    if(!hasNugget) {
+      probDraws = expit(gridDraws_tmb)
+    }
+    else {
+      tauEps = exp(SD0$par.fixed[grepl("log_tauEps", names(SD0$par.fixed))])
+      sigmaEps = 1/sqrt(tauEps)
+      probDraws = logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=FALSE)
+      
+      sigmaEpsSq_tmb_draws = sigmaEps^2
+    }
+    
+    preds = probDraws
+    quants = NULL
+  }
+  
+  list(probDrawsUrb, probDrawsRur, predsUrb, predsRur, 
+       quantsUrb, quantsRur, yUrb, yRur, nUrb, nRur)
 }
+
+scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenScores=FALSE) {
+  # clean input arguments
+  model = match.arg(model)
+  foldMICS = fold - 10
+  
+  # load in the data for the appropriate model
+  fnameRoot = model
+  if(fnameRoot == "MD") {
+    fnameRoot = "M_D"
+  } else if(fnameRoot == "MDM") {
+    fnameRoot = "M_DM"
+  }
+  
+  # load predictions
+  out = load(paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
+  # list(probDrawsUrb, probDrawsRur, predsUrb, predsRur, 
+  #      quantsUrb, quantsRur, yUrb, yRur, nUrb, nRur)
+  
+  if(!is.null(preds)) {
+    probDrawsUrb = preds$probDrawsUrb
+    predsUrb = preds$predsUrb
+    quantsUrb = preds$quantsUrb
+    yUrb = preds$yUrb
+    nUrb = preds$nUrb
+    probDrawsRur = preds$probDrawsRur
+    predsRur = preds$predsRur
+    quantsRur = preds$quantsRur
+    yRur = preds$yRur
+    nRur = preds$nRur
+    
+    # combine predictions from urban and rural areas
+    probDraws = c(probDrawsUrb, probDrawsRur)
+    preds = c(predsUrb, predsRur)
+    quants = c(quantsUrb, quantsRur)
+    ys = c(yUrb, yRur)
+    ns = c(nUrb, nRur)
+    
+    # calculate score
+    scoresUrb = getScores(truth=yUrb, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDrawsUrb, weights=nUrb, 
+                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+    scoresRur = getScores(truth=yRur, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDrawsRur, weights=nRur, 
+                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+    scores = getScores(truth=ys, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDraws, weights=ns, 
+                       significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+    
+    browser()
+    # add computation time
+  } else {
+    scoresUrb = NULL
+    scoresRur = NULL
+    scores = NULL
+  }
+  
+  save(scoresUrb, scoresRur, scores, preds, file=paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData"))
+  
+  invisible(NULL)
+}
+
 
 

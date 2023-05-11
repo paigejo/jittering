@@ -3,7 +3,8 @@
 source("setup.R")
 options(error=traceback)
 index = as.numeric(commandArgs(trailingOnly = TRUE)) # test with index == something
-# index=53
+# index=53 # i=4, j=11
+# index=43
 # i: 1-4 corresponding to M_d, M_D, M_dm, and M_DM
 # j: 1-11 for M_d and M_D and 1-20 for M_dm and M_DM
 jobInds = getJobIndices(index, maxJ=c(11, 11, 20, 20), rev=TRUE)
@@ -23,7 +24,7 @@ fold = j
 #       gc.profiling = TRUE, memory.profiling = TRUE)
 
 # p = profvis({
-system.time(out <- getValidationFit(fold, model, regenModFit=FALSE))
+system.time(out <- getValidationFit(fold, model, regenModFit=TRUE))
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
 
