@@ -1189,17 +1189,14 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   edMICSInSample = dat$edMICSInSample
   edOutOfSample = dat$edOutOfSample
   edMICSOutOfSample = dat$edMICSOutOfSample
-  dat$MakeADFunInputs$parameters <- list(alpha = -1.49, # intercept
-                       beta = c(.6, -.62, .19, .13, .12), 
-                       log_tau = log(1/.36), # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = logit(.52), # SPDE parameter related to the range
-                       log_tauEps = log(1/1.57), # Log tau (i.e. log spatial precision, Epsilon)
-                       Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-    )
+  
+  # set starting values to full M_DM optimum
+  dat$MakeADFunInputs$parameters$alpha = -1.49 # intercept
+  dat$MakeADFunInputs$parameters$beta = c(.6, -.62, .19, .13, .12)
+  dat$MakeADFunInputs$parameters$log_tau = log(1/.36) # Log tau (i.e. log spatial precision, Epsilon)
+  dat$MakeADFunInputs$parameters$logit_phi = logit(.52) # SPDE parameter related to the range
+  dat$MakeADFunInputs$parameters$log_tauEps = log(1/1.57) # Log tau (i.e. log spatial precision, Epsilon)
+  
   MakeADFunInputs = dat$MakeADFunInputs
   MakeADFunInputsFull = MakeADFunInputs
   MakeADFunInputsFull$random = NULL
