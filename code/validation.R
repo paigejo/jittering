@@ -1394,7 +1394,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   leftOutDat = get(paste0("dat", modelLeftOut))[[fold]]$dataOutOfSample
   out = load(paste0("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
   load("~/git/jittering/savedOutput/validation/edMICSval.RData")
-  load("~/git/jittering/savedOutput/validation/edval.RData")
+  load("~/git/jittering/savedOutput/validation/edVal.RData")
   
   varname = paste0("dat", model)
   dat = get(varname)[[fold]]
