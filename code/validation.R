@@ -1556,8 +1556,10 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     quants = NULL
   }
   
-  list(probDrawsUrb, probDrawsRur, predsUrb, predsRur, 
-       quantsUrb, quantsRur, yUrb, yRur, nUrb, nRur)
+  list(probDrawsUrb=probDrawsUrb, probDrawsRur=probDrawsRur, 
+       predsUrb=predsUrb, predsRur=predsRur, 
+       quantsUrb=quantsUrb, quantsRur=quantsRur, 
+       yUrb=yUrb, yRur=yRur, nUrb=nUrb, nRur=nRur)
 }
 
 scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenScores=FALSE) {

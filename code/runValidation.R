@@ -1,10 +1,11 @@
-# srun --partition=CPUQ --time=02:00:00 --mem-per-cpu=20000 --pty bash
+# srun --partition=CPUQ --time=02:00:00 --mem-per-cpu=10000 --pty bash
 
 source("setup.R")
 options(error=traceback)
 index = as.numeric(commandArgs(trailingOnly = TRUE)) # test with index == something
 # index=53 # i=4, j=11
 # index=43
+# index=41
 # i: 1-4 corresponding to M_d, M_D, M_dm, and M_DM
 # j: 1-11 for M_d and M_D and 1-20 for M_dm and M_DM
 jobInds = getJobIndices(index, maxJ=20, rev=TRUE)
