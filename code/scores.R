@@ -761,7 +761,7 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
   } else {
     thisIntScore = intScore[,grepl("intScore", colnames(intScore))]
     thisCoverage = intScore[,grepl("coverage", colnames(intScore))]
-    thisWidth = intScore[grepl("width", colnames(intScore))]
+    thisWidth = intScore[,grepl("width", colnames(intScore))]
   }
   
   # calculate CRPS
@@ -1251,9 +1251,9 @@ intervalScore = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL,
   
   if(returnCoverage) {
     if(getAverage) {
-      allResults = c(intScore=allResults, coverage=sum(cvg*weights, na.rm=na.rm))
+      allResults = c(allResults, coverage=sum(cvg*weights, na.rm=na.rm))
     } else {
-      allResults = cbind(intScore=allResults, coverage=cvg)
+      allResults = cbind(allResults, coverage=cvg)
     }
   }
   
