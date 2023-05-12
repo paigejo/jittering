@@ -1593,22 +1593,24 @@ scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenSc
     nRur = preds$nRur
     
     # combine predictions from urban and rural areas
-    probDraws = c(probDrawsUrb, probDrawsRur)
+    probDraws = rbind(probDrawsUrb, probDrawsRur)
     preds = c(predsUrb, predsRur)
     quants = c(quantsUrb, quantsRur)
     ys = c(yUrb, yRur)
     ns = c(nUrb, nRur)
     
     # calculate score
-    scoresUrb = getScores(truth=yUrb, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDrawsUrb, weights=nUrb, 
+    scoresUrb = getScores(truth=yUrb/nUrb, estMat=probDrawsUrb, weights=nUrb, 
                           significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
-    scoresRur = getScores(truth=yRur, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDrawsRur, weights=nRur, 
+    scoresRur = getScores(truth=yRur/nRur, estMat=probDrawsRur, weights=nRur, 
                           significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
-    scores = getScores(truth=ys, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=probDraws, weights=ns, 
+    scores = getScores(truth=ys/ns, estMat=probDraws, weights=ns, 
                        significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
     
-    browser()
     # add computation time
+    scoresUrb = cbind(scoresUrb, Time=totalTime/60)
+    scoresRur = cbind(scoresRur, Time=totalTime/60)
+    scores = cbind(scores, Time=totalTime/60)
   } else {
     scoresUrb = NULL
     scoresRur = NULL

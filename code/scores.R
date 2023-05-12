@@ -1251,9 +1251,9 @@ intervalScore = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL,
   
   if(returnCoverage) {
     if(getAverage) {
-      allResults = c(allResults, coverage=sum(cvg*weights, na.rm=na.rm))
+      allResults = c(intScore=allResults, coverage=sum(cvg*weights, na.rm=na.rm))
     } else {
-      allResults = cbind(allResults, coverage=cvg)
+      allResults = cbind(intScore=allResults, coverage=cvg)
     }
   }
   
