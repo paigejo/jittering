@@ -1390,7 +1390,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   # model doesn't use MICS data use the M_DM info to make the predictions for 
   # curiosity's sake.
   fnameRootLeftOut = ifelse(fnameRoot %in% c("Md", "M_D"), "M_DM", fnameRoot)
-  modelLeftOut = ifelse(fnameRoot %in% c("Md", "MD"), "MDM", model)
+  modelLeftOut = ifelse(fnameRoot %in% c("Md", "M_D"), "MDM", model)
   
   # load relevant data and model fit
   out = load(paste0("savedOutput/validation/dat", fnameRootLeftOut, ".RData", collapse=""))
