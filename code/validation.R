@@ -162,7 +162,11 @@ stratKdhs = function(K=10, seed=123) {
 # submodels of the BYM2 model
 
 getValidationDataM_d = function(fold, inSample=TRUE) {
-  # first load the DHS data
+  # load in the precomputed integration points
+  load("savedOutput/global/intPtsDHS.RData")
+  load("savedOutput/global/intPtsMICS.RData")
+  
+  # load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLInds = edVal$fold != fold
@@ -184,7 +188,7 @@ getValidationDataM_d = function(fold, inSample=TRUE) {
   
   # do some precomputation ----
   
-  # make integration points if necessary
+  # use integration points
   out = load("savedOutput/global/intPtsDHS.RData")
   
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
@@ -301,7 +305,11 @@ getValidationDataM_d = function(fold, inSample=TRUE) {
 }
 
 getValidationDataM_D = function(fold, inSample=TRUE) {
-  # first load the DHS data
+  # load in the precomputed integration points
+  load("savedOutput/global/intPtsDHS.RData")
+  load("savedOutput/global/intPtsMICS.RData")
+  
+  # load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLInds = edVal$fold != fold
@@ -323,9 +331,7 @@ getValidationDataM_D = function(fold, inSample=TRUE) {
   
   # do some precomputation ----
   
-  # make integration points if necessary
-  out = load("savedOutput/global/intPtsDHS.RData")
-  
+  # use integration points
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
@@ -433,7 +439,11 @@ getValidationDataM_D = function(fold, inSample=TRUE) {
 getValidationDataM_dm = function(fold) {
   foldMICS = fold - 10
   
-  # first load the DHS data
+  # load in the precomputed integration points
+  load("savedOutput/global/intPtsDHS.RData")
+  load("savedOutput/global/intPtsMICS.RData")
+  
+  # load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLIndsDHS = edVal$fold != fold
@@ -605,10 +615,10 @@ getValidationDataM_dm = function(fold) {
   ysRurMICS = edMICSInSample[!edMICSInSample$urban,]$ys
   nsRurMICS = edMICSInSample[!edMICSInSample$urban,]$ns
   
-  ysUrbMICSoutOfSample = edMICSOutOfSample$y[edMICSOutOfSample$urban]
-  ysRurMICSoutOfSample = edMICSOutOfSample$y[!edMICSOutOfSample$urban]
-  nsUrbMICSoutOfSample = edMICSOutOfSample$n[edMICSOutOfSample$urban]
-  nsRurMICSoutOfSample = edMICSOutOfSample$n[!edMICSOutOfSample$urban]
+  ysUrbMICSoutOfSample = edMICSOutOfSample$ys[edMICSOutOfSample$urban]
+  ysRurMICSoutOfSample = edMICSOutOfSample$ys[!edMICSOutOfSample$urban]
+  nsUrbMICSoutOfSample = edMICSOutOfSample$ns[edMICSOutOfSample$urban]
+  nsRurMICSoutOfSample = edMICSOutOfSample$ns[!edMICSOutOfSample$urban]
   
   # make sure A matrices are nArea x nObs, as TMB expects
   if(fold > 10) {
@@ -799,7 +809,11 @@ getValidationDataM_dm = function(fold) {
 getValidationDataM_DM = function(fold) {
   foldMICS = fold - 10
   
-  # first load the DHS data
+  # load in the precomputed integration points
+  load("savedOutput/global/intPtsDHS.RData")
+  load("savedOutput/global/intPtsMICS.RData")
+  
+  # load the DHS data
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLIndsDHS = edVal$fold != fold
@@ -971,8 +985,8 @@ getValidationDataM_DM = function(fold) {
   
   ysUrbMICSoutOfSample = edMICSOutOfSample$y[edMICSOutOfSample$urban]
   ysRurMICSoutOfSample = edMICSOutOfSample$y[!edMICSOutOfSample$urban]
-  nsUrbMICSoutOfSample = edMICSOutOfSample$n[edMICSOutOfSample$urban]
-  nsRurMICSoutOfSample = edMICSOutOfSample$n[!edMICSOutOfSample$urban]
+  nsUrbMICSoutOfSample = edMICSOutOfSample$ns[edMICSOutOfSample$urban]
+  nsRurMICSoutOfSample = edMICSOutOfSample$ns[!edMICSOutOfSample$urban]
   
   # make sure A matrices are nArea x nObs, as TMB expects
   if(fold > 10) {
@@ -1504,8 +1518,25 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       probIntDrawsRur = expit(clustIntDrawsRur)
     }
     else {
-      probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
-      probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
+      nClustUrb = nrow(clustIntDrawsUrb)/Kurb
+      nClustRur = nrow(clustIntDrawsRur)/Krur
+      clustIDUrb = rep(1:nClustUrb, Kurb)
+      clustIDRur = rep(1:nClustRur, Krur)
+      # probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
+      # probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
+      logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
+        thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
+        nugsUrb = rnorm(nClustUrb, sd=thisNuggetSD)
+        clustIntDrawsUrb[,colI] + rep(nugsUrb, times=Kurb)
+      })
+      probIntDrawsUrb = expit(logitIntDrawsUrb)
+      
+      logitIntDrawsRur = sapply(1:ncol(clustIntDrawsRur), function(colI) {
+        thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
+        nugsRur = rnorm(nClustRur, sd=thisNuggetSD)
+        clustIntDrawsRur[,colI] + rep(nugsRur, times=Krur)
+      })
+      probIntDrawsRur = expit(logitIntDrawsRur)
     }
     
     # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)
@@ -1643,11 +1674,33 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
     c(mean(x), sd(x), quantile(x, probs=quantiles))
   }
   
+  # calculate the fold weights (overall, urban, and rural)
+  # Note that the scores within each fold average have already been weighted by 
+  # the cluster ns so we just have to weight by the fold total ns here
+  out = load("savedOutput/validation/edVal.RData")
+  out = load("savedOutput/validation/edMICSval.RData")
+  weightsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
+  weightsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
+  weightsUrbDHS = aggregate(edVal$n[edVal$urban], by=list(fold=edVal$fold[edVal$urban]), FUN=sum)$x
+  weightsUrbMICS = aggregate(edMICSval$ns[edMICSval$urban], by=list(fold=edMICSval$fold[edMICSval$urban]), FUN=sum)$x
+  weightsRurDHS = aggregate(edVal$n[!edVal$urban], by=list(fold=edVal$fold[!edVal$urban]), FUN=sum)$x
+  weightsRurMICS = aggregate(edMICSval$ns[!edMICSval$urban], by=list(fold=edMICSval$fold[!edMICSval$urban]), FUN=sum)$x
+  weightsDHS = weightsDHS/sum(weightsDHS)
+  weightsUrbDHS = weightsUrbDHS/sum(weightsUrbDHS)
+  weightsRurDHS = weightsRurDHS/sum(weightsRurDHS)
+  weightsMICS = weightsMICS/sum(weightsMICS)
+  weightsUrbMICS = weightsUrbMICS/sum(weightsUrbMICS)
+  weightsRurMICS = weightsRurMICS/sum(weightsRurMICS)
+  
   # aggregate the results of all folds for each model
-  scoresTabs = list()
-  scoresTabsUrb = list()
-  scoresTabsRur = list()
-  fixedStatsTabs = list()
+  scoresTabsDHS = list()
+  scoresTabsUrbDHS = list()
+  scoresTabsRurDHS = list()
+  parTabsDHS = list()
+  scoresTabsMICS = list()
+  scoresTabsUrbMICS = list()
+  scoresTabsRurMICS = list()
+  parTabsMICS = list()
   for(i in 1:length(models)) {
     model = models[i]
     
@@ -1660,20 +1713,94 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
     }
     
     # collect the results over all folds
+    thisScoresTabDHS = list()
+    thisScoresTabUrbDHS = list()
+    thisScoresTabRurDHS = list()
+    thisParTabDHS = list()
+    thisScoresTabMICS = list()
+    thisScoresTabUrbMICS = list()
+    thisScoresTabRurMICS = list()
+    thisParTabMICS = list()
     for(j in 1:length(folds)) {
       fold = folds[j]
+      isMICS = j <= 10
       
       # load the scores
       out = load(paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData"))
+      out = load(paste0("~/git/jittering/savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
       
-      thisScoresTabs = rbind(thisScoresTabs, scores)
-      thisScoresTabsUrb = rbind(thisScoresTabsUrb, scoresUrb)
-      thisScoresTabsRur = rbind(thisScoresTabsRur, scoresRur)
-      thisFixedStatsTabs = apply(thisSummaryFun)
+      # calculate parameter summary statistics
+      foldParTab = t(apply(t(preds$fixedMat), 2, thisSummaryFun))
+      colnames(foldParTab) = c("Est", "SD", paste0("Q", quantiles*100))
+      
+      if(!isMICS) {
+        thisScoresTabDHS = rbind(thisScoresTabDHS, scores)
+        thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, scoresUrb)
+        thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, scoresRur)
+        
+        thisParTabDHS = c(thisParTabDHS, list(foldParTab))
+      } else {
+        thisScoresTabMICS = rbind(thisScoresTabMICS, scores)
+        thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, scoresUrb)
+        thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, scoresRur)
+        
+        thisParTabMICS = c(thisParTabMICS, list(foldParTab))
+      }
     }
-    scoresTabs
-    thisScoresTabsUrb
-    thisScoresTabsRur
+    scoresTabsDHS = c(scoresTabsDHS, list(thisScoresTabDHS))
+    scoresTabsUrbDHS = c(scoresTabsUrbDHS, list(thisScoresTabUrbDHS))
+    scoresTabsRurDHS = c(scoresTabsRurDHS, list(thisScoresTabRurDHS))
+    parTabsDHS = c(parTabsDHS, list(thisParTabDHS))
+    scoresTabsMICS = c(scoresTabsMICS, list(thisScoresTabMICS))
+    scoresTabsUrbMICS = c(scoresTabsUrbMICS, list(thisScoresTabUrbMICS))
+    scoresTabsRurMICS = c(scoresTabsRurMICS, list(thisScoresTabRurMICS))
+    parTabsMICS = c(parTabsMICS, list(thisParTabMICS))
   }
+  
+  # calculate averages
+  scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, function(x) {colSums(sweep(x, 1, weightsDHS, "*"))}))
+  scoresTabsUrbAvgDHS = do.call("rbind", lapply(scoresTabsUrbDHS, function(x) {colSums(sweep(x, 1, weightsUrbDHS, "*"))}))
+  scoresTabsRurAvgDHS = do.call("rbind", lapply(scoresTabsRurDHS, function(x) {colSums(sweep(x, 1, weightsRurDHS, "*"))}))
+  scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x, 1, weightsUrbMICS, "*"))}))
+  scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x, 1, weightsUrbMICS, "*"))}))
+  scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x, 1, weightsRurMICS, "*"))}))
+  
+  parTabsAvgDHS = lapply(parTabsDHS, function(x) {
+    rNames = row.names(x[[1]])
+    cNames = colnames(x[[1]])
+    x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
+    scoreArray = do.call("abind", list(x, along=3))
+    out = apply(scoreArray, 1:2, mean)
+    row.names(out) = rNames
+    colnames(out) = cNames
+    out
+  })
+  names(parTabsAvgDHS) = models
+  parTabsAvgMICS = lapply(parTabsMICS, function(x) {
+    rNames = row.names(x[[1]])
+    cNames = colnames(x[[1]])
+    x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
+    scoreArray = do.call("abind", list(x, along=3))
+    out = apply(scoreArray, 1:2, mean)
+    row.names(out) = rNames
+    colnames(out) = cNames
+    out
+  })
+  names(parTabsAvgMICS) = models
+  
+  parTabsAvg = lapply(1:length(models), function (i) {
+    rNames = row.names(parTabsAvgDHS[[1]])
+    cNames = colnames(parTabsAvgDHS[[1]])
+    thisParTab = abind(parTabsAvgDHS[[i]], parTabsAvgMICS[[i]], along=3)
+    thisParTab = apply(thisParTab, 1:2, mean)
+    
+    row.names(thisParTab) = rNames
+    colnames(thisParTab) = cNames
+    thisParTab
+  })
+  names(parTabsAvg) = models
+  
+  browser()
+  
 }
 
