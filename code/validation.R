@@ -1373,7 +1373,8 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
 # model: which model we're making predictions with
 predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM"), 
-                        quantiles=c(0.025, 0.1, 0.9, 0.975)) {
+                        quantiles=c(0.025, 0.1, 0.9, 0.975), 
+                        addBinVar=TRUE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1519,8 +1520,14 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
     probDrawsRur = Wrur %*% probIntDrawsRur
     
+    # calculate central prediction before binomial variation is added in
     predsUrb = rowMeans(probDrawsUrb)
     predsRur = rowMeans(probDrawsRur)
+    
+    # add in binomial variation
+    probDrawsUrb = addBinomialVar(probDrawsUrb, nUrb)
+    probDrawsRur = addBinomialVar(probDrawsRur, nRur)
+    
     quantsUrb = apply(probDrawsUrb, 1, quantile, probs=quantiles, na.rm=TRUE)
     quantsRur = apply(probDrawsRur, 1, quantile, probs=quantiles, na.rm=TRUE)
   }
@@ -1627,4 +1634,46 @@ scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenSc
 }
 
 
+# function for collecting validation results for each model
+validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
+  models=c("Md", "MD", "Mdm", "MDM")
+  folds = 1:20
+  
+  thisSummaryFun = function(x) {
+    c(mean(x), sd(x), quantile(x, probs=quantiles))
+  }
+  
+  # aggregate the results of all folds for each model
+  scoresTabs = list()
+  scoresTabsUrb = list()
+  scoresTabsRur = list()
+  fixedStatsTabs = list()
+  for(i in 1:length(models)) {
+    model = models[i]
+    
+    # get the file name root for the results of this model
+    fnameRoot = model
+    if(fnameRoot == "MD") {
+      fnameRoot = "M_D"
+    } else if(fnameRoot == "MDM") {
+      fnameRoot = "M_DM"
+    }
+    
+    # collect the results over all folds
+    for(j in 1:length(folds)) {
+      fold = folds[j]
+      
+      # load the scores
+      out = load(paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData"))
+      
+      thisScoresTabs = rbind(thisScoresTabs, scores)
+      thisScoresTabsUrb = rbind(thisScoresTabsUrb, scoresUrb)
+      thisScoresTabsRur = rbind(thisScoresTabsRur, scoresRur)
+      thisFixedStatsTabs = apply(thisSummaryFun)
+    }
+    scoresTabs
+    thisScoresTabsUrb
+    thisScoresTabsRur
+  }
+}
 
