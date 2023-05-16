@@ -1561,6 +1561,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   
   list(probDrawsUrb=probDrawsUrb, probDrawsRur=probDrawsRur, 
        predsUrb=predsUrb, predsRur=predsRur, 
+       parSummary=parSummary, fixedMat=fixedMat, 
        quantsUrb=quantsUrb, quantsRur=quantsRur, 
        yUrb=yUrb, yRur=yRur, nUrb=nUrb, nRur=nRur)
 }
