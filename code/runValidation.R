@@ -25,7 +25,8 @@ fold = j
 #       gc.profiling = TRUE, memory.profiling = TRUE)
 
 # p = profvis({
-randomBeta = ifelse(model=="MDM", TRUE, FALSE)
+# randomBeta = ifelse(model=="MDM", TRUE, FALSE)
+randomBeta = TRUE
 system.time(out <- getValidationFit(fold, model, regenModFit=TRUE, randomBeta=randomBeta))
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
