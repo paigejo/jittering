@@ -1162,7 +1162,7 @@ getAllValidationData = function(folds=1:20) {
   invisible(list(datMd, datMD, datMdm, datMDM))
 }
 
-getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit=FALSE) {
+getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit=FALSE, randomBeta=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1196,6 +1196,9 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   dat$MakeADFunInputs$parameters$log_tau = log(1/.36) # Log tau (i.e. log spatial precision, Epsilon)
   dat$MakeADFunInputs$parameters$logit_phi = logit(.52) # SPDE parameter related to the range
   dat$MakeADFunInputs$parameters$log_tauEps = log(1/1.57) # Log tau (i.e. log spatial precision, Epsilon)
+  if(randomBeta) {
+    dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+  }
   
   MakeADFunInputs = dat$MakeADFunInputs
   MakeADFunInputsFull = MakeADFunInputs

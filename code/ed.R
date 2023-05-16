@@ -5,7 +5,15 @@ out = load("savedOutput/global/ed.RData")
 out = load("savedOutput/global/edMICS.RData")
 
 # set parameters ----
-KMICS=25
+# Umut settings: 
+#   5 urban rings of 15 each (61 points total)
+#   10 rural rings of 15 each (136 points total)
+KMICS=100
+KDHSurb = 31 # 4 rings of 10 each
+JInnerUrban = 4
+KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
+JInnerRural = 4
+JOuterRural = 4
 
 if(FALSE) {
   # do some precomputation ----
@@ -13,7 +21,11 @@ if(FALSE) {
   # make integration points if necessary
   intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
                                             numPtsRur=KMICS, numPtsUrb=KMICS)
-  intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
+  # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
+  intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE, 
+                                          numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
+                                          JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
+                                          JOuterRural=JOuterRural)
   
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")

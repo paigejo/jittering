@@ -10,7 +10,7 @@
 #   urbanicity
 # Inputs:
 # setMissingToAvg: if TRUE, sets missing covariates average value in NGA (or to 0 if normalized==TRUE)
-getDesignMat = function(lonLatCoords, normalized=TRUE, stratifyPop=TRUE, 
+getDesignMat = function(lonLatCoords, normalized=TRUE, 
                         useThreshPopMat=TRUE, proj=projNigeria, testMode=FALSE, 
                         setMissingToAvg=TRUE) {
   
@@ -126,7 +126,7 @@ getDesignMat = function(lonLatCoords, normalized=TRUE, stratifyPop=TRUE,
 #   urbanicity
 # Inputs:
 # setMissingToAvg: if TRUE, sets missing covariates average value in NGA (or to 0 if normalized==TRUE)
-getDesignMatPopNorm = function(lonLatCoords, stratifyPop=TRUE, 
+getDesignMatPopNorm = function(lonLatCoords, 
                         useThreshPopMat=TRUE, proj=projNigeria, testMode=FALSE, 
                         setMissingToAvg=TRUE) {
   
