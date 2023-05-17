@@ -1541,14 +1541,28 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     
     # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)
     # We will make block diagonal Wurb and Wrur matrices, where element ij is the integration weight for cluster i associated with integration point j
-    buildRowUrb = c(rep(1, Kurb), rep(0, nrow(Xurb)))
-    Wurb = matrix(c(rep(buildRowUrb, times=length(yUrb)-1), rep(1, Kurb)), byrow=TRUE, ncol=nrow(Xurb))
-    Wurb = sweep(Wurb, 2, c(t(wUrb)), FUN="*")
+    # buildRowUrb = c(rep(1, Kurb), rep(0, nrow(Xurb)))
+    # Wurb = matrix(c(rep(buildRowUrb, times=length(yUrb)-1), rep(1, Kurb)), byrow=TRUE, ncol=nrow(Xurb))
+    # Wurb = sweep(Wurb, 2, c(t(wUrb)), FUN="*")
+    
+    buildMatUrb = rbind(c(wUrb), 
+                        matrix(0, ncol=Kurb*nrow(wUrb), nrow=nrow(wUrb)))
+    leaveOutInds = (length(buildMatUrb)-nrow(wUrb) + 1):length(buildMatUrb)
+    Wurb = matrix(c(buildMatUrb)[-leaveOutInds], nrow=nrow(wUrb))
+    zeroCols = seq(nrow(Wurb)+1, ncol(Wurb), by=nrow(Wurb)+1)
+    Wurb = Wurb[,-zeroCols]
     probDrawsUrb = Wurb %*% probIntDrawsUrb
     
-    buildRowRur = c(rep(1, Krur), rep(0, nrow(Xrur)))
-    Wrur = matrix(c(rep(buildRowRur, times=length(yRur)-1), rep(1, Krur)), byrow=TRUE, ncol=nrow(Xrur))
-    Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
+    # buildRowRur = c(rep(1, Krur), rep(0, nrow(Xrur)))
+    # Wrur = matrix(c(rep(buildRowRur, times=length(yRur)-1), rep(1, Krur)), byrow=TRUE, ncol=nrow(Xrur))
+    # Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
+    
+    buildMatRur = rbind(c(wRur), 
+                        matrix(0, ncol=Krur*nrow(wRur), nrow=nrow(wRur)))
+    leaveOutInds = (length(buildMatRur)-nrow(wRur) + 1):length(buildMatRur)
+    Wrur = matrix(c(buildMatRur)[-leaveOutInds], nrow=nrow(wRur))
+    zeroCols = seq(nrow(Wrur)+1, ncol(Wrur), by=nrow(Wrur)+1)
+    Wrur = Wrur[,-zeroCols]
     probDrawsRur = Wrur %*% probIntDrawsRur
     
     # calculate central prediction before binomial variation is added in
