@@ -537,9 +537,10 @@ getValidationDataM_dm = function(fold) {
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   AUrbMICS = makeApointToArea(edMICSInSample$Stratum[edMICSInSample$urban], admFinal$NAME_FINAL)
   numPerStratUrb = rowSums(AUrbMICS)
-  stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
-  obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
-  intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
+  # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
+  # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
+  # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
   XUrb = XUrb[stratIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
@@ -547,10 +548,11 @@ getValidationDataM_dm = function(fold) {
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   ARurMICS = makeApointToArea(edMICSInSample$Stratum[!edMICSInSample$urban], admFinal$NAME_FINAL)
   numPerStratRur = rowSums(ARurMICS)
-  stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
-  obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
-  intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  XRur = XRur[stratIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
+  # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
+  # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   
   # now do the same for the out of sample data if need be
   if(fold > 10) {
@@ -560,19 +562,21 @@ getValidationDataM_dm = function(fold) {
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     AUrbMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[edMICSOutOfSample$urban], admFinal$NAME_FINAL)
     numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
-    stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
-    obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
-    intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
-    XUrbOutOfSample = XUrbOutOfSample[stratIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
+    # obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
+    # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
+    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
+    XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], admFinal$NAME_FINAL)
     numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
-    stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
-    obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
-    intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
+    # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
+    # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
+    # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
+    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     XRurOutOfSample = XRurOutOfSample[stratIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
   }
   else {
@@ -905,20 +909,22 @@ getValidationDataM_DM = function(fold) {
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   AUrbMICS = makeApointToArea(edMICSInSample$Stratum[edMICSInSample$urban], admFinal$NAME_FINAL)
   numPerStratUrb = rowSums(AUrbMICS)
-  stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
-  obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
-  intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  XUrb = XUrb[stratIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
+  # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
+  # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   ARurMICS = makeApointToArea(edMICSInSample$Stratum[!edMICSInSample$urban], admFinal$NAME_FINAL)
   numPerStratRur = rowSums(ARurMICS)
-  stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
-  obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
-  intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  XRur = XRur[stratIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
+  # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
+  # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   
   # now do the same for the out of sample data if need be
   if(fold > 10) {
@@ -928,20 +934,22 @@ getValidationDataM_DM = function(fold) {
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     AUrbMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[edMICSOutOfSample$urban], admFinal$NAME_FINAL)
     numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
-    stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
-    obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
-    intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
-    XUrbOutOfSample = XUrbOutOfSample[stratIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
+    # obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
+    # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
+    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
+    XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], admFinal$NAME_FINAL)
     numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
-    stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
-    obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
-    intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
-    XRurOutOfSample = XRurOutOfSample[stratIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
+    # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
+    # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
+    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
+    XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
   }
   else {
     AUrbMICSOutOfSample = NULL

@@ -8,12 +8,18 @@ out = load("savedOutput/global/edMICS.RData")
 # Umut settings: 
 #   5 urban rings of 15 each (61 points total)
 #   10 rural rings of 15 each (136 points total)
-KMICS=100
-KDHSurb = 31 # 4 rings of 10 each
-JInnerUrban = 4
-KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
-JInnerRural = 4
-JOuterRural = 4
+# KMICS=100
+# KDHSurb = 31 # 4 rings of 10 each
+# JInnerUrban = 4
+# KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
+# JInnerRural = 4
+# JOuterRural = 4
+KMICS=25
+KDHSurb = 11 # 3 rings of 5 each
+JInnerUrban = 3
+KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+JInnerRural = 3
+JOuterRural = 1
 
 if(FALSE) {
   # do some precomputation ----
@@ -41,20 +47,22 @@ if(FALSE) {
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
   numPerStratUrb = rowSums(AUrbMICS)
-  stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
-  obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
-  intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  XUrb = XUrb[stratIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
+  # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
+  # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
   numPerStratRur = rowSums(ARurMICS)
-  stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
-  obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
-  intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  XRur = XRur[stratIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
+  # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
+  # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   
   # w matrices are nStrata x K. They should be nObs x K
   wUrban = intPtsMICS$wUrban
@@ -450,10 +458,13 @@ out = load("savedOutput/ed/admin2Preds.RData")
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=NULL, 
+          plotNameRoot="edFusionFull")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionTest", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionFull", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusion", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionFull", plotNameRootAreal="Admin2")
 
 

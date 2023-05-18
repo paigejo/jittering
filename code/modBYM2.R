@@ -395,15 +395,29 @@ plotPreds = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
   pdHess = gridPreds$pdHess
   
   # print parameter summary table
-  fixedMat = rbind(alphaDraws, 
-                   betaDraws, 
-                   sigmaSqDraws, 
-                   phiDraws)
-  betaNames = rep("beta", nrow(betaDraws))
-  row.names(fixedMat) = c("(Int)", 
-                          betaNames, 
-                          "sigmaSq", 
-                          "phi")
+  if(pdHess) {
+    fixedMat = rbind(alphaDraws, 
+                     betaDraws, 
+                     sigmaSqDraws, 
+                     phiDraws)
+    betaNames = rep("beta", nrow(betaDraws))
+    row.names(fixedMat) = c("(Int)", 
+                            betaNames, 
+                            "sigmaSq", 
+                            "phi")
+  } else {
+    fixedMat = matrix(c(alphaDraws, 
+                     betaDraws, 
+                     sigmaSqDraws, 
+                     phiDraws), ncol=1)
+    betaDraws = matrix(betaDraws, ncol=1)
+    betaNames = rep("beta", nrow(betaDraws))
+    row.names(fixedMat) = c("(Int)", 
+                            betaNames, 
+                            "sigmaSq", 
+                            "phi")
+  }
+  
   
   hasNugget = is.null(sigmaEpsSqDraws)
   if(hasNugget) {
@@ -420,7 +434,12 @@ plotPreds = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
   colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
   print(xtable(parSummary, digits=2))
   
-  preds = rowMeans(gridDraws, na.rm=TRUE)
+  if(pdHess) {
+    preds = rowMeans(gridDraws, na.rm=TRUE)
+  } else {
+    preds = gridDraws
+  }
+  
   
   predCols = makeBlueGreenYellowSequentialColors(64)
   quantCols = makePurpleYellowSequentialColors(64)
@@ -722,7 +741,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     alpha_tmb_draws = alpha
     beta_tmb_draws = beta
     phi_tmb_draws = expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))])
-    sigmaSq_tmb_draws = 1/exp(SD0$par.fixed[grepl("log_tau", names(SD0$par.fixed))])
+    sigmaSq_tmb_draws = 1/exp(SD0$par.fixed[names(SD0$par.fixed) == "log_tau"])
     
     # add effects to predictions
     gridDraws_tmb <- Amat %*% Eps
