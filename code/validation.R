@@ -87,7 +87,7 @@ stratKmics = function(K=10, seed=123) {
 # Inputs:
 # K: number of folds
 # seed: random number seed for reproducibility
-stratKdhs = function(K=10, seed=123) {
+stratKdhs = function(K=10, seed=12) {
   set.seed(seed)
   
   out = load("savedOutput/global/ed.RData")
@@ -541,7 +541,7 @@ getValidationDataM_dm = function(fold) {
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
   actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  XUrb = XUrb[stratIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
@@ -577,7 +577,7 @@ getValidationDataM_dm = function(fold) {
     # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
-    XRurOutOfSample = XRurOutOfSample[stratIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -1213,11 +1213,11 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   edMICSOutOfSample = dat$edMICSOutOfSample
   
   # set starting values to full M_DM optimum
-  dat$MakeADFunInputs$parameters$alpha = -1.49 # intercept
+  dat$MakeADFunInputs$parameters$alpha = -1.7905689 # intercept
   dat$MakeADFunInputs$parameters$beta = c(.6, -.62, .19, .13, .12)
-  dat$MakeADFunInputs$parameters$log_tau = log(1/.36) # Log tau (i.e. log spatial precision, Epsilon)
-  dat$MakeADFunInputs$parameters$logit_phi = logit(.52) # SPDE parameter related to the range
-  dat$MakeADFunInputs$parameters$log_tauEps = log(1/1.57) # Log tau (i.e. log spatial precision, Epsilon)
+  dat$MakeADFunInputs$parameters$log_tau = 0.6306069 # Log tau (i.e. log spatial precision, Epsilon)
+  dat$MakeADFunInputs$parameters$logit_phi = 2.4493192 # SPDE parameter related to the range
+  dat$MakeADFunInputs$parameters$log_tauEps = -0.4203604 # Log tau (i.e. log spatial precision, Epsilon)
   if(randomBeta) {
     dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
   }
