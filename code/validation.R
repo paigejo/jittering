@@ -6,7 +6,7 @@
 # Inputs:
 # K: number of folds
 # seed: random number seed for reproducibility
-stratKmics = function(K=10, seed=123) {
+stratKmics = function(K=10, seed=1234) {
   set.seed(seed)
   
   out = load("savedOutput/global/edMICS.RData")
@@ -73,6 +73,10 @@ stratKmics = function(K=10, seed=123) {
   edMICSval = edMICS
   edMICSval$fold = foldVec
   
+  # sort it by stratum
+  stratIDs = match(edMICSval$Stratum, admFinal$NAME_FINAL)
+  edMICSval = edMICSval[order(stratIDs),]
+  
   save(edMICSval, file="savedOutput/validation/edMICSval.RData")
   
   invisible(edMICSval)
@@ -87,7 +91,7 @@ stratKmics = function(K=10, seed=123) {
 # Inputs:
 # K: number of folds
 # seed: random number seed for reproducibility
-stratKdhs = function(K=10, seed=12) {
+stratKdhs = function(K=10, seed=1234) {
   set.seed(seed)
   
   out = load("savedOutput/global/ed.RData")
@@ -153,6 +157,10 @@ stratKdhs = function(K=10, seed=12) {
   
   edVal = ed
   edVal$fold = foldVec
+  
+  # sort it by stratum
+  # stratIDs = match(edVal$Stratum, admFinal$NAME_FINAL)
+  # edVal = edVal[order(stratIDs),]
   
   save(edVal, file="savedOutput/validation/edVal.RData")
   
@@ -596,22 +604,22 @@ getValidationDataM_dm = function(fold) {
   wRural = wRural[stratIndexRurW,]
   
   if(fold > 10) {
-    # Do the same with the out of sample observations
+    # Do the same with the out of sample MICS observations
     wUrbanOutOfSample = intPtsMICS$wUrban
     stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample))
-    wUrbanOutOfSample = wUrban[stratIndexUrbW,]
+    wUrbanOutOfSample = wUrbanOutOfSample[stratIndexUrbW,]
     
     wRuralOutOfSample = intPtsMICS$wRural
     stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample))
-    wRuralOutOfSample = wRural[stratIndexRurW,]
+    wRuralOutOfSample = wRuralOutOfSample[stratIndexRurW,]
   } else {
     wUrbanOutOfSample = NULL
     wRuralOutOfSample = NULL
   }
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
-  stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
-  edMICSInSample = edMICSInSample[order(stratIDs),]
+  # stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
+  # edMICSInSample = edMICSInSample[order(stratIDs),]
   
   # extract cluster information (in the correct order)
   ysUrbMICS = edMICSInSample[edMICSInSample$urban,]$ys
@@ -971,19 +979,19 @@ getValidationDataM_DM = function(fold) {
     # Do the same with the out of sample observations
     wUrbanOutOfSample = intPtsMICS$wUrban
     stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample))
-    wUrbanOutOfSample = wUrban[stratIndexUrbW,]
+    wUrbanOutOfSample = wUrbanOutOfSample[stratIndexUrbW,]
     
     wRuralOutOfSample = intPtsMICS$wRural
     stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample))
-    wRuralOutOfSample = wRural[stratIndexRurW,]
+    wRuralOutOfSample = wRuralOutOfSample[stratIndexRurW,]
   } else {
     wUrbanOutOfSample = NULL
     wRuralOutOfSample = NULL
   }
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
-  stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
-  edMICSInSample = edMICSInSample[order(stratIDs),]
+  # stratIDs = match(edMICSInSample$Stratum, admFinal$NAME_FINAL)
+  # edMICSInSample = edMICSInSample[order(stratIDs),]
   
   # extract cluster information (in the correct order)
   ysUrbMICS = edMICSInSample[edMICSInSample$urban,]$ys
@@ -1412,8 +1420,22 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   # for loading the info for predicting at the left out data locations, if the 
   # model doesn't use MICS data use the M_DM info to make the predictions for 
   # curiosity's sake.
-  fnameRootLeftOut = ifelse(fnameRoot %in% c("Md", "M_D"), "M_DM", fnameRoot)
-  modelLeftOut = ifelse(fnameRoot %in% c("Md", "M_D"), "MDM", model)
+  
+  if((fold <= 10) && (fnameRoot == "Md")) {
+    # for Md model, predict normally for DHS data, but use M_DM prediction info for MICS
+    fnameRootLeftOut = "Mdm"
+    modelLeftOut = "Mdm"
+  } else if(fnameRoot == "Md") {
+    fnameRootLeftOut = "M_DM"
+    modelLeftOut = "MDM"
+  } else if(fnameRoot == "M_D") {
+    # for MD model, use M_DM prediction info for both DHS and MICS
+    fnameRootLeftOut = "M_DM"
+    modelLeftOut = "MDM"
+  } else {
+    fnameRootLeftOut = fnameRoot
+    modelLeftOut = model
+  }
   
   # load relevant data and model fit
   out = load(paste0("savedOutput/validation/dat", fnameRootLeftOut, ".RData", collapse=""))
@@ -1521,6 +1543,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
     
     # convert predictions to probability scale
+    # browser()
     if(!hasNugget) {
       probIntDrawsUrb = expit(clustIntDrawsUrb)
       probIntDrawsRur = expit(clustIntDrawsRur)
@@ -1552,7 +1575,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # buildRowUrb = c(rep(1, Kurb), rep(0, nrow(Xurb)))
     # Wurb = matrix(c(rep(buildRowUrb, times=length(yUrb)-1), rep(1, Kurb)), byrow=TRUE, ncol=nrow(Xurb))
     # Wurb = sweep(Wurb, 2, c(t(wUrb)), FUN="*")
-    
+    # browser()
     buildMatUrb = rbind(c(wUrb), 
                         matrix(0, ncol=Kurb*nrow(wUrb), nrow=nrow(wUrb)))
     leaveOutInds = (length(buildMatUrb)-nrow(wUrb) + 1):length(buildMatUrb)
@@ -1619,6 +1642,33 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     quants = NULL
   }
   
+  browser()
+  if(FALSE) {
+    thisNs = c(nUrb, nRur)
+    thisTruth = c(yUrb, yRur)/thisNs
+    thisEstMat = rbind(probDrawsUrb, probDrawsRur)
+    thisWeights = thisNs/sum(thisNs)
+    theseScores = getScores(thisTruth, estMat=thisEstMat, weights=thisWeights, 
+                            significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
+                            getAverage=TRUE, na.rm=TRUE)
+    #          Bias       Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
+    # 1 -0.04969721 0.1036997 0.1061695 0.3258366 0.1793202        0.819808       0.9952007        1.035166        1.047229
+    #   Coverage50 Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95
+    # 1  0.3596456  0.6744459  0.8208786  0.8961908 0.4018325 0.6749564 0.7925829 0.8727094
+    
+    # i4, j11, current
+    #          Bias       Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
+    # 1 0.005108033 0.1014577 0.1014838 0.3185652 0.1800558       0.8058633       0.8776547       0.8773777       0.9649815
+    #   Coverage50 Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95
+    # 1  0.2946404  0.6378262  0.8295828  0.9208956 0.4337488 0.7400739 0.8589104 0.9280471
+    
+    # i3, j11, current
+    #          Bias       Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
+    # 1 0.002739965 0.1344116 0.1344191 0.3666321 0.2086547       0.9349913        1.161867        1.237347         1.16586
+    # Coverage50 Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95
+    # 1  0.3727854  0.6535637  0.7704153  0.8565431 0.4157941 0.7011344 0.8184991 0.8866274
+  }
+  
   list(probDrawsUrb=probDrawsUrb, probDrawsRur=probDrawsRur, 
        predsUrb=predsUrb, predsRur=predsRur, 
        parSummary=parSummary, fixedMat=fixedMat, 
@@ -1647,29 +1697,29 @@ scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenSc
   if(!is.null(preds)) {
     probDrawsUrb = preds$probDrawsUrb
     predsUrb = preds$predsUrb
-    quantsUrb = preds$quantsUrb
     yUrb = preds$yUrb
     nUrb = preds$nUrb
     probDrawsRur = preds$probDrawsRur
     predsRur = preds$predsRur
-    quantsRur = preds$quantsRur
     yRur = preds$yRur
     nRur = preds$nRur
     
     # combine predictions from urban and rural areas
     probDraws = rbind(probDrawsUrb, probDrawsRur)
     preds = c(predsUrb, predsRur)
-    quants = c(quantsUrb, quantsRur)
     ys = c(yUrb, yRur)
     ns = c(nUrb, nRur)
     
     # calculate score
     scoresUrb = getScores(truth=yUrb/nUrb, estMat=probDrawsUrb, weights=nUrb, 
-                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
+                          getAverage=TRUE, na.rm=TRUE, ns=nUrb)
     scoresRur = getScores(truth=yRur/nRur, estMat=probDrawsRur, weights=nRur, 
-                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
+                          getAverage=TRUE, na.rm=TRUE, ns=nRur)
     scores = getScores(truth=ys/ns, estMat=probDraws, weights=ns, 
-                       significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE)
+                       significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
+                       getAverage=TRUE, na.rm=TRUE, ns=ns)
     
     # add computation time
     scoresUrb = cbind(scoresUrb, Time=totalTime/60)
@@ -1745,7 +1795,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
     thisParTabMICS = list()
     for(j in 1:length(folds)) {
       fold = folds[j]
-      isMICS = j <= 10
+      isMICS = j > 10
       
       # load the scores
       out = load(paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData"))
@@ -1823,6 +1873,9 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   names(parTabsAvg) = models
   
   browser()
-  
+  #          Bias        Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
+  # 1 0.003537896 0.09405488 0.0940674 0.3067041 0.1726749       0.7729948       0.9801325        1.110449        1.239974
+  #   Coverage50 Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95
+  # 1  0.3782958  0.6722866  0.8125554  0.8765654 0.3623988 0.6269316 0.7425313 0.8279065
 }
 

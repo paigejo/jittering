@@ -625,8 +625,10 @@
 # breaks: the number of equal spaced bins to break the scores into as a function of distance
 # NOTE: Discrete, count level credible intervals are estimated based on the input estMat along with coverage and CRPS
 getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=NULL, weights=rep(1, length(truth)), 
-                     significance=.8, distances=NULL, breaks=30, doFuzzyReject=TRUE, getAverage=TRUE, 
+                     significance=.8, distances=NULL, breaks=30, doFuzzyReject=TRUE, getAverage=TRUE, ns=NULL, 
                      anyNAisNA=FALSE, returnNAs=FALSE, na.rm=FALSE, setInfToNA=FALSE, throwOutAllNAs=FALSE) {
+  
+  weights = weights*(1/sum(weights))
   
   if(setInfToNA) {
     naRows = !is.finite(truth)
@@ -676,9 +678,9 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
     }
     notNA = !naRows
     if(sum(naRows) > 0) {
-      out = getScores(truth[notNA], est[notNA], var[notNA], lower[notNA], upper[notNA], 
-                      estMat[notNA,], weights[notNA], significance, distances, breaks, doFuzzyReject, 
-                      getAverage, anyNAisNA=anyNAisNA, na.rm=na.rm)
+      out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA], lower=lower[notNA], upper=upper[notNA], 
+                      estMat=estMat[notNA,], weights=weights[notNA], significance=significance, distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject, 
+                      getAverage=getAverage, ns=ns[notNA], anyNAisNA=anyNAisNA, na.rm=na.rm)
       if(returnNAs) {
         return(c(out, list(naRows=naRows)))
       } else {
@@ -691,9 +693,11 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
     naRows = is.na(truth)
     notNA = !naRows
     
-    out = getScores(truth[notNA], est[notNA], var[notNA], lower[notNA], upper[notNA], 
-                    estMat[notNA,], weights[notNA], significance, distances, breaks, doFuzzyReject, 
-                    getAverage, anyNAisNA=anyNAisNA, na.rm=na.rm, setInfToNA=setInfToNA)
+    out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA], 
+                    lower=lower[notNA], upper=upper[notNA], ns=ns[notNA], 
+                    estMat=estMat[notNA,], weights=weights[notNA], significance=significance, 
+                    distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject, 
+                    getAverage=getAverage, anyNAisNA=anyNAisNA, na.rm=na.rm, setInfToNA=setInfToNA)
     if(returnNAs) {
       return(c(out, list(naRows=naRows)))
     } else {
@@ -715,19 +719,21 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
     weightPerBin = as.numeric(aggregate(weights, by=list(binsI=binsI), FUN=sum, na.rm=na.rm))
     browser() # check weightPerBin is correct and uniqueBinsI matches with it in binnedScores object
     # helper function to compute the scoring rules for a given bin
-    getSubScores = function(uniqueBinI, truth, est, var, lower, upper, estMat, weights, significance) {
+    getSubScores = function(uniqueBinI, truth, est, var, lower, upper, estMat, weights, ns) {
       thisDatI = binsI == uniqueBinI
       
       newEstMat = NULL
       if(!is.null(estMat))
         newEstMat = matrix(estMat[thisDatI,], ncol=ncol(estMat))
-      getScores(truth[thisDatI], est[thisDatI], var[thisDatI], lower[thisDatI], upper[thisDatI], 
-                newEstMat, weights[thisDatI], significance, doFuzzyReject=doFuzzyReject, anyNAisNA=anyNAisNA, na.rm=na.rm)
+      getScores(truth=truth[thisDatI], est=est[thisDatI], var=var[thisDatI], 
+                lower=lower[thisDatI], upper=upper[thisDatI], ns=ns[thisDatI], 
+                estMat=newEstMat, weights=weights[thisDatI], significance=significance, 
+                doFuzzyReject=doFuzzyReject, anyNAisNA=anyNAisNA, na.rm=na.rm)
     }
     
     # calculate scores for each bin individually
     binnedScores = t(sapply(uniqueBinsI, getSubScores, truth=truth, est=est, var=var, lower=lower, upper=upper, 
-                            estMat=estMat, weights=weights, significance=significance))
+                            estMat=estMat, weights=weights, ns=ns))
     
     # make sure each variable in binnedScores is a numeric, not a list...
     temp = matrix(unlist(binnedScores), nrow=length(uniqueBinsI))
@@ -752,7 +758,7 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
   # calculate coverage and credible interval width with and without binomial variation
   intScore = intervalScore(truth, est, var, lower, upper, estMat=estMat, 
                            significance=significance, returnIntervalWidth=TRUE, 
-                           returnCoverage=TRUE, weights=weights, 
+                           returnCoverage=TRUE, weights=weights, ns=ns, 
                            doFuzzyReject=doFuzzyReject, getAverage=getAverage, na.rm=na.rm)
   if(getAverage) {
     thisIntScore = intScore[grepl("intScore", names(intScore))]
