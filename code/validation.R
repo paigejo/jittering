@@ -1642,7 +1642,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     quants = NULL
   }
   
-  browser()
+  # browser()
   if(FALSE) {
     thisNs = c(nUrb, nRur)
     thisTruth = c(yUrb, yRur)/thisNs
