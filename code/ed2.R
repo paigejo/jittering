@@ -39,13 +39,18 @@ if(FALSE) {
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
+  AUrbDHS = makeApointToArea(ed$admin2[ed$urban], adm2$NAME_2) # 41 x 569 nStrat x nObsUrb
+  ARurDHS = makeApointToArea(ed$admin2[!ed$urban], adm2$NAME_2) # 41 x 810
+  
   # modify the integration points to be in the correct format for TMB
   
   # first extract only the relevant covariates
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
   stratUrb = XUrb$strat
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
+  # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
+  # TODO: EXTEND A TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
+  AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], adm2$NAME_2)
   numPerStratUrb = rowSums(AUrbMICS)
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
@@ -110,22 +115,22 @@ if(FALSE) {
   save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
        ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/edInputs.RData")
+       file="savedOutput/global/ed2Inputs.RData")
   
   # compile model ----
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget"))
-  compile( "code/modBYM2JitterFusionNugget.cpp")
+  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
+  compile( "code/modBYM2JitterFusionNugget2.cpp")
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edInputs.RData")
+out = load("savedOutput/global/ed2Inputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
 beta_pri = c(0, 10^2)
 
 out = load("savedOutput/global/admFinalMat.RData")
-bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
+bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                          constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
 lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for bym2 precision
 lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
@@ -143,7 +148,7 @@ data_full = list(
   y_iRuralMICS=ysRurMICS, # 
   n_iUrbanMICS=nsUrbMICS, # number binomial trials
   n_iRuralMICS=nsRurMICS, # 
-  AprojUrbanMICS=AUrbMICS, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
   AprojRuralMICS=ARurMICS, # 
   X_betaUrbanMICS=intPtsMICS$XUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
   X_betaRuralMICS=intPtsMICS$XRur, # 
@@ -154,7 +159,7 @@ data_full = list(
   y_iRuralDHS=ysRurDHS, # 
   n_iUrbanDHS=nsUrbDHS, # number binomial trials
   n_iRuralDHS=nsRurDHS, # 
-  AprojUrbanDHS=AUrbDHS, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
   AprojRuralDHS=ARurDHS, # 
   X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
   X_betaRuralDHS=intPtsDHS$covsRur, # 
@@ -234,9 +239,9 @@ obj <- MakeADFun(data=data_full,
                  hessian=TRUE,
                  DLL='modBYM2JitterFusionNugget')
 objFull <- MakeADFun(data=data_full,
-                 parameters=tmb_params,
-                 hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget')
+                     parameters=tmb_params,
+                     hessian=TRUE,
+                     DLL='modBYM2JitterFusionNugget')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -347,11 +352,11 @@ if(!SD0$pdHess) {
   map=list(factor(c(log_tauEps=NA)))
   names(map) = "log_tauEps"
   objFixed <- MakeADFun(data=data_full,
-                   parameters=tmb_params,
-                   random=rand_effs,
-                   map=map, 
-                   hessian=TRUE,
-                   DLL='modBYM2JitterFusionNugget')
+                        parameters=tmb_params,
+                        random=rand_effs,
+                        map=map, 
+                        hessian=TRUE,
+                        DLL='modBYM2JitterFusionNugget')
   testObj = objFixed
   thisOptPar = optPar[-which(names(optPar) == "log_tauEps")]
   lower = lower[-which(names(optPar) == "log_tauEps")]

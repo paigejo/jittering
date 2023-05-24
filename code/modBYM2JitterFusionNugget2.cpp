@@ -81,8 +81,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR( y_iRuralMICS );
   DATA_VECTOR( n_iUrbanMICS );   // Trials per cluster
   DATA_VECTOR( n_iRuralMICS );
-  DATA_MATRIX( AprojUrbanMICS ); // nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  DATA_MATRIX( AprojRuralMICS ); // nObsRural x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  DATA_MATRIX( AprojUrbanMICS ); // (nObsUrban * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
+  DATA_MATRIX( AprojRuralMICS ); // (nObsRural * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
   DATA_MATRIX( X_betaUrbanMICS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
   DATA_MATRIX( X_betaRuralMICS );  // first nObsRural rows correspond to first int pt
   DATA_ARRAY( wUrbanMICS ); // nObsUrban x nIntegrationPointsUrban weight matrix
@@ -92,8 +92,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR( y_iRuralDHS );
   DATA_VECTOR( n_iUrbanDHS );   // Trials per cluster
   DATA_VECTOR( n_iRuralDHS );
-  DATA_MATRIX( AprojUrbanDHS ); // nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  DATA_MATRIX( AprojRuralDHS ); // nObsRural x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  DATA_MATRIX( AprojUrbanDHS ); // (nObsUrban * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
+  DATA_MATRIX( AprojRuralDHS ); // (nObsRural * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
   DATA_MATRIX( X_betaUrbanDHS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
   DATA_MATRIX( X_betaRuralDHS );  // first nObsRural rows correspond to first int pt
   DATA_ARRAY( wUrbanDHS ); // nObsUrban x nIntegrationPointsUrban weight matrix
@@ -335,7 +335,7 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
-      latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI) + nuggetUrbMICS(obsI);
+      latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(thisIndex) + nuggetUrbMICS(obsI);
       // latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
       
       // and add data contribution to jnll
@@ -365,7 +365,7 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
-      latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI) + nuggetUrbDHS(obsI);
+      latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(thisIndex) + nuggetUrbDHS(obsI);
       // latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
       
       // and add data contribution to jnll
@@ -390,12 +390,12 @@ Type objective_function<Type>::operator() ()
   for (int obsI = 0; obsI < num_iRuralMICS; obsI++) {
     thislik = 0;
     
-      for (int intI = 0; intI < n_integrationPointsRuralMICS; intI++) {
+    for (int intI = 0; intI < n_integrationPointsRuralMICS; intI++) {
       thisIndex = num_iRuralMICS * intI + obsI;
       
       // latent field estimate at each obs
       // thisLatentField = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
-      latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI) + nuggetRurMICS(obsI);
+      latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(thisIndex) + nuggetRurMICS(obsI);
       // latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
       
       // and add data contribution to jnll
@@ -420,12 +420,12 @@ Type objective_function<Type>::operator() ()
   for (int obsI = 0; obsI < num_iRuralDHS; obsI++) {
     thislik = 0;
     
-      for (int intI = 0; intI < n_integrationPointsRuralDHS; intI++) {
+    for (int intI = 0; intI < n_integrationPointsRuralDHS; intI++) {
       thisIndex = num_iRuralDHS * intI + obsI;
       
       // latent field estimate at each obs
       // thisLatentField = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
-      latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI) + nuggetRurDHS(obsI);
+      latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(thisIndex) + nuggetRurDHS(obsI);
       // latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
       
       // and add data contribution to jnll

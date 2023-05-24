@@ -328,6 +328,10 @@ litMICSagg$ns = nsMICSagg$x
 
 edMICS = edMICSagg
 litMICS = litMICSagg
+
+stratIDs = match(edMICS$Stratum, admFinal$NAME_FINAL)
+edMICS = edMICS[order(stratIDs),]
+
 save(edMICS, file="savedOutput/global/edMICS.RData")
 save(litMICS, file="savedOutput/global/litMICS.RData")
 
@@ -1173,6 +1177,7 @@ save(popMeanCal, popMeanCalThresh, popSDCal, popSDCalThresh, file="savedOutput/g
 
 
 # Make polygon neighborhood graph objects for BYM2 model ----
+# MICS stratum level
 require(spdep)
 admFinalMat <- poly2nb(SpatialPolygons(admFinal@polygons))
 admFinalMat <- nb2mat(admFinalMat, zero.policy = TRUE)
@@ -1203,6 +1208,38 @@ pdf('figures/test/admFinal_neighb.pdf', height = 4, width = 4)
 dev.off()
 
 save(admFinalMat, file="savedOutput/global/admFinalMat.RData")
+
+# Admin2 level
+require(spdep)
+adm2Mat <- poly2nb(SpatialPolygons(adm2@polygons))
+adm2Mat <- nb2mat(adm2Mat, zero.policy = TRUE)
+colnames(adm2Mat) = adm2$NAME_FINAL
+
+cent <- getSpPPolygonsLabptSlots(adm2)
+cols <- rainbow(min(10,
+                    dim(adm2Mat)[1]))
+
+# plot neighborhood structure for testing
+pdf('figures/test/adm2_neighb.pdf', height = 4, width = 4)
+{
+  plot(adm2, col = cols, border = F, axes = F,)
+  for(i in 1:dim(cent)[1]){
+    neighbs <- which(adm2Mat[i,] != 0)
+    if(length(neighbs) != 0){
+      for(j in 1:length(neighbs)){
+        ends <- cent[neighbs,]
+        segments(x0 = cent[i, 1],
+                 y0 = cent[i, 2],
+                 x1 = cent[neighbs[j], 1],
+                 y1 = cent[neighbs[j], 2],
+                 col = 'black')
+      }
+    }
+  }
+}
+dev.off()
+
+save(adm2Mat, file="savedOutput/global/adm2Mat.RData")
 
 # EAs per area (No household per area info published) ----
 # apparently, average household size is 5.0 based on the 2017 MICS

@@ -203,7 +203,9 @@ getDesignMatPopNorm = function(lonLatCoords,
     }
     
     # normalize the population densities
-    out = load("savedOutput/global/popMeanSD.RData")
+    out = load("savedOutput/global/popMeanSDCal.RData")
+    popMean = ifelse(useThreshPopMat, popMeanCalThresh, popMeanCal)
+    popSD = ifelse(useThreshPopMat, popSDCalThresh, popSDCal)
     popVals = (log1p(popVals) - popMean)*(1/popSD)
   }
   

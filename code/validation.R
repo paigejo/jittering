@@ -244,8 +244,8 @@ getValidationDataM_d = function(fold, inSample=TRUE) {
   out = load("savedOutput/global/admFinalMat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-  lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
-  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -375,8 +375,8 @@ getValidationDataM_D = function(fold, inSample=TRUE) {
   out = load("savedOutput/global/admFinalMat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-  lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
-  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -715,8 +715,8 @@ getValidationDataM_dm = function(fold) {
   out = load("savedOutput/global/admFinalMat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-  lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for bym2 precision
-  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
   
   # Specify inputs for TMB ----
   
@@ -1067,8 +1067,8 @@ getValidationDataM_DM = function(fold) {
   out = load("savedOutput/global/admFinalMat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-  lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for bym2 precision
-  lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
   
   # Specify inputs for TMB ----
   
@@ -1871,6 +1871,28 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
     thisParTab
   })
   names(parTabsAvg) = models
+  
+  # take a weighted average of MICS and DHS scores by total people in datasets
+  nMICS = sum(edMICSval$ns)
+  nUrbMICS = sum(edMICSval$ns[edMICSval$urban])
+  nRurMICS = sum(edMICSval$ns[!edMICSval$urban])
+  nDHS = sum(edVal$n)
+  nUrbDHS = sum(edVal$n[edVal$urban])
+  nRurDHS = sum(edVal$n[!edVal$urban])
+  nTotal = nMICS + nDHS
+  nUrbTotal = nUrbMICS + nUrbDHS
+  nRurTotal = nRurMICS + nRurDHS
+  
+  wMICS = nMICS/nTotal
+  wDHS = nDHS/nTotal
+  wUrbMICS = nUrbMICS/nUrbTotal
+  wUrbDHS = nUrbDHS/nUrbTotal
+  wRurMICS = nRurMICS/nRurTotal
+  wRurDHS = nRurDHS/nRurTotal
+  
+  finalTabAvg = scoresTabsAvgDHS * wDHS + scoresTabsAvgMICS * wMICS
+  finalTabUrbAvg = scoresTabsUrbAvgDHS * wUrbDHS + scoresTabsUrbAvgMICS * wUrbMICS
+  finalTabRurAvg = scoresTabsRurAvgDHS * wRurDHS + scoresTabsRurAvgMICS * wRurMICS
   
   browser()
   #          Bias        Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95

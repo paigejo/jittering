@@ -430,7 +430,7 @@ updateWeightsByAdminArea = function(coords,
 #                         integration area
 #   popPrior: use population density as prior for updating weights if need be.
 #   setMissingToAvg: sets NA covariates to 0 if they are pop or urban or normalized
-makeAllIntegrationPointsDHS = function(coords, urbanVals, 
+makeAllIntegrationPointsDHSold = function(coords, urbanVals, 
                                     numPointsUrban=11, numPointsRural=16, 
                                     scalingFactor=1, 
                                     JInnerUrban=3, JOuterUrban=0, 
@@ -717,6 +717,257 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals,
   intPtsDHS
 }
 
+# construct integration points as well as weights. Same as makeAllIntegrationPointsDHSold, 
+# except makes covariates (population density in particular) in the same way as MICS
+# Output: 3 pairs of matrices of dimension nCoordsInStratum x nIntegrationPointsInStratum, 
+#         each pair contains one urban matrix and one equivalent rural matrix
+#   x: x/easting coordinates
+#   y: y/northing coordinates
+#   w: integration weights
+# Input: 
+#   coords: 2 column matrix of observation easting/northing coordinates
+#   urbanVals: vector of observation urbanicity classifications
+#   numPointsUrban: number of urban numerical integration points
+#   numPointsRural: number of rural numerical integration points
+#   scalingFactor: factor by which to scale the jittering distribution. 
+#                  1 corresponds to standard DHS jittering, larger than 1 
+#                  corresponds to more jittering than DHS
+#   JInnerUrban: number of inner integration rings for urban points
+#   JOuterUrban: number of outer integration rings for urban points
+#   JInnerRural: number of inner integration rings for rural points
+#   JOuterRural: number of outer integration rings for rural points
+#   integrationPointType: 'mean' is center of mass, 'midpoint' is the 
+#                         median angle and median radius within the 
+#                         integration area
+#   popPrior: use population density as prior for updating weights if need be.
+#   setMissingToAvg: sets NA covariates to 0 if they are pop or urban or normalized
+makeAllIntegrationPointsDHS = function(coords, urbanVals, 
+                                       numPointsUrban=11, numPointsRural=16, 
+                                       scalingFactor=1, 
+                                       JInnerUrban=3, JOuterUrban=0, 
+                                       JInnerRural=3, JOuterRural=1, 
+                                       integrationPointType=c("mean", "midpoint"), 
+                                       adminMap=admFinalFull, areaNameVar="NAME_FINAL", nSubAPerPoint=10, nSubRPerPoint=10, 
+                                       popPrior=TRUE, testMode=FALSE, proj=projNigeria, 
+                                       outFile="savedOutput/global/intPtsDHS.RData", 
+                                       getCovariates=TRUE, normalized=TRUE, useThreshPopMat=TRUE, 
+                                       extractMethod="bilinear", setMissingToAvg=TRUE) {
+  
+  # calculate integration points and weights relative to individual points
+  outUrban = getIntegrationPointsDHS(urban=TRUE, numPointsUrban, 
+                                     scalingFactor, 
+                                     JInnerUrban, JOuterUrban, 
+                                     integrationPointType, 
+                                     verbose=FALSE)
+  
+  outRural = getIntegrationPointsDHS(urban=FALSE, numPointsRural, 
+                                     scalingFactor, 
+                                     JInnerRural, JOuterRural, 
+                                     integrationPointType, 
+                                     verbose=FALSE)
+  
+  # concatenate integration points and weights into a single vector
+  xsUrbanVec = unlist(sapply(outUrban$pts, function(x) {x[,1]}))
+  ysUrbanVec = unlist(sapply(outUrban$pts, function(x) {x[,2]}))
+  wsUrbanVec = rep(outUrban$ws, outUrban$ms)
+  xsRuralVec = unlist(sapply(outRural$pts, function(x) {x[,1]}))
+  ysRuralVec = unlist(sapply(outRural$pts, function(x) {x[,2]}))
+  wsRuralVec = rep(outRural$ws, outRural$ms)
+  
+  # separate coordinates in urban and rural
+  coordsUrban = coords[urbanVals,]
+  coordsRural = coords[!urbanVals,]
+  nUrban = nrow(coordsUrban)
+  nRural = nrow(coordsRural)
+  
+  # calculate the six matrices
+  xUrban = outer(coordsUrban[,1], xsUrbanVec, "+")
+  yUrban = outer(coordsUrban[,2], ysUrbanVec, "+")
+  wUrban = matrix(wsUrbanVec, ncol=length(wsUrbanVec), nrow=nUrban, byrow=TRUE)
+  xRural = outer(coordsRural[,1], xsRuralVec, "+")
+  yRural = outer(coordsRural[,2], ysRuralVec, "+")
+  wRural = matrix(wsRuralVec, ncol=length(wsRuralVec), nrow=nRural, byrow=TRUE)
+  
+  if(!is.null(adminMap)) {
+    # if adminMap is input, integration weights will be adjusted using a much 
+    # finer "sub" integration grid
+    
+    # first subset jittered points that are close enough to the border to have 
+    # a possibility of being adjusted
+    
+    # determine if points are within max distance of admin area:
+    # first calculate max distance from admin area
+    maxUrbanDistance = 2 * scalingFactor
+    maxRuralDistance = 10 * scalingFactor
+    maxDist = rep(maxRuralDistance, nrow(coords))
+    maxDist[urbanVals] = maxUrbanDistance
+    
+    # determine what admin area each point is in
+    coordsLonLat = proj(coords, inverse=TRUE)
+    spCoordsLonLat = SpatialPoints(coordsLonLat, adminMap@proj4string)
+    temp = over(spCoordsLonLat, adminMap, returnList=FALSE)
+    nas = is.na(temp[[areaNameVar]])
+    
+    # calculate distances to admin boundaries for unknown points
+    adminMapPolygons = as.SpatialPolygons.PolygonsList(adminMap@polygons, adminMap@proj4string)
+    require(geosphere)
+    naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons)[4]})
+    adminID = rep(1, nrow(temp))
+    adminID[nas] = naClosestIDs
+    adminID[!nas] = match(temp[[areaNameVar]][!nas], adminMap[[areaNameVar]])
+    areas = adminMap[[areaNameVar]][adminID]
+    
+    # calculate distances to admin boundaries
+    dists = sapply(1:nrow(coords), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons[adminID[ind]])[1]}) * (1/1000)
+    
+    # set whether or not to update weights based on distance to admin boundaries
+    updateI = dists < maxDist
+    urbanUpdateI = updateI[urbanVals]
+    ruralUpdateI = updateI[!urbanVals]
+    
+    # calculate updated weights for the integration points near the borders
+    tempCoords = coords[updateI,]
+    tempUrbanVals = urbanVals[updateI]
+    require(fields)
+    
+    if(testMode) {
+      # in this case, we take only one set of coords that is very close to border, 
+      # and adjust its weight, saving relevant results for plotting
+      tempDists = dists[updateI]
+      closeCoords = which.min(tempDists)
+      smallTempCoords = matrix(tempCoords[closeCoords,], nrow=1)
+      smallTempUrbanVals = tempUrbanVals[closeCoords]
+      
+      tempNewWsForPlotting = updateWeightsByAdminArea(coords=smallTempCoords, urbanVals=smallTempUrbanVals, 
+                                                      adminMap=adminMap, 
+                                                      integrationPointsUrban=outUrban, 
+                                                      integrationPointsRural=outRural, 
+                                                      nSubAPerPoint=nSubAPerPoint, 
+                                                      nSubRPerPoint=nSubRPerPoint, 
+                                                      testMode=testMode)
+      
+      subPts = tempNewWsForPlotting$subPts
+      goodSubPts = tempNewWsForPlotting$goodPts
+      subWs = tempNewWsForPlotting$updatedSubWs
+      
+      if(smallTempUrbanVals) {
+        thisIntPts = outUrban
+        thisIntWs = tempNewWsForPlotting$wUrban
+      } else {
+        thisIntPts = outRural
+        thisIntWs = tempNewWsForPlotting$wRural
+      }
+      
+      return(list(centerCoords=smallTempCoords, isUrban=smallTempUrbanVals, 
+                  intPts=thisIntPts, intWs=thisIntWs, 
+                  subPts=subPts, goodSubPts=goodSubPts, subWs=subWs))
+    }
+    
+    tempNewWs = updateWeightsByAdminArea(coords=tempCoords, urbanVals=tempUrbanVals, 
+                                         adminMap=adminMap, 
+                                         integrationPointsUrban=outUrban, 
+                                         integrationPointsRural=outRural, 
+                                         nSubAPerPoint=nSubAPerPoint, 
+                                         nSubRPerPoint=nSubRPerPoint)
+    
+    # update the weights with the new values
+    wUrban[urbanUpdateI,] = tempNewWs$wUrban
+    wRural[ruralUpdateI,] = tempNewWs$wRural
+  }
+  else {
+    area = NULL
+  }
+  
+  if(popPrior || getCovariates) {
+    out = load("savedOutput/global/covariates.RData")
+    
+    # multiply weights by their associated populations and renormalize after
+    # xUrban and yUrban so they are [K x nObs] x 1 after c()
+    urbanPts = proj(cbind(c(xUrban), c(yUrban)), inverse=TRUE)
+    ruralPts = proj(cbind(c(xRural), c(yRural)), inverse=TRUE)
+    
+    spCoordsUrban = SpatialPoints(urbanPts, adminMap@proj4string)
+    spCoordsRural = SpatialPoints(ruralPts, adminMap@proj4string)
+    popValsUrb = extract(pop, spCoordsUrban, method=extractMethod)
+    popValsRur = extract(pop, spCoordsRural, method=extractMethod)
+    popValsUrb[is.na(popValsUrb)] = 0
+    popValsRur[is.na(popValsRur)] = 0
+  }
+  
+  # return list of all matrices
+  intPtsDHS = list(xUrban=xUrban, yUrban=yUrban, wUrban=wUrban, areasUrban=areas[urbanVals], 
+                   xRural=xRural, yRural=yRural, wRural=wRural, areasRural=areas[!urbanVals])
+  
+  popValsUrbOrig = popValsUrb
+  popValsRurOrig = popValsRur
+  if(getCovariates) {
+    covsUrb = getDesignMatPopNorm(spCoordsUrban@coords, useThreshPopMat=useThreshPopMat, 
+                                   proj=proj, testMode=testMode, setMissingToAvg=TRUE)
+    covsRur = getDesignMatPopNorm(spCoordsRural@coords, useThreshPopMat=useThreshPopMat, 
+                                   proj=proj, testMode=testMode, setMissingToAvg=TRUE)
+    
+    covsUrb = covsUrb[,c(1, 3, 4, 5, 6, 2)]
+    names(covsUrb)[2] = "urban"
+    
+    covsRur = covsRur[,c(1, 3, 4, 5, 6, 2)]
+    names(covsRur)[2] = "urban"
+    
+    # figure out what rows have NAs
+    naCovRowsUrb = apply(covsUrb, 1, anyNA)
+    naCovRowsRur = apply(covsRur, 1, anyNA)
+    
+    # make sure integration points correspond to the same urbanicity as the corresponding data
+    covsUrb[,2] = 1
+    covsRur[,2] = 0
+    
+    # make sure there are no NAs. They will be given zero weight anyway
+    covsUrb[is.na(covsUrb)] = 0
+    covsRur[is.na(covsRur)] = 0
+  }
+  else {
+    covsUrb = covsRur = NULL
+  }
+  
+  # adjust weights so that points with any NA covariates are given 0 weight
+  if(getCovariates) {
+    # make sure NA covariate values get 0 weight
+    notnaCovMatUrb = matrix(!naCovRowsUrb, nrow=nrow(xUrban), ncol=ncol(xUrban))
+    notnaCovMatRur = matrix(!naCovRowsRur, nrow=nrow(xRural), ncol=ncol(xRural))
+    mode(notnaCovMatUrb) = "numeric"
+    mode(notnaCovMatRur) = "numeric"
+    wUrban = wUrban * notnaCovMatUrb
+    wRural = wRural * notnaCovMatRur
+  }
+  
+  # multiply weights by population density prior and renormalize
+  if(popPrior) {
+    popMatUrban = matrix(popValsUrbOrig, nrow=nrow(xUrban), ncol=ncol(xUrban))
+    popMatRural = matrix(popValsRurOrig, nrow=nrow(xRural), ncol=ncol(xRural))
+    wUrbanTemp = wUrban * popMatUrban
+    wRuralTemp = wRural * popMatRural
+    rowSumsUrban = rowSums(wUrbanTemp)
+    rowSumsRural = rowSums(wRuralTemp)
+    
+    # just in case, only multiply weights by population density if it is nonzero for at least 1 int point
+    nonzeroRowsUrban = rowSumsUrban != 0
+    nonzeroRowsRural = rowSumsRural != 0
+    wUrban[nonzeroRowsUrban,] = sweep(wUrbanTemp[nonzeroRowsUrban,], 1, 1/rowSumsUrban[nonzeroRowsUrban], "*")
+    wRural[nonzeroRowsRural,] = sweep(wRuralTemp[nonzeroRowsRural,], 1, 1/rowSumsRural[nonzeroRowsRural], "*")
+    
+    intPtsDHS$wUrban = wUrban
+    intPtsDHS$wRural = wRural
+  }
+  
+  intPtsDHS$covsUrb = covsUrb
+  intPtsDHS$covsRur = covsRur
+  intPtsDHS$wUrban = wUrban
+  intPtsDHS$wRural = wRural
+  
+  save(intPtsDHS, file=outFile)
+  
+  intPtsDHS
+}
+
 # Inputs:
 #  integrationPointInfo: outfrom from makeAllIntegrationPoints
 #  ys: observation vector
@@ -869,8 +1120,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
   urb = fineIntPtsTab$urban
   ENCoords = cbind(fineIntPtsTab$east, fineIntPtsTab$north)
   
-  # add spatial coordinates as covariates if user requests
+  
   if(spatialAsCovariate) {
+    # add spatial coordinates as covariates if user requests
     if(is.null(domainDiameter)) {
       # adm0Boundary = gBoundary(adm0)
       # adm0BoundaryCoords = do.call("rbind", lapply(adm0Boundary@lines[[1]]@Lines, function(x) {x@coords}))
@@ -886,6 +1138,7 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     ENCoordsNorm = sweep(ENCoords, 2, colMeans(ENCoords), FUN="-")
     ENCoordsNorm = ENCoordsNorm * lambda
+    
     X = cbind(X, ENCoordsNorm)
   }
   
@@ -902,7 +1155,11 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     # do the weighted K-medoids (technically PAM): 
     # Maechler, M., P. Rousseeuw, A. Struyf, M. Hubert and K. Hornik (2011).
     # cluster: Cluster Analysis Basics and Extensions. R package version 1.14.1
-    XmatUrb = as.matrix(X)[urb,]
+    XmatUrb = matrix(unlist(X[urb,]), ncol=ncol(X))
+    # if(all(rep(t(XmatUrb)[,1], times=nrow(XmatUrb)) == c(t(XmatUrb)))) {
+    #   XmatUrb = cbind(XmatUrb, ENCoordsNorm[urb,])
+    # }
+      
     distMatUrb = rdist(XmatUrb, XmatUrb)
     medoidsUrb = wcKMedoids(distMatUrb^2, numPtsUrb, weights=pop[urb], method="PAM")
     medoidIUrb = medoidsUrb$clustering
@@ -922,7 +1179,11 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
   }
   
   if(nPtsRur > 0) {
-    XmatRur = as.matrix(X)[!urb,]
+    XmatRur = matrix(unlist(X[!urb,]), ncol=ncol(X))
+    # if(all(rep(t(XmatRur)[,1], times=nrow(XmatRur)) == c(t(XmatRur)))) {
+    #   XmatRur = cbind(XmatRur, ENCoordsNorm[!urb,])
+    # }
+    
     distMatRur = rdist(XmatRur, XmatRur)
     medoidsRur = wcKMedoids(distMatRur^2, numPtsRur, weights=pop[!urb], method="PAM")
     medoidIRur = medoidsRur$clustering
@@ -1208,7 +1469,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
 #   minDistRiverLakes
 # Inputs:
 # setMissingToAvg: if TRUE and normalized is TRUE, sets NA covariates to 0
-getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20, minPointsRur=20, 
+getFineIntPointsInfoMICSold = function(stratumName, kmresStart=2.5, minPointsUrb=20, minPointsRur=20, 
                                     stratumMICSMapDat=admFinalFull, stratumMICSNameVar="NAME_FINAL", 
                                     subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
                                     poppsub=poppsubNGAThresh, 
@@ -1478,6 +1739,229 @@ getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20
     popMean = ifelse(useThreshPopMat, popMeanCalThresh, popMeanCal)
     popSD = ifelse(useThreshPopMat, popSDCalThresh, popSDCal)
     out = cbind(out, normPop=(log1p(trueFinalPopVals)-popMeanCal)/popSDCal)
+  }
+  
+  out
+}
+
+# second version of getFineIntPointsInfoMICSold using same covariates scheme as DHS integration points
+# covariates include:
+#   intercept
+#   pop
+#   urb
+#   access
+#   elev
+#   minDistRiverLakes
+# Inputs:
+# setMissingToAvg: if TRUE and normalized is TRUE, sets NA covariates to 0
+getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20, minPointsRur=20, 
+                                    stratumMICSMapDat=admFinalFull, stratumMICSNameVar="NAME_FINAL", 
+                                    subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                    poppsub=poppsubNGAThresh, 
+                                    normalized=TRUE, useThreshPopMat=TRUE, 
+                                    proj=projNigeria, projArea=projNigeriaArea, 
+                                    testMode=FALSE, extractMethod="bilinear", 
+                                    setMissingToAvg=TRUE) {
+  
+  # get saved urbanicity and population integration matrix
+  if(useThreshPopMat) {
+    out = load("savedOutput/global/popMatNGAThresh.RData")
+    popMat = popMatNGAThresh
+  } else {
+    out = load("savedOutput/global/popMatNGA.RData")
+    popMat = popMatNGA
+  }
+  stratumPopMat = popMat[popMat$strat==stratumName,]
+  
+  # obtain the SpatialPolygon associated with this MICS stratum
+  stratPolygonI = which(stratumMICSMapDat@data[[stratumMICSNameVar]] == stratumName)
+  stratumMICSPolygons = SpatialPolygons(stratumMICSMapDat@polygons)
+  stratumMICSSpatialPolygon = stratumMICSPolygons[stratPolygonI]
+  stratumMICSPolygons@proj4string = stratumMICSMapDat@proj4string
+  stratumMICSSpatialPolygon@proj4string = stratumMICSMapDat@proj4string
+  
+  # get all subareas associated with this MICS stratum
+  allStrataMICS = getMICSstratumNigeria(poppsub$subarea, poppsub$area)
+  thisI = allStrataMICS == stratumName
+  thisPoppsub = poppsub[thisI,]
+  uniqueSubareas = thisPoppsub$subarea
+  
+  totalUrbPop = sum(thisPoppsub$popUrb)
+  totalRurPop = sum(thisPoppsub$popRur)
+  
+  # subset subareaMapDat to subareas in relevant MICS stratum only
+  subareaPolygons = SpatialPolygons(subareaMapDat@polygons)
+  subareaPolygonI = which(subareaMapDat@data[[subareaNameVar]] %in% uniqueSubareas)
+  thisSubareaPolygons = subareaPolygons[subareaPolygonI]
+  thisData = subareaMapDat@data[subareaPolygonI,]
+  thisSubareaMapDat = SpatialPolygonsDataFrame(thisSubareaPolygons, thisData)
+  
+  # subset grid so it's in the domain
+  # inDomain = in.poly(lonLatGrid, domainPoly)
+  # determine version of PROJ
+  ver = terra::gdal(lib="proj")
+  PROJ6 <- as.numeric(substr(ver, 1, 1)) >= 6
+  
+  # determine whether subareas have custom grid points
+  customGridPoints = logical(length(uniqueSubareas))
+  for(i in 1:length(uniqueSubareas)) {
+    thisSubarea = uniqueSubareas[i]
+    thisPopMat = stratumPopMat[stratumPopMat$subarea == thisSubarea,]
+    
+    # get number of urban and rural points in the subarea
+    thisNUrb = sum(thisPopMat$urban)
+    thisNRur = sum(!thisPopMat$urban)
+    
+    customGridPoints[i] = FALSE
+    if((thisNUrb == 1) && (thisNRur == 1)) {
+      urbPt = thisPopMat[thisPopMat$urban,]
+      rurPt = thisPopMat[!thisPopMat$urban,]
+      
+      if((urbPt$east == rurPt$east) && (urbPt$north == rurPt$north)) {
+        customGridPoints[i] = TRUE
+      }
+    }
+  }
+  
+  # from lon/lat coords to easting/northing
+  bbox = projNigeriaBBox(stratumMICSSpatialPolygon@bbox)
+  eastRange = sort(bbox[1,])
+  northRange = sort(bbox[2,])
+  kmres = kmresStart * 2
+  npUrb = 0
+  npRur = 0
+  while((npUrb < minPointsUrb) && (npRur < minPointsRur)) {
+    kmres = kmres/2
+    print(paste0("Constructing fine grid with resolution ", kmres))
+    eastPoints = seq(eastRange[1], eastRange[2], by=kmres)
+    northPoints = seq(northRange[1], northRange[2], by=kmres)
+    allPointsEN = make.surface.grid(list(east=eastPoints, north=northPoints))
+    allPointsLL = proj(allPointsEN, inverse=TRUE)
+    
+    # keep only points in the area of interest
+    if(!PROJ6) {
+      allPointsLLsp = sp::SpatialPoints(allPointsLL, sp::CRS("+proj=longlat"))
+    } else {
+      allPointsLLsp = sp::SpatialPoints(allPointsLL, sp::CRS(SRS_string="EPSG:4326"))
+    }
+    inArea = sp::over(allPointsLLsp, stratumMICSSpatialPolygon)
+    inArea = !is.na(inArea)
+    allPointsEN = allPointsEN[inArea,]
+    allPointsLL = allPointsLL[inArea,]
+    
+    # get subareas associated with the points (considering only subareas within 
+    # relevant MICS stratum)
+    theseSubareas = getRegion2(allPointsLL, mapDat=thisSubareaMapDat, nameVar=subareaNameVar)
+    theseSubareas = theseSubareas$regionNames
+    naSubs = is.na(theseSubareas)
+    
+    allPointsEN = allPointsEN[!naSubs,]
+    allPointsLL = allPointsLL[!naSubs,]
+    theseSubareas = theseSubareas[!naSubs]
+    
+    uniqueSubareas = sort(unique(theseSubareas))
+    
+    getPopMatIs = function(i) {
+      pts = allPointsEN[i,]
+      # thisSubarea = theseSubareas[i]
+      # thisPopMatI = which(stratumPopMat$subarea == thisSubarea)
+      thisPopMat = stratumPopMat #[thisPopMatI,]
+      # thisSubareaI = match(thisSubarea, uniqueSubareas)
+      
+      # dists = rdist(matrix(pts, ncol=2, cbind(thisPopMat$east, thisPopMat$north))
+      
+      # fullPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
+      closeE = (pts[1] > thisPopMat$east - 2.5) & (pts[1] <= thisPopMat$east + 2.5)
+      closeN = (pts[2] > thisPopMat$north - 2.5) & (pts[2] <= thisPopMat$north + 2.5)
+      closeI = closeE & closeN
+      
+      # there should be exactly 1 point we're closest to within this subarea
+      if(sum(closeI > 1)) {
+        stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      } else if(sum(closeI) == 0) {
+        # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+        
+        if(testMode) {
+          return(NA)
+        }
+        # this case should only happen at the edges, but just take closest point then
+        dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
+        # return(thisPopMatI[which.min(dists)])
+        which.min(dists)
+      } else {
+        # return(thisPopMatI[which(closeI)])
+        which(closeI)
+      }
+    }
+    
+    popMatIs = unlist(sapply(1:nrow(allPointsEN), getPopMatIs))
+    urbVals = stratumPopMat$urban[popMatIs]
+    
+    npUrb = sum(urbVals, na.rm=TRUE)
+    npRur = sum(!urbVals, na.rm=TRUE)
+    
+    print(paste0("Fine grid has ", npUrb, " and ", npRur,  " urban and rural points respectively"))
+    
+    if(totalUrbPop == 0) {
+      npUrb = minPointsUrb
+    }
+    if(totalRurPop == 0) {
+      npRur = minPointsRur
+    }
+  }
+  
+  adm2Vals = stratumPopMat$subarea[popMatIs]
+  
+  fineGridCoordsEN = allPointsEN
+  fineGridCoordsLL = allPointsLL
+  if(!PROJ6) {
+    fineGridCoordsLLsp = sp::SpatialPoints(fineGridCoordsLL, sp::CRS("+proj=longlat"))
+  } else {
+    fineGridCoordsLLsp = sp::SpatialPoints(fineGridCoordsLL, sp::CRS(SRS_string="EPSG:4326"))
+  }
+  
+  # NOTE: getDesignMat gets urbanicity from nearest popMat pixel, whereas urbanicity 
+  # in this case should be set based on nearest pixel IN THE STRATUM. So we must correct it
+  fineIntPtInfo = getDesignMat(fineGridCoordsLL, useThreshPopMat=useThreshPopMat, normalized=normalized, 
+                               proj=proj, testMode=testMode, setMissingToAvg=setMissingToAvg)[,-1]
+  fineIntPtInfo[,2] = urbVals
+  
+  finalPopMat = data.frame(east=fineGridCoordsEN[,1], north=fineGridCoordsEN[,2], 
+                           lon=fineGridCoordsLL[,1], lat=fineGridCoordsLL[,2], 
+                           pop=fineIntPtInfo[,1], urban=(fineIntPtInfo[,2]==1), 
+                           area=stratumPopMat$area[popMatIs], 
+                           subarea=adm2Vals, strat=stratumPopMat$strat[popMatIs], 
+                           popMatIs=which(popMat$strat==stratumName)[popMatIs])
+  
+  # remove NA covariate points and points with zero population, and, if there 
+  # aren't enough points, restart this function with finer resolution
+  naCovRowIs = apply(fineIntPtInfo, 1, anyNA) | (fineIntPtInfo[,1] == 0)
+  if(testMode) {
+    naCovRowIs[naCovRowIs] = FALSE
+    # just return the entire set of results, don't continue to make the grid finer
+  }
+  
+  # browser()
+  if(((sum(finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsUrb) && totalUrbPop > 0) || ((sum(!finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsRur) && totalRurPop > 0)) {
+    warning("NA covariates and zero pop points reduced number of urban and rural points to below minimum. Increasing resolution...")
+    
+    out = getFineIntPointsInfoMICS(stratumName=stratumName, kmresStart=kmres/2, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
+                                   stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
+                                   subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
+                                   poppsub=poppsub, 
+                                   normalized=normalized, useThreshPopMat=useThreshPopMat, 
+                                   proj=proj, projArea=projArea, extractMethod=extractMethod)
+  } else {
+    out = cbind(finalPopMat, int=1, access=fineIntPtInfo[,3], elev=fineIntPtInfo[,4], distRiversLakes=fineIntPtInfo[,5], urbanicity=fineIntPtInfo[,6])[!naCovRowIs,]
+    
+    # get normalized population density 
+    load("savedOutput/global/covariatesNorm.RData")
+    popVals = extract(pop, fineGridCoordsLLsp, method="bilinear")
+    
+    load("savedOutput/global/popMeanSDCal.RData")
+    popMean = ifelse(useThreshPopMat, popMeanCalThresh, popMeanCal)
+    popSD = ifelse(useThreshPopMat, popSDCalThresh, popSDCal)
+    out = cbind(out, normPop=(log1p(popVals[!naCovRowIs])-popMeanCal)/popSDCal)
   }
   
   out
