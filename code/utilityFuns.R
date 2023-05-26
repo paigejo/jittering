@@ -195,6 +195,98 @@ getRegion2 = function(pts, project=FALSE, mapDat=adm1compressed, nameVar="NAME_1
   list(regionID=regionID, regionNames=regionNameVec, multipleRegs=multipleRegs)
 }
 
+getRegionRobust = function(pts, mapDat=adm1, regionNameVar="NAME_1") {
+  spCoordsLonLat = SpatialPoints(pts, mapDat@proj4string)
+  temp = over(spCoordsLonLat, mapDat, returnList=FALSE)
+  nas = is.na(temp[[regionNameVar]])
+  
+  # calculate which distances to admin boundaries for unknown points are closest
+  mapDatPolygons = as.SpatialPolygons.PolygonsList(mapDat@polygons, mapDat@proj4string)
+  require(geosphere)
+  naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], mapDatPolygons)[4]})
+  
+  # set associated region to the closest one
+  regionID = rep(1, nrow(temp))
+  regionID[nas] = naClosestIDs
+  regionID[!nas] = match(temp[[regionNameVar]][!nas], mapDat[[regionNameVar]])
+  
+  # get the region names associated with the region IDs
+  regionNames = mapDat@data[[regionNameVar]][regionID]
+  
+  list(regionID=regionID, regionNames=regionNames)
+}
+
+# for computing subareas given what areas the given points are in. If a point 
+# isn't in any subarea, finds the closest subarea in its area
+# project: project to longitude/latitude coordinates
+# warningDist: if distance (in degrees) is above this value, produce a warning
+getSubareaRobust = function(pts, areas, subareaMapDat=adm2, 
+                            subareaNameVar="NAME_2", 
+                            areaNameVar="NAME_1", warningDist=.2) {
+  
+  subareaNames = subareaMapDat@data[[subareaNameVar]]
+  areaNames = subareaMapDat@data[[areaNameVar]]
+  
+  # make sure county names are consistent for mapDat == adm1
+  # regionNames[regionNames == "Elgeyo-Marakwet"] = "Elgeyo Marakwet"
+  # regionNames[regionNames == "Trans Nzoia"] = "Trans-Nzoia"
+  
+  # get region map polygons and set helper function for testing if pts are in the regions
+  polys = subareaMapDat@polygons
+  inSubarea = function(i) {
+    subareaPolys = polys[[i]]@Polygons
+    inside = sapply(1:length(subareaPolys), function(x) {in.poly(pts, subareaPolys[[x]]@coords, inflation=0)})
+    insideAny = apply(inside, 1, any)
+    return(insideAny*i)
+  }
+  out = sapply(1:length(polys), inSubarea)
+  multipleRegs = apply(out, 1, function(vals) {sum(vals != 0) > 1})
+  subareaID = apply(out, 1, function(vals) {match(1, vals != 0)})
+  subareaNameVec = subareaNames[subareaID]
+  
+  # check if any points are in the wrong area or not in any subareas. If there 
+  # are, match them to the closest possible subarea within the correct area.
+  outAreas = areaNames[match(subareaNameVec, subareaNames)]
+  badPts = is.na(subareaNameVec) | (outAreas != areas)
+  badPtDists = rep(0, sum(badPts))
+  if(any(badPts)) {
+    badIs = which(badPts)
+    
+    for(i in 1:length(badIs)) {
+      ind = badIs[i]
+      
+      # get the point and convert to SpatialPoint
+      thisPtSP = SpatialPoints(matrix(pts[ind,], nrow=1), proj4string=subareaMapDat@proj4string)
+      
+      # get the area associate with this point and the subareas it contains. 
+      # Subset the polygons to only be the ones associated with the correct area
+      thisArea = areas[ind]
+      subareaIs = which(areaNames == thisArea)
+      thisSubareas = subareaNames[subareaIs]
+      thisPolys = subareaMapDat@polygons[subareaIs]
+      
+      # determine which polygon is closest
+      dists = gDistance(thisPtSP, subareaMapDat, byid=TRUE)[subareaIs]
+      closestI = which.min(dists)
+      closestSubarea = thisSubareas[closestI]
+      badPtDists[i] = dists[closestI]
+      
+      # update outputs
+      subareaNameVec[ind] = closestSubarea
+      subareaID[ind] = which(subareaNames == closestSubarea)
+      multipleRegs[ind] = FALSE
+    }
+  }
+  
+  # produce warnings
+  warnIDs = which(badPtDists > warningDist)
+  if(length(warnIDs) > 0) {
+    warning(paste0("points ", paste(warnIDs, collapse=", "), " had dists ", paste(badPtDists[warnIDs], collapse=", "), " from nearest subareas"))
+  }
+  
+  list(regionID=subareaID, regionNames=subareaNameVec, multipleRegs=multipleRegs)
+}
+
 # for computing what administrative regions the given points are in
 # project: project to longitude/latitude coordinates
 getProvince = function(pts, project=FALSE) {

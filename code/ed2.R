@@ -28,10 +28,15 @@ if(FALSE) {
   intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
                                             numPtsRur=KMICS, numPtsUrb=KMICS)
   # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
-  intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE, 
+  # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE, 
+  #                                         numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
+  #                                         JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
+  #                                         JOuterRural=JOuterRural)
+  intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, 
+                                          areaNames=ed$subarea, popPrior=TRUE, 
                                           numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
                                           JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                          JOuterRural=JOuterRural)
+                                          JOuterRural=JOuterRural, adminMap=adm2Full)
   
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")
@@ -39,35 +44,34 @@ if(FALSE) {
   AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
-  AUrbDHS = makeApointToArea(ed$admin2[ed$urban], adm2$NAME_2) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(ed$admin2[!ed$urban], adm2$NAME_2) # 41 x 810
+  AUrbDHS = makeApointToArea(rep(ed$admin2[ed$urban], times=KDHSurb), adm2$NAME_2) # 41 x 569 nStrat x nObsUrb
+  ARurDHS = makeApointToArea(rep(ed$admin2[!ed$urban], times=KDHSrur), adm2$NAME_2) # 41 x 810
   
   # modify the integration points to be in the correct format for TMB
   
   # first extract only the relevant covariates
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
-  stratUrb = XUrb$strat
-  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
   # TODO: EXTEND A TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
-  AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], adm2$NAME_2)
-  numPerStratUrb = rowSums(AUrbMICS)
+  numPerStratUrb = table(edMICS$Stratum[edMICS$urban])
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
   actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
+  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
-  stratRur = XRur$strat
-  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
-  numPerStratRur = rowSums(ARurMICS)
+  # ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
+  numPerStratRur = table(edMICS$Stratum[!edMICS$urban])
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
+  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   # w matrices are nStrata x K. They should be nObs x K
   wUrban = intPtsMICS$wUrban

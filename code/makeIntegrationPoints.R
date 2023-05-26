@@ -291,7 +291,7 @@ getSubIntegrationPointsDHS = function(integrationPoints, centerCoords=cbind(0, 0
 updateWeightsByAdminArea = function(coords, 
                                     urbanVals, adminMap, 
                                     integrationPointsUrban, 
-                                    integrationPointsRural, 
+                                    integrationPointsRural, areas=NULL, 
                                     nSubAPerPoint=10, nSubRPerPoint=10, 
                                     testMode=FALSE, areaNameVar="NAME_FINAL", proj=projNigeria) {
   
@@ -320,10 +320,15 @@ updateWeightsByAdminArea = function(coords,
   # calculate distances to admin boundaries for unknown points
   adminMapPolygons = as.SpatialPolygons.PolygonsList(adminMap@polygons, adminMap@proj4string)
   require(geosphere)
-  naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons)[4]})
-  adminID = rep(1, nrow(temp))
-  adminID[nas] = naClosestIDs
-  adminID[!nas] = match(temp[[areaNameVar]][!nas], adminMap[[areaNameVar]])
+  if(is.null(areas)) {
+    naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons)[4]})
+    adminID = rep(1, nrow(temp))
+    adminID[nas] = naClosestIDs
+    adminID[!nas] = match(temp[[areaNameVar]][!nas], adminMap[[areaNameVar]])
+  } else {
+    adminID = match(areas, adminMap[[areaNameVar]])
+  }
+  
   
   # for each jittered coordinate:
   #   for each integration point:
@@ -727,6 +732,7 @@ makeAllIntegrationPointsDHSold = function(coords, urbanVals,
 # Input: 
 #   coords: 2 column matrix of observation easting/northing coordinates
 #   urbanVals: vector of observation urbanicity classifications
+#   areaNames: vector of areas associated with points (can only jitter within the same areas)
 #   numPointsUrban: number of urban numerical integration points
 #   numPointsRural: number of rural numerical integration points
 #   scalingFactor: factor by which to scale the jittering distribution. 
@@ -741,13 +747,13 @@ makeAllIntegrationPointsDHSold = function(coords, urbanVals,
 #                         integration area
 #   popPrior: use population density as prior for updating weights if need be.
 #   setMissingToAvg: sets NA covariates to 0 if they are pop or urban or normalized
-makeAllIntegrationPointsDHS = function(coords, urbanVals, 
+makeAllIntegrationPointsDHS = function(coords, urbanVals, areaNames=NULL, 
                                        numPointsUrban=11, numPointsRural=16, 
                                        scalingFactor=1, 
                                        JInnerUrban=3, JOuterUrban=0, 
                                        JInnerRural=3, JOuterRural=1, 
                                        integrationPointType=c("mean", "midpoint"), 
-                                       adminMap=admFinalFull, areaNameVar="NAME_FINAL", nSubAPerPoint=10, nSubRPerPoint=10, 
+                                       adminMap=adm2Full, areaNameVar="NAME_2", nSubAPerPoint=10, nSubRPerPoint=10, 
                                        popPrior=TRUE, testMode=FALSE, proj=projNigeria, 
                                        outFile="savedOutput/global/intPtsDHS.RData", 
                                        getCovariates=TRUE, normalized=TRUE, useThreshPopMat=TRUE, 
@@ -802,20 +808,28 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals,
     maxDist = rep(maxRuralDistance, nrow(coords))
     maxDist[urbanVals] = maxUrbanDistance
     
-    # determine what admin area each point is in
+    # get all points and map data in sp format
     coordsLonLat = proj(coords, inverse=TRUE)
     spCoordsLonLat = SpatialPoints(coordsLonLat, adminMap@proj4string)
+    adminMapPolygons = as.SpatialPolygons.PolygonsList(adminMap@polygons, adminMap@proj4string)
+    
+    # determine what admin area each point is in
     temp = over(spCoordsLonLat, adminMap, returnList=FALSE)
     nas = is.na(temp[[areaNameVar]])
     
     # calculate distances to admin boundaries for unknown points
-    adminMapPolygons = as.SpatialPolygons.PolygonsList(adminMap@polygons, adminMap@proj4string)
     require(geosphere)
     naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons)[4]})
     adminID = rep(1, nrow(temp))
     adminID[nas] = naClosestIDs
     adminID[!nas] = match(temp[[areaNameVar]][!nas], adminMap[[areaNameVar]])
-    areas = adminMap[[areaNameVar]][adminID]
+    
+    # set names of what area each point is in if need be
+    if(is.null(areaNames)) {
+      areas = adminMap[[areaNameVar]][adminID]
+    } else {
+      areas = areaNames
+    }
     
     # calculate distances to admin boundaries
     dists = sapply(1:nrow(coords), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons[adminID[ind]])[1]}) * (1/1000)
@@ -839,7 +853,8 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals,
       smallTempUrbanVals = tempUrbanVals[closeCoords]
       
       tempNewWsForPlotting = updateWeightsByAdminArea(coords=smallTempCoords, urbanVals=smallTempUrbanVals, 
-                                                      adminMap=adminMap, 
+                                                      adminMap=adminMap, areas=areas[which(updateI)[closeCoords]], 
+                                                      areaNameVar=areaNameVar, 
                                                       integrationPointsUrban=outUrban, 
                                                       integrationPointsRural=outRural, 
                                                       nSubAPerPoint=nSubAPerPoint, 
@@ -864,7 +879,8 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals,
     }
     
     tempNewWs = updateWeightsByAdminArea(coords=tempCoords, urbanVals=tempUrbanVals, 
-                                         adminMap=adminMap, 
+                                         adminMap=adminMap, areas=areas[updateI], 
+                                         areaNameVar=areaNameVar, 
                                          integrationPointsUrban=outUrban, 
                                          integrationPointsRural=outRural, 
                                          nSubAPerPoint=nSubAPerPoint, 
@@ -888,8 +904,8 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals,
     
     spCoordsUrban = SpatialPoints(urbanPts, adminMap@proj4string)
     spCoordsRural = SpatialPoints(ruralPts, adminMap@proj4string)
-    popValsUrb = extract(pop, spCoordsUrban, method=extractMethod)
-    popValsRur = extract(pop, spCoordsRural, method=extractMethod)
+    popValsUrb = terra::extract(pop, spCoordsUrban, method=extractMethod)
+    popValsRur = terra::extract(pop, spCoordsRural, method=extractMethod)
     popValsUrb[is.na(popValsUrb)] = 0
     popValsRur[is.na(popValsRur)] = 0
   }

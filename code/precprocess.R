@@ -472,6 +472,21 @@ ed$region = gpsDat$region[gpsI]
 tmp = projNigeria(ed$lon, ed$lat)
 ed$east = tmp[,1]
 ed$north = tmp[,2]
+
+# fix admin1 area names and add admin2 area
+library(tidyverse)
+actualAreas = str_to_title(ed$admin1)
+actualAreas[actualAreas == "Fct Abuja"] = "Federal Capital Territory"
+areas = getRegionRobust(cbind(ed$lon, ed$lat), mapDat=adm1Full, regionNameVar="NAME_1")
+any(is.na(match(actualAreas, adm1$NAME_1)))
+
+
+subareas = getRegion2(cbind(ed$lon, ed$lat), mapDat=adm2Full, nameVar="NAME_2")
+subareas = getSubareaRobust(cbind(ed$lon, ed$lat), actualAreas, subareaMapDat=adm2, 
+                            subareaNameVar="NAME_2", 
+                            areaNameVar="NAME_1")
+ed$area = actualAreas
+ed$subarea = subareas$regionNames
 save(ed, file="savedOutput/global/ed.RData")
 
 # Cleaning urban proportions ----

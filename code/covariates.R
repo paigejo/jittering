@@ -58,11 +58,11 @@ getDesignMat = function(lonLatCoords, normalized=TRUE,
     out = load("savedOutput/global/covariatesNorm.RData")
     # out = load("savedOutput/global/covariates.RData")
     
-    popVals = extract(pop, lonLatCoords, method="bilinear")
-    urbanicityVals = extract(urb, lonLatCoords, method="bilinear") # don't normalize urbanicity or population
-    accessVals = extract(accessNorm, lonLatCoords, method="bilinear")
-    elevVals = extract(elevNorm, lonLatCoords, method="bilinear")
-    distVals = extract(minDistRiverLakesNorm, lonLatCoords, method="bilinear")
+    popVals = terra::extract(pop, lonLatCoords, method="bilinear")
+    urbanicityVals = terra::extract(urb, lonLatCoords, method="bilinear") # don't normalize urbanicity or population
+    accessVals = terra::extract(accessNorm, lonLatCoords, method="bilinear")
+    elevVals = terra::extract(elevNorm, lonLatCoords, method="bilinear")
+    distVals = terra::extract(minDistRiverLakesNorm, lonLatCoords, method="bilinear")
     
     if(setMissingToAvg) {
       popNAs = is.na(popVals)
@@ -90,11 +90,11 @@ getDesignMat = function(lonLatCoords, normalized=TRUE,
   } else {
     out = load("savedOutput/global/covariates.RData")
     
-    popVals = extract(pop, lonLatCoords, method="bilinear")
-    urbanicityVals = extract(urb, lonLatCoords, method="bilinear")
-    accessVals = extract(access, lonLatCoords, method="bilinear")
-    elevVals = extract(elev, lonLatCoords, method="bilinear")
-    distVals = extract(minDistRiverLakes, lonLatCoords, method="bilinear")
+    popVals = terra::extract(pop, lonLatCoords, method="bilinear")
+    urbanicityVals = terra::extract(urb, lonLatCoords, method="bilinear")
+    accessVals = terra::extract(access, lonLatCoords, method="bilinear")
+    elevVals = terra::extract(elev, lonLatCoords, method="bilinear")
+    distVals = terra::extract(minDistRiverLakes, lonLatCoords, method="bilinear")
     
     if(setMissingToAvg) {
       popNAs = is.na(popVals)
@@ -173,11 +173,11 @@ getDesignMatPopNorm = function(lonLatCoords,
   out = load("savedOutput/global/covariatesNorm.RData")
   # out = load("savedOutput/global/covariates.RData")
   
-  popVals = extract(pop, lonLatCoords, method="bilinear")
-  urbanicityVals = extract(urb, lonLatCoords, method="bilinear") # don't normalize urbanicity or population
-  accessVals = extract(accessNorm, lonLatCoords, method="bilinear")
-  elevVals = extract(elevNorm, lonLatCoords, method="bilinear")
-  distVals = extract(minDistRiverLakesNorm, lonLatCoords, method="bilinear")
+  popVals = terra::extract(pop, lonLatCoords, method="bilinear")
+  urbanicityVals = terra::extract(urb, lonLatCoords, method="bilinear") # don't normalize urbanicity or population
+  accessVals = terra::extract(accessNorm, lonLatCoords, method="bilinear")
+  elevVals = terra::extract(elevNorm, lonLatCoords, method="bilinear")
+  distVals = terra::extract(minDistRiverLakesNorm, lonLatCoords, method="bilinear")
   
   if(setMissingToAvg) {
     popNAs = is.na(popVals)
