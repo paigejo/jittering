@@ -49,7 +49,7 @@ if(FALSE) {
   # compile model ----
   dyn.unload( dynlib("code/modBYM2JitterDHS2"))
   compile( "code/modBYM2JitterDHS2.cpp", 
-           framework="TMBad", safebounds=FALSE)
+           framework="TMBad", safebounds=TRUE)
   # compile("code/modBYM2JitterDHS.cpp","-O0 -g") # for using gbdsource
 }
 

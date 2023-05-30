@@ -1460,7 +1460,7 @@ getValidationFit = function(fold,
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
     TMB::config(tmbad.sparse_hessian_compress = 1)
-    # browser()
+    
     if(FALSE) {
       dimLen = function(x) {
         out = dim(x)
@@ -1497,7 +1497,7 @@ getValidationFit = function(fold,
       
       head(tempDataFull$X_betaUrbanMICS)
     }
-    browser()
+    
     # Error in getParameterOrder(data, parameters, new.env(), DLL = DLL) : 
     #   Error when reading the variable: 'AprojUrbanDHS'. Please check data and parameters.
     obj <- do.call("MakeADFun", MakeADFunInputs)
@@ -1766,8 +1766,13 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # expand A matrices to size of Xmat (project to integration points instead of clusters)
     Kurb = nrow(Xurb) / nrow(Aurb)
     Krur = nrow(Xrur) / nrow(Arur)
-    bigAurb = matrix(rep(Aurb, times=Kurb), ncol=ncol(Aurb))
-    bigArur = matrix(rep(Arur, times=Krur), ncol=ncol(Arur))
+    if(model %in% c("Md", "MD", "Mdm", "MDM")) {
+      bigAurb = matrix(rep(Aurb, times=Kurb), ncol=ncol(Aurb))
+      bigArur = matrix(rep(Arur, times=Krur), ncol=ncol(Arur))
+    } else {
+      bigAurb = Aurb
+      bigArur = Arur
+    }
     
     # get latent preds at cluster integration points
     clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
@@ -1912,7 +1917,9 @@ predClusters = function(nsim=1000, fold, SD0, obj,
        yUrb=yUrb, yRur=yRur, nUrb=nUrb, nRur=nRur)
 }
 
-scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenScores=FALSE) {
+scoreValidationPreds = function(fold, 
+                                model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
+                                regenScores=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1923,6 +1930,10 @@ scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenSc
     fnameRoot = "M_D"
   } else if(fnameRoot == "MDM") {
     fnameRoot = "M_DM"
+  } else if(fnameRoot == "MD2") {
+    fnameRoot = "M_D2"
+  } else if(fnameRoot == "MDM2") {
+    fnameRoot = "M_DM2"
   }
   
   # load predictions
@@ -1975,7 +1986,8 @@ scoreValidationPreds = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenSc
 
 # function for collecting validation results for each model
 validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
-  models=c("Md", "MD", "Mdm", "MDM")
+  # models=c("Md", "MD", "Mdm", "MDM")
+  models=c("Md2", "MD2", "Mdm2", "MDM2")
   folds = 1:20
   
   thisSummaryFun = function(x) {
@@ -2018,6 +2030,10 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
       fnameRoot = "M_D"
     } else if(fnameRoot == "MDM") {
       fnameRoot = "M_DM"
+    } else if(fnameRoot == "MD2") {
+      fnameRoot = "M_D2"
+    } else if(fnameRoot == "MDM2") {
+      fnameRoot = "M_DM2"
     }
     
     # collect the results over all folds
