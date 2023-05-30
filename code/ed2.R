@@ -139,11 +139,11 @@ if(FALSE) {
   
   # compile model ----
   dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad")
+  compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
   dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
   compile( "code/modBYM2JitterFusionNugget2.cpp", 
-           framework="TMBad", safebounds=FALSE)
+           framework="TMBad", safebounds=TRUE)
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterFusionNugget2  -DTMB_LIB_INIT=R_init_modBYM2JitterFusionNugget2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterFusionNugget2.cpp -o code/modBYM2JitterFusionNugget2.o
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterFusionNugget2.so code/modBYM2JitterFusionNugget2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
 }
