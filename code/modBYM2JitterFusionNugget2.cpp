@@ -173,11 +173,11 @@ Type objective_function<Type>::operator() ()
   //vector<Type> latent_field_iUrban(num_iUrban);
   //vector<Type> latent_field_iRural(num_iRural);
   // value of gmrf at data points
-  vector<Type> projepsilon_iUrbanMICS(num_iUrbanMICS);
-  vector<Type> projepsilon_iRuralMICS(num_iRuralMICS);
+  vector<Type> projepsilon_iUrbanMICS(num_iUrbanMICS * n_integrationPointsUrbanMICS);
+  vector<Type> projepsilon_iRuralMICS(num_iRuralMICS * n_integrationPointsRuralMICS);
   
-  vector<Type> projepsilon_iUrbanDHS(num_iUrbanDHS);
-  vector<Type> projepsilon_iRuralDHS(num_iRuralDHS);
+  vector<Type> projepsilon_iUrbanDHS(num_iUrbanDHS * n_integrationPointsUrbanDHS);
+  vector<Type> projepsilon_iRuralDHS(num_iRuralDHS * n_integrationPointsRuralDHS);
   
   // linear combination of fixed effects
   // fe_iUrbanMICS = X_betaUrbanMICS * beta + alpha; // initialize
@@ -315,10 +315,15 @@ Type objective_function<Type>::operator() ()
   // (3) //
   /////////
   // jnll contribution from each datapoint i
-  vector<Type> latentFieldUrbMICS(num_iUrbanMICS * n_integrationPointsUrbanMICS);
-  vector<Type> latentFieldUrbDHS(num_iUrbanDHS * n_integrationPointsUrbanDHS);
-  vector<Type> latentFieldRurMICS(num_iRuralMICS * n_integrationPointsRuralMICS);
-  vector<Type> latentFieldRurDHS(num_iRuralDHS * n_integrationPointsRuralDHS);
+  // vector<Type> latentFieldUrbMICS(num_iUrbanMICS * n_integrationPointsUrbanMICS);
+  // vector<Type> latentFieldUrbDHS(num_iUrbanDHS * n_integrationPointsUrbanDHS);
+  // vector<Type> latentFieldRurMICS(num_iRuralMICS * n_integrationPointsRuralMICS);
+  // vector<Type> latentFieldRurDHS(num_iRuralDHS * n_integrationPointsRuralDHS);
+  vector<Type> latentFieldUrbMICS = fe_iUrbanMICS + projepsilon_iUrbanMICS;
+  vector<Type> latentFieldUrbDHS = fe_iUrbanDHS + projepsilon_iUrbanDHS;
+  vector<Type> latentFieldRurMICS = fe_iRuralMICS + projepsilon_iRuralMICS;
+  vector<Type> latentFieldRurDHS = fe_iRuralDHS + projepsilon_iRuralDHS;
+  
   int thisIndex;
   // Type thisLatentField;
   Type thisWeight;
@@ -335,8 +340,9 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
-      latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(thisIndex) + nuggetUrbMICS(obsI);
+      // latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(thisIndex) + nuggetUrbMICS(obsI);
       // latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
+      latentFieldUrbMICS(thisIndex) += nuggetUrbMICS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
@@ -354,7 +360,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iUrbanDHS; obsI++) {
@@ -365,8 +373,9 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
-      latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(thisIndex) + nuggetUrbDHS(obsI);
+      // latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(thisIndex) + nuggetUrbDHS(obsI);
       // latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
+      latentFieldUrbDHS(thisIndex) += nuggetUrbDHS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
@@ -384,7 +393,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iRuralMICS; obsI++) {
@@ -395,8 +406,9 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
-      latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(thisIndex) + nuggetRurMICS(obsI);
+      // latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(thisIndex) + nuggetRurMICS(obsI);
       // latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
+      latentFieldRurMICS(thisIndex) += nuggetRurMICS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
@@ -414,7 +426,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iRuralDHS; obsI++) {
@@ -425,8 +439,9 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
-      latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(thisIndex) + nuggetRurDHS(obsI);
+      // latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(thisIndex) + nuggetRurDHS(obsI);
       // latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
+      latentFieldRurDHS(thisIndex) += nuggetRurDHS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
@@ -444,7 +459,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   // ~~~~~~~~~~~
@@ -455,6 +472,7 @@ Type objective_function<Type>::operator() ()
     ADREPORT(logit_phi);
   }
   
+  REPORT(beta);
   REPORT(quad);
   REPORT(logDet);
   REPORT(logDetTau);
@@ -472,6 +490,14 @@ Type objective_function<Type>::operator() ()
   REPORT(liksRurMICS);
   REPORT(liksRurDHS);
   REPORT(transformedEpsilon);
+  REPORT(projepsilon_iUrbanMICS);
+  REPORT(projepsilon_iRuralMICS);
+  REPORT(projepsilon_iUrbanDHS);
+  REPORT(projepsilon_iRuralDHS);
+  REPORT(fe_iUrbanMICS);
+  REPORT(fe_iRuralMICS);
+  REPORT(fe_iUrbanDHS);
+  REPORT(fe_iRuralDHS);
   REPORT(latentFieldUrbMICS);
   REPORT(latentFieldUrbDHS);
   REPORT(latentFieldRurMICS);

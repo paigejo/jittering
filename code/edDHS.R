@@ -52,26 +52,6 @@ bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3,
 lambdaTau = getLambdaPCprec(u=0.5, alpha=2/3)
 lambdaTauEps = getLambdaPCprec(u=0.5, alpha=2/3) # get PC prior lambda for nugget precision
 
-# Specify starting values for TMB params ----
-# initial parameters
-initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
-initAlpha = logit(initRurP)
-initBeta1 = logit(initUrbP) - initAlpha
-
-tmb_params <- list(alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
-                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-)
-
-## specify random effects
-rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS')
-
 # collect input data ----
 
 data_full = list(
@@ -98,6 +78,26 @@ data_full = list(
   options=0 # 1 for adreport of log tau and logit phi
 )
 
+# Specify starting values for TMB params ----
+# initial parameters
+initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
+initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
+initAlpha = logit(initRurP)
+initBeta1 = logit(initUrbP) - initAlpha
+
+tmb_params <- list(alpha = initAlpha, # intercept
+                   beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   logit_phi = 0, # SPDE parameter related to the range
+                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+)
+
+## specify random effects
+rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS')
+
 anyna = function(x) {any(is.na(x))}
 myDim = function(x) {
   dims = dim(x)
@@ -109,92 +109,23 @@ myDim = function(x) {
   }
 }
 
-## make the autodiff generated likelihood func & gradient
+# * Run TMB ----
 dyn.load( dynlib("code/modBYM2JitterDHS"))
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
                  DLL='modBYM2JitterDHS')
+objFull <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     hessian=TRUE,
+                     DLL='modBYM2JitterDHS')
 
-# * Run TMB ----
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
-funWrapper = function(pars) {
-  print(pars)
-  obj[['fn']](pars)
-}
-grWrapper = function(pars) {
-  print(pars)
-  obj[['gr']](pars)
-}
 
-badPar = c(-1.46335890,  1.73814507, -0.10405578,  0.08469777, -0.02948654,  0.16331678, -1.60453975, -0.22204565 )
-obj[['fn']](badPar)
-obj[['gr']](badPar)
-obj[['he']](badPar)
-library(numDeriv)
-grad(obj[['fn']], badPar)
-
-test = obj$report()
-test$quad
-test$logDet
-test$logDetTau
-test$logPriPhi
-test$KLD
-test$d
-test$logPriPhi
-test$lliksUrb
-
-opt0 <- nlminb(start       =    obj[['par']],
-               objective   =    funWrapper,
-               gradient    =    grWrapper,
-               lower       =    lower,
-               upper       =    upper,
-               control     =    list(trace=1))
-
-testOut = optim(obj[['par']], funWrapper, control=list(trace=4))
-testOut$value
-# [1] -10.89829
-optPar1 = testOut$par
-optPar1
-#      alpha       beta       beta       beta       beta       beta    log_tau  logit_phi 
-# -0.3507440  0.6236230  0.7150636  1.2023273 -0.1570947 -0.2156714 -2.5024082 -0.3730605 
-
-opt0 <- nlminb(start       =    optPar1,
-               objective   =    funWrapper,
-               gradient    =    grWrapper,
-               lower       =    lower,
-               upper       =    upper,
-               control     =    list(trace=1))
-opt0
-# $par
-# alpha       beta       beta       beta       beta       beta    log_tau  logit_phi 
-# -0.3507549  0.6236147  0.7150841  1.2023305 -0.1570978 -0.2156813 -2.5023804 -0.3730772 
-# $objective
-# [1] -7.839766
-# $convergence
-# [1] 1
-# $message
-# [1] "false convergence (8)"
-obj[["gr"]](opt0$par)
-# outer mgc:  2287113 
-# [1]  1020303.31   744758.58 -2287112.89 -1011361.45    38339.58  1826511.89 -1695171.90  1564203.59
-grad(funWrapper, opt0$par)
-load("savedOutput/h.RData")
-funWrapper(opt0$par + h)
-funWrapper(opt0$par - h)
-test = obj$report()
-test$quad
-test$logDet
-test$logDetTau
-test$logPriPhi
-test$KLD
-test$d
-test$logPriPhi
-test$lliksUrb
-
-testObjFunWrapper = function(par, badParVal=1e10) {
+# make wrapper functions that print out parameters and function values
+funWrapper = function(par, badParVal=1e10) {
   if(any(par < lower) || any(par > upper)) {
     return(badParVal)
   }
@@ -203,121 +134,213 @@ testObjFunWrapper = function(par, badParVal=1e10) {
   parNames = names(par)
   parVals = par
   parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
-  parStr = paste(parStrs, sep=", ")
+  parStr = paste(parStrs, collapse=", ")
   print(paste0("objective: ", objVal, " for parameters, ", parStr))
   objVal
 }
 
-tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
-for(thisTol in tolSeq) {
+grWrapper = function(par, badParVal=1e10) {
+  if(any(par < lower) || any(par > upper)) {
+    return(rep(badParVal, length(par)))
+  }
+  print(par)
+  grVal = testObj[['gr']](par)
+  parNames = names(par)
+  parVals = par
+  parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+  parStr = paste(parStrs, collapse=", ")
+  grStr = paste(grVal, collapse=", ")
+  print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+  grVal
+}
+
+{
+  tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
   testObj = obj
-  testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
-  testObj$env$tracepar = TRUE
-  print(paste0("optimizing for tol = ", thisTol, "."))
-  tryCatch({
-    opt1 <- optim(par=testObj$par, fn = testObjFunWrapper, gr = testObj[['gr']],
-                 method = c("BFGS"), hessian = FALSE)
-  }, error={
-    print(paste0("error for tol = ", thisTol, "."))
-  }, finally={
-    print(paste0("completed optimization for tol = ", thisTol, "."))
-  })
+  optPar = testObj$par
+  startTime = proc.time()[3]
+  for(thisTol in tolSeq) {
+    testObj = obj
+    testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
+    testObj$env$tracepar = TRUE
+    print(paste0("optimizing for tol = ", thisTol, "."))
+    opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                  method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+    optPar = opt1$par
+    if(!is.null(opt1$message)) {
+      print(paste0("error for tol = ", thisTol, ". Message:"))
+      print(opt1$message)
+      next
+    }
+    else {
+      print(paste0("completed optimization for tol = ", thisTol, ""))
+      
+      ## Get standard errors
+      print("getting standard errors...")
+      sdTime = system.time(
+        SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                             bias.correct = TRUE,
+                             bias.correct.control = list(sd = TRUE))
+      )[3]
+      # SD0
+      print(sdTime/60)
+      #  minutes for intern=FALSE
+      
+      if(SD0$pdHess) {
+        print("Optimization and PD hess calculation done!")
+        break
+      }
+      else {
+        print("Hessan not PD. Rerunning optimization with stricter tol...")
+        
+      }
+    }
+    
+    
+    
+  }
+  endTime = proc.time()[3]
+  sdTime/60
+  totalTime = endTime - startTime
+  print(paste0("optimization took ", totalTime/60, " minutes"))
+  # optimization took  minutes (for intern=FALSE)
+}
+
+if(FALSE) {
+  badPar = c(SD0$par.fixed, SD0$par.random)
+  
+  tempGrad = obj$env$f(badPar,order=1)
+  tempHess = obj$env$spHess(badPar,random=TRUE)
+  range(tempHess)
+  
+  tempEig = eigen(tempHess)
+  range(tempEig$values)
+}
+
+if(!SD0$pdHess) {
+  thisTMBpar = tmb_params
+  thisTMBpar$log_tauEps = optPar[names(optPar) == "log_tauEps"]
+  
+  map = as.list(factor(c(alpha=1, beta=2:6, log_tau=7, logit_phi=8, log_tauEps=NA)))
+  temp = unlist(map[grepl("beta", names(map))])
+  map[grepl("beta", names(map))] = NULL
+  map$beta = temp
+  map=list(factor(c(log_tauEps=NA)))
+  names(map) = "log_tauEps"
+  objFixed <- MakeADFun(data=data_full,
+                        parameters=tmb_params,
+                        random=rand_effs,
+                        map=map, 
+                        hessian=TRUE,
+                        DLL='modBYM2JitterDHS')
+  testObj = objFixed
+  thisOptPar = optPar[-which(names(optPar) == "log_tauEps")]
+  lower = lower[-which(names(optPar) == "log_tauEps")]
+  upper = upper[-which(names(optPar) == "log_tauEps")]
+  
+  newStartTime = proc.time()[3]
+  for(thisTol in tolSeq) {
+    testObj = objFixed
+    testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
+    testObj$env$tracepar = TRUE
+    print(paste0("optimizing for tol = ", thisTol, "."))
+    opt1 <- optim(par=thisOptPar, fn=funWrapper, gr=grWrapper,
+                  method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+    # opt1 <- optim(par=optPar, fn=funWrapper, 
+    #               hessian = FALSE, control=list(reltol=thisTol))
+    thisOptPar = opt1$par
+    if(!is.null(opt1$message)) {
+      print(paste0("error for tol = ", thisTol, ". Message:"))
+      print(opt1$message)
+      next
+    }
+    else {
+      print(paste0("completed optimization for tol = ", thisTol, ""))
+      
+      ## Get standard errors
+      print("getting standard errors...")
+      sdTime = system.time(
+        SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                             bias.correct = TRUE,
+                             bias.correct.control = list(sd = TRUE))
+      )[3]
+      # SD0
+      print(sdTime/60)
+      #  minutes for intern=FALSE
+      
+      if(SD0$pdHess) {
+        print("Optimization and PD hess calculation done!")
+        break
+      }
+      else {
+        print("Hessan not PD. Rerunning optimization with stricter tol...")
+        
+      }
+    }
+    
+    
+    
+  }
+  thisEndTime = proc.time()[3]
+  sdTime/60
+  thisTotalTime = thisEndTime - newStartTime
+  totalTime = thisEndTime - startTime
+  print(paste0("second optimization took ", thisTotalTime/60, " minutes"))
+  print(paste0("all optimization took ", totalTime/60, " minutes"))
+}
+
+# opt0 <- nlminb(start       =    obj[['par']],
+#                objective   =    obj[['fn']],
+#                gradient    =    obj[['gr']],
+#                lower = rep(-10, length(obj[['par']])),
+#                upper = rep( 10, length(obj[['par']])),
+#                control     =    list(trace=1))
+
+# * TMB Posterior Sampling ----
+
+if(FALSE) {
+  hessTime = system.time(testHess <- hessian(testObj$fn, optPar))[3]
+  hessTime/60
+  # 10.28792 minutes for intern=FALSE
+  eig = eigen(testHess)
+  eig
+  
+  for(i in 1:length(eig$values)) {
+    thisVal = eig$values[i]
+    thisVec = eig$vectors[,i]
+    barplot(eig$vectors[,i], names.arg=names(SD0$par.fixed), 
+            main=paste0("Eigenvector ", i, " with value ", thisVal))
+  }
+  
+  testObj$fn(SD0$par.fixed)
+  testObj$fn(SD0$par.fixed + eig$vectors[,9]*.05)
+  testObj$fn(SD0$par.fixed - eig$vectors[,9]*.05)
 }
 
 
 
-# * TMB Posterior Sampling ----
-## Get standard errors
-SD0 <- TMB::sdreport(obj, getJointPrecision=TRUE,
-                     bias.correct = TRUE,
-                     bias.correct.control = list(sd = TRUE))
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-# plot predictions
+save(SD0, obj, objFull, totalTime, sdTime, file="savedOutput/ed/fit.RData")
+out = load("savedOutput/ed/fit.RData")
 
+gridPreds = predGrid(SD0, obj)
+save(gridPreds, file="savedOutput/ed/gridPreds.RData")
+out = load("savedOutput/ed/gridPreds.RData")
 
-## take samples from fitted model
-mu <- c(SD0$par.fixed,SD0$par.random)
+stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+save(stratPreds, file="savedOutput/ed/stratPreds.RData")
+save(admin2Preds, file="savedOutput/ed/admin2Preds.RData")
+out = load("savedOutput/ed/stratPreds.RData")
+out = load("savedOutput/ed/admin2Preds.RData")
 
-## simulate draws
-rmvnorm_prec <- function(mu, chol_prec, n.sims) {
-  z <- matrix(rnorm(length(mu) * n.sims), ncol=n.sims)
-  L <- chol_prec #Cholesky(prec, super=TRUE)
-  z <- Matrix::solve(L, z, system = "Lt") ## z = Lt^-1 %*% z
-  z <- Matrix::solve(L, z, system = "Pt") ## z = Pt    %*% z
-  z <- as.matrix(z)
-  mu + z
-}
-
-L <- Cholesky(SD0[['jointPrecision']], super = T)
-t.draws <- rmvnorm_prec(mu = mu , chol_prec = L, n.sims = 500)
-
-## summarize the draws
-parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
-epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_s',]
-alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
-
-# project from mesh to raster, add intercept
-data(kenyaPopulationData)
-predCoords = cbind(popMatKenya$east, popMatKenya$north)
-A.pred = inla.spde.make.A(mesh = mesh.s, loc = predCoords)
-pred_tmb <- as.matrix(A.pred %*% epsilon_tmb_draws)
-pred_tmb <- sweep(pred_tmb, 2, alpha_tmb_draws, '+')
-
-# convert to probability scale
-pred_tmb = expit(pred_tmb)
-
-## find the median and sd across draws, as well as 90% intervals
-summ_tmb <- cbind(median = (apply(pred_tmb, 1, median)),
-                  sd     = (apply(pred_tmb, 1, sd)),
-                  lower = (apply(pred_tmb, 1, quantile, .05)),
-                  upper = (apply(pred_tmb, 1, quantile, .95)))
-
-# * Plot TMB results ----
-## make summary rasters
-# kenyaExtent = extent(cbind(popMatKenya$east, popMatKenya$north))
-# pop.rast <- raster(nrows=length(unique(popMatKenya$north)), ncols=length(length(unique(popMatKenya$north))),
-#                   xmn=min(popMatKenya$east), xmx=max(length(unique(popMatKenya$east))), 
-#                   ymn=min(popMatKenya$north), ymx=max(popMatKenya$north),
-#                   vals=popMatKenya$pop, ext = kenyaExtent)
-pop.rast = rasterFromXYZ(data.frame(x=popMatKenya$east, y=popMatKenya$north, z=popMatKenya$pop), 
-                         res=c(5, 5))
-ras_med_tmb = rasterFromXYZ(data.frame(x=popMatKenya$east, y=popMatKenya$north, z=summ_tmb[, 1]), 
-                            res=c(5, 5))
-ras_sdv_tmb = rasterFromXYZ(data.frame(x=popMatKenya$east, y=popMatKenya$north, z=summ_tmb[, 2]), 
-                            res=c(5, 5))
-ras_lower_tmb = rasterFromXYZ(data.frame(x=popMatKenya$east, y=popMatKenya$north, z=summ_tmb[, 3]), 
-                              res=c(5, 5))
-ras_upper_tmb = rasterFromXYZ(data.frame(x=popMatKenya$east, y=popMatKenya$north, z=summ_tmb[, 4]), 
-                              res=c(5, 5))
-
-## plot truth, pixels falling within/without the 90% interval,
-##  post. median, and post sd
-
-# set the range for the truth and median
-rast.zrange <- range(c(dat$y/dat$n, values(ras_med_tmb)), na.rm = T)
-
-# plot tmb
-par(mfrow = c(2, 2))
-quilt.plot(dat$east, dat$north, dat$y/dat$n, main = 'Observations', col = (viridis(100)), 
-           nx=30, ny=30)
-# plot(ras_inInt_tmb, main = 'Pixels where 90% CIs did not cover Truth')
-# points(dat$east, dat$north, pch=".")
-plot(ras_med_tmb, main = 'TMB Posterior Median',
-     col = (viridis(100)))
-points(dat$east, dat$north, pch=".")
-plot(ras_sdv_tmb, main='TMB Posterior Standard Deviation')
-points(dat$east, dat$north, pch=".")
-
-## plot TMB meds and stdevs
-med.zrange <- range(values(ras_med_tmb), na.rm = T)
-sdv.zrange <- range(values(ras_sdv_tmb), na.rm = T)
-
-par(mfrow = c(1, 2))
-plot(ras_med_tmb, main = 'TMB Posterior Median',
-     zlim = med.zrange, col = (viridis(100)))
-points(dat$east, dat$north, pch=".")
-plot(ras_sdv_tmb, main = 'TMB Posterior Standard Deviation',
-     zlim = sdv.zrange)
-points(dat$east, dat$north, pch=".")
+summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
+               gridPreds=gridPreds)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=stratPreds, 
+          plotNameRoot="edFusionTest", plotNameRootAreal="Strat")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin2Preds, 
+          plotNameRoot="edFusion", plotNameRootAreal="Admin2")

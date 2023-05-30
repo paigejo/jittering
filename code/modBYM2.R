@@ -621,7 +621,8 @@ summaryTabBYM2 = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
 predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh, 
                     normalized=TRUE, extractMethod="bilinear", 
                     nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                    splineApprox=TRUE) {
+                    splineApprox=TRUE, admLevel=c("stratMICS", "adm2")) {
+  admLevel = match.arg(admLevel)
   
   # get parameters
   alpha = SD0$par.fixed[1]
@@ -641,7 +642,11 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
   Xmat = cbind(Xmat[,3:6], popValsNorm)
   
   # get projection matrix at prediction locations
-  Amat = t(makeApointToArea(popMat$stratumMICS, admFinal$NAME_FINAL)) # nrow(popMat) x 41
+  if(admLevel == "stratMICS") {
+    Amat = t(makeApointToArea(popMat$stratumMICS, admFinal$NAME_FINAL)) # nrow(popMat) x 41
+  } else {
+    Amat = t(makeApointToArea(popMat$subarea, adm2Full$NAME_2)) # nrow(popMat) x (# admin2 areas)
+  }
   
   # generate draws
   rmvnorm_prec <- function(mu, chol_prec, n.sims) {

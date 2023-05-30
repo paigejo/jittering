@@ -479,7 +479,8 @@ actualAreas = str_to_title(ed$admin1)
 actualAreas[actualAreas == "Fct Abuja"] = "Federal Capital Territory"
 areas = getRegionRobust(cbind(ed$lon, ed$lat), mapDat=adm1Full, regionNameVar="NAME_1")
 any(is.na(match(actualAreas, adm1$NAME_1)))
-
+areasNotRobust = getRegion2(cbind(ed$lon, ed$lat), mapDat=adm1Full, nameVar="NAME_1")
+all.equal(areas$regionNames, areasNotRobust$regionNames)
 
 subareas = getRegion2(cbind(ed$lon, ed$lat), mapDat=adm2Full, nameVar="NAME_2")
 subareas = getSubareaRobust(cbind(ed$lon, ed$lat), actualAreas, subareaMapDat=adm2, 

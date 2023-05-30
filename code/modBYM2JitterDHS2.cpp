@@ -81,8 +81,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR( y_iRuralDHS );
   DATA_VECTOR( n_iUrbanDHS );   // Trials per cluster
   DATA_VECTOR( n_iRuralDHS );
-  DATA_MATRIX( AprojUrbanDHS ); // (nObsUrban * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
-  DATA_MATRIX( AprojRuralDHS ); // (nObsRural * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
+  DATA_SPARSE_MATRIX( AprojUrbanDHS ); // (nObsUrban * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
+  DATA_SPARSE_MATRIX( AprojRuralDHS ); // (nObsRural * nIntegrationPointsUrban) x nArea matrix with ij-th entry = 1 if intPt i associated with area j and 0 o.w.
   DATA_MATRIX( X_betaUrbanDHS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
   DATA_MATRIX( X_betaRuralDHS );  // first nObsRural rows correspond to first int pt
   DATA_ARRAY( wUrbanDHS ); // nObsUrban x nIntegrationPointsUrban weight matrix
@@ -308,7 +308,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iRuralDHS; obsI++) {
@@ -338,7 +340,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   // ~~~~~~~~~~~

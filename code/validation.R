@@ -169,12 +169,17 @@ stratKdhs = function(K=10, seed=1234) {
 
 # submodels of the BYM2 model
 
-getValidationDataM_d = function(fold, inSample=TRUE) {
+getValidationDataM_d = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm2")) {
+  KDHSurb = 11 # 3 rings of 5 each
+  KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+  admLevel = match.arg(admLevel)
+  
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")
   
   # load the DHS data
+  out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLInds = edVal$fold != fold
@@ -199,9 +204,13 @@ getValidationDataM_d = function(fold, inSample=TRUE) {
   # use integration points
   out = load("savedOutput/global/intPtsDHS.RData")
   
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
-  
+  if(admLevel == "admFinal") {
+    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  } else {
+    AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
+    ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
+  }
   AUrbDHS = AUrbDHS[,inSampleLIndsUrb2]
   ARurDHS = ARurDHS[,inSampleLIndsRur2]
   
@@ -307,17 +316,24 @@ getValidationDataM_d = function(fold, inSample=TRUE) {
   #                  hessian=TRUE,
   #                  DLL='modBYM2JitterDHS')
   
+  DLL = ifelse(admLevel == "admFinal", 'modBYM2JitterDHS', 'modBYM2JitterDHS2')
+  
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterDHS'))
+                            hessian=TRUE, DLL=DLL))
 }
 
-getValidationDataM_D = function(fold, inSample=TRUE) {
+getValidationDataM_D = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm2")) {
+  KDHSurb = 11 # 3 rings of 5 each
+  KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+  admLevel = match.arg(admLevel)
+  
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")
   
   # load the DHS data
+  out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLInds = edVal$fold != fold
@@ -340,8 +356,13 @@ getValidationDataM_D = function(fold, inSample=TRUE) {
   # do some precomputation ----
   
   # use integration points
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  if(admLevel == "admFinal") {
+    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  } else {
+    AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
+    ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
+  }
   
   AUrbDHS = AUrbDHS[,inSampleLIndsUrb2]
   ARurDHS = ARurDHS[,inSampleLIndsRur2]
@@ -438,13 +459,18 @@ getValidationDataM_D = function(fold, inSample=TRUE) {
   #                  hessian=TRUE,
   #                  DLL='modBYM2JitterDHS')
   
+  DLL = ifelse(admLevel == "admFinal", 'modBYM2JitterDHS', 'modBYM2JitterDHS2')
+  
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterDHS'))
+                            hessian=TRUE, DLL=DLL))
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_dm = function(fold) {
+getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
+  KDHSurb = 11 # 3 rings of 5 each
+  KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+  admLevel = match.arg(admLevel)
   foldMICS = fold - 10
   
   # load in the precomputed integration points
@@ -452,6 +478,7 @@ getValidationDataM_dm = function(fold) {
   load("savedOutput/global/intPtsMICS.RData")
   
   # load the DHS data
+  out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLIndsDHS = edVal$fold != fold
@@ -506,8 +533,13 @@ getValidationDataM_dm = function(fold) {
   out = load("savedOutput/global/intPtsMICS.RData")
   
   
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  if(admLevel == "admFinal") {
+    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  } else {
+    AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
+    ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
+  }
   
   AUrbDHSoutOfSample = t(AUrbDHS[,outOfSampleLIndsUrb2DHS])
   ARurDHSoutOfSample = t(ARurDHS[,outOfSampleLIndsRur2DHS])
@@ -731,8 +763,8 @@ getValidationDataM_dm = function(fold) {
     y_iRuralMICS=ysRurMICS, # 
     n_iUrbanMICS=nsUrbMICS, # number binomial trials
     n_iRuralMICS=nsRurMICS, # 
-    AprojUrbanMICS=AUrbMICS, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-    AprojRuralMICS=ARurMICS, # 
+    AprojUrbanMICS=as(AUrbMICS, "sparseMatrix"), # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralMICS=as(ARurMICS, "sparseMatrix"), # 
     X_betaUrbanMICS=intPtsMICS$XUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
     X_betaRuralMICS=intPtsMICS$XRur, # 
     wUrbanMICS=intPtsMICS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -742,8 +774,8 @@ getValidationDataM_dm = function(fold) {
     y_iRuralDHS=ysRurDHS, # 
     n_iUrbanDHS=nsUrbDHS, # number binomial trials
     n_iRuralDHS=nsRurDHS, # 
-    AprojUrbanDHS=AUrbDHS, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-    AprojRuralDHS=ARurDHS, # 
+    AprojUrbanDHS=as(AUrbDHS, "sparseMatrix"), # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralDHS=as(ARurDHS, "sparseMatrix"), # 
     X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
     X_betaRuralDHS=intPtsDHS$covsRur, # 
     wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -766,8 +798,8 @@ getValidationDataM_dm = function(fold) {
     y_iRuralDHS=ysRurDHSoutOfSample, # 
     n_iUrbanDHS=nsUrbDHSoutOfSample, # number binomial trials
     n_iRuralDHS=nsRurDHSoutOfSample, # 
-    AprojUrbanDHS=AUrbDHSoutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-    AprojRuralDHS=ARurDHSoutOfSample, # 
+    AprojUrbanDHS=as(AUrbDHSoutOfSample, "sparseMatrix"), # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralDHS=as(ARurDHSoutOfSample, "sparseMatrix"), # 
     X_betaUrbanDHS=intPtsDHS$covsUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
     X_betaRuralDHS=intPtsDHS$covsRurOutOfSample, # 
     wUrbanDHS=intPtsDHS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -777,8 +809,8 @@ getValidationDataM_dm = function(fold) {
     y_iRuralMICS=ysRurMICSoutOfSample, # 
     n_iUrbanMICS=nsUrbMICSoutOfSample, # number binomial trials
     n_iRuralMICS=nsRurMICSoutOfSample, # 
-    AprojUrbanMICS=AUrbMICSOutOfSample, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-    AprojRuralMICS=ARurMICSOutOfSample, # 
+    AprojUrbanMICS=as(AUrbMICSOutOfSample, "sparseMatrix"), # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+    AprojRuralMICS=as(ARurMICSOutOfSample, "sparseMatrix"), # 
     X_betaUrbanMICS=intPtsMICS$XUrbOutOfSample, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
     X_betaRuralMICS=intPtsMICS$XRurOutOfSample, # 
     wUrbanMICS=intPtsMICS$wUrbanOutOfSample, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -810,15 +842,20 @@ getValidationDataM_dm = function(fold) {
   #                  hessian=TRUE,
   #                  DLL='modBYM2JitterDHS')
   
+  DLL = ifelse(admLevel == "admFinal", 'modBYM2JitterFusionNugget', 'modBYM2JitterFusionNugget2')
+  
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        edMICSInSample=edMICSInSample, edMICSOutOfSample=edMICSOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'), 
+                            hessian=TRUE, DLL=DLL), 
        dataOutOfSample=dataOutOfSample)
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_DM = function(fold) {
+getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
+  KDHSurb = 11 # 3 rings of 5 each
+  KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+  admLevel = match.arg(admLevel)
   foldMICS = fold - 10
   
   # load in the precomputed integration points
@@ -826,6 +863,7 @@ getValidationDataM_DM = function(fold) {
   load("savedOutput/global/intPtsMICS.RData")
   
   # load the DHS data
+  out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
   inSampleLIndsDHS = edVal$fold != fold
@@ -878,8 +916,10 @@ getValidationDataM_DM = function(fold) {
   out = load("savedOutput/global/intPtsMICS.RData")
   
   
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+  # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
+  ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
   
   AUrbDHSoutOfSample = t(AUrbDHS[,outOfSampleLIndsUrb2DHS])
   ARurDHSoutOfSample = t(ARurDHS[,outOfSampleLIndsRur2DHS])
@@ -910,54 +950,80 @@ getValidationDataM_DM = function(fold) {
   intPtsDHS$covsRur = intPtsDHS$covsRur[rep(inSampleLIndsRur2DHS, times=KrurDHS),-1]
   
   # modify the integration points to be in the correct format for TMB
+  allNumPerStrat = aggregate(edMICSInSample$Stratum, by=list(strat=edMICSInSample$Stratum, urb=edMICSInSample$urban), FUN=length, drop=FALSE)
+  numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
+  numPerStratUrb[is.na(numPerStratUrb)] = 0
+  numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
+  numPerStratRur[is.na(numPerStratRur)] = 0
   
   # first extract only the relevant covariates for the in sample data
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
   stratUrb = XUrb$strat
-  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  AUrbMICS = makeApointToArea(edMICSInSample$Stratum[edMICSInSample$urban], admFinal$NAME_FINAL)
-  numPerStratUrb = rowSums(AUrbMICS)
+  # AUrbMICS = makeApointToArea(edMICSInSample$Stratum[edMICSInSample$urban], admFinal$NAME_FINAL)
+  AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
+  # numPerStratUrb = rowSums(AUrbMICS)
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
   actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  if(admLevel == "adm2") {
+    AUrbMICS = AUrbMICS[,actualIndexUrb]
+  }
+  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
-  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = makeApointToArea(edMICSInSample$Stratum[!edMICSInSample$urban], admFinal$NAME_FINAL)
-  numPerStratRur = rowSums(ARurMICS)
+  # ARurMICS = makeApointToArea(edMICSInSample$Stratum[!edMICSInSample$urban], admFinal$NAME_FINAL)
+  ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
+  # numPerStratRur = rowSums(ARurMICS)
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  if(admLevel == "adm2") {
+    ARurMICS = ARurMICS[,actualIndexRur]
+  }
   
   # now do the same for the out of sample data if need be
   if(fold > 10) {
+    allNumPerStrat = aggregate(edMICSOutOfSample$Stratum, by=list(strat=edMICSOutOfSample$Stratum, urb=edMICSOutOfSample$urban), FUN=length, drop=FALSE)
+    numPerStratUrbOutOfSample = allNumPerStrat[allNumPerStrat[,2], 3]
+    numPerStratUrbOutOfSample[is.na(numPerStratUrbOutOfSample)] = 0
+    numPerStratRurOutOfSample = allNumPerStrat[!allNumPerStrat[,2], 3]
+    numPerStratRurOutOfSample[is.na(numPerStratRurOutOfSample)] = 0
+    
     # first extract only the relevant covariates for the in sample data
     XUrbOutOfSample = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
     stratUrb = XUrbOutOfSample$strat
-    XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    AUrbMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[edMICSOutOfSample$urban], admFinal$NAME_FINAL)
-    numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
+    AUrbMICSOutOfSample = makeApointToArea(XUrbOutOfSample$subarea, adm2$NAME_2)
+    # numPerStratUrbOutOfSample = rowSums(AUrbMICSOutOfSample)
     # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample * KMICS))
     # obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
     # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
     actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
     XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    if(admLevel == "adm2") {
+      AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
+    }
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
-    XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], admFinal$NAME_FINAL)
-    numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
+    # ARurMICSOutOfSample = makeApointToArea(edMICSOutOfSample$Stratum[!edMICSOutOfSample$urban], adm2$NAME_2)
+    ARurMICSOutOfSample = makeApointToArea(XRurOutOfSample$subarea, adm2$NAME_2)
+    # numPerStratRurOutOfSample = rowSums(ARurMICSOutOfSample)
     # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample * KMICS))
     # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    if(admLevel == "adm2") {
+      ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
+    }
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -968,21 +1034,21 @@ getValidationDataM_DM = function(fold) {
   
   # w matrices are nStrata x K. They should be nObs x K. Start with the in sample observations
   wUrban = intPtsMICS$wUrban
-  stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb))
+  stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
   wUrban = wUrban[stratIndexUrbW,]
   
   wRural = intPtsMICS$wRural
-  stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur))
+  stratIndexRurW = unlist(mapply(rep, 1:nrow(wRural), each=numPerStratRur))
   wRural = wRural[stratIndexRurW,]
   
   if(fold > 10) {
     # Do the same with the out of sample observations
     wUrbanOutOfSample = intPtsMICS$wUrban
-    stratIndexUrbW = unlist(mapply(rep, 1:nrow(AUrbMICSOutOfSample), each=numPerStratUrbOutOfSample))
+    stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrbanOutOfSample), each=numPerStratUrbOutOfSample))
     wUrbanOutOfSample = wUrbanOutOfSample[stratIndexUrbW,]
     
     wRuralOutOfSample = intPtsMICS$wRural
-    stratIndexRurW = unlist(mapply(rep, 1:nrow(ARurMICSOutOfSample), each=numPerStratRurOutOfSample))
+    stratIndexRurW = unlist(mapply(rep, 1:nrow(wRuralOutOfSample), each=numPerStratRurOutOfSample))
     wRuralOutOfSample = wRuralOutOfSample[stratIndexRurW,]
   } else {
     wUrbanOutOfSample = NULL
@@ -1076,6 +1142,20 @@ getValidationDataM_DM = function(fold) {
   rand_effs <- c('Epsilon_bym2', 'nuggetUrbMICS', 'nuggetRurMICS', 
                  'nuggetUrbDHS', 'nuggetRurDHS')
   
+  # make sure A matrices are sparse if BYM2 is at the admin2 level
+  if(admLevel == "adm2") {
+    AUrbDHS=as(AUrbDHS, "sparseMatrix")
+    ARurDHS=as(ARurDHS, "sparseMatrix")
+    AUrbDHSoutOfSample=as(AUrbDHSoutOfSample, "sparseMatrix")
+    ARurDHSoutOfSample=as(ARurDHSoutOfSample, "sparseMatrix")
+    if(fold > 10) {
+      AUrbMICS=as(AUrbMICS, "sparseMatrix")
+      ARurMICS=as(ARurMICS, "sparseMatrix")
+      AUrbMICSOutOfSample=as(AUrbMICSOutOfSample, "sparseMatrix")
+      ARurMICSOutOfSample=as(ARurMICSOutOfSample, "sparseMatrix")
+    }
+  }
+  
   # collect input data
   
   data_full = list(
@@ -1162,10 +1242,12 @@ getValidationDataM_DM = function(fold) {
   #                  hessian=TRUE,
   #                  DLL='modBYM2JitterDHS')
   
+  DLL = ifelse(admLevel == "admFinal", 'modBYM2JitterFusionNugget', 'modBYM2JitterFusionNugget2')
+  
   list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
        edMICSInSample=edMICSInSample, edMICSOutOfSample=edMICSOutOfSample, 
        MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
-                            hessian=TRUE, DLL='modBYM2JitterFusionNugget'), 
+                            hessian=TRUE, DLL=DLL), 
        dataOutOfSample=dataOutOfSample)
 }
 
@@ -1192,7 +1274,32 @@ getAllValidationData = function(folds=1:20) {
   invisible(list(datMd, datMD, datMdm, datMDM))
 }
 
-getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit=FALSE, randomBeta=FALSE) {
+# This function generates and saves all the validation datasets and input 
+# parameters for all models
+getAllValidationData2 = function(folds=1:20) {
+  
+  # first generate M_d data
+  print("generating data for M_d2...")
+  time1 = system.time(datMd2 <- lapply(folds, getValidationDataM_d, admLevel="adm2"))[3]
+  print(paste0("Took ", time1, " seconds. Now generating data for M_D2..."))
+  time2 = system.time(datMD2 <- lapply(folds, getValidationDataM_D, admLevel="adm2"))[3]
+  print(paste0("Took ", time2, " seconds. Now generating data for M_dm2..."))
+  time3 = system.time(datMdm2 <- lapply(folds, getValidationDataM_dm, admLevel="adm2"))[3]
+  print(paste0("Took ", time3, " seconds. Now generating data for M_DM2..."))
+  time4 = system.time(datMDM2 <- lapply(folds, getValidationDataM_DM, admLevel="adm2"))[3]
+  print(paste0("Took ", time4, " seconds. Now saving results..."))
+  
+  save(datMd2, file="savedOutput/validation/datMd2.RData")
+  save(datMD2, file="savedOutput/validation/datM_D2.RData")
+  save(datMdm2, file="savedOutput/validation/datMdm2.RData")
+  save(datMDM2, file="savedOutput/validation/datM_DM2.RData")
+  
+  invisible(list(datMd2, datMD2, datMdm2, datMDM2))
+}
+
+getValidationFit = function(fold, 
+                            model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
+                            regenModFit=FALSE, randomBeta=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1203,6 +1310,10 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
     fnameRoot = "M_D"
   } else if(fnameRoot == "MDM") {
     fnameRoot = "M_DM"
+  } else if(fnameRoot == "MD2") {
+    fnameRoot = "M_D2"
+  } else if(fnameRoot == "MDM2") {
+    fnameRoot = "M_DM2"
   }
   fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
   out = load(fname)
@@ -1243,6 +1354,7 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
     # browser()
     if(FALSE) {
       dimLen = function(x) {
@@ -1402,9 +1514,10 @@ getValidationFit = function(fold, model=c("Md", "MD", "Mdm", "MDM"), regenModFit
 # ptType: The type of integration points. either MICS or DHS
 # model: which model we're making predictions with
 predClusters = function(nsim=1000, fold, SD0, obj, 
-                        model=c("Md", "MD", "Mdm", "MDM"), 
+                        model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
                         addBinVar=TRUE) {
+  
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1415,6 +1528,10 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     fnameRoot = "M_D"
   } else if(fnameRoot == "MDM") {
     fnameRoot = "M_DM"
+  } else if(fnameRoot == "MD2") {
+    fnameRoot = "M_D2"
+  } else if(fnameRoot == "MDM2") {
+    fnameRoot = "M_DM2"
   }
   
   # for loading the info for predicting at the left out data locations, if the 
@@ -1432,6 +1549,17 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # for MD model, use M_DM prediction info for both DHS and MICS
     fnameRootLeftOut = "M_DM"
     modelLeftOut = "MDM"
+  } else if((fold <= 10) && (fnameRoot == "Md2")) {
+    # for Md model, predict normally for DHS data, but use M_DM prediction info for MICS
+    fnameRootLeftOut = "Mdm2"
+    modelLeftOut = "Mdm2"
+  } else if(fnameRoot == "Md2") {
+    fnameRootLeftOut = "M_DM2"
+    modelLeftOut = "MDM2"
+  } else if(fnameRoot == "M_D2") {
+    # for MD model, use M_DM prediction info for both DHS and MICS
+    fnameRootLeftOut = "M_DM2"
+    modelLeftOut = "MDM2"
   } else {
     fnameRootLeftOut = fnameRoot
     modelLeftOut = model

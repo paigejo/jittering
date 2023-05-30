@@ -354,7 +354,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iUrbanDHS; obsI++) {
@@ -384,7 +386,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iRuralMICS; obsI++) {
@@ -414,7 +418,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   for (int obsI = 0; obsI < num_iRuralDHS; obsI++) {
@@ -444,7 +450,9 @@ Type objective_function<Type>::operator() ()
       
     } // for( intI )
     
-    jnll -= log(thislik);
+    if(thislik > 0) {
+      jnll -= log(thislik);
+    }
   } // for( obsI )
   
   // ~~~~~~~~~~~

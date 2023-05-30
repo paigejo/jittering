@@ -2,22 +2,10 @@
 
 # load datasets ----
 out = load("savedOutput/global/ed.RData")
-out = load("savedOutput/global/edMICS.RData")
 
-# set parameters ----
-# Umut settings: 
-#   5 urban rings of 15 each (61 points total)
-#   10 rural rings of 15 each (136 points total)
-# KMICS=100
-# KDHSurb = 31 # 4 rings of 10 each
-# JInnerUrban = 4
-# KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
-# JInnerRural = 4
-# JOuterRural = 4
-KMICS=25
 KDHSurb = 11 # 3 rings of 5 each
-JInnerUrban = 3
 KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+JInnerUrban = 3
 JInnerRural = 3
 JOuterRural = 1
 
@@ -25,21 +13,10 @@ if(FALSE) {
   # do some precomputation ----
   
   # make integration points if necessary
-  intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                            numPtsRur=KMICS, numPtsUrb=KMICS)
-  # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
-  # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE, 
-  #                                         numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
-  #                                         JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-  #                                         JOuterRural=JOuterRural)
   intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, 
-                                          areaNames=ed$subarea, popPrior=TRUE, 
-                                          numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
-                                          JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                          JOuterRural=JOuterRural, adminMap=adm2Full)
+                                          popPrior=TRUE, adminMap=adm2Full)
   
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
@@ -47,109 +24,37 @@ if(FALSE) {
   AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
   ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
   
-  # modify the integration points to be in the correct format for TMB
-  allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
-  numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
-  numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
-  numPerStratRur[is.na(numPerStratRur)] = 0
-  
-  # first extract only the relevant covariates
-  XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
-  # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
-  # TODO: EXTEND AMICS TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
-  
-  # numPerStratUrb = table(edMICS$Stratum[edMICS$urban])
-  # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
-  # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
-  # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
-  AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
-  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  
-  XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
-  # ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
-  # numPerStratRur = table(edMICS$Stratum[!edMICS$urban])
-  # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
-  # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
-  # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
-  ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
-  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  
-  # w matrices are nStrata x K. They should be nObs x K
-  wUrban = intPtsMICS$wUrban
-  stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
-  wUrban = wUrban[stratIndexUrbW,]
-  
-  wRural = intPtsMICS$wRural
-  stratIndexRurW = unlist(mapply(rep, 1:nrow(wRural), each=numPerStratRur))
-  wRural = wRural[stratIndexRurW,]
-  
-  # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
-  # stratIDs = match(edMICS$Stratum, admFinal$NAME_FINAL)
-  # edMICS = edMICS[order(stratIDs),]
-  
   # extract cluster information (in the correct order)
-  ysUrbMICS = edMICS[edMICS$urban,]$ys
-  nsUrbMICS = edMICS[edMICS$urban,]$ns
-  ysRurMICS = edMICS[!edMICS$urban,]$ys
-  nsRurMICS = edMICS[!edMICS$urban,]$ns
-  
   ysUrbDHS = ed$y[ed$urban]
   ysRurDHS = ed$y[!ed$urban]
   nsUrbDHS = ed$n[ed$urban]
   nsRurDHS = ed$n[!ed$urban]
   
   # make sure A matrices are nArea x nObs, as TMB expects
-  AUrbMICS = t(AUrbMICS)
-  ARurMICS = t(ARurMICS)
   AUrbDHS = t(AUrbDHS)
   ARurDHS = t(ARurDHS)
-  mode(AUrbMICS) = "numeric"
-  mode(ARurMICS) = "numeric"
   mode(AUrbDHS) = "numeric"
   mode(ARurDHS) = "numeric"
   
-  # save everything
-  intPtsMICS$XUrb = XUrb[,-(2:3)] # don't include strata or intercept
-  intPtsMICS$XRur = XRur[,-(2:3)]
-  intPtsMICS$XUrb = as.matrix(intPtsMICS$XUrb)
-  intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
-  intPtsMICS$wUrban = wUrban
-  intPtsMICS$wRural = wRural
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
-  
-  # convert A matrices to sparse matrices
-  AUrbMICS = as(AUrbMICS, "sparseMatrix")
-  ARurMICS = as(ARurMICS, "sparseMatrix")
   AUrbDHS = as(AUrbDHS, "sparseMatrix")
   ARurDHS = as(ARurDHS, "sparseMatrix")
-  AUrbMICS = as.matrix(AUrbMICS)
-  ARurMICS = as.matrix(ARurMICS)
-  AUrbDHS = as.matrix(AUrbDHS)
-  ARurDHS = as.matrix(ARurDHS)
   
-  save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
-       ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
+  # save everything
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
+  save(AUrbDHS, ARurDHS, intPtsDHS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/ed2Inputs.RData")
+       file="savedOutput/global/edInputsDHS2.RData")
   
   # compile model ----
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad")
-  
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
-  compile( "code/modBYM2JitterFusionNugget2.cpp", 
+  dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+  compile( "code/modBYM2JitterDHS2.cpp", 
            framework="TMBad", safebounds=FALSE)
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterFusionNugget2  -DTMB_LIB_INIT=R_init_modBYM2JitterFusionNugget2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterFusionNugget2.cpp -o code/modBYM2JitterFusionNugget2.o
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterFusionNugget2.so code/modBYM2JitterFusionNugget2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
+  # compile("code/modBYM2JitterDHS.cpp","-O0 -g") # for using gbdsource
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/ed2Inputs.RData")
+out = load("savedOutput/global/edInputsDHS2.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -158,34 +63,17 @@ beta_pri = c(0, 10^2)
 out = load("savedOutput/global/adm2Mat.RData")
 bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                          constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-lambdaTau = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for bym2 precision
+lambdaTau = getLambdaPCprec(u=1, alpha=.1)
 lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
 
-# Specify inputs for TMB ----
-
-## specify random effects
-rand_effs <- c('Epsilon_bym2', 'nuggetUrbMICS', 'nuggetRurMICS', 
-               'nuggetUrbDHS', 'nuggetRurDHS', 'beta')
-
-# collect input data
+# collect input data ----
 
 data_full = list(
-  y_iUrbanMICS=ysUrbMICS, # observed binomial experiment at point i (clust)
-  y_iRuralMICS=ysRurMICS, # 
-  n_iUrbanMICS=nsUrbMICS, # number binomial trials
-  n_iRuralMICS=nsRurMICS, # 
-  AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  AprojRuralMICS=ARurMICS, # 
-  X_betaUrbanMICS=intPtsMICS$XUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
-  X_betaRuralMICS=intPtsMICS$XRur, # 
-  wUrbanMICS=intPtsMICS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
-  wRuralMICS=intPtsMICS$wRural, # 
-  
   y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
   y_iRuralDHS=ysRurDHS, # 
   n_iUrbanDHS=nsUrbDHS, # number binomial trials
   n_iRuralDHS=nsRurDHS, # 
-  AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  AprojUrbanDHS=AUrbDHS, # nObsUrban x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
   AprojRuralDHS=ARurDHS, # 
   X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
   X_betaRuralDHS=intPtsDHS$covsRur, # 
@@ -200,9 +88,29 @@ data_full = list(
   gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
   lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
   lambdaTau=lambdaTau, # determines PC prior for tau
-  lambdaTauEps=lambdaTauEps, 
+  lambdaTauEps=lambdaTauEps, # determines PC prior for tauEps, the nugget precision
   options=0 # 1 for adreport of log tau and logit phi
 )
+
+# Specify starting values for TMB params ----
+# initial parameters
+initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
+initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
+initAlpha = logit(initRurP)
+initBeta1 = logit(initUrbP) - initAlpha
+
+tmb_params <- list(alpha = initAlpha, # intercept
+                   beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   logit_phi = 0, # SPDE parameter related to the range
+                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+)
+
+## specify random effects
+rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta')
 
 anyna = function(x) {any(is.na(x))}
 myDim = function(x) {
@@ -215,66 +123,18 @@ myDim = function(x) {
   }
 }
 
-if(FALSE) {
-  # for testing purposes
-  sapply(data_full, anyna)
-  sapply(data_full, myDim)
-  hist(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS, breaks=50)
-  hist(data_full$y_iRuralDHS/data_full$n_iRuralDHS, breaks=50)
-  hist(data_full$n_iUrbanDHS-data_full$y_iUrbanDHS, breaks=seq(-0.5, 17.5, by=1))
-  hist(data_full$n_iRuralDHS-data_full$y_iRuralDHS, breaks=seq(-0.5, 24.5, by=1))
-  hist(data_full$y_iRuralDHS, breaks=seq(-0.5, 16.5, by=1))
-  mean(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS == 1)
-  mean(data_full$y_iRuralDHS/data_full$n_iRuralDHS == 0)
-  mean(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS == 1) + mean(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS == 0)
-  mean(data_full$y_iRuralDHS/data_full$n_iRuralDHS == 0) + mean(data_full$y_iRuralDHS/data_full$n_iRuralDHS == 1)
-  
-  hist(data_full$y_iUrbanMICS/data_full$n_iUrbanMICS, breaks=50)
-  hist(data_full$y_iRuralMICS/data_full$n_iRuralMICS, breaks=50)
-  hist(data_full$n_iUrbanMICS-data_full$y_iUrbanMICS, breaks=seq(-0.5, 17.5, by=1))
-  hist(data_full$y_iRuralMICS, breaks=seq(-0.5, 16.5, by=1))
-  mean(data_full$y_iUrbanMICS/data_full$n_iUrbanMICS == 1)
-  mean(data_full$y_iRuralMICS/data_full$n_iRuralMICS == 0)
-  mean(data_full$y_iUrbanMICS/data_full$n_iUrbanMICS == 1) + mean(data_full$y_iUrbanMICS/data_full$n_iUrbanMICS == 0)
-  mean(data_full$y_iRuralMICS/data_full$n_iRuralMICS == 0) + mean(data_full$y_iRuralMICS/data_full$n_iRuralMICS == 1)
-}
-
-# initial parameters
-initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
-initAlpha = logit(initRurP)
-initBeta1 = logit(initUrbP) - initAlpha
-
-tmb_params <- list(alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
-                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                   nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-)
-
-# make TMB fun and grad ----
-dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
+# * Run TMB ----
+dyn.load( dynlib("code/modBYM2JitterDHS2"))
 TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2sparse')
-obj <- MakeADFun(data=data_full,
-                 parameters=tmb_params,
-                 random=rand_effs,
-                 hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2')
-# objFull <- MakeADFun(data=data_full,
-#                      parameters=tmb_params,
-#                      hessian=TRUE,
-#                      DLL='modBYM2JitterFusionNugget2')
+                 DLL='modBYM2JitterDHS2')
+objFull <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     hessian=TRUE,
+                     DLL='modBYM2JitterDHS2')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -318,12 +178,10 @@ if(FALSE) {
   testRep = obj$report(initParFull)
   
   system.time(test <- obj$fn(obj$par))
-  # 363.236  for non-sparse
-  # 355.211 for sparse
+  #  109.244
   
   system.time(test <- obj$gr(obj$par))
-  # 54.5 for non-sparse
-  # 55.3 for sparse
+  #  31.048 
   
   testRep = obj$report()
   
@@ -356,8 +214,6 @@ if(FALSE) {
   any(apply(data_full$wRuralMICS, 1, function(x) {all(x == 0)}))
 }
 
-# * Run TMB ----
-
 {
   tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
   testObj = obj
@@ -388,7 +244,7 @@ if(FALSE) {
       )[3]
       # SD0
       print(sdTime/60)
-      # 3.9447 minutes for intern=FALSE
+      #  minutes for intern=FALSE
       
       if(SD0$pdHess) {
         print("Optimization and PD hess calculation done!")
@@ -407,7 +263,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 3.66491666666667 minutes (for intern=FALSE)
+  # optimization took  minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -436,7 +292,7 @@ if(!SD0$pdHess) {
                         random=rand_effs,
                         map=map, 
                         hessian=TRUE,
-                        DLL='modBYM2JitterFusionNugget')
+                        DLL='modBYM2JitterDHS')
   testObj = objFixed
   thisOptPar = optPar[-which(names(optPar) == "log_tauEps")]
   lower = lower[-which(names(optPar) == "log_tauEps")]
@@ -470,7 +326,7 @@ if(!SD0$pdHess) {
       )[3]
       # SD0
       print(sdTime/60)
-      # 3.9447 minutes for intern=FALSE
+      #  minutes for intern=FALSE
       
       if(SD0$pdHess) {
         print("Optimization and PD hess calculation done!")
@@ -526,21 +382,10 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit.RData")
+save(SD0, obj, objFull, totalTime, sdTime, file="savedOutput/ed/fit.RData")
 out = load("savedOutput/ed/fit.RData")
 
 gridPreds = predGrid(SD0, obj)
-# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
-# \hline
-# (Int) & -1.79 & -1.91 & -1.87 & -1.71 & -1.66 \\ 
-# urb & 1.13 & 1.04 & 1.07 & 1.18 & 1.21 \\ 
-# access & -0.30 & -0.42 & -0.37 & -0.23 & -0.19 \\ 
-# elev & -0.32 & -1.01 & -0.75 & 0.16 & 0.34 \\ 
-# distRiversLakes & 0.29 & -0.85 & -0.48 & 1.06 & 1.50 \\ 
-# popValsNorm & 0.38 & 0.23 & 0.28 & 0.49 & 0.54 \\ 
-# sigmaSq & 0.53 & 0.44 & 0.47 & 0.60 & 0.64 \\ 
-# phi & 0.92 & 0.91 & 0.92 & 0.92 & 0.93 \\ 
-# sigmaEpsSq & 1.52 & 1.41 & 1.45 & 1.60 & 1.65 \\ 
 save(gridPreds, file="savedOutput/ed/gridPreds.RData")
 out = load("savedOutput/ed/gridPreds.RData")
 
@@ -554,13 +399,8 @@ out = load("savedOutput/ed/admin2Preds.RData")
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-          gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionFull2")
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionFull2", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionTest", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionFull2", plotNameRootAreal="Admin2")
-
-
+          plotNameRoot="edFusion", plotNameRootAreal="Admin2")
