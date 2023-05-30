@@ -1764,9 +1764,11 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     }
     
     # expand A matrices to size of Xmat (project to integration points instead of clusters)
-    Kurb = nrow(Xurb) / nrow(Aurb)
-    Krur = nrow(Xrur) / nrow(Arur)
+    Kurb = ncol(wUrb)
+    Krur = ncol(wRur)
     if(model %in% c("Md", "MD", "Mdm", "MDM")) {
+      Kurb = nrow(Xurb) / nrow(Aurb)
+      Krur = nrow(Xrur) / nrow(Arur)
       bigAurb = matrix(rep(Aurb, times=Kurb), ncol=ncol(Aurb))
       bigArur = matrix(rep(Arur, times=Krur), ncol=ncol(Arur))
     } else {
