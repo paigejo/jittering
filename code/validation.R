@@ -169,7 +169,7 @@ stratKdhs = function(K=10, seed=1234) {
 
 # submodels of the BYM2 model
 
-getValidationDataM_d = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm2")) {
+getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -181,13 +181,27 @@ getValidationDataM_d = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
+  out = load("savedOutput/validation/edMICSval.RData")
   
-  inSampleLInds = edVal$fold != fold
-  inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
-  inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
-  inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
-  outOfSampleLInds = edVal$fold == fold
+  strata = sort(unique(edVal$Stratum))
+  foldStrat = strata[fold]
+  
+  if(!areal) {
+    inSampleLInds = edVal$fold != fold
+    inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
+    inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$fold == fold
+  } else {
+    inSampleLInds = edVal$Stratum != foldStrat
+    inSampleLIndsUrb = (edVal$Stratum != foldStrat) & (edVal$urban)
+    inSampleLIndsRur = (edVal$Stratum != foldStrat) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$Stratum == foldStrat
+  }
+  
   edInSample = edVal[inSampleLInds,]
   edOutOfSample = edVal[outOfSampleLInds,]
   
@@ -247,8 +261,8 @@ getValidationDataM_d = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
   
   
   # set priors ----
-  alpha_pri = c(0, 100^2)
-  beta_pri = c(0, 10^2)
+  alpha_pri = c(0, 10^2)
+  beta_pri = c(0, 5^2)
   
   if(admLevel == "admFinal") {
     out = load("savedOutput/global/admFinalMat.RData")
@@ -334,7 +348,7 @@ getValidationDataM_d = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
                             hessian=TRUE, DLL=DLL))
 }
 
-getValidationDataM_D = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm2")) {
+getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -347,12 +361,25 @@ getValidationDataM_D = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
-  inSampleLInds = edVal$fold != fold
-  inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
-  inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
-  inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
-  outOfSampleLInds = edVal$fold == fold
+  strata = sort(unique(edVal$Stratum))
+  foldStrat = strata[fold]
+  
+  if(!areal) {
+    inSampleLInds = edVal$fold != fold
+    inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
+    inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$fold == fold
+  } else {
+    inSampleLInds = edVal$Stratum != foldStrat
+    inSampleLIndsUrb = (edVal$Stratum != foldStrat) & (edVal$urban)
+    inSampleLIndsRur = (edVal$Stratum != foldStrat) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$Stratum == foldStrat
+  }
+  
   edInSample = edVal[inSampleLInds,]
   edOutOfSample = edVal[outOfSampleLInds,]
   
@@ -400,8 +427,8 @@ getValidationDataM_D = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
   # out = load("savedOutput/global/edInputsDHS.RData")
   
   # set priors ----
-  alpha_pri = c(0, 100^2)
-  beta_pri = c(0, 10^2)
+  alpha_pri = c(0, 10^2)
+  beta_pri = c(0, 5^2)
   
   if(admLevel == "admFinal") {
     out = load("savedOutput/global/admFinalMat.RData")
@@ -487,7 +514,7 @@ getValidationDataM_D = function(fold, inSample=TRUE, admLevel=c("admFinal", "adm
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
+getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -501,16 +528,25 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
-  inSampleLIndsDHS = edVal$fold != fold
-  inSampleLIndsUrbDHS = (edVal$fold != fold) & (edVal$urban)
-  inSampleLIndsRurDHS = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
-  inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
-  outOfSampleLIndsDHS = edVal$fold == fold
-  outOfSampleLIndsUrbDHS = (edVal$fold == fold) & (edVal$urban)
-  outOfSampleLIndsRurDHS = (edVal$fold == fold) & (!edVal$urban)
-  outOfSampleLIndsUrb2DHS = outOfSampleLIndsDHS[edVal$urban]
-  outOfSampleLIndsRur2DHS = outOfSampleLIndsDHS[!edVal$urban]
+  strata = sort(unique(edVal$Stratum))
+  foldStrat = strata[fold]
+  
+  if(!areal) {
+    inSampleLInds = edVal$fold != fold
+    inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
+    inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$fold == fold
+  } else {
+    inSampleLInds = edVal$Stratum != foldStrat
+    inSampleLIndsUrb = (edVal$Stratum != foldStrat) & (edVal$urban)
+    inSampleLIndsRur = (edVal$Stratum != foldStrat) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$Stratum == foldStrat
+  }
+  
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
   
@@ -524,16 +560,30 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
   out = load("savedOutput/validation/simEdMICS.RData")
   edMICSval = simEdMICS[[fold]]
   
-  inSampleLIndsMICS = edMICSval$fold != foldMICS
-  inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
-  inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
-  inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
-  inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
-  outOfSampleLIndsMICS = edMICSval$fold == foldMICS
-  outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
-  outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
-  outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
-  outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  if(!areal) {
+    inSampleLIndsMICS = edMICSval$fold != foldMICS
+    inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
+    inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
+    inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+    inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
+    outOfSampleLIndsMICS = edMICSval$fold == foldMICS
+    outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
+    outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
+    outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+    outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  } else {
+    inSampleLIndsMICS = edMICSval$Stratum != foldStrat
+    inSampleLIndsUrbMICS = (edMICSval$Stratum != foldStrat) & (edMICSval$urban)
+    inSampleLIndsRurMICS = (edMICSval$Stratum != foldStrat) & (!edMICSval$urban)
+    inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+    inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
+    outOfSampleLIndsMICS = edMICSval$Stratum == foldStrat
+    outOfSampleLIndsUrbMICS = (edMICSval$Stratum == foldStrat) & (edMICSval$urban)
+    outOfSampleLIndsRurMICS = (edMICSval$Stratum == foldStrat) & (!edMICSval$urban)
+    outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+    outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  }
+  
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
   
@@ -806,8 +856,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
   }
   
   # set priors ----
-  alpha_pri = c(0, 100^2)
-  beta_pri = c(0, 10^2)
+  alpha_pri = c(0, 10^2)
+  beta_pri = c(0, 5^2)
   
   if(admLevel == "admFinal") {
     out = load("savedOutput/global/admFinalMat.RData")
@@ -937,7 +987,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2")) {
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
+getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -951,16 +1001,25 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
-  inSampleLIndsDHS = edVal$fold != fold
-  inSampleLIndsUrbDHS = (edVal$fold != fold) & (edVal$urban)
-  inSampleLIndsRurDHS = (edVal$fold != fold) & (!edVal$urban)
-  inSampleLIndsUrb2DHS = inSampleLIndsDHS[edVal$urban]
-  inSampleLIndsRur2DHS = inSampleLIndsDHS[!edVal$urban]
-  outOfSampleLIndsDHS = edVal$fold == fold
-  outOfSampleLIndsUrbDHS = (edVal$fold == fold) & (edVal$urban)
-  outOfSampleLIndsRurDHS = (edVal$fold == fold) & (!edVal$urban)
-  outOfSampleLIndsUrb2DHS = outOfSampleLIndsDHS[edVal$urban]
-  outOfSampleLIndsRur2DHS = outOfSampleLIndsDHS[!edVal$urban]
+  strata = sort(unique(edVal$Stratum))
+  foldStrat = strata[fold]
+  
+  if(!areal) {
+    inSampleLInds = edVal$fold != fold
+    inSampleLIndsUrb = (edVal$fold != fold) & (edVal$urban)
+    inSampleLIndsRur = (edVal$fold != fold) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$fold == fold
+  } else {
+    inSampleLInds = edVal$Stratum != foldStrat
+    inSampleLIndsUrb = (edVal$Stratum != foldStrat) & (edVal$urban)
+    inSampleLIndsRur = (edVal$Stratum != foldStrat) & (!edVal$urban)
+    inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
+    inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
+    outOfSampleLInds = edVal$Stratum == foldStrat
+  }
+  
   edInSample = edVal[inSampleLIndsDHS,]
   edOutOfSample = edVal[outOfSampleLIndsDHS,]
   
@@ -972,16 +1031,30 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
   # now load MICS data
   out = load("savedOutput/validation/edMICSval.RData")
   
-  inSampleLIndsMICS = edMICSval$fold != foldMICS
-  inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
-  inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
-  inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
-  inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
-  outOfSampleLIndsMICS = edMICSval$fold == foldMICS
-  outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
-  outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
-  outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
-  outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  if(!areal) {
+    inSampleLIndsMICS = edMICSval$fold != foldMICS
+    inSampleLIndsUrbMICS = (edMICSval$fold != foldMICS) & (edMICSval$urban)
+    inSampleLIndsRurMICS = (edMICSval$fold != foldMICS) & (!edMICSval$urban)
+    inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+    inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
+    outOfSampleLIndsMICS = edMICSval$fold == foldMICS
+    outOfSampleLIndsUrbMICS = (edMICSval$fold == foldMICS) & (edMICSval$urban)
+    outOfSampleLIndsRurMICS = (edMICSval$fold == foldMICS) & (!edMICSval$urban)
+    outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+    outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  } else {
+    inSampleLIndsMICS = edMICSval$Stratum != foldStrat
+    inSampleLIndsUrbMICS = (edMICSval$Stratum != foldStrat) & (edMICSval$urban)
+    inSampleLIndsRurMICS = (edMICSval$Stratum != foldStrat) & (!edMICSval$urban)
+    inSampleLIndsUrb2MICS = inSampleLIndsMICS[edMICSval$urban]
+    inSampleLIndsRur2MICS = inSampleLIndsMICS[!edMICSval$urban]
+    outOfSampleLIndsMICS = edMICSval$Stratum == foldStrat
+    outOfSampleLIndsUrbMICS = (edMICSval$Stratum == foldStrat) & (edMICSval$urban)
+    outOfSampleLIndsRurMICS = (edMICSval$Stratum == foldStrat) & (!edMICSval$urban)
+    outOfSampleLIndsUrb2MICS = outOfSampleLIndsMICS[edMICSval$urban]
+    outOfSampleLIndsRur2MICS = outOfSampleLIndsMICS[!edMICSval$urban]
+  }
+  
   edMICSInSample = edMICSval[inSampleLIndsMICS,]
   edMICSOutOfSample = edMICSval[outOfSampleLIndsMICS,]
   
@@ -1000,6 +1073,15 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
   out = load("savedOutput/global/intPtsDHS.RData")
   out = load("savedOutput/global/intPtsMICS.RData")
   
+  if(areal) {
+    # for areal predictions, subset the grid to the relevant stratum, get 
+    # covariates at grid locations
+    out = load("savedOutput/global/popMatNGAThresh.RData")
+    popMat = popMatNGAThresh
+    foldPopMat = popMat[popMat$stratumMICS == foldStrat,]
+    covs = getDesignMat(cbind(foldPopMat$lon, foldPopMat$lat), useThreshPopMat=TRUE, normalized=TRUE, 
+                        proj=proj, testMode=testMode, setMissingToAvg=setMissingToAvg)
+  }
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
@@ -1226,8 +1308,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2")) {
   # intPtsMICS$wRural[,1] = 1
   
   # set priors ----
-  alpha_pri = c(0, 100^2)
-  beta_pri = c(0, 10^2)
+  alpha_pri = c(0, 10^2)
+  beta_pri = c(0, 5^2)
   
   if(admLevel == "admFinal") {
     out = load("savedOutput/global/admFinalMat.RData")
@@ -1404,7 +1486,7 @@ getAllValidationData2 = function(folds=1:20) {
 
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                            regenModFit=FALSE, randomBeta=FALSE) {
+                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1437,13 +1519,21 @@ getValidationFit = function(fold,
   edMICSOutOfSample = dat$edMICSOutOfSample
   
   # set starting values to full M_DM optimum
-  dat$MakeADFunInputs$parameters$alpha = -1.7905689 # intercept
-  dat$MakeADFunInputs$parameters$beta = c(.6, -.62, .19, .13, .12)
-  dat$MakeADFunInputs$parameters$log_tau = 0.6306069 # Log tau (i.e. log spatial precision, Epsilon)
-  dat$MakeADFunInputs$parameters$logit_phi = 2.4493192 # SPDE parameter related to the range
-  dat$MakeADFunInputs$parameters$log_tauEps = -0.4203604 # Log tau (i.e. log spatial precision, Epsilon)
+  # dat$MakeADFunInputs$parameters$alpha = -1.7905689 # intercept
+  # dat$MakeADFunInputs$parameters$beta = c(.6, -.62, .19, .13, .12)
+  # dat$MakeADFunInputs$parameters$log_tau = 0.6306069 # Log tau (i.e. log spatial precision, Epsilon)
+  # dat$MakeADFunInputs$parameters$logit_phi = 2.4493192 # SPDE parameter related to the range
+  # dat$MakeADFunInputs$parameters$log_tauEps = -0.4203604 # Log tau (i.e. log spatial precision, Epsilon)
+  dat$MakeADFunInputs$parameters$alpha = -2.19427268 # intercept
+  dat$MakeADFunInputs$parameters$beta = c(0.56250562, 0.01287842, 0.10090683, 0.09207191, 1.25325119)
+  dat$MakeADFunInputs$parameters$log_tau = -0.08209775 # Log tau (i.e. log spatial precision, Epsilon)
+  dat$MakeADFunInputs$parameters$logit_phi = -1.78428461 # SPDE parameter related to the range
+  dat$MakeADFunInputs$parameters$log_tauEps = 0.64672006 # Log tau (i.e. log spatial precision, Epsilon)
   if(randomBeta) {
     dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+  }
+  if(randomAlpha) {
+    dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
   }
   
   MakeADFunInputs = dat$MakeADFunInputs
@@ -1537,7 +1627,8 @@ getValidationFit = function(fold,
     }
     
     {
-      tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+      # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+      tolSeq = 1e-06
       testObj = obj
       optPar = testObj$par
       startTime = proc.time()[3]
@@ -1572,11 +1663,23 @@ getValidationFit = function(fold,
             break
           }
           else {
+            # try some other ways of calculating the hessian:
+            SD0testSkipDelta <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                 bias.correct = TRUE,
+                                 bias.correct.control = list(sd = TRUE), 
+                                 skip.delta.method=TRUE)
+            SD0testSkipBiasCorrect <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                              bias.correct = FALSE, 
+                                              skip.delta.method=TRUE)
+            SD0testNoSDCorrect <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                              bias.correct = TRUE,
+                                              bias.correct.control = list(sd = FALSE), 
+                                              skip.delta.method=TRUE)
+            
+            browser()
             print("Hessan not PD. Rerunning optimization with stricter tol...")
           }
         }
-        
-        
         
       }
       endTime = proc.time()[3]
@@ -1917,6 +2020,46 @@ predClusters = function(nsim=1000, fold, SD0, obj,
        parSummary=parSummary, fixedMat=fixedMat, 
        quantsUrb=quantsUrb, quantsRur=quantsRur, 
        yUrb=yUrb, yRur=yRur, nUrb=nUrb, nRur=nRur)
+}
+
+# make predictions for a set of clusters of one type (MICS or DHS)
+# SD0: TMB sdreport object
+# obj: TMB fun object
+# fold: cross validation fold from 1-41 represent the MICS stratum in alphabetical order
+# model: which model we're making predictions with
+predStratum = function(nsim=1000, fold, SD0, obj, 
+                       model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
+                       quantiles=c(0.025, 0.1, 0.9, 0.975)) {
+  
+  # clean input arguments
+  model = match.arg(model)
+  
+  # load in the data for the appropriate model
+  fnameRoot = model
+  if(fnameRoot == "MD") {
+    fnameRoot = "M_D"
+  } else if(fnameRoot == "MDM") {
+    fnameRoot = "M_DM"
+  } else if(fnameRoot == "MD2") {
+    fnameRoot = "M_D2"
+  } else if(fnameRoot == "MDM2") {
+    fnameRoot = "M_DM2"
+  }
+  
+  # get what stratum we're predicting at
+  out = load("savedOutput/validation/edMICSval.RData")
+  strata = sort(unique(edVal$Stratum))
+  foldStrat = strata[fold]
+  
+  gridPreds = predGrid(SD0=SD0, tmbObj=obj, 
+                       normalized=TRUE, extractMethod="bilinear", 
+                       nsim=nsim, quantiles=quantiles, 
+                       splineApprox=TRUE, admLevel="stratMICS", 
+                       predAtArea=foldStrat)
+  
+  stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+  
+  stratPreds
 }
 
 scoreValidationPreds = function(fold, 

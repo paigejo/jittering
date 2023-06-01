@@ -618,10 +618,12 @@ summaryTabBYM2 = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
 
 # normalized: whether covariates are normalized
 # extractMethod: extraction method for covariates in terra:extract
+# predAtArea: name of area to predict at, if only 1
 predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh, 
                     normalized=TRUE, extractMethod="bilinear", 
                     nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                    splineApprox=TRUE, admLevel=c("stratMICS", "adm2")) {
+                    splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
+                    predAtArea=NULL) {
   admLevel = match.arg(admLevel)
   
   # get parameters
@@ -630,6 +632,14 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
   beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
   parnames = names(SD0$par.fixed)
   hasNugget = "log_tauEps" %in% parnames
+  
+  if(!is.null(predAtArea)) {
+    if(admLevel == "stratMICS") {
+      popMat = popMat[popMat$stratumMICS == predAtArea,]
+    } else {
+      popMat = popMat[popMat$subarea == predAtArea,]
+    }
+  }
   
   # load covariates at prediction locations
   LLcoords = cbind(popMat$lon, popMat$lat)
