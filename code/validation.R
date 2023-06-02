@@ -1486,7 +1486,7 @@ getAllValidationData2 = function(folds=1:20) {
 
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE) {
+                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, fromOptPar=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1631,6 +1631,11 @@ getValidationFit = function(fold,
       tolSeq = 1e-06
       testObj = obj
       optPar = testObj$par
+      if(fromOptPar) {
+        # load optPar from file if requested
+        load(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
+      }
+      
       startTime = proc.time()[3]
       for(thisTol in tolSeq) {
         testObj = obj
@@ -1640,6 +1645,8 @@ getValidationFit = function(fold,
         opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
                       method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
         optPar = opt1$par
+        
+        save(optPar, file=paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
         if(!is.null(opt1$message)) {
           print(paste0("error for tol = ", thisTol, ". Message:"))
           print(opt1$message)
