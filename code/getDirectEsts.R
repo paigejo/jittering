@@ -1,7 +1,8 @@
 # library(haven)
 library(survey)
 
-# clustDatRow: a row of cluster level data.frame with elements:
+# clustDat: a cluster level data.frame with elements (in any order):
+#    clustID
 #    y
 #    n
 #    urban
@@ -21,6 +22,19 @@ getDirectEsts = function(clustDat, divideWeight=TRUE) {
                      useSamplingWeights = TRUE)
   
   res
+}
+
+# clustDatDHS: a subset of edVal
+# clustDatMICS: a subset of edMICSval
+getCombinedDirectEsts = function(clustDatDHS, clustDatMICS, divideWeight=TRUE) {
+  clustDatDHS$area = NULL
+  # clustDatDHS$subarea = NULL only remove this because it could be confusing
+  names(clustDatDHS)[grepl("Stratum", names(clustDatDHS))] = "area"
+  names(clustDatDHS)[grepl("clusterID", names(clustDatDHS))] = "clustID"
+  
+  names(clustDatMICS)[grepl("ys", names(clustDatDHS))] = "y"
+  names(clustDatMICS)[grepl("ns", names(clustDatDHS))] = "n"
+  
 }
 
 # helper functions -----

@@ -3,7 +3,7 @@
 #SBATCH --partition CPUQ    # Slurm partition to use
 #SBATCH --ntasks 1          # Number of tasks to run. By default, one CPU core will be allocated per task
 #SBATCH --time 1-00:00        # Wall time limit in D-HH:MM
-#SBATCH --mem-per-cpu=3000     # Memory limit for each tasks (in MB) 6850
+#SBATCH --mem-per-cpu=4000     # Memory limit for each tasks (in MB) 6850
 #SBATCH -o runValidation2_%A_%a.out    # File to which STDOUT will be written
 #SBATCH -e runValidation2_%A_%a.err    # File to which STDERR will be written
 #SBATCH --mail-type=ALL       # Type of email notification- BEGIN,END,FAIL,ALL
@@ -22,9 +22,9 @@
 # srun --account=ie-imf --nodes=1 --partition=CPUQ --time=02:00:00 --pty bash 
 # module purge
 # module load R/4.0.3-foss-2020b
-module load R/4.2.1-foss-2022a
 # module swap JasPer/2.0.14-GCCcore-10.2.0 JasPer/2.0.24-GCCcore-10.2.0
 # module load GDAL/3.2.1-foss-2020b
+module load R/4.2.1-foss-2022a
 module load GDAL/3.5.0-foss-2022a
 
 Rscript --verbose runValidation2.R ${SLURM_ARRAY_TASK_ID} > runValidation2_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout

@@ -1356,6 +1356,123 @@ getJobIndices = function(i=1, j=1:100, maxJ=100, rev=FALSE) {
   }
 }
 
+# iNames: vector of names corresponding to i job index from getJobIndices
+# jNames: vector of names corresponding to j job index from getJobIndices
+# NOTE: iNames and jNames must be names that uniquely characterize files 
+#       with the i and j index respectively
+generateJobList = function(workDir="savedOutput/validation/folds/", 
+                           filePrefix="scores", fileSuffix=".RData", 
+                           iNames=c("Md2", "M_D2", "Mdm2", "M_DM2"), 
+                           jNames=paste(paste("fold", 1:20, sep=""), ".", sep=""), 
+                           extensiveCheck=FALSE, excludeFiles=c("d_", "D_", "dm_", "DM_")) {
+  # save current directory to return to later. Set directory to job file locations
+  thisDir = getwd()
+  setwd(workDir)
+  
+  # get indices of relevant characters in the file names
+  out = system(paste0("ls ", filePrefix, "*", fileSuffix), intern=TRUE)
+  
+  # remove excluded files if necessary
+  if(length(excludeFiles) > 1) {
+    badFiles = matrix(sapply(excludeFiles, function(x) {
+      grepl(x, out)
+    }), ncol=length(excludeFiles))
+    badFiles = apply(badFiles, 1, any)
+    out = out[!badFiles]
+  }
+  
+  
+  # get index of character in x representing the start of the iName or jName. 
+  # Assumes x has at most 1 iName or jName
+  getIJNameInds = function(x, type=c("i", "j")) {
+    type=match.arg(type)
+    thisNames = iNames
+    if(type == "j") {
+      thisNames = jNames
+    }
+    myGregexpr = function(y, z) {
+      gregexpr(y, z, fixed=TRUE)[[1]][1]
+    }
+    out = which(sapply(thisNames, myGregexpr, z=x) != -1)
+    
+    if(length(out) > 1) {
+      stop(paste("multiple matches for type", type, "and names", paste(thisNames[out], collapse=" "), "in file", x, sep=" "))
+    }
+    out
+  }
+  iIs = sapply(out, getIJNameInds, type="i")
+  jIs = sapply(out, getIJNameInds, type="j")
+  
+  # determine whether the relevant file exists or not
+  fileExists = matrix(FALSE, nrow=length(iNames), ncol=length(jNames))
+  for(i in 1:length(out)) {
+    thisFilename = out[i]
+    iI = iIs[i]
+    jI = jIs[i]
+    
+    if(!extensiveCheck) {
+      fileExists[iI, jI] = TRUE
+    } else {
+      # check to make sure we can actually load the relevant file
+      
+      canLoad <<- TRUE
+      tmp = tryCatch(load(thisFilename), error= function(e) {canLoad <<- FALSE})
+      
+      fileExists[iI, jI] = canLoad
+    }
+  }
+  missingJobInds = (1:length(fileExists))[!c(t(fileExists))]
+  
+  if(length(missingJobInds) == 0) {
+    setwd(thisDir)
+    print("No missing jobs")
+    return(invsible(NULL))
+  }else if(length(missingJobInds) == 1) {
+    setwd(thisDir)
+    return(missingJobInds)
+  } else {
+    print(paste0("Total missing job results: ", length(missingJobInds)))
+  }
+  
+  # shorten the string to make it readable:
+  
+  # add a fake missing job index at the end to make sure we get the final missing jobs
+  missingJobInds = c(missingJobInds, length(fileExists) + 100)
+  
+  # look for groups of consecutive missing job indices
+  lastInd = missingJobInds[1]
+  firstJobInd = lastInd
+  jobList = ""
+  for(i in 2:length(missingJobInds)) {
+    thisInd = missingJobInds[i]
+    thisDiff = thisInd - lastInd
+    commaStr = ifelse(firstJobInd == missingJobInds[1], "", ",")
+    
+    if(thisDiff != 1) {
+      # this index and last index aren't in the same group, must add 
+      # last index (or its associated group) to the job list string
+      
+      if(firstJobInd == lastInd) {
+        # last index was a singleton
+        jobList = paste0(jobList, commaStr, lastInd)
+      } else {
+        # last index was the last consecutive job in the group
+        jobList = paste0(jobList, commaStr, "[", firstJobInd, "-", lastInd, "]")
+      }
+      
+      firstJobInd = thisInd
+    } else {
+      # this index and last index are in the same group. Don't need to 
+      # do anything here
+    }
+    lastInd = thisInd
+  }
+  
+  setwd(thisDir)
+  
+  return(jobList)
+}
+
 shrinkpdf<-function(pdf,maxsize=5,suffix="_small",verbose=T){  
   require(multicore)  
   wd=getwd()  
