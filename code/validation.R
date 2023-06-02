@@ -1664,20 +1664,32 @@ getValidationFit = function(fold,
           }
           else {
             # try some other ways of calculating the hessian:
+            print("Hessian not PD. Testing other SD calculations...")
+            print(SD0)
             SD0testSkipDelta <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                                  bias.correct = TRUE,
                                  bias.correct.control = list(sd = TRUE), 
                                  skip.delta.method=TRUE)
+            print(SD0testSkipDelta)
+            print(paste0("SD0testSkipDelta PD: ", SD0testSkipDelta$pdHess))
+            
+            save(SD0, SD0testSkipDelta, file=paste0("savedOutput/validation/folds/testSkipDelta", fnameRoot, "_fold", fold, ".RData"))
             SD0testSkipBiasCorrect <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                                               bias.correct = FALSE, 
                                               skip.delta.method=TRUE)
+            save(SD0testSkipBiasCorrect, file=paste0("savedOutput/validation/folds/testSkipBias", fnameRoot, "_fold", fold, ".RData"))
+            print(SD0testSkipBiasCorrect)
+            print(paste0("SD0testSkipBiasCorrect PD: ", SD0testSkipBiasCorrect$pdHess))
             SD0testNoSDCorrect <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                                               bias.correct = TRUE,
                                               bias.correct.control = list(sd = FALSE), 
                                               skip.delta.method=TRUE)
+            save(SD0testNoSDCorrect, file=paste0("savedOutput/validation/folds/testNoSDCorrect", fnameRoot, "_fold", fold, ".RData"))
+            print(SD0testNoSDCorrect)
+            print(paste0("SD0testNoSDCorrect PD: ", SD0testNoSDCorrect$pdHess))
             
             browser()
-            print("Hessan not PD. Rerunning optimization with stricter tol...")
+            # print("Hessian not PD. Rerunning optimization with stricter tol...")
           }
         }
         
