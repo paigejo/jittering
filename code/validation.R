@@ -1486,7 +1486,8 @@ getAllValidationData2 = function(folds=1:20) {
 
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, fromOptPar=FALSE) {
+                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, 
+                            randomTauEps=FALSE, fromOptPar=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1534,6 +1535,9 @@ getValidationFit = function(fold,
   }
   if(randomAlpha) {
     dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
+  }
+  if(randomTauEps) {
+    dat$MakeADFunInputs$random = c("log_tauEps", dat$MakeADFunInputs$random)
   }
   
   MakeADFunInputs = dat$MakeADFunInputs
@@ -1632,8 +1636,10 @@ getValidationFit = function(fold,
       testObj = obj
       optPar = testObj$par
       if(fromOptPar) {
-        # load optPar from file if requested
-        load(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
+        if(file.exists(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))) {
+          # load optPar (replacing the default value) from file if requested
+          load(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
+        }
       }
       
       startTime = proc.time()[3]

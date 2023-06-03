@@ -213,12 +213,18 @@ wb4orig = dat$WB4
 wb5orig = dat$WB5
 # wb6orig = dat$WB6
 literacyOrig = dat$WB7
+wt = as.numeric(dat$wmweight) # women's weight at admin1 level
+wtKano = as.numeric(dat$wmweightkano) # women's weight
+wtLagos = as.numeric(dat$wmweightlagos) # women's weight
 wb3 = as.numeric(as.character(dat$WB3))
 wb4 = as.numeric(as.character(dat$WB4))
 wb5 = as.numeric(as.character(dat$WB5))
 # wb6 = as.numeric(as.character(dat$WB6))
 literacyMICS = as.numeric(as.character(dat$WB7))
 fullyInterviewed = dat$WM7
+
+wtLagosNZero = wtLagos[wtLagos > 0]
+length(wtLagosNZero) # 1745
 
 # histogram and summary statistics about literacy of people without formal education
 hist(literacyMICS[wb4 == 4], breaks=c(.5, 1.5, 2.5, 3.5, 4.5, 5.5, 9.5))
@@ -259,6 +265,7 @@ datMICSwm = data.frame(clustID=clustID, hhID=houseID, age=ageMICS,
                        secondaryEd=edMICS, literacy=literacyMICS)
 
 # now read in the household data because it contains stratum information
+datwm = dat
 dat = read_sav("data/NigeriaMICS5/NigeriaMICS2016-17SPSS/hh.sav")
 stratum = dat$stratum
 clustIDhh = dat$HH1
@@ -282,7 +289,7 @@ datMICShh = stratMatchTable[match(stratum, stratMatchTable$StratumID),]
 fullHouseIDhh = paste(as.character(clustIDhh), as.character(houseIDhh), sep=", ")
 fullHouseIDwm = paste(as.character(clustID), as.character(houseID), sep=", ")
 datMICSwm = cbind(datMICSwm, fullHouseID=fullHouseIDwm)
-datMICShh = cbind(datMICShh, fullHouseID=fullHouseIDhh, urban=urbanhh==1)
+datMICShh = cbind(datMICShh, fullHouseID=fullHouseIDhh, urban=urbanhh==1, wt=dat$wqhweight, wtKano=dat$wqhweightkano, wtLagos=dat$wqhweightlagos)
 
 datMICS = merge(datMICShh, datMICSwm, by="fullHouseID")
 datMICS = datMICS[,c(2:ncol(datMICS), 1)]

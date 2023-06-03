@@ -27,8 +27,9 @@ fold = j
 # p = profvis({
 # randomBeta = ifelse(model=="MDM", TRUE, FALSE)
 randomBeta = TRUE
-randomAlpha=TRUE
-system.time(out <- getValidationFit(fold, model, regenModFit=TRUE, randomBeta=randomBeta, randomAlpha=randomAlpha))
+randomAlpha = TRUE
+randomTauEps = TRUE # since its posterior also looks highly Gaussian
+system.time(out <- getValidationFit(fold, model, regenModFit=TRUE, randomBeta=randomBeta, randomAlpha=randomAlpha, randomTauEps=randomTauEps))
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
 
