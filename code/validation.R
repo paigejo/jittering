@@ -1487,7 +1487,7 @@ getAllValidationData2 = function(folds=1:20) {
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                             regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, 
-                            randomTauEps=FALSE, fromOptPar=FALSE) {
+                            fromOptPar=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1535,9 +1535,6 @@ getValidationFit = function(fold,
   }
   if(randomAlpha) {
     dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
-  }
-  if(randomTauEps) {
-    dat$MakeADFunInputs$random = c("log_tauEps", dat$MakeADFunInputs$random)
   }
   
   MakeADFunInputs = dat$MakeADFunInputs
@@ -1663,10 +1660,25 @@ getValidationFit = function(fold,
           
           ## Get standard errors
           print("getting standard errors...")
-          sdTime = system.time(
+          sdTime = system.time({
             SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                                  bias.correct = TRUE,
                                  bias.correct.control = list(sd = TRUE))
+            
+            if(!SD0$pdHess) {
+              # try recalculating for fixed parameters numerically
+              Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
+              SD0 <- sdreport( testObj, hessian.fixed=Hess,
+                             bias.correct = TRUE,
+                             bias.correct.control = list(sd = TRUE) )
+              browser()
+            }
+            
+            if(!SD0$pdHess) {
+              # try fixing parameter at estimated value
+              
+            }
+          }
           )[3]
           # SD0
           print(paste0("SE calculations took ", sdTime/60, " minutes"))
@@ -1697,6 +1709,11 @@ getValidationFit = function(fold,
                                               bias.correct = TRUE,
                                               bias.correct.control = list(sd = FALSE), 
                                               skip.delta.method=TRUE)
+            save(SD0testNoSDCorrect, file=paste0("savedOutput/validation/folds/testNoSDCorrect", fnameRoot, "_fold", fold, ".RData"))
+            print(SD0testNoSDCorrect)
+            print(paste0("SD0testNoSDCorrect PD: ", SD0testNoSDCorrect$pdHess))
+            
+            hessTest <- numDeriv::jacobian(objFull$gr, )
             save(SD0testNoSDCorrect, file=paste0("savedOutput/validation/folds/testNoSDCorrect", fnameRoot, "_fold", fold, ".RData"))
             print(SD0testNoSDCorrect)
             print(paste0("SD0testNoSDCorrect PD: ", SD0testNoSDCorrect$pdHess))
