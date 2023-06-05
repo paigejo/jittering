@@ -1364,7 +1364,8 @@ generateJobList = function(workDir="savedOutput/validation/folds/",
                            filePrefix="scores", fileSuffix=".RData", 
                            iNames=c("Md2", "M_D2", "Mdm2", "M_DM2"), 
                            jNames=paste(paste("fold", 1:20, sep=""), ".", sep=""), 
-                           extensiveCheck=FALSE, excludeFiles=c("d_", "D_", "dm_", "DM_")) {
+                           extensiveCheck=FALSE, extensiveCheckNULL=FALSE, 
+                           excludeFiles=c("d_", "D_", "dm_", "DM_")) {
   # save current directory to return to later. Set directory to job file locations
   thisDir = getwd()
   setwd(workDir)
@@ -1412,11 +1413,15 @@ generateJobList = function(workDir="savedOutput/validation/folds/",
     
     if(!extensiveCheck) {
       fileExists[iI, jI] = TRUE
-    } else {
+    } else if(extensiveCheck || extensiveCheckNULL) {
       # check to make sure we can actually load the relevant file
       
       canLoad <<- TRUE
       tmp = tryCatch(load(thisFilename), error= function(e) {canLoad <<- FALSE})
+      
+      if(canLoad && extensiveCheckNULL) {
+        canLoad <<- !is.null(preds)
+      }
       
       fileExists[iI, jI] = canLoad
     }

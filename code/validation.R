@@ -1671,12 +1671,11 @@ getValidationFit = function(fold,
               SD0 <- sdreport( testObj, hessian.fixed=Hess,
                              bias.correct = TRUE,
                              bias.correct.control = list(sd = TRUE) )
-              browser()
             }
             
             if(!SD0$pdHess) {
               # try fixing parameter at estimated value
-              
+              stop("non-PD hessian...")
             }
           }
           )[3]
