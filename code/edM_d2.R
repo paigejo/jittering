@@ -552,12 +552,12 @@ out = load("savedOutput/ed/gridPreds.RData")
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DM2.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DM2.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DM2.RData")
-out = load("savedOutput/ed/stratPredsM_DM2.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsM_d2.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsM_d2.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsM_d2.RData")
+out = load("savedOutput/ed/stratPredsM_d2.RData")
 out = load("savedOutput/ed/admin2PredsM_dm1.RData")
-out = load("savedOutput/ed/admin2PredsM_DM2.RData")
+out = load("savedOutput/ed/admin2PredsM_d2.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -581,15 +581,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DM2")
+          plotNameRoot="edFusionM_d2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionM_d2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionM_d2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionM_d2", plotNameRootAreal="Admin2")
 
 

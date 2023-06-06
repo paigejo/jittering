@@ -716,7 +716,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
       probDraws = expit(gridDraws_tmb)
     }
     else {
-      probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(gridDraws_tmb))
+      probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb))
       
       if(FALSE) {
         # test spline approximation timing and accuracy versus regular
@@ -769,7 +769,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     else {
       tauEps = exp(SD0$par.fixed[grepl("log_tauEps", names(SD0$par.fixed))])
       sigmaEps = 1/sqrt(tauEps)
-      probDraws = logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=FALSE)
+      probDraws = logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=splineApprox)
       
       sigmaEpsSq_tmb_draws = sigmaEps^2
     }
@@ -801,6 +801,9 @@ predArea = function(gridPreds, areaVarName="stratumMICS",
     }
     else if(areaVarName == "subarea") {
       adm = adm2
+    }
+    else if(areaVarName == "area") {
+      adm = adm1
     }
   }
   

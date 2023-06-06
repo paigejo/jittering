@@ -41,6 +41,9 @@ if(FALSE) {
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")
   
+  out = load("savedOutput/validation/simEdMICS.RData")
+  edMICSsim = simEdMICS[[1]]
+  
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
@@ -132,14 +135,33 @@ if(FALSE) {
   # AUrbDHS = as.matrix(AUrbDHS)
   # ARurDHS = as.matrix(ARurDHS)
   
+  intPtsDHS$wUrban[,-1] = 0
+  intPtsDHS$wUrban[,1] = 1
+  intPtsDHS$wRural[,-1] = 0
+  intPtsDHS$wRural[,1] = 1
+  
+  intPtsMICS$wUrban[,-1] = 0
+  intPtsMICS$wUrban[,1] = 1
+  intPtsMICS$wRural[,-1] = 0
+  intPtsMICS$wRural[,1] = 1
+  
+  # update the MICS covariates to the ones from the simulated locations for the first 
+  # column
+  subareasUrb = edMICSsim[edMICSsim$urban,]$subarea
+  urbCovsMICS = edMICSsim[edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+  intPtsMICS$XUrb[1:sum(edMICSsim$urban),] = matrix(unlist(urbCovsMICS), ncol=ncol(urbCovsMICS))
+  subareasRur = edMICSsim[!edMICSsim$urban,]$subarea
+  rurCovsMICS = edMICSsim[!edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+  intPtsMICS$XRur[1:sum(!edMICSsim$urban),] = matrix(unlist(rurCovsMICS), ncol=ncol(rurCovsMICS))
+  
   save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
        ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/ed2Inputs.RData")
+       file="savedOutput/global/ed2M_dmInputs.RData")
   
   # compile model ----
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
+  # dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
+  # compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
   dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
   compile( "code/modBYM2JitterFusionNugget2.cpp", 
@@ -153,7 +175,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/ed2Inputs.RData")
+out = load("savedOutput/global/ed2M_dmInputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -169,7 +191,7 @@ lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget p
 
 ## specify random effects
 rand_effs <- c('Epsilon_bym2', 'nuggetUrbMICS', 'nuggetRurMICS', 
-               'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+               'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data
 
@@ -412,7 +434,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 3.66491666666667 minutes (for intern=FALSE)
+  # optimization took 95.9579 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -531,33 +553,40 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit.RData")
-out = load("savedOutput/ed/fit.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_dm2.RData")
+out = load("savedOutput/ed/fitM_dm2.RData")
 
-gridPreds = predGrid(SD0, obj)
+gridPreds = predGrid(SD0, obj, admLevel="adm2")
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.79 & -1.91 & -1.87 & -1.71 & -1.66 \\ 
-# urb & 1.13 & 1.04 & 1.07 & 1.18 & 1.21 \\ 
-# access & -0.30 & -0.42 & -0.37 & -0.23 & -0.19 \\ 
-# elev & -0.32 & -1.01 & -0.75 & 0.16 & 0.34 \\ 
-# distRiversLakes & 0.29 & -0.85 & -0.48 & 1.06 & 1.50 \\ 
-# popValsNorm & 0.38 & 0.23 & 0.28 & 0.49 & 0.54 \\ 
-# sigmaSq & 0.53 & 0.44 & 0.47 & 0.60 & 0.64 \\ 
-# phi & 0.92 & 0.91 & 0.92 & 0.92 & 0.93 \\ 
-# sigmaEpsSq & 1.52 & 1.41 & 1.45 & 1.60 & 1.65 \\ 
-save(gridPreds, file="savedOutput/ed/gridPreds.RData")
-out = load("savedOutput/ed/gridPreds.RData")
+# (Int) & -1.73 & -1.90 & -1.84 & -1.62 & -1.56 \\ 
+# urb & 1.34 & 1.13 & 1.21 & 1.48 & 1.54 \\ 
+# access & -0.03 & -0.11 & -0.08 & 0.02 & 0.05 \\ 
+# elev & 0.02 & -0.07 & -0.03 & 0.08 & 0.12 \\ 
+# distRiversLakes & 0.05 & -0.04 & -0.00 & 0.11 & 0.14 \\ 
+# popValsNorm & 0.57 & 0.42 & 0.48 & 0.66 & 0.72 \\ 
+# sigmaSq & 0.87 & 0.67 & 0.74 & 1.00 & 1.09 \\ 
+# phi & 0.11 & 0.08 & 0.09 & 0.13 & 0.14 \\ 
+# sigmaEpsSq & 1.76 & 1.58 & 1.63 & 1.88 & 1.96 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+save(gridPreds, file="savedOutput/ed/gridPredsM_dm2.RData")
+out = load("savedOutput/ed/gridPredsM_dm2.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DM2.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DM2.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DM2.RData")
-out = load("savedOutput/ed/stratPredsM_DM2.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsM_dm2.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsM_dm2.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsM_dm2.RData")
+out = load("savedOutput/ed/stratPredsM_dm2.RData")
 out = load("savedOutput/ed/admin2PredsM_dm1.RData")
-out = load("savedOutput/ed/admin2PredsM_DM2.RData")
+out = load("savedOutput/ed/admin2PredsM_dm2.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -581,15 +610,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DM2")
+          plotNameRoot="edFusionM_dm2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Admin2")
 
 

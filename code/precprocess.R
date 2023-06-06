@@ -214,8 +214,8 @@ wb5orig = dat$WB5
 # wb6orig = dat$WB6
 literacyOrig = dat$WB7
 wt = as.numeric(dat$wmweight) # women's weight at admin1 level
-wtKano = as.numeric(dat$wmweightkano) # women's weight
-wtLagos = as.numeric(dat$wmweightlagos) # women's weight
+# wtKano = as.numeric(dat$wmweightkano) # women's weight
+# wtLagos = as.numeric(dat$wmweightlagos) # women's weight
 wb3 = as.numeric(as.character(dat$WB3))
 wb4 = as.numeric(as.character(dat$WB4))
 wb5 = as.numeric(as.character(dat$WB5))
@@ -262,7 +262,7 @@ literacyMICS = as.logical(literacyMICS)
 mean(is.na(literacyMICS)) # Nice! We match the missing data rate of 5%
 
 datMICSwm = data.frame(clustID=clustID, hhID=houseID, age=ageMICS, 
-                       secondaryEd=edMICS, literacy=literacyMICS)
+                       secondaryEd=edMICS, literacy=literacyMICS, samplingWeight=wt)
 
 # now read in the household data because it contains stratum information
 datwm = dat
@@ -289,7 +289,7 @@ datMICShh = stratMatchTable[match(stratum, stratMatchTable$StratumID),]
 fullHouseIDhh = paste(as.character(clustIDhh), as.character(houseIDhh), sep=", ")
 fullHouseIDwm = paste(as.character(clustID), as.character(houseID), sep=", ")
 datMICSwm = cbind(datMICSwm, fullHouseID=fullHouseIDwm)
-datMICShh = cbind(datMICShh, fullHouseID=fullHouseIDhh, urban=urbanhh==1, wt=dat$wqhweight, wtKano=dat$wqhweightkano, wtLagos=dat$wqhweightlagos)
+datMICShh = cbind(datMICShh, fullHouseID=fullHouseIDhh, urban=urbanhh==1)
 
 datMICS = merge(datMICShh, datMICSwm, by="fullHouseID")
 datMICS = datMICS[,c(2:ncol(datMICS), 1)]
@@ -309,6 +309,9 @@ datMICS = datMICS[correctAge,]
 edMICS = datMICS[!is.na(datMICS$secondaryEd),]
 ysMICSagg = aggregate(edMICS$secondaryEd, by=list(edMICS$clustID), FUN=sum)
 nsMICSagg = aggregate(edMICS$secondaryEd, by=list(edMICS$clustID), FUN=length)
+wtMICSagg = aggregate(edMICS$samplingWeight, by=list(edMICS$clustID), FUN=sum)
+# wtKanoMICSagg = aggregate(edMICS$wtKano, by=list(edMICS$clustID), FUN=sum)
+# wtLagosMICSagg = aggregate(edMICS$wtLagos, by=list(edMICS$clustID), FUN=sum)
 matchI = match(ysMICSagg$Group.1, edMICS$clustID)
 edMICSagg = edMICS[matchI,]
 edMICSagg$hhID = NULL
@@ -318,11 +321,17 @@ edMICSagg$literacy = NULL
 edMICSagg$fullHouseID = NULL
 edMICSagg$ys = ysMICSagg$x
 edMICSagg$ns = nsMICSagg$x
+edMICSagg$samplingWeight = wtMICSagg$x
+# edMICSagg$wtKano = wtKanoMICSagg$x
+# edMICSagg$wtLagos = wtLagosMICSagg$x
 
 # aggregate women's literacy by cluster
 litMICS = datMICS[!is.na(datMICS$literacy),]
 ysMICSagg = aggregate(litMICS$literacy, by=list(litMICS$clustID), FUN=sum)
 nsMICSagg = aggregate(litMICS$literacy, by=list(litMICS$clustID), FUN=length)
+wtMICSagg = aggregate(litMICS$samplingWeight, by=list(litMICS$clustID), FUN=sum)
+# wtKanoMICSagg = aggregate(litMICS$wtKano, by=list(litMICS$clustID), FUN=sum)
+# wtLagosMICSagg = aggregate(litMICS$wtLagos, by=list(litMICS$clustID), FUN=sum)
 matchI = match(ysMICSagg$Group.1, litMICS$clustID)
 litMICSagg = litMICS[matchI,]
 litMICSagg$hhID = NULL
@@ -332,6 +341,9 @@ litMICSagg$literacy = NULL
 litMICSagg$fullHouseID = NULL
 litMICSagg$ys = ysMICSagg$x
 litMICSagg$ns = nsMICSagg$x
+litMICSagg$samplingWeight = wtMICSagg$x
+# litMICSagg$wtKano = wtKanoMICSagg$x
+# litMICSagg$wtLagos = wtLagosMICSagg$x
 
 edMICS = edMICSagg
 litMICS = litMICSagg
@@ -1267,3 +1279,5 @@ save(adm2Mat, file="savedOutput/global/adm2Mat.RData")
 # EAs per area (No household per area info published) ----
 # apparently, average household size is 5.0 based on the 2017 MICS
 # sum(poppsubNGA$popTotal)/5 = 39737530
+# number of EAs is: 662529 according to 
+# https://www.unodc.org/documents/data-and-analysis/Crime-statistics/Nigeria/NBS_-_technical_report_on_survey.pdf
