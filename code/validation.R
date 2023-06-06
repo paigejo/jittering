@@ -1669,8 +1669,9 @@ getValidationFit = function(fold,
               # try recalculating for fixed parameters numerically
               Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
               SD0 <- sdreport( testObj, hessian.fixed=Hess,
-                             bias.correct = TRUE,
-                             bias.correct.control = list(sd = TRUE) )
+                               getJointPrecision=TRUE,
+                               bias.correct = TRUE,
+                               bias.correct.control = list(sd = TRUE) )
             }
             
             if(!SD0$pdHess) {
@@ -2513,3 +2514,43 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   # sigmaEpsSq       1.41296094 0.065694832  1.2892284  1.32994917  1.4973411  1.5449716
 }
 
+# function for getting combined MICS and DHS direct estimates at the admin1 level
+# clustDatDHS: a subset of edVal
+# clustDatMICS: a subset of edMICSval
+getCombinedDirectEsts = function(clustDatDHS, clustDatMICS, divideWeight=TRUE, signifs=c(.5, .8, .9, .95)) {
+  
+  # convert DHS data to the correct format
+  # clustDatDHS$area = NULL
+  # clustDatDHS$subarea = NULL only remove this because it could be confusing
+  # names(clustDatDHS)[grepl("Stratum", names(clustDatDHS))] = "area"
+  names(clustDatDHS)[grepl("clusterID", names(clustDatDHS))] = "clustID"
+  
+  estsDHS = getDirectEsts(clustDatDHS, divideWeight=divideWeight, signifs=signifs)
+  
+  names(clustDatMICS)[grepl("ys", names(clustDatMICS))] = "y"
+  names(clustDatMICS)[grepl("ns", names(clustDatMICS))] = "n"
+  names(clustDatMICS)[grepl("Area", names(clustDatMICS))] = "area"
+  browser()
+  estsMICS = getDirectEsts(clustDatMICS, divideWeight=divideWeight, 
+                           signifs=signifs, customStratVarName="Stratum")
+  
+  # take precision weighted average of admin1 estimates
+  precsDHS = 1/estsDHS$logit.var
+  precsMICS = 1/estsMICS$logit.var
+  wsDHS = precsDHS/(precsDHS + precsMICS)
+  wsMICS = 1 - wsDHS
+  ests = estsDHS
+  ests$logit.est = estsDHS$logit.est * wsDHS + estsMICS$logit.est * wsMICS
+  ests$est = logitNormMeanSimple(cbind(ests$logit.est, sqrt(ests$logit.var)))
+  ests$logit.var = estsDHS$logit.var * wsDHS^2 + estsMICS$logit.var * wsMICS^2
+  ests$var = logitNormSqMeanSimple(cbind(ests$logit.est, sqrt(ests$logit.var))) - ests$est^2
+  
+  # calculate CI quantiles of the new estimator. Convergence is only true if both converged
+  lowerQuants = (1-signifs)/2
+  upperQuants = 1 - (1-signifs)/2
+  ests[,6:(5+length(signifs))] = sweep(t(sapply(sqrt(ests$logit.var), qnorm, mean=0, p=lowerQuants)), 1, ests$logit.est, "+")
+  ests[,(6+length(signifs)):(5+2*length(signifs))] = sweep(t(sapply(sqrt(ests$logit.var), qnorm, mean=0, p=upperQuants)), 1, ests$logit.est, "+")
+  ests$converge = apply(cbind(estsDHS$converge, estsMICS$converge), 1, max)
+  
+  list(ests=ests, estsDHS=estsDHS, estsMICS=estsMICS)
+}

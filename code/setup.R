@@ -110,6 +110,7 @@ source('code/covariates.R')
 source('code/modAgg.R')
 source('code/validation.R')
 source("code/scores.R")
+source("code/getDirectEsts.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {
