@@ -41,9 +41,6 @@ if(FALSE) {
   load("savedOutput/global/intPtsDHS.RData")
   load("savedOutput/global/intPtsMICS.RData")
   
-  out = load("savedOutput/validation/simEdMICS.RData")
-  edMICSsim = simEdMICS[[1]]
-  
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
@@ -57,7 +54,7 @@ if(FALSE) {
   numPerStratRur[is.na(numPerStratRur)] = 0
   
   # first extract only the relevant covariates
-  XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
+  # XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
   # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
   # TODO: EXTEND AMICS TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
   
@@ -65,40 +62,40 @@ if(FALSE) {
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
-  AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
-  XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  # AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
+  # XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
-  XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
+  # XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   # ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
   # numPerStratRur = table(edMICS$Stratum[!edMICS$urban])
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
-  ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
-  XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
+  # XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   # w matrices are nStrata x K. They should be nObs x K
-  wUrban = intPtsMICS$wUrban
-  stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
-  wUrban = wUrban[stratIndexUrbW,]
-  
-  wRural = intPtsMICS$wRural
-  stratIndexRurW = unlist(mapply(rep, 1:nrow(wRural), each=numPerStratRur))
-  wRural = wRural[stratIndexRurW,]
+  # wUrban = intPtsMICS$wUrban
+  # stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
+  # wUrban = wUrban[stratIndexUrbW,]
+  # 
+  # wRural = intPtsMICS$wRural
+  # stratIndexRurW = unlist(mapply(rep, 1:nrow(wRural), each=numPerStratRur))
+  # wRural = wRural[stratIndexRurW,]
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
   # stratIDs = match(edMICS$Stratum, admFinal$NAME_FINAL)
   # edMICS = edMICS[order(stratIDs),]
   
   # extract cluster information (in the correct order)
-  ysUrbMICS = edMICS[edMICS$urban,]$ys
-  nsUrbMICS = edMICS[edMICS$urban,]$ns
-  ysRurMICS = edMICS[!edMICS$urban,]$ys
-  nsRurMICS = edMICS[!edMICS$urban,]$ns
+  # ysUrbMICS = edMICS[edMICS$urban,]$ys
+  # nsUrbMICS = edMICS[edMICS$urban,]$ns
+  # ysRurMICS = edMICS[!edMICS$urban,]$ys
+  # nsRurMICS = edMICS[!edMICS$urban,]$ns
   
   ysUrbDHS = ed$y[ed$urban]
   ysRurDHS = ed$y[!ed$urban]
@@ -106,28 +103,28 @@ if(FALSE) {
   nsRurDHS = ed$n[!ed$urban]
   
   # make sure A matrices are nArea x nObs, as TMB expects
-  AUrbMICS = t(AUrbMICS)
-  ARurMICS = t(ARurMICS)
+  # AUrbMICS = t(AUrbMICS)
+  # ARurMICS = t(ARurMICS)
   AUrbDHS = t(AUrbDHS)
   ARurDHS = t(ARurDHS)
-  mode(AUrbMICS) = "numeric"
-  mode(ARurMICS) = "numeric"
+  # mode(AUrbMICS) = "numeric"
+  # mode(ARurMICS) = "numeric"
   mode(AUrbDHS) = "numeric"
   mode(ARurDHS) = "numeric"
   
   # save everything
-  intPtsMICS$XUrb = XUrb[,-(2:3)] # don't include strata or intercept
-  intPtsMICS$XRur = XRur[,-(2:3)]
-  intPtsMICS$XUrb = as.matrix(intPtsMICS$XUrb)
-  intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
-  intPtsMICS$wUrban = wUrban
-  intPtsMICS$wRural = wRural
+  # intPtsMICS$XUrb = XUrb[,-(2:3)] # don't include strata or intercept
+  # intPtsMICS$XRur = XRur[,-(2:3)]
+  # intPtsMICS$XUrb = as.matrix(intPtsMICS$XUrb)
+  # intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
+  # intPtsMICS$wUrban = wUrban
+  # intPtsMICS$wRural = wRural
   intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
   intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
   
   # convert A matrices to sparse matrices
-  AUrbMICS = as(AUrbMICS, "sparseMatrix")
-  ARurMICS = as(ARurMICS, "sparseMatrix")
+  # AUrbMICS = as(AUrbMICS, "sparseMatrix")
+  # ARurMICS = as(ARurMICS, "sparseMatrix")
   AUrbDHS = as(AUrbDHS, "sparseMatrix")
   ARurDHS = as(ARurDHS, "sparseMatrix")
   # AUrbMICS = as.matrix(AUrbMICS)
@@ -135,47 +132,33 @@ if(FALSE) {
   # AUrbDHS = as.matrix(AUrbDHS)
   # ARurDHS = as.matrix(ARurDHS)
   
-  intPtsDHS$wUrban[,-1] = 0
+  # put integration weight entirely on observed cluster location
   intPtsDHS$wUrban[,1] = 1
-  intPtsDHS$wRural[,-1] = 0
+  intPtsDHS$wUrban[,-1] = 0
   intPtsDHS$wRural[,1] = 1
+  intPtsDHS$wRural[,-1] = 0
   
-  intPtsMICS$wUrban[,-1] = 0
-  intPtsMICS$wUrban[,1] = 1
-  intPtsMICS$wRural[,-1] = 0
-  intPtsMICS$wRural[,1] = 1
-  
-  # update the MICS covariates to the ones from the simulated locations for the first 
-  # column
-  subareasUrb = edMICSsim[edMICSsim$urban,]$subarea
-  urbCovsMICS = edMICSsim[edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
-  intPtsMICS$XUrb[1:sum(edMICSsim$urban),] = matrix(unlist(urbCovsMICS), ncol=ncol(urbCovsMICS))
-  subareasRur = edMICSsim[!edMICSsim$urban,]$subarea
-  rurCovsMICS = edMICSsim[!edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
-  intPtsMICS$XRur[1:sum(!edMICSsim$urban),] = matrix(unlist(rurCovsMICS), ncol=ncol(rurCovsMICS))
-  
-  save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
-       ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
+  save(AUrbDHS, ARurDHS, intPtsDHS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/ed2M_dmInputs.RData")
+       file="savedOutput/global/edMd2Inputs.RData")
   
   # compile model ----
-  # dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  # compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
+  # dyn.unload( dynlib("code/modBYM2JitterDHS2sparse"))
+  # compile( "code/modBYM2JitterDHS2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
-  compile( "code/modBYM2JitterFusionNugget2.cpp", 
+  dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+  compile( "code/modBYM2JitterDHS2.cpp", 
            framework="TMBad", safebounds=FALSE)
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterFusionNugget2  -DTMB_LIB_INIT=R_init_modBYM2JitterFusionNugget2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterFusionNugget2.cpp -o code/modBYM2JitterFusionNugget2.o
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterFusionNugget2.so code/modBYM2JitterFusionNugget2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
+  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterDHS2  -DTMB_LIB_INIT=R_init_modBYM2JitterDHS2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterDHS2.cpp -o code/modBYM2JitterDHS2.o
+  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterDHS2.so code/modBYM2JitterDHS2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
   
   # on Idun:
-  # g++ -std=gnu++14 -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/include" -DNDEBUG -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/TMB/include" -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/RcppEigen/include"   -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterFusionNugget2  -DTMB_LIB_INIT=R_init_modBYM2JitterFusionNugget2  -DTMBAD_FRAMEWORK  -I/cluster/apps/eb/software/OpenSSL/1.1/include -I/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/include -I/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/include -I/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/include -I/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/include -I/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/include -I/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Java/11.0.2/include -I/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/include -I/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/include -I/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include/flexiblas   -fpic  -O2 -ftree-vectorize -march=native -fno-math-errno  -c code/modBYM2JitterFusionNugget2.cpp -o code/modBYM2JitterFusionNugget2.o
-  # g++ -std=gnu++14 -shared -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -L/cluster/apps/eb/software/OpenSSL/1.1/lib64 -L/cluster/apps/eb/software/OpenSSL/1.1/lib -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib64 -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib64 -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Java/11.0.2/lib64 -L/cluster/apps/eb/software/Java/11.0.2/lib -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib64 -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib -L/cluster/apps/eb/software/GCCcore/11.3.0/lib64 -L/cluster/apps/eb/software/GCCcore/11.3.0/lib -o code/modBYM2JitterFusionNugget2.so code/modBYM2JitterFusionNugget2.o -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -lR
+  # g++ -std=gnu++14 -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/include" -DNDEBUG -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/TMB/include" -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/RcppEigen/include"   -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterDHS2  -DTMB_LIB_INIT=R_init_modBYM2JitterDHS2  -DTMBAD_FRAMEWORK  -I/cluster/apps/eb/software/OpenSSL/1.1/include -I/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/include -I/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/include -I/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/include -I/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/include -I/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/include -I/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Java/11.0.2/include -I/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/include -I/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/include -I/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include/flexiblas   -fpic  -O2 -ftree-vectorize -march=native -fno-math-errno  -c code/modBYM2JitterDHS2.cpp -o code/modBYM2JitterDHS2.o
+  # g++ -std=gnu++14 -shared -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -L/cluster/apps/eb/software/OpenSSL/1.1/lib64 -L/cluster/apps/eb/software/OpenSSL/1.1/lib -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib64 -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib64 -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Java/11.0.2/lib64 -L/cluster/apps/eb/software/Java/11.0.2/lib -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib64 -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib -L/cluster/apps/eb/software/GCCcore/11.3.0/lib64 -L/cluster/apps/eb/software/GCCcore/11.3.0/lib -o code/modBYM2JitterDHS2.so code/modBYM2JitterDHS2.o -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -lR
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/ed2M_dmInputs.RData")
+out = load("savedOutput/global/edMd2Inputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -190,23 +173,11 @@ lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget p
 # Specify inputs for TMB ----
 
 ## specify random effects
-rand_effs <- c('Epsilon_bym2', 'nuggetUrbMICS', 'nuggetRurMICS', 
-               'nuggetUrbDHS', 'nuggetRurDHS')
+rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data
 
 data_full = list(
-  y_iUrbanMICS=ysUrbMICS, # observed binomial experiment at point i (clust)
-  y_iRuralMICS=ysRurMICS, # 
-  n_iUrbanMICS=nsUrbMICS, # number binomial trials
-  n_iRuralMICS=nsRurMICS, # 
-  AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  AprojRuralMICS=ARurMICS, # 
-  X_betaUrbanMICS=intPtsMICS$XUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
-  X_betaRuralMICS=intPtsMICS$XRur, # 
-  wUrbanMICS=intPtsMICS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
-  wRuralMICS=intPtsMICS$wRural, # 
-  
   y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
   y_iRuralDHS=ysRurDHS, # 
   n_iUrbanDHS=nsUrbDHS, # number binomial trials
@@ -272,35 +243,33 @@ initAlpha = logit(initRurP)
 initBeta1 = logit(initUrbP) - initAlpha
 
 tmb_params <- list(alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+                   beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                    log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
                    log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                   nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
                    nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
 # make TMB fun and grad ----
-# dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
+# dyn.load( dynlib("code/modBYM2JitterDHS2sparse"))
+dyn.load( dynlib("code/modBYM2JitterDHS2"))
 TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2')
+                 DLL='modBYM2JitterDHS2')
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2')
+                 DLL='modBYM2JitterDHS2')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,
-#                      DLL='modBYM2JitterFusionNugget2')
+#                      DLL='modBYM2JitterDHS2')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -434,7 +403,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 95.9579 minutes (for intern=FALSE)
+  # optimization took 100.647 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -553,8 +522,8 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_dm2.RData")
-out = load("savedOutput/ed/fitM_dm2.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitMd2.RData")
+out = load("savedOutput/ed/fitMd2.RData")
 
 gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # \begin{table}[ht]
@@ -563,30 +532,30 @@ gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.73 & -1.90 & -1.84 & -1.62 & -1.56 \\ 
-# urb & 1.34 & 1.13 & 1.21 & 1.48 & 1.54 \\ 
-# access & -0.03 & -0.11 & -0.08 & 0.02 & 0.05 \\ 
-# elev & 0.02 & -0.07 & -0.03 & 0.08 & 0.12 \\ 
-# distRiversLakes & 0.05 & -0.04 & -0.00 & 0.11 & 0.14 \\ 
-# popValsNorm & 0.57 & 0.42 & 0.48 & 0.66 & 0.72 \\ 
-# sigmaSq & 0.87 & 0.67 & 0.74 & 1.00 & 1.09 \\ 
-# phi & 0.11 & 0.08 & 0.09 & 0.13 & 0.14 \\ 
-# sigmaEpsSq & 1.76 & 1.58 & 1.63 & 1.88 & 1.96 \\ 
+# (Int) & -1.90 & -2.11 & -2.04 & -1.78 & -1.71 \\ 
+# urb & 0.30 & 0.06 & 0.15 & 0.45 & 0.52 \\ 
+# access & -0.22 & -0.33 & -0.29 & -0.15 & -0.12 \\ 
+# elev & 0.19 & 0.05 & 0.10 & 0.28 & 0.34 \\ 
+# distRiversLakes & 0.07 & -0.05 & -0.02 & 0.15 & 0.19 \\ 
+# popValsNorm & 0.86 & 0.65 & 0.72 & 1.00 & 1.08 \\ 
+# sigmaSq & 0.66 & 0.51 & 0.56 & 0.78 & 0.87 \\ 
+# phi & 0.13 & 0.10 & 0.11 & 0.16 & 0.17 \\ 
+# sigmaEpsSq & 0.91 & 0.75 & 0.80 & 1.03 & 1.09 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsM_dm2.RData")
-out = load("savedOutput/ed/gridPredsM_dm2.RData")
+save(gridPreds, file="savedOutput/ed/gridPredsMd2.RData")
+out = load("savedOutput/ed/gridPredsMd2.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_dm2.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_dm2.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_dm2.RData")
-out = load("savedOutput/ed/stratPredsM_dm2.RData")
-out = load("savedOutput/ed/admin2PredsM_dm1.RData")
-out = load("savedOutput/ed/admin2PredsM_dm2.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsMd2.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsMd2.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsMd2.RData")
+out = load("savedOutput/ed/stratPredsMd2.RData")
+out = load("savedOutput/ed/admin1PredsMd2.RData")
+out = load("savedOutput/ed/admin2PredsMd2.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -610,15 +579,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_dm2")
+          plotNameRoot="edFusionMd2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionMd2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionMd2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_dm2", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionMd2", plotNameRootAreal="Admin2")
 
 

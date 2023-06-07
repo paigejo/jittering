@@ -1281,3 +1281,33 @@ save(adm2Mat, file="savedOutput/global/adm2Mat.RData")
 # sum(poppsubNGA$popTotal)/5 = 39737530
 # number of EAs is: 662529 according to 
 # https://www.unodc.org/documents/data-and-analysis/Crime-statistics/Nigeria/NBS_-_technical_report_on_survey.pdf
+
+
+# convert covariate filenames on cluster ----
+if(FALSE) {
+  # for Syvert and Idun
+  library(terra)
+  pop = rast("savedOutput/global/pop.tif")
+  pop = raster(pop)
+  urb = rast("savedOutput/global/urb.tif")
+  urb = raster(urb)
+  access = rast("savedOutput/global/access.tif")
+  access = raster(access)
+  elev = rast("savedOutput/global/elev.tif")
+  elev = raster(elev)
+  minDistRiverLakes = rast("savedOutput/global/minDistRiverLakes.tif")
+  minDistRiverLakes = raster(minDistRiverLakes)
+  save(pop, urb, access, elev, minDistRiverLakes, file="savedOutput/global/covariates.RData")
+  
+  popNorm = rast("savedOutput/global/popNorm.tif")
+  popNorm = raster(popNorm)
+  urbNorm = rast("savedOutput/global/urbNorm.tif")
+  urbNorm = raster(urbNorm)
+  accessNorm = rast("savedOutput/global/accessNorm.tif")
+  accessNorm = raster(accessNorm)
+  elevNorm = rast("savedOutput/global/elevNorm.tif")
+  elevNorm = raster(elevNorm)
+  minDistRiverLakesNorm = rast("savedOutput/global/minDistRiverLakesNorm.tif")
+  minDistRiverLakesNorm = raster(minDistRiverLakesNorm)
+  save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
+}

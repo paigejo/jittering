@@ -2517,7 +2517,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
 # function for getting combined MICS and DHS direct estimates at the admin1 level
 # clustDatDHS: a subset of edVal
 # clustDatMICS: a subset of edMICSval
-getCombinedDirectEsts = function(clustDatDHS, clustDatMICS, divideWeight=TRUE, signifs=c(.5, .8, .9, .95)) {
+getCombinedDirectEsts = function(clustDatDHS=edVal, clustDatMICS=edMICSval, divideWeight=TRUE, signifs=c(.5, .8, .9, .95)) {
   
   # convert DHS data to the correct format
   # clustDatDHS$area = NULL
@@ -2530,7 +2530,7 @@ getCombinedDirectEsts = function(clustDatDHS, clustDatMICS, divideWeight=TRUE, s
   names(clustDatMICS)[grepl("ys", names(clustDatMICS))] = "y"
   names(clustDatMICS)[grepl("ns", names(clustDatMICS))] = "n"
   names(clustDatMICS)[grepl("Area", names(clustDatMICS))] = "area"
-  browser()
+  
   estsMICS = getDirectEsts(clustDatMICS, divideWeight=divideWeight, 
                            signifs=signifs, customStratVarName="Stratum")
   
@@ -2543,7 +2543,7 @@ getCombinedDirectEsts = function(clustDatDHS, clustDatMICS, divideWeight=TRUE, s
   ests$logit.est = estsDHS$logit.est * wsDHS + estsMICS$logit.est * wsMICS
   ests$est = logitNormMeanSimple(cbind(ests$logit.est, sqrt(ests$logit.var)))
   ests$logit.var = estsDHS$logit.var * wsDHS^2 + estsMICS$logit.var * wsMICS^2
-  ests$var = logitNormSqMeanSimple(cbind(ests$logit.est, sqrt(ests$logit.var))) - ests$est^2
+  ests$var = logitNormVarSimple(cbind(ests$logit.est, sqrt(ests$logit.var)))
   
   # calculate CI quantiles of the new estimator. Convergence is only true if both converged
   lowerQuants = (1-signifs)/2

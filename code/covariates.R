@@ -56,7 +56,7 @@ getDesignMat = function(lonLatCoords, normalized=TRUE,
   
   if(normalized) {
     out = load("savedOutput/global/covariatesNorm.RData")
-    # out = load("savedOutput/global/covariates.RData")
+    out = load("savedOutput/global/covariates.RData")
     
     popVals = terra::extract(pop, lonLatCoords, method="bilinear")
     urbanicityVals = terra::extract(urb, lonLatCoords, method="bilinear") # don't normalize urbanicity or population

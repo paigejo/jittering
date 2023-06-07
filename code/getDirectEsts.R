@@ -128,7 +128,8 @@ get.est<-function(glm.ob, signifs=c(.95)) {
   
   # calculate normal approximate on probability scale
   probEst = logitNormMeanSimple(cbind(logit(est), sqrt(logit.var)))
-  probVar = logitNormSqMeanSimple(cbind(logit(est), sqrt(logit.var))) - probEst^2
+  # probVar = logitNormSqMeanSimple(cbind(logit(est), sqrt(logit.var))) - probEst^2
+  probVar = logitNormVarSimple(cbind(logit(est), sqrt(logit.var)))
   
   out = c(probEst,probVar, logit(est),logit.var,lower, upper)
   names(out) = c("est", "var", "logit.est", "logit.var", 
@@ -321,8 +322,42 @@ logitNormSqMeanSimple = function(muSigmaMat, ...)
       if (any(is.na(c(mu, sigma)))) 
         NA
       else {
+        # plogis(x) = 1/(1 + e^-x)
+        # fExp(x) = exp{2 * log(1/(1 + e^-x)) + log(phi(x; mu, sigma))}
+        #         = (1/(1 + e^-x))^2 * phi(x; mu, sigma)
+        #         = expit(x)^2 * phi(x; mu, sigma)
         fExp <- function(x) exp(stats::plogis(x, log.p = TRUE) * 2 + 
                                   stats::dnorm(x, mean = mu, sd = sigma, log = TRUE))
+        stats::integrate(fExp, mu - 10 * sigma, mu + 
+                           10 * sigma, abs.tol = 0, ...)$value
+      }
+    }
+  }
+}
+
+# Calculates the second moment of a distribution whose 
+# logit is Gaussian. Each row of muSigmaMat is a mean and standard deviation 
+# on the logit scale of the Gaussian that is squared.
+# NOTE: could use logitNormSqMeanSimple - logitNormMeanSimple^2, but that can be 
+#       negative, whereas this function cannot.
+logitNormVarSimple = function(muSigmaMat, ...) 
+{
+  if (length(muSigmaMat) > 2) {
+    apply(muSigmaMat, 1, logitNormVarSimple, ...)
+  }
+  else {
+    mu = muSigmaMat[1]
+    sigma = muSigmaMat[2]
+    if (sigma == 0) 
+      SUMMER::expit(mu)^2
+    else {
+      if (any(is.na(c(mu, sigma)))) 
+        NA
+      else {
+        # plogis(x) = 1/(1 + e^-x) = expit(x)
+        # fExp(x) = (expit(x) - probMean)^2 * phi(x; mu, sigma)
+        probMean = logitNormMeanSimple(muSigmaMat)
+        fExp <- function(x) exp(log((plogis(x) - probMean)^2) + stats::dnorm(x, mean = mu, sd = sigma, log = TRUE))
         stats::integrate(fExp, mu - 10 * sigma, mu + 
                            10 * sigma, abs.tol = 0, ...)$value
       }

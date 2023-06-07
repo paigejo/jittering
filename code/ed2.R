@@ -386,10 +386,20 @@ if(FALSE) {
       
       ## Get standard errors
       print("getting standard errors...")
-      sdTime = system.time(
+      sdTime = system.time({
         SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                              bias.correct = TRUE,
                              bias.correct.control = list(sd = TRUE))
+        
+        if(!SD0$pdHess) {
+          # try recalculating for fixed parameters numerically
+          Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
+          SD0 <- sdreport( testObj, hessian.fixed=Hess,
+                           getJointPrecision=TRUE,
+                           bias.correct = TRUE,
+                           bias.correct.control = list(sd = TRUE) )
+        }
+      }
       )[3]
       # SD0
       print(sdTime/60)
@@ -412,7 +422,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 3.66491666666667 minutes (for intern=FALSE)
+  # optimization took ~601.791 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -534,7 +544,7 @@ if(FALSE) {
 save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit.RData")
 out = load("savedOutput/ed/fit.RData")
 
-gridPreds = predGrid(SD0, obj)
+gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
 # (Int) & -1.79 & -1.91 & -1.87 & -1.71 & -1.66 \\ 
@@ -556,7 +566,7 @@ save(stratPreds, file="savedOutput/ed/stratPredsM_DM2.RData")
 save(admin1Preds, file="savedOutput/ed/admin1PredsM_DM2.RData")
 save(admin2Preds, file="savedOutput/ed/admin2PredsM_DM2.RData")
 out = load("savedOutput/ed/stratPredsM_DM2.RData")
-out = load("savedOutput/ed/admin2PredsM_dm1.RData")
+out = load("savedOutput/ed/admin1PredsM_DM2.RData")
 out = load("savedOutput/ed/admin2PredsM_DM2.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 

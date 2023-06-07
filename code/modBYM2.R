@@ -644,7 +644,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
   # load covariates at prediction locations
   LLcoords = cbind(popMat$lon, popMat$lat)
   Xmat = getDesignMat(LLcoords, normalized)
-  
+  browser()
   out = load("savedOutput/global/popMeanSDCal.RData")
   popMean = popMeanCalThresh
   popSD = popSDCalThresh
@@ -706,7 +706,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     colnames(parSummary)[1] = "Est"
     colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
     print(xtable(parSummary, digits=2))
-    
+    browser()
     # add effects to predictions
     gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
     gridDraws_tmb <- sweep(gridDraws_tmb, 2, alpha_tmb_draws, '+')
