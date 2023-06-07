@@ -194,12 +194,12 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
     inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
     outOfSampleLInds = edVal$fold == fold
   } else {
-    inSampleLInds = edVal$area != foldArea
-    inSampleLIndsUrb = (edVal$Stratum != foldArea) & (edVal$urban)
-    inSampleLIndsRur = (edVal$Stratum != foldArea) & (!edVal$urban)
+    inSampleLInds = (edVal$area != foldArea) & (edVal$fold <= 5)
+    inSampleLIndsUrb = (edVal$area != foldArea) & (edVal$fold <= 5) & (edVal$urban)
+    inSampleLIndsRur = (edVal$area != foldArea) & (edVal$fold <= 5) & (!edVal$urban)
     inSampleLIndsUrb2 = inSampleLInds[edVal$urban]
     inSampleLIndsRur2 = inSampleLInds[!edVal$urban]
-    outOfSampleLInds = edVal$Stratum == foldArea
+    outOfSampleLInds = (edVal$area == foldArea) & (edVal$fold > 5)
   }
   
   edInSample = edVal[inSampleLInds,]
