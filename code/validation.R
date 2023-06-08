@@ -2302,6 +2302,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
         
         if(is.null(preds) || is.null(scores)) {
           warning(paste0("NULL scores or preds for model ", fnameRoot, " fold ", fold))
+          next
         }
       } else {
         warning(paste0("no scores or preds file for model ", fnameRoot, " fold ", fold))
