@@ -1569,6 +1569,9 @@ getValidationFit = function(fold,
   #      MakeADFunInputs=list(data=data_full, parameters=tmb_params, random=rand_effs, 
   #                           hessian=TRUE, DLL='modBYM2JitterFusionNugget'))
   varname = paste0("dat", model, collapse="")
+  if(areal) {
+    varname = paste0(varname, "areal", collapse = "")
+  }
   dat = get(varname)[[fold]]
   
   edInSample = dat$edInSample
