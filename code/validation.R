@@ -2299,7 +2299,12 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
          file.exists(paste0("~/git/jittering/savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))) {
         out = load(paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData"))
         out = load(paste0("~/git/jittering/savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
+        
+        if(is.null(preds) || is.null(scores)) {
+          warning(paste0("NULL scores or preds for model ", fnameRoot, " fold ", fold))
+        }
       } else {
+        warning(paste0("no scores or preds file for model ", fnameRoot, " fold ", fold))
         next
       }
       
