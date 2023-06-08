@@ -2302,10 +2302,42 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
         
         if(is.null(preds) || is.null(scores)) {
           warning(paste0("NULL scores or preds for model ", fnameRoot, " fold ", fold))
+          
+          # add filler
+          if(!isMICS) {
+            thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
+            thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
+            thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
+            
+            thisParTabDHS = c(thisParTabDHS, list(NA))
+          } else {
+            thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
+            thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
+            thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
+            
+            thisParTabMICS = c(thisParTabMICS, list(NA))
+          }
+          
           next
         }
       } else {
         warning(paste0("no scores or preds file for model ", fnameRoot, " fold ", fold))
+        
+        # add filler
+        if(!isMICS) {
+          thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
+          thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
+          thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
+          
+          thisParTabDHS = c(thisParTabDHS, list(NA))
+        } else {
+          thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
+          thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
+          thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
+          
+          thisParTabMICS = c(thisParTabMICS, list(NA))
+        }
+        
         next
       }
       
@@ -2338,14 +2370,16 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   }
   
   # calculate averages
-  scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, function(x) {colSums(sweep(x, 1, weightsDHS, "*"))}))
-  scoresTabsUrbAvgDHS = do.call("rbind", lapply(scoresTabsUrbDHS, function(x) {colSums(sweep(x, 1, weightsUrbDHS, "*"))}))
-  scoresTabsRurAvgDHS = do.call("rbind", lapply(scoresTabsRurDHS, function(x) {colSums(sweep(x, 1, weightsRurDHS, "*"))}))
-  scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x, 1, weightsUrbMICS, "*"))}))
-  scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x, 1, weightsUrbMICS, "*"))}))
-  scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x, 1, weightsRurMICS, "*"))}))
+  scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, function(x) {colSums(sweep(x[weightsDHS[!is.na(x[,1])],], 1, weightsDHS[!is.na(x[,1])]/weightsDHS[!is.na(x[,1])], "*"))}))
+  scoresTabsUrbAvgDHS = do.call("rbind", lapply(scoresTabsUrbDHS, function(x) {colSums(sweep(x[weightsUrbDHS[!is.na(x[,1])],], 1, weightsUrbDHS[!is.na(x[,1])]/weightsUrbDHS[!is.na(x[,1])], "*"))}))
+  scoresTabsRurAvgDHS = do.call("rbind", lapply(scoresTabsRurDHS, function(x) {colSums(sweep(x[weightsRurDHS[!is.na(x[,1])],], 1, weightsRurDHS[!is.na(x[,1])]/weightsRurDHS[!is.na(x[,1])], "*"))}))
+  scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x[weightsMICS[!is.na(x[,1])],], 1, weightsMICS[!is.na(x[,1])]/weightsMICS[!is.na(x[,1])], "*"))}))
+  scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x[weightsUrbMICS[!is.na(x[,1])],], 1, weightsUrbMICS[!is.na(x[,1])]/weightsUrbMICS[!is.na(x[,1])], "*"))}))
+  scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x[weightsRurMICS[!is.na(x[,1])],], 1, weightsRurMICS[!is.na(x[,1])]/weightsRurMICS[!is.na(x[,1])], "*"))}))
   
   parTabsAvgDHS = lapply(parTabsDHS, function(x) {
+    badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
+    x[badFits] = NULL
     rNames = row.names(x[[1]])
     cNames = colnames(x[[1]])
     x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
@@ -2357,6 +2391,8 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   })
   names(parTabsAvgDHS) = models
   parTabsAvgMICS = lapply(parTabsMICS, function(x) {
+    badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
+    x[badFits] = NULL
     rNames = row.names(x[[1]])
     cNames = colnames(x[[1]])
     x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
