@@ -1557,7 +1557,7 @@ getValidationFit = function(fold,
   }
   
   if(areal) {
-    fnameRoot = paste0(fnameRoot, "area", collapse="")
+    fnameRoot = paste0(fnameRoot, "areal", collapse="")
   }
   
   fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
@@ -2188,7 +2188,7 @@ scoreValidationPreds = function(fold,
   }
   
   if(areal) {
-    fnameRoot = paste0(fnameRoot, "area", collapse="")
+    fnameRoot = paste0(fnameRoot, "areal", collapse="")
   }
   
   # load predictions
