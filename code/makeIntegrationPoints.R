@@ -1292,7 +1292,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   
   # For each stratum, generate the integration points
   allIntPts = list()
-  strataMICS = stratumMICSMapDat@data[[stratumMICSNameVar]]
+  strataMICS = sort(stratumMICSMapDat@data[[stratumMICSNameVar]])
   for(i in 1:length(strataMICS)) {
     thisStrat = strataMICS[i]
     if(thisStrat == "Lake Chad") {

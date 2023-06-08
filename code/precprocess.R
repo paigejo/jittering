@@ -348,8 +348,10 @@ litMICSagg$samplingWeight = wtMICSagg$x
 edMICS = edMICSagg
 litMICS = litMICSagg
 
-stratIDs = match(edMICS$Stratum, admFinal$NAME_FINAL)
-edMICS = edMICS[order(stratIDs),]
+# stratIDs = match(edMICS$Stratum, admFinal$NAME_FINAL)
+# edMICS = edMICS[order(stratIDs),]
+edMICS = edMICS[order(edMICS$Stratum),]
+litMICS = litMICS[order(edMICS$Stratum),]
 
 save(edMICS, file="savedOutput/global/edMICS.RData")
 save(litMICS, file="savedOutput/global/litMICS.RData")

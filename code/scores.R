@@ -1512,7 +1512,29 @@ sortWithNAs = function(x, ...) {
   c(out, rep(NA, numNAs))
 }
 
-
+# for validation against direct estimates based on left out data
+getScoresDirectEstimates = function(logitDirectEsts, logitDirectEstsVar, nsim=NULL, 
+                                    estMat, weights=rep(1, length(directEsts)), 
+                                    significance=.8, getAverage=TRUE, 
+                                    anyNAisNA=FALSE, returnNAs=FALSE, na.rm=FALSE, 
+                                    setInfToNA=FALSE, throwOutAllNAs=FALSE) {
+  
+  if(is.null(nsim)) {
+    nsim = ncol(estMat)
+  }
+  
+  logitDirectEstsSE = sqrt(logitDirectEstsVar)
+  tempFun = Vectorize(function(i, n) rnorm(n, mean=logitDirectEsts[i], sd=logitDirectEstsSE[i]))
+  logitTruthMat = t(sapply(1:length(logitDirectEsts), tempFun, n=nsim))
+  
+  # subtract simulated truths from logit estimates
+  updatedEstMat = expit(logit(estMat) - logitTruthMat)
+  
+  getScores(truth=rep(0, logitDirectEsts), estMat=updatedEstMat, weights=weights, 
+            significance=significance, doFuzzyReject=FALSE, getAverage=getAverage, 
+            anyNAisNA=anyNAisNA, returnNAs=returnNAs, na.rm=na.rm, 
+            setInfToNA=setInfToNA, throwOutAllNAs=throwOutAllNAs)
+}
 
 
 
