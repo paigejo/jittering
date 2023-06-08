@@ -270,15 +270,10 @@ obj <- MakeADFun(data=data_full,
                  random=rand_effs,
                  hessian=TRUE,
                  DLL='modBYM2JitterFusionNugget2')
-obj <- MakeADFun(data=data_full,
-                 parameters=tmb_params,
-                 random=rand_effs,
-                 hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2')
-# objFull <- MakeADFun(data=data_full,
-#                      parameters=tmb_params,
-#                      hessian=TRUE,
-#                      DLL='modBYM2JitterFusionNugget2')
+objFull <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     hessian=TRUE,
+                     DLL='modBYM2JitterFusionNugget2')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -398,6 +393,10 @@ if(FALSE) {
                            getJointPrecision=TRUE,
                            bias.correct = TRUE,
                            bias.correct.control = list(sd = TRUE) )
+          
+          system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
+          # 15.82288 minutes, not PD
+          system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
         }
       }
       )[3]
@@ -478,11 +477,20 @@ if(!SD0$pdHess) {
       
       ## Get standard errors
       print("getting standard errors...")
-      sdTime = system.time(
+      sdTime = system.time({
         SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                              bias.correct = TRUE,
                              bias.correct.control = list(sd = TRUE))
-      )[3]
+        
+        if(!SD0$pdHess) {
+          # try recalculating for fixed parameters numerically
+          Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
+          SD0 <- sdreport( testObj, hessian.fixed=Hess,
+                           getJointPrecision=TRUE,
+                           bias.correct = TRUE,
+                           bias.correct.control = list(sd = TRUE) )
+        }
+      })[3]
       # SD0
       print(sdTime/60)
       # 3.9447 minutes for intern=FALSE
@@ -541,23 +549,30 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit.RData")
-out = load("savedOutput/ed/fit.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit2.RData")
+out = load("savedOutput/ed/fit2.RData")
 
 gridPreds = predGrid(SD0, obj, admLevel="adm2")
-# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
 # \hline
-# (Int) & -1.79 & -1.91 & -1.87 & -1.71 & -1.66 \\ 
-# urb & 1.13 & 1.04 & 1.07 & 1.18 & 1.21 \\ 
-# access & -0.30 & -0.42 & -0.37 & -0.23 & -0.19 \\ 
-# elev & -0.32 & -1.01 & -0.75 & 0.16 & 0.34 \\ 
-# distRiversLakes & 0.29 & -0.85 & -0.48 & 1.06 & 1.50 \\ 
-# popValsNorm & 0.38 & 0.23 & 0.28 & 0.49 & 0.54 \\ 
-# sigmaSq & 0.53 & 0.44 & 0.47 & 0.60 & 0.64 \\ 
-# phi & 0.92 & 0.91 & 0.92 & 0.92 & 0.93 \\ 
-# sigmaEpsSq & 1.52 & 1.41 & 1.45 & 1.60 & 1.65 \\ 
-save(gridPreds, file="savedOutput/ed/gridPreds.RData")
-out = load("savedOutput/ed/gridPreds.RData")
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\
+# \hline
+# (Int) & -1.74 & -2.32 & -2.15 & -1.33 & -1.18 \\
+# urb & 0.63 & -1.32 & -0.65 & 1.93 & 2.55 \\
+# access & -0.06 & -0.29 & -0.22 & 0.11 & 0.19 \\
+# elev & 0.20 & 0.20 & 0.20 & 0.20 & 0.21 \\
+# distRiversLakes & 0.02 & -0.02 & -0.00 & 0.05 & 0.06 \\
+# popValsNorm & 0.91 & 0.89 & 0.90 & 0.92 & 0.93 \\
+# sigmaSq & 1.81 & 0.24 & 0.41 & 3.89 & 6.45 \\
+# phi & 0.13 & 0.10 & 0.11 & 0.16 & 0.17 \\
+# sigmaEpsSq & 0.44 & 0.24 & 0.29 & 0.62 & 0.74 \\
+# \hline
+# \end{tabular}
+# \end{table}
+save(gridPreds, file="savedOutput/ed/gridPreds2.RData")
+out = load("savedOutput/ed/gridPreds2.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)

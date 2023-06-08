@@ -668,6 +668,13 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     mu + z
   }
   
+  rmvnorm_prec2 <- function(mu, chol_prec, n.sims) {
+    z <- matrix(rnorm(length(mu) * n.sims), ncol=n.sims)
+    L <- solve(t(as(chol_prec, "sparseMatrix"))) # Sigma = L %*% L^T
+    z <- as.matrix(L %*% z)
+    mu + z
+  }
+  
   sigmaEpsSq_tmb_draws = NULL
   if(SD0$pdHess) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
@@ -706,7 +713,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     colnames(parSummary)[1] = "Est"
     colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
     print(xtable(parSummary, digits=2))
-    
+    browser()
     # add effects to predictions
     gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
     gridDraws_tmb <- sweep(gridDraws_tmb, 2, alpha_tmb_draws, '+')

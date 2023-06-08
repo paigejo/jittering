@@ -559,29 +559,29 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# X.Int. & -1.72 & -1.90 & -1.56 \\ 
-# beta & 1.33 & 1.12 & 1.54 \\ 
-# beta.1 & -0.03 & -0.11 & 0.06 \\ 
-# beta.2 & 0.02 & -0.07 & 0.12 \\ 
-# beta.3 & 0.05 & -0.03 & 0.14 \\ 
-# beta.4 & 0.57 & 0.42 & 0.73 \\ 
-# sigmaSq & 0.87 & 0.68 & 1.09 \\ 
-# phi & 0.11 & 0.08 & 0.14 \\ 
-# sigmaEpsSq & 1.76 & 1.58 & 1.95 \\ 
+# (Int) & -2.01 & -2.22 & -2.14 & -1.86 & -1.80 \\
+# urb & 0.28 & 0.05 & 0.14 & 0.42 & 0.48 \\
+# access & -0.26 & -0.38 & -0.33 & -0.18 & -0.13 \\
+# elev & 0.20 & 0.07 & 0.11 & 0.29 & 0.34 \\
+# distRiversLakes & 0.07 & -0.06 & -0.01 & 0.15 & 0.19 \\
+# popValsNorm & 0.90 & 0.66 & 0.74 & 1.06 & 1.13 \\
+# sigmaSq & 0.65 & 0.49 & 0.53 & 0.76 & 0.83 \\
+# phi & 0.13 & 0.10 & 0.11 & 0.16 & 0.17 \\
+# sigmaEpsSq & 0.88 & 0.72 & 0.77 & 0.98 & 1.06 \\
 # \hline
 # \end{tabular}
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_D2")
+          plotNameRoot="edM_D2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_D2", plotNameRootAreal="Strat")
+          plotNameRoot="edM_D2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_D2", plotNameRootAreal="Admin1")
+          plotNameRoot="edM_D2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_D2", plotNameRootAreal="Admin2")
+          plotNameRoot="edM_D2", plotNameRootAreal="Admin2")
 
 

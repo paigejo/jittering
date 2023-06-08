@@ -1173,7 +1173,16 @@ logitNormMean = function(muSigmaMat, parClust=NULL, logisticApproximation=TRUE, 
       else if(!logisticApproximation) {
         # numerically calculate the mean
         fExp <- function(x) exp(plogis(x, log.p=TRUE) + dnorm(x, mean = mu, sd = sigma, log=TRUE))
-        integrate(fExp, mu-10*sigma, mu+10*sigma, abs.tol = 0, ...)$value
+        outVal = integrate(fExp, mu-10*sigma, mu+10*sigma, abs.tol = 0, ...)$value
+        
+        if(is.na(outVal)) {
+          # if the result is NA, such as in the case of numerical instability, just use logistic approximation
+          k = 16 * sqrt(3) / (15 * pi)
+          expit(mu / sqrt(1 + k^2 * sigma^2))
+          outVal = expit(mu)
+        }
+        
+        outVal
       } else {
         # use logistic approximation
         k = 16 * sqrt(3) / (15 * pi)

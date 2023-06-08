@@ -563,31 +563,30 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \centering
 # \begin{tabular}{rrrr}
 # \hline
-# & Est & Q0.025 & Q0.975 \\ 
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\
 # \hline
-# X.Int. & -1.72 & -1.90 & -1.56 \\ 
-# beta & 1.33 & 1.12 & 1.54 \\ 
-# beta.1 & -0.03 & -0.11 & 0.06 \\ 
-# beta.2 & 0.02 & -0.07 & 0.12 \\ 
-# beta.3 & 0.05 & -0.03 & 0.14 \\ 
-# beta.4 & 0.57 & 0.42 & 0.73 \\ 
-# sigmaSq & 0.87 & 0.68 & 1.09 \\ 
-# phi & 0.11 & 0.08 & 0.14 \\ 
-# sigmaEpsSq & 1.76 & 1.58 & 1.95 \\ 
+# X.Int. & -1.91 & -2.11 & -2.04 & -1.78 & -1.70 \\
+# beta & 0.30 & 0.07 & 0.15 & 0.45 & 0.52 \\
+# beta.1 & -0.22 & -0.33 & -0.29 & -0.15 & -0.12 \\
+# beta.2 & 0.19 & 0.07 & 0.10 & 0.29 & 0.33 \\
+# beta.3 & 0.07 & -0.05 & -0.01 & 0.15 & 0.19 \\
+# beta.4 & 0.87 & 0.67 & 0.73 & 1.00 & 1.07 \\
+# sigmaSq & 0.66 & 0.50 & 0.55 & 0.79 & 0.87 \\
+# phi & 0.13 & 0.10 & 0.11 & 0.16 & 0.18 \\
 # \hline
 # \end{tabular}
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionMd2")
+          plotNameRoot="edMd2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionMd2", plotNameRootAreal="Strat")
+          plotNameRoot="edMd2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionMd2", plotNameRootAreal="Admin1")
+          plotNameRoot="edMd2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionMd2", plotNameRootAreal="Admin2")
+          plotNameRoot="edMd2", plotNameRootAreal="Admin2")
 
 
