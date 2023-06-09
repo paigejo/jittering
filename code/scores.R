@@ -1528,9 +1528,9 @@ getScoresDirectEstimates = function(logitDirectEsts, logitDirectEstsVar, nsim=NU
   logitTruthMat = t(sapply(1:length(logitDirectEsts), tempFun, n=nsim))
   
   # subtract simulated truths from logit estimates
-  updatedEstMat = expit(logit(estMat) - logitTruthMat)
+  updatedEstMat = estMat - expit(logitTruthMat)
   
-  getScores(truth=rep(0, logitDirectEsts), estMat=updatedEstMat, weights=weights, 
+  getScores(truth=rep(0, length(logitDirectEsts)), estMat=updatedEstMat, weights=weights, 
             significance=significance, doFuzzyReject=FALSE, getAverage=getAverage, 
             anyNAisNA=anyNAisNA, returnNAs=returnNAs, na.rm=na.rm, 
             setInfToNA=setInfToNA, throwOutAllNAs=throwOutAllNAs)

@@ -1806,13 +1806,13 @@ getValidationFit = function(fold,
   
   # predict at the left out clusters
   if(hessPD) {
-    if(areal) {
+    if(!areal) {
       preds = predClusters(nsim=1000, fold, SD0, obj, 
                            model=model, 
                            quantiles=c(0.025, 0.1, 0.9, 0.975))
     } else {
       gridPreds = predGrid(SD0, obj, nsim=1000, admLevel="adm2", 
-                       model=model, predAtArea=foldArea,
+                       predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975))
       preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
     }
@@ -2173,7 +2173,7 @@ predStratum = function(nsim=1000, fold, SD0, obj,
 
 scoreValidationPreds = function(fold, 
                                 model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                                regenScores=FALSE) {
+                                regenScores=FALSE, areal=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
