@@ -270,10 +270,10 @@ obj <- MakeADFun(data=data_full,
                  random=rand_effs,
                  hessian=TRUE,
                  DLL='modBYM2JitterFusionNugget2')
-objFull <- MakeADFun(data=data_full,
-                     parameters=tmb_params,
-                     hessian=TRUE,
-                     DLL='modBYM2JitterFusionNugget2')
+# objFull <- MakeADFun(data=data_full,
+#                      parameters=tmb_params,
+#                      hessian=TRUE,
+#                      DLL='modBYM2JitterFusionNugget2')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -388,15 +388,16 @@ if(FALSE) {
         
         if(!SD0$pdHess) {
           # try recalculating for fixed parameters numerically
+          warning("Using alternative method for hessian calculation...")
           Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
           SD0 <- sdreport( testObj, hessian.fixed=Hess,
                            getJointPrecision=TRUE,
                            bias.correct = TRUE,
                            bias.correct.control = list(sd = TRUE) )
           
-          system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
+          # system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
           # 15.82288 minutes, not PD
-          system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
+          # system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
         }
       }
       )[3]

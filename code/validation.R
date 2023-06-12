@@ -1195,6 +1195,9 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
     allNumPerStrat = aggregate(edMICSOutOfSample$Stratum, by=list(strat=edMICSOutOfSample$Stratum, urb=edMICSOutOfSample$urban), FUN=length, drop=FALSE)
+    if(nrow(allNumPerStrat) != 82) {
+      stop("bad number of rows in out of sample nPerStrat")
+    }
     numPerStratUrbOutOfSample = allNumPerStrat[allNumPerStrat[,2], 3]
     numPerStratUrbOutOfSample[is.na(numPerStratUrbOutOfSample)] = 0
     numPerStratRurOutOfSample = allNumPerStrat[!allNumPerStrat[,2], 3]
@@ -1308,12 +1311,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
     intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
     
-    # put weight only on the simulated locations for both DHS and MICS data
     intPtsDHS$wUrbanOutOfSample = intPtsDHS$wUrban[outOfSampleLIndsUrb2DHS,]
     intPtsDHS$wRuralOutOfSample = intPtsDHS$wRural[outOfSampleLIndsRur2DHS,]
-    
-    intPtsMICS$wUrbanOutOfSample = wUrbanOutOfSample
-    intPtsMICS$wRuralOutOfSample = wRuralOutOfSample
   } else {
     intPtsMICS$XUrbOutOfSample = NULL
     intPtsMICS$XRurOutOfSample = NULL
@@ -1895,7 +1894,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   varname = paste0("dat", model)
   dat = get(varname)[[fold]]
   
-  foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD")), 11, fold)
+  foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD", "Md2", "MD2")), 11, fold)
   out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", foldMod, ".RData"))
   
   # generate predictions at the left out clusters
