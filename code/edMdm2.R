@@ -65,7 +65,12 @@ if(FALSE) {
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
+  getInds = function(intPtI = 1, numPerStrat) {
+    unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
+  }
+  actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -76,7 +81,8 @@ if(FALSE) {
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -125,6 +131,18 @@ if(FALSE) {
   intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
   intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
   
+  # update the MICS covariates and A matrices to the ones from the simulated 
+  # locations
+  subareasUrb = edMICSsim[edMICSsim$urban,]$subarea
+  urbCovsMICS = edMICSsim[edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+  intPtsMICS$XUrb[1:sum(edMICSsim$urban),] = matrix(unlist(urbCovsMICS), ncol=ncol(urbCovsMICS))
+  subareasRur = edMICSsim[!edMICSsim$urban,]$subarea
+  rurCovsMICS = edMICSsim[!edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
+  intPtsMICS$XRur[1:sum(!edMICSsim$urban),] = matrix(unlist(rurCovsMICS), ncol=ncol(rurCovsMICS))
+  
+  AUrbMICS[1:sum(edMICSsim$urban),] = t(makeApointToArea(subareasUrb,  adm2$NAME_2))
+  ARurMICS[1:sum(!edMICSsim$urban),] = t(makeApointToArea(subareasRur,  adm2$NAME_2))
+  
   # convert A matrices to sparse matrices
   AUrbMICS = as(AUrbMICS, "sparseMatrix")
   ARurMICS = as(ARurMICS, "sparseMatrix")
@@ -144,15 +162,6 @@ if(FALSE) {
   intPtsMICS$wUrban[,1] = 1
   intPtsMICS$wRural[,-1] = 0
   intPtsMICS$wRural[,1] = 1
-  
-  # update the MICS covariates to the ones from the simulated locations for the first 
-  # column
-  subareasUrb = edMICSsim[edMICSsim$urban,]$subarea
-  urbCovsMICS = edMICSsim[edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
-  intPtsMICS$XUrb[1:sum(edMICSsim$urban),] = matrix(unlist(urbCovsMICS), ncol=ncol(urbCovsMICS))
-  subareasRur = edMICSsim[!edMICSsim$urban,]$subarea
-  rurCovsMICS = edMICSsim[!edMICSsim$urban,][c("urb", "access", "elev", "distRiversLakes", "pop")]
-  intPtsMICS$XRur[1:sum(!edMICSsim$urban),] = matrix(unlist(rurCovsMICS), ncol=ncol(rurCovsMICS))
   
   save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
        ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 

@@ -56,13 +56,17 @@ if(FALSE) {
   # first extract only the relevant covariates
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
   # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
-  # TODO: EXTEND AMICS TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
   
   # numPerStratUrb = table(edMICS$Stratum[edMICS$urban])
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
+  getInds = function(intPtI = 1, numPerStrat) {
+    unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
+  }
+  actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -73,7 +77,8 @@ if(FALSE) {
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -422,7 +427,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took ~601.791 minutes (for intern=FALSE)
+  # optimization took ~232.657233333333 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -558,17 +563,17 @@ gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # \centering
 # \begin{tabular}{rrrrrr}
 # \hline
-# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.74 & -2.32 & -2.15 & -1.33 & -1.18 \\
-# urb & 0.63 & -1.32 & -0.65 & 1.93 & 2.55 \\
-# access & -0.06 & -0.29 & -0.22 & 0.11 & 0.19 \\
-# elev & 0.20 & 0.20 & 0.20 & 0.20 & 0.21 \\
-# distRiversLakes & 0.02 & -0.02 & -0.00 & 0.05 & 0.06 \\
-# popValsNorm & 0.91 & 0.89 & 0.90 & 0.92 & 0.93 \\
-# sigmaSq & 1.81 & 0.24 & 0.41 & 3.89 & 6.45 \\
-# phi & 0.13 & 0.10 & 0.11 & 0.16 & 0.17 \\
-# sigmaEpsSq & 0.44 & 0.24 & 0.29 & 0.62 & 0.74 \\
+# (Int) & -1.75 & -1.88 & -1.83 & -1.66 & -1.62 \\ 
+# urb & 0.82 & 0.70 & 0.73 & 0.91 & 0.95 \\ 
+# access & -0.09 & -0.29 & -0.22 & 0.03 & 0.10 \\ 
+# elev & 0.24 & -0.04 & 0.06 & 0.43 & 0.56 \\ 
+# distRiversLakes & -0.06 & -0.48 & -0.34 & 0.20 & 0.33 \\ 
+# popValsNorm & 0.81 & 0.61 & 0.68 & 0.92 & 1.00 \\ 
+# sigmaSq & 1.10 & 0.91 & 0.97 & 1.24 & 1.31 \\ 
+# phi & 0.11 & 0.10 & 0.10 & 0.13 & 0.13 \\ 
+# sigmaEpsSq & 0.39 & 0.35 & 0.36 & 0.41 & 0.42 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
@@ -593,15 +598,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# X.Int. & -1.72 & -1.90 & -1.56 \\ 
-# beta & 1.33 & 1.12 & 1.54 \\ 
-# beta.1 & -0.03 & -0.11 & 0.06 \\ 
-# beta.2 & 0.02 & -0.07 & 0.12 \\ 
-# beta.3 & 0.05 & -0.03 & 0.14 \\ 
-# beta.4 & 0.57 & 0.42 & 0.73 \\ 
-# sigmaSq & 0.87 & 0.68 & 1.09 \\ 
-# phi & 0.11 & 0.08 & 0.14 \\ 
-# sigmaEpsSq & 1.76 & 1.58 & 1.95 \\ 
+# X.Int. & -1.75 & -1.88 & -1.62 \\ 
+# beta & 0.82 & 0.70 & 0.95 \\ 
+# beta.1 & -0.09 & -0.29 & 0.10 \\ 
+# beta.2 & 0.24 & -0.04 & 0.56 \\ 
+# beta.3 & -0.06 & -0.48 & 0.33 \\ 
+# beta.4 & 0.81 & 0.61 & 1.00 \\ 
+# sigmaSq & 1.10 & 0.91 & 1.31 \\ 
+# phi & 0.11 & 0.10 & 0.13 \\ 
+# sigmaEpsSq & 0.39 & 0.35 & 0.42 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
