@@ -27,4 +27,4 @@
 module load R/4.2.1-foss-2022a
 module load GDAL/3.5.0-foss-2022a
 
-Rscript --verbose runValidation2areal.R ${SLURM_ARRAY_TASK_ID} > runValidation2_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout
+Rscript --verbose runValidation2areal.R ${SLURM_ARRAY_TASK_ID} > runValidation2areal_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout
