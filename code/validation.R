@@ -2390,7 +2390,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
             thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
             
             thisParTabDHS = c(thisParTabDHS, list(NA))
-          } else if(!isAreal) {
+          } else if(!areal) {
             thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
             thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
             thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
@@ -2414,7 +2414,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
           thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
           
           thisParTabDHS = c(thisParTabDHS, list(NA))
-        } else if(!isAreal) {
+        } else if(!areal) {
           thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
           thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
           thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
