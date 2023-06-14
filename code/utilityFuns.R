@@ -1692,3 +1692,36 @@ adm2ToStratumMICS = function(adm2Names) {
   strata
 }
 
+# function for calculating weighted SD using bias correction factor from:
+# https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Reliability_weights
+wtdSD = function(x, weights=NULL, na.rm=FALSE, 
+                 biasCorrection=c("reliability", "none", "frequency")) {
+  biasCorrection = match.arg(biasCorrection)
+  
+  if(na.rm) {
+    x = x[!is.na(x)]
+  }
+  
+  if(is.null(weights)) {
+    weights = rep(1, length(x))
+  }
+  
+  meanEst = weighted.mean(x, w=weights)
+  biasedVarEst = sum(weights*(x - meanEst)^2)/sum(weights)
+  
+  if(biasCorrection == "reliability") {
+    V1 = sum(weights)
+    V2 = sum(weights^2)
+    
+    varEst = biasedVarEst/(1 - (V2/V1^2))
+  } else if(biasCorrection == "frequency") {
+    V1 = sum(weights)
+    varEst = biasedVarEst * (V1/(V1-1))
+  } else {
+    varEst = biasedVarEst
+  }
+  
+  sqrt(varEst)
+}
+
+

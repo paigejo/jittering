@@ -1136,7 +1136,6 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
   urb = fineIntPtsTab$urban
   ENCoords = cbind(fineIntPtsTab$east, fineIntPtsTab$north)
   
-  
   if(spatialAsCovariate) {
     # add spatial coordinates as covariates if user requests
     if(is.null(domainDiameter)) {
@@ -1183,6 +1182,18 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     # calculate weights of the medoids
     totalPopUrb = aggregate(pop[urb], by=list(medoid=medoidIUrb), FUN=sum)
     weightsUrb = totalPopUrb[,2] / sum(totalPopUrb[,2])
+    
+    # calculate averages of covariates, both fine scale and at the integration points
+    finePopWeights = pop[urb]
+    finePopWeights[is.na(finePopWeights)] = 0
+    finePopWeights = finePopWeights/sum(finePopWeights)
+    fineAvgsUrb = colSums(sweep(XmatUrb, 1, finePopWeights, "*"))
+    
+    intAvgsUrb = colSums(sweep(XmatUrb[sort(unique(medoidIUrb)),], 1, weightsUrb, "*"))
+    
+    # calculate ranges of covariates, both fine scale and at the integration points 
+    fineSDUrb = apply(XmatUrb, 2, wtdSD, weights=weightsUrb)
+    intSDUrb = apply(XmatUrb[sort(unique(medoidIUrb)),], 2, wtdSD, weights=weightsUrb)
   } else {
     hasUrbPop = FALSE
     XmatUrb = NULL
@@ -1192,6 +1203,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     totalPopUrb = NULL
     weightsUrb = NULL
+    
+    fineAvgsUrb = NULL
+    intAvgsUrb = NULL
   }
   
   if(nPtsRur > 0) {
@@ -1206,6 +1220,18 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     totalPopRur = aggregate(pop[!urb], by=list(medoid=medoidIRur), FUN=sum)
     weightsRur = totalPopRur[,2] / sum(totalPopRur[,2])
+    
+    # calculate averages of covariates, both fine scale and at the integration points
+    finePopWeights = pop[!urb]
+    finePopWeights[is.na(finePopWeights)] = 0
+    finePopWeights = finePopWeights/sum(finePopWeights)
+    fineAvgsRur = colSums(sweep(XmatRur, 1, finePopWeights, "*"))
+    
+    intAvgsRur = colSums(sweep(XmatRur[sort(unique(medoidIRur)),], 1, weightsRur, "*"))
+    
+    # calculate ranges of covariates, both fine scale and at the integration points 
+    fineSDRur = apply(XmatRur, 2, wtdSD, weights=weightsRur)
+    intSDRur = apply(XmatRur[sort(unique(medoidIRur)),], 2, wtdSD, weights=weightsRur)
   } else {
     hasRurPop = FALSE
     XmatRur = NULL
@@ -1215,6 +1241,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     totalPopRur = NULL
     weightsRur = NULL
+    
+    fineAvgsRur = NULL
+    intAvgsRur = NULL
   }
   
   # # assign fine grid points to each medoid
@@ -1226,13 +1255,19 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
   # medoidAssignedRur = apply(distToMedoidsRur, 1, which.min)
   # pointIAssignedRur = medoidIRur[medoidAssignedRur]
   
-  # return results
+  # return results, and calculate pop averages of covariates compared to with 
+  # the fine integration points
   sortIUrb = which(fineIntPtsTab$urban)[sort(unique(medoidIUrb))]
   sortIRur = which(!fineIntPtsTab$urban)[sort(unique(medoidIRur))]
+  
   out = list(strat=strat, hasUrbPop=hasUrbPop, hasRurPop=hasRurPop, 
        pts=fineIntPtsTab[c(sortIUrb, sortIRur),], weights=c(weightsUrb, weightsRur), 
        ptsUrb=fineIntPtsTab[sortIUrb,], weightsUrb=weightsUrb, 
-       ptsRur=fineIntPtsTab[sortIRur,], weightsRur=weightsRur)
+       ptsRur=fineIntPtsTab[sortIRur,], weightsRur=weightsRur, 
+       fineAvgsUrb=fineAvgsUrb, intAvgsUrb=intAvgsUrb, 
+       fineAvgsRur=fineAvgsRur, intAvgsRur=intAvgsRur, 
+       fineSDUrb=fineSDUrb, intSDUrb=intSDUrb, 
+       fineSDRur=fineSDRur, intSDRur=intSDRur)
   
   if(returnFineGrid) {
     list(fineGrid = fineIntPtsTab, 
@@ -1323,6 +1358,15 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
       save(thisIntPoints, file=paste0(fileNameRoot, "_i", i, ".RData"))
     }
     
+    print(paste0("fineIntPts cov averages (urban): ", paste(thisIntPoints$fineAvgsUrb, collapse= " ")))
+    print(paste0("intPts cov averages (urban): ", paste(thisIntPoints$intAvgsUrb, collapse= " ")))
+    print(paste0("fineIntPts cov averages (rural): ", paste(thisIntPoints$fineAvgsRur, collapse= " ")))
+    print(paste0("intPts cov averages (rural): ", paste(thisIntPoints$intAvgsRur, collapse= " ")))
+    print(paste0("fineIntPts cov SDs (urban): ", paste(thisIntPoints$fineSDUrb, collapse= " ")))
+    print(paste0("intPts cov SDs (urban): ", paste(thisIntPoints$intSDUrb, collapse= " ")))
+    print(paste0("fineIntPts cov SDs (rural): ", paste(thisIntPoints$fineSDRur, collapse= " ")))
+    print(paste0("intPts cov SDs (rural): ", paste(thisIntPoints$intSDRur, collapse= " ")))
+    
     if(length(thisIntPoints$weightsUrb) == 0) {
       browser()
     }
@@ -1359,6 +1403,37 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   
   wsUrban = do.call("rbind", (lapply(allIntPts, function(x) {x$weightsUrb})))
   wsRural = do.call("rbind", (lapply(allIntPts, function(x) {x$weightsRur})))
+  
+  # get average value of covariates
+  fineIntPtAvgsUrb = do.call("rbind", lapply(allIntPts, function(x) {x$fineAvgsUrb}))
+  fineIntPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$fineAvgsRur}))
+  intPtAvgsUrb = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsUrb}))
+  intPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsRur}))
+  absPctErrorUrb = abs(100*(intPtAvgsUrb - fineIntPtAvgsUrb)/fineIntPtAvgsUrb)
+  absPctErrorRur = abs(100*(intPtAvgsRur - fineIntPtAvgsRur)/fineIntPtAvgsRur)
+  absPctError = rbind(absPctErrorUrb, 
+                      absPctErrorRur)
+  absMeanPctErrorUrb = colMeans(absPctErrorUrb)
+  absMeanPctErrorRur = colMeans(absPctErrorRur)
+  absMeanPctError = colMeans(absPctError)
+  absMaxPctErrorUrb = apply(absPctErrorUrb, 2, max)
+  absMaxPctErrorRur = apply(absPctErrorRur, 2, max)
+  absMaxPctError = apply(absPctError, 2, max)
+  
+  fineIntPtSDUrb = do.call("rbind", lapply(allIntPts, function(x) {x$fineSDUrb}))
+  fineIntPtSDRur = do.call("rbind", lapply(allIntPts, function(x) {x$fineSDRur}))
+  intPtSDUrb = do.call("rbind", lapply(allIntPts, function(x) {x$intSDUrb}))
+  intPtSDRur = do.call("rbind", lapply(allIntPts, function(x) {x$intSDRur}))
+  absPctErrorSDUrb = abs(100*(intPtSDUrb - fineIntPtSDUrb)/fineIntPtSDUrb)
+  absPctErrorSDRur = abs(100*(intPtSDRur - fineIntPtSDRur)/fineIntPtSDRur)
+  absPctErrorSD = rbind(absPctErrorSDUrb, 
+                      absPctErrorSDRur)
+  absMeanPctErrorSDUrb = colMeans(absPctErrorSDUrb)
+  absMeanPctErrorSDRur = colMeans(absPctErrorSDRur)
+  absMeanPctErrorSD = colMeans(absPctErrorSD)
+  absMaxPctErrorSDUrb = apply(absPctErrorSDUrb, 2, max)
+  absMaxPctErrorSDRur = apply(absPctErrorSDRur, 2, max)
+  absMaxPctErrorSD = apply(absPctErrorSD, 2, max)
   
   # make sure to fill in gaps where there is no urban or rural population
   hasUrbPop = sapply(allIntPts, function(x) {x$hasUrbPop})
@@ -1465,10 +1540,22 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                     intI=rep(1:numPtsRur, each=length(strataRur)))
     XRurFull = merge(allCovsRurByObs, allCovsRur)
     
-    # return list of all matrices at the observation level
+    # return list of all matrices and diagnostics at the observation level
     intPtsMICS = list(strataMICS=strataMICS, 
          XUrb=XUrbFull, XRur=XRurFull, 
-         wUrban=wsUrban, wRural=wsRural)
+         wUrban=wsUrban, wRural=wsRural, 
+         absMeanPctErrorUrb=absMeanPctErrorUrb, 
+         absMeanPctErrorRur=absMeanPctErrorRur, 
+         absMeanPctError=absMeanPctError, 
+         absMaxPctErrorUrb=absMaxPctErrorUrb, 
+         absMaxPctErrorRur=absMaxPctErrorRur, 
+         absMaxPctError=absMaxPctError, 
+         absMeanPctErrorSDUrb=absMeanPctErrorSDUrb, 
+         absMeanPctErrorSDRur=absMeanPctErrorSDRur, 
+         absMeanPctErrorSD=absMeanPctErrorSD, 
+         absMaxPctErrorSDUrb=absMaxPctErrorSDUrb, 
+         absMaxPctErrorSDRur=absMaxPctErrorSDRur, 
+         absMaxPctErrorSD=absMaxPctErrorSD)
   }
   
   save(intPtsMICS, file=outFile)
@@ -2138,3 +2225,22 @@ simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGATh
   
   invisible(simEdMICS)
 }
+
+# by default, finds resolution within 1% of fine scale average
+getBestResMICS = function(startRes=25, tol=.01) {
+  
+  lastRes = startRes
+  thisRes = startRes
+  finished = FALSE
+  while(!finished) {
+    micsPts = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
+                                           numPtsUrb = thisRes, numPtsRur=thisRes)
+    
+    
+  }
+  
+}
+
+
+
+

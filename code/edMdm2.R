@@ -301,11 +301,6 @@ obj <- MakeADFun(data=data_full,
                  random=rand_effs,
                  hessian=TRUE,
                  DLL='modBYM2JitterFusionNugget2')
-obj <- MakeADFun(data=data_full,
-                 parameters=tmb_params,
-                 random=rand_effs,
-                 hessian=TRUE,
-                 DLL='modBYM2JitterFusionNugget2')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,
@@ -527,6 +522,7 @@ if(!SD0$pdHess) {
   totalTime = thisEndTime - startTime
   print(paste0("second optimization took ", thisTotalTime/60, " minutes"))
   print(paste0("all optimization took ", totalTime/60, " minutes"))
+  # 102.33995 minutes
 }
 
 # opt0 <- nlminb(start       =    obj[['par']],
@@ -572,15 +568,15 @@ gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.73 & -1.90 & -1.84 & -1.62 & -1.56 \\ 
-# urb & 1.34 & 1.13 & 1.21 & 1.48 & 1.54 \\ 
-# access & -0.03 & -0.11 & -0.08 & 0.02 & 0.05 \\ 
-# elev & 0.02 & -0.07 & -0.03 & 0.08 & 0.12 \\ 
-# distRiversLakes & 0.05 & -0.04 & -0.00 & 0.11 & 0.14 \\ 
-# popValsNorm & 0.57 & 0.42 & 0.48 & 0.66 & 0.72 \\ 
-# sigmaSq & 0.87 & 0.67 & 0.74 & 1.00 & 1.09 \\ 
-# phi & 0.11 & 0.08 & 0.09 & 0.13 & 0.14 \\ 
-# sigmaEpsSq & 1.76 & 1.58 & 1.63 & 1.88 & 1.96 \\ 
+# (Int) & -1.56 & -1.73 & -1.67 & -1.44 & -1.39 \\ 
+# urb & 1.35 & 1.14 & 1.21 & 1.47 & 1.56 \\ 
+# access & -0.03 & -0.12 & -0.09 & 0.03 & 0.06 \\ 
+# elev & 0.09 & -0.03 & 0.01 & 0.18 & 0.22 \\ 
+# distRiversLakes & -0.04 & -0.14 & -0.11 & 0.04 & 0.07 \\ 
+# popValsNorm & 0.53 & 0.36 & 0.41 & 0.63 & 0.69 \\ 
+# sigmaSq & 0.70 & 0.55 & 0.60 & 0.81 & 0.89 \\ 
+# phi & 0.10 & 0.07 & 0.08 & 0.12 & 0.13 \\ 
+# sigmaEpsSq & 2.03 & 1.83 & 1.89 & 2.17 & 2.24 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
@@ -605,14 +601,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# X.Int. & -1.73 & -1.89 & -1.83 & -1.62 & -1.55 \\
-# beta & 1.34 & 1.13 & 1.20 & 1.48 & 1.55 \\
-# beta.1 & -0.03 & -0.11 & -0.08 & 0.02 & 0.05 \\
-# beta.2 & 0.02 & -0.07 & -0.04 & 0.08 & 0.11 \\
-# beta.3 & 0.05 & -0.03 & -0.01 & 0.11 & 0.14 \\
-# beta.4 & 0.57 & 0.43 & 0.48 & 0.67 & 0.72 \\
-# sigmaSq & 0.87 & 0.69 & 0.75 & 1.00 & 1.10 \\
-# phi & 0.11 & 0.08 & 0.09 & 0.13 & 0.15 \\
+# X.Int. & -1.56 & -1.73 & -1.39 \\ 
+# beta & 1.35 & 1.14 & 1.56 \\ 
+# beta.1 & -0.03 & -0.12 & 0.06 \\ 
+# beta.2 & 0.09 & -0.03 & 0.22 \\ 
+# beta.3 & -0.04 & -0.14 & 0.07 \\ 
+# beta.4 & 0.53 & 0.36 & 0.69 \\ 
+# sigmaSq & 0.70 & 0.55 & 0.89 \\ 
+# phi & 0.10 & 0.07 & 0.13 \\ 
+# sigmaEpsSq & 2.03 & 1.83 & 2.24 \\ 
 # \hline
 # \end{tabular}
 # \end{table}

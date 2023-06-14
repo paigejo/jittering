@@ -2570,6 +2570,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
     finalTabMICSAvg = scoresTabsAvgMICS
   }
   
+  # print out tables ----
   
   browser()
   #          Bias        Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95

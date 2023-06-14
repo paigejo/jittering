@@ -427,7 +427,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took ~232.657233333333 minutes (for intern=FALSE)
+  # optimization took ~125.95185 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -565,15 +565,15 @@ gridPreds = predGrid(SD0, obj, admLevel="adm2")
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.75 & -1.88 & -1.83 & -1.66 & -1.62 \\ 
-# urb & 0.82 & 0.70 & 0.73 & 0.91 & 0.95 \\ 
-# access & -0.09 & -0.29 & -0.22 & 0.03 & 0.10 \\ 
-# elev & 0.24 & -0.04 & 0.06 & 0.43 & 0.56 \\ 
-# distRiversLakes & -0.06 & -0.48 & -0.34 & 0.20 & 0.33 \\ 
-# popValsNorm & 0.81 & 0.61 & 0.68 & 0.92 & 1.00 \\ 
-# sigmaSq & 1.10 & 0.91 & 0.97 & 1.24 & 1.31 \\ 
-# phi & 0.11 & 0.10 & 0.10 & 0.13 & 0.13 \\ 
-# sigmaEpsSq & 0.39 & 0.35 & 0.36 & 0.41 & 0.42 \\ 
+# (Int) & -1.76 & -1.90 & -1.84 & -1.68 & -1.64 \\ 
+# urb & 0.38 & 0.25 & 0.30 & 0.46 & 0.50 \\ 
+# access & -0.12 & -0.30 & -0.24 & 0.01 & 0.07 \\ 
+# elev & 0.21 & 0.01 & 0.08 & 0.34 & 0.40 \\ 
+# distRiversLakes & 0.06 & -0.27 & -0.15 & 0.29 & 0.40 \\ 
+# popValsNorm & 0.87 & 0.70 & 0.76 & 0.99 & 1.04 \\ 
+# sigmaSq & 0.97 & 0.81 & 0.86 & 1.09 & 1.16 \\ 
+# phi & 0.12 & 0.10 & 0.11 & 0.13 & 0.14 \\ 
+# sigmaEpsSq & 0.39 & 0.36 & 0.37 & 0.41 & 0.43 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
@@ -598,15 +598,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# X.Int. & -1.75 & -1.88 & -1.62 \\ 
-# beta & 0.82 & 0.70 & 0.95 \\ 
-# beta.1 & -0.09 & -0.29 & 0.10 \\ 
-# beta.2 & 0.24 & -0.04 & 0.56 \\ 
-# beta.3 & -0.06 & -0.48 & 0.33 \\ 
-# beta.4 & 0.81 & 0.61 & 1.00 \\ 
-# sigmaSq & 1.10 & 0.91 & 1.31 \\ 
-# phi & 0.11 & 0.10 & 0.13 \\ 
-# sigmaEpsSq & 0.39 & 0.35 & 0.42 \\ 
+# X.Int. & -1.76 & -1.90 & -1.64 \\ 
+# beta & 0.38 & 0.25 & 0.50 \\ 
+# beta.1 & -0.12 & -0.30 & 0.07 \\ 
+# beta.2 & 0.21 & 0.01 & 0.40 \\ 
+# beta.3 & 0.06 & -0.27 & 0.40 \\ 
+# beta.4 & 0.87 & 0.70 & 1.04 \\ 
+# sigmaSq & 0.97 & 0.81 & 1.16 \\ 
+# phi & 0.12 & 0.10 & 0.14 \\ 
+# sigmaEpsSq & 0.39 & 0.36 & 0.43 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
