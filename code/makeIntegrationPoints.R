@@ -1192,7 +1192,7 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsUrb = colSums(sweep(XmatUrb[sort(unique(medoidIUrb)),], 1, weightsUrb, "*"))
     
     # calculate ranges of covariates, both fine scale and at the integration points 
-    fineSDUrb = apply(XmatUrb, 2, wtdSD, weights=weightsUrb)
+    fineSDUrb = apply(XmatUrb, 2, wtdSD, weights=finePopWeights)
     intSDUrb = apply(XmatUrb[sort(unique(medoidIUrb)),], 2, wtdSD, weights=weightsUrb)
   } else {
     hasUrbPop = FALSE
@@ -1206,6 +1206,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     fineAvgsUrb = NULL
     intAvgsUrb = NULL
+    fineSDUrb = NULL
+    intSDUrb = NULL
   }
   
   if(nPtsRur > 0) {
@@ -1230,7 +1232,7 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsRur = colSums(sweep(XmatRur[sort(unique(medoidIRur)),], 1, weightsRur, "*"))
     
     # calculate ranges of covariates, both fine scale and at the integration points 
-    fineSDRur = apply(XmatRur, 2, wtdSD, weights=weightsRur)
+    fineSDRur = apply(XmatRur, 2, wtdSD, weights=finePopWeights)
     intSDRur = apply(XmatRur[sort(unique(medoidIRur)),], 2, wtdSD, weights=weightsRur)
   } else {
     hasRurPop = FALSE
@@ -1244,6 +1246,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     fineAvgsRur = NULL
     intAvgsRur = NULL
+    fineSDRur = NULL
+    intSDRur = NULL
   }
   
   # # assign fine grid points to each medoid
@@ -2227,7 +2231,8 @@ simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGATh
 }
 
 # by default, finds resolution within 1% of fine scale average
-getBestResMICS = function(startRes=25, tol=.01) {
+# tol: tolerance in percent
+getBestResMICS = function(startRes=25, tolMean=5, tolSD=10) {
   
   lastRes = startRes
   thisRes = startRes
@@ -2236,7 +2241,25 @@ getBestResMICS = function(startRes=25, tol=.01) {
     micsPts = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
                                            numPtsUrb = thisRes, numPtsRur=thisRes)
     
+    # get diagnostics
+    absMeanPctErrorUrb = micsPts$absMeanPctErrorUrb
+    absMeanPctErrorRur = micsPts$absMeanPctErrorRur
+    absMeanPctError = micsPts$absMeanPctError
+    absMaxPctErrorUrb = micsPts$absMaxPctErrorUrb
+    absMaxPctErrorRur = micsPts$absMaxPctErrorRur
+    absMaxPctError = micsPts$absMaxPctError
+    absMeanPctErrorSDUrb = micsPts$absMeanPctErrorSDUrb
+    absMeanPctErrorSDRur = micsPts$absMeanPctErrorSDRur
+    absMeanPctErrorSD = micsPts$absMeanPctErrorSD
+    absMaxPctErrorSDUrb = micsPts$absMaxPctErrorSDUrb
+    absMaxPctErrorSDRur = micsPts$absMaxPctErrorSDRur
+    absMaxPctErrorSD = micsPts$absMaxPctErrorSD
     
+    if((max(absMeanPctError) < tolMean) && (max(absMeanPctErrorSD) < tolSD)) {
+      finished = TRUE
+    } else {
+      browser()
+    }
   }
   
 }

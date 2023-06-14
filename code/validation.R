@@ -2384,7 +2384,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
           warning(paste0("NULL scores or preds for model ", fnameRoot, " fold ", fold))
           
           # add filler
-          if(!isMICS && !areal) {
+          if(!areal && !isMICS) {
             thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
             thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
             thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
@@ -2408,7 +2408,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
         warning(paste0("no scores or preds file for model ", fnameRoot, " fold ", fold))
         
         # add filler
-        if(!isMICS && !areal) {
+        if(!areal && !isMICS) {
           thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
           thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
           thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
@@ -2435,7 +2435,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
       foldParTab = t(apply(t(preds$fixedMat), 2, thisSummaryFun))
       colnames(foldParTab) = c("Est", "SD", paste0("Q", quantiles*100))
       
-      if(!isMICS && !areal) {
+      if(!areal && !isMICS) {
         thisScoresTabDHS = rbind(thisScoresTabDHS, scores)
         thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, scoresUrb)
         thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, scoresRur)
@@ -2582,12 +2582,12 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
   # old results: ----
   
   # finalTabAvg
-  # Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
+  #              Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
   # [1,] -0.048923416 0.10258375 0.10724543 0.3269813 0.1848153       0.8074385       1.0257699       1.1268245       1.1880048  0.3220954
   # [2,] -0.042409437 0.08963965 0.09597390 0.3078246 0.1739119       0.7602655       0.9553505       1.0343832       1.0760787  0.3216234
   # [3,]  0.008536307 0.12283088 0.12347722 0.3498838 0.2006246       0.8801756       1.1053651       1.1743620       1.2067275  0.3412146
   # [4,]  0.016442123 0.09399670 0.09507257 0.3076165 0.1742858       0.7629908       0.9098012       0.9606157       0.9930743  0.3339502
-  # Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95       Time
+  #      Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95       Time
   # [1,]  0.6241462  0.7698937  0.8659569 0.3304475 0.6010558 0.7258421 0.8153675 0.09974754
   # [2,]  0.6114158  0.7642869  0.8640286 0.3305149 0.6013947 0.7313789 0.8207659 0.84239516
   # [3,]  0.6279874  0.7664817  0.8696364 0.3663356 0.6523856 0.7778282 0.8572857 0.19906408
