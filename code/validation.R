@@ -2286,10 +2286,15 @@ scoreValidationPreds = function(fold,
 
 
 # function for collecting validation results for each model
-validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
+validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
   # models=c("Md", "MD", "Mdm", "MDM")
   models=c("Md2", "MD2", "Mdm2", "MDM2")
-  folds = 1:20
+  
+  if(!areal) {
+    folds = 1:20
+  } else {
+    folds = 1:37
+  }
   
   thisSummaryFun = function(x) {
     c(mean(x), sd(x), quantile(x, probs=quantiles))
@@ -2300,20 +2305,26 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   # the cluster ns so we just have to weight by the fold total ns here
   out = load("savedOutput/validation/edVal.RData")
   out = load("savedOutput/validation/edMICSval.RData")
-  weightsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
-  weightsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
-  weightsUrbDHS = aggregate(edVal$n[edVal$urban], by=list(fold=edVal$fold[edVal$urban]), FUN=sum)$x
-  weightsUrbMICS = aggregate(edMICSval$ns[edMICSval$urban], by=list(fold=edMICSval$fold[edMICSval$urban]), FUN=sum)$x
-  weightsRurDHS = aggregate(edVal$n[!edVal$urban], by=list(fold=edVal$fold[!edVal$urban]), FUN=sum)$x
-  weightsRurMICS = aggregate(edMICSval$ns[!edMICSval$urban], by=list(fold=edMICSval$fold[!edMICSval$urban]), FUN=sum)$x
-  weightsDHS = weightsDHS/sum(weightsDHS)
-  weightsUrbDHS = weightsUrbDHS/sum(weightsUrbDHS)
-  weightsRurDHS = weightsRurDHS/sum(weightsRurDHS)
-  weightsMICS = weightsMICS/sum(weightsMICS)
-  weightsUrbMICS = weightsUrbMICS/sum(weightsUrbMICS)
-  weightsRurMICS = weightsRurMICS/sum(weightsRurMICS)
+  if(!areal) {
+    weightsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
+    weightsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
+    weightsUrbDHS = aggregate(edVal$n[edVal$urban], by=list(fold=edVal$fold[edVal$urban]), FUN=sum)$x
+    weightsUrbMICS = aggregate(edMICSval$ns[edMICSval$urban], by=list(fold=edMICSval$fold[edMICSval$urban]), FUN=sum)$x
+    weightsRurDHS = aggregate(edVal$n[!edVal$urban], by=list(fold=edVal$fold[!edVal$urban]), FUN=sum)$x
+    weightsRurMICS = aggregate(edMICSval$ns[!edMICSval$urban], by=list(fold=edMICSval$fold[!edMICSval$urban]), FUN=sum)$x
+    weightsDHS = weightsDHS/sum(weightsDHS)
+    weightsUrbDHS = weightsUrbDHS/sum(weightsUrbDHS)
+    weightsRurDHS = weightsRurDHS/sum(weightsRurDHS)
+    weightsMICS = weightsMICS/sum(weightsMICS)
+    weightsUrbMICS = weightsUrbMICS/sum(weightsUrbMICS)
+    weightsRurMICS = weightsRurMICS/sum(weightsRurMICS)
+  }
   
   # aggregate the results of all folds for each model
+  if(areal) {
+    scoreTabsFull = list()
+    parTabsFull = list()
+  }
   scoresTabsDHS = list()
   scoresTabsUrbDHS = list()
   scoresTabsRurDHS = list()
@@ -2337,7 +2348,15 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
       fnameRoot = "M_DM2"
     }
     
+    if(areal) {
+      fnameRoot = paste0(fnameRoot, "areal", collapse="")
+    }
+    
     # collect the results over all folds
+    if(areal) {
+      thisScoresTabFull = list() # only for areal case
+      thisParTabFull = list()
+    }
     thisScoresTabDHS = list()
     thisScoresTabUrbDHS = list()
     thisScoresTabRurDHS = list()
@@ -2348,7 +2367,10 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
     thisParTabMICS = list()
     for(j in 1:length(folds)) {
       fold = folds[j]
-      isMICS = j > 10
+      
+      if(!areal) {
+        isMICS = j > 10
+      }
       
       # load the scores
       if(file.exists(paste0("savedOutput/validation/folds/scores", fnameRoot, "_fold", fold, ".RData")) &&
@@ -2360,18 +2382,22 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
           warning(paste0("NULL scores or preds for model ", fnameRoot, " fold ", fold))
           
           # add filler
-          if(!isMICS) {
+          if(!isMICS && !areal) {
             thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
             thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
             thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
             
             thisParTabDHS = c(thisParTabDHS, list(NA))
-          } else {
+          } else if(!isAreal) {
             thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
             thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
             thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
             
             thisParTabMICS = c(thisParTabMICS, list(NA))
+          } else {
+            thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
+            thisScoresTabMICS = rbind(thisScoresTabDHS, NA)
+            thisScoresTabFull = rbind(thisScoresTabFull, NA)
           }
           
           next
@@ -2380,18 +2406,24 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
         warning(paste0("no scores or preds file for model ", fnameRoot, " fold ", fold))
         
         # add filler
-        if(!isMICS) {
+        if(!isMICS && !areal) {
           thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
           thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, NA)
           thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, NA)
           
           thisParTabDHS = c(thisParTabDHS, list(NA))
-        } else {
+        } else if(!isAreal) {
           thisScoresTabMICS = rbind(thisScoresTabMICS, NA)
           thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, NA)
           thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, NA)
           
           thisParTabMICS = c(thisParTabMICS, list(NA))
+        } else {
+          thisScoresTabDHS = rbind(thisScoresTabDHS, NA)
+          thisScoresTabMICS = rbind(thisScoresTabDHS, NA)
+          thisScoresTabFull = rbind(thisScoresTabFull, NA)
+          
+          thisParTabFull = rbind(thisParTabFull, NA)
         }
         
         next
@@ -2401,78 +2433,114 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
       foldParTab = t(apply(t(preds$fixedMat), 2, thisSummaryFun))
       colnames(foldParTab) = c("Est", "SD", paste0("Q", quantiles*100))
       
-      if(!isMICS) {
+      if(!isMICS && !areal) {
         thisScoresTabDHS = rbind(thisScoresTabDHS, scores)
         thisScoresTabUrbDHS = rbind(thisScoresTabUrbDHS, scoresUrb)
         thisScoresTabRurDHS = rbind(thisScoresTabRurDHS, scoresRur)
         
         thisParTabDHS = c(thisParTabDHS, list(foldParTab))
-      } else {
+      } else if(!areal) {
         thisScoresTabMICS = rbind(thisScoresTabMICS, scores)
         thisScoresTabUrbMICS = rbind(thisScoresTabUrbMICS, scoresUrb)
         thisScoresTabRurMICS = rbind(thisScoresTabRurMICS, scoresRur)
         
         thisParTabMICS = c(thisParTabMICS, list(foldParTab))
+      } else {
+        thisScoresTabDHS = rbind(thisScoresTabDHS, scoresDHS)
+        thisScoresTabMICS = rbind(thisScoresTabMICS, scoresMICS)
+        thisScoresTabFull = rbind(thisScoresTabFull, scores)
+        
+        thisParTabFull = c(thisParTabFull, list(foldParTab))
       }
     }
+    
     scoresTabsDHS = c(scoresTabsDHS, list(thisScoresTabDHS))
-    scoresTabsUrbDHS = c(scoresTabsUrbDHS, list(thisScoresTabUrbDHS))
-    scoresTabsRurDHS = c(scoresTabsRurDHS, list(thisScoresTabRurDHS))
-    parTabsDHS = c(parTabsDHS, list(thisParTabDHS))
     scoresTabsMICS = c(scoresTabsMICS, list(thisScoresTabMICS))
-    scoresTabsUrbMICS = c(scoresTabsUrbMICS, list(thisScoresTabUrbMICS))
-    scoresTabsRurMICS = c(scoresTabsRurMICS, list(thisScoresTabRurMICS))
-    parTabsMICS = c(parTabsMICS, list(thisParTabMICS))
+    if(!areal) {
+      parTabsDHS = c(parTabsDHS, list(thisParTabDHS))
+      parTabsMICS = c(parTabsMICS, list(thisParTabMICS))
+      scoresTabsUrbDHS = c(scoresTabsUrbDHS, list(thisScoresTabUrbDHS))
+      scoresTabsRurDHS = c(scoresTabsRurDHS, list(thisScoresTabRurDHS))
+      scoresTabsUrbMICS = c(scoresTabsUrbMICS, list(thisScoresTabUrbMICS))
+      scoresTabsRurMICS = c(scoresTabsRurMICS, list(thisScoresTabRurMICS))
+    } else {
+      parTabsFull = c(parTabsFull, list(thisParTabFull))
+      scoresTabsFull = c(scoresTabsFull, list(thisScoresTabFull))
+    }
   }
   
   # calculate averages
-  scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsDHS[!is.na(x[,1])]/sum(weightsDHS[!is.na(x[,1])]), "*"))}))
-  scoresTabsUrbAvgDHS = do.call("rbind", lapply(scoresTabsUrbDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsUrbDHS[!is.na(x[,1])]/sum(weightsUrbDHS[!is.na(x[,1])]), "*"))}))
-  scoresTabsRurAvgDHS = do.call("rbind", lapply(scoresTabsRurDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurDHS[!is.na(x[,1])]/sum(weightsRurDHS[!is.na(x[,1])]), "*"))}))
-  scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsMICS[!is.na(x[,1])]/sum(weightsMICS[!is.na(x[,1])]), "*"))}))
-  scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsUrbMICS[!is.na(x[,1])]/sum(weightsUrbMICS[!is.na(x[,1])]), "*"))}))
-  scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurMICS[!is.na(x[,1])]/sum(weightsRurMICS[!is.na(x[,1])]), "*"))}))
+  if(!areal) {
+    scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsDHS[!is.na(x[,1])]/sum(weightsDHS[!is.na(x[,1])]), "*"))}))
+    scoresTabsUrbAvgDHS = do.call("rbind", lapply(scoresTabsUrbDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsUrbDHS[!is.na(x[,1])]/sum(weightsUrbDHS[!is.na(x[,1])]), "*"))}))
+    scoresTabsRurAvgDHS = do.call("rbind", lapply(scoresTabsRurDHS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurDHS[!is.na(x[,1])]/sum(weightsRurDHS[!is.na(x[,1])]), "*"))}))
+    scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsMICS[!is.na(x[,1])]/sum(weightsMICS[!is.na(x[,1])]), "*"))}))
+    scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsUrbMICS[!is.na(x[,1])]/sum(weightsUrbMICS[!is.na(x[,1])]), "*"))}))
+    scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurMICS[!is.na(x[,1])]/sum(weightsRurMICS[!is.na(x[,1])]), "*"))}))
+  } else {
+    # no need for weighted averaging in this case
+    scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, colMeans))
+    scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, colMeans))
+    scoresTabsAvgFull = do.call("rbind", lapply(scoresTabsFull, colMeans))
+  }
   
-  parTabsAvgDHS = lapply(parTabsDHS, function(x) {
-    badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
-    x[badFits] = NULL
-    rNames = row.names(x[[1]])
-    cNames = colnames(x[[1]])
-    x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
-    scoreArray = do.call("abind", list(x, along=3))
-    out = apply(scoreArray, 1:2, mean)
-    row.names(out) = rNames
-    colnames(out) = cNames
-    out
-  })
-  names(parTabsAvgDHS) = models
-  parTabsAvgMICS = lapply(parTabsMICS, function(x) {
-    badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
-    x[badFits] = NULL
-    rNames = row.names(x[[1]])
-    cNames = colnames(x[[1]])
-    x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
-    scoreArray = do.call("abind", list(x, along=3))
-    out = apply(scoreArray, 1:2, mean)
-    row.names(out) = rNames
-    colnames(out) = cNames
-    out
-  })
-  names(parTabsAvgMICS) = models
-  
-  parTabsAvg = lapply(1:length(models), function (i) {
-    rNames = row.names(parTabsAvgDHS[[1]])
-    cNames = colnames(parTabsAvgDHS[[1]])
-    thisParTab = abind(parTabsAvgDHS[[i]], parTabsAvgMICS[[i]], along=3)
-    thisParTab = apply(thisParTab, 1:2, mean)
+  if(!areal) {
+    parTabsAvgDHS = lapply(parTabsDHS, function(x) {
+      badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
+      x[badFits] = NULL
+      rNames = row.names(x[[1]])
+      cNames = colnames(x[[1]])
+      x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
+      scoreArray = do.call("abind", list(x, along=3))
+      out = apply(scoreArray, 1:2, mean)
+      row.names(out) = rNames
+      colnames(out) = cNames
+      out
+    })
+    names(parTabsAvgDHS) = models
+    parTabsAvgMICS = lapply(parTabsMICS, function(x) {
+      badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
+      x[badFits] = NULL
+      rNames = row.names(x[[1]])
+      cNames = colnames(x[[1]])
+      x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
+      scoreArray = do.call("abind", list(x, along=3))
+      out = apply(scoreArray, 1:2, mean)
+      row.names(out) = rNames
+      colnames(out) = cNames
+      out
+    })
+    names(parTabsAvgMICS) = models
     
-    row.names(thisParTab) = rNames
-    colnames(thisParTab) = cNames
-    thisParTab
-  })
-  names(parTabsAvg) = models
+    parTabsAvg = lapply(1:length(models), function (i) {
+      rNames = row.names(parTabsAvgDHS[[1]])
+      cNames = colnames(parTabsAvgDHS[[1]])
+      thisParTab = abind(parTabsAvgDHS[[i]], parTabsAvgMICS[[i]], along=3)
+      thisParTab = apply(thisParTab, 1:2, mean)
+      
+      row.names(thisParTab) = rNames
+      colnames(thisParTab) = cNames
+      thisParTab
+    })
+    names(parTabsAvg) = models
+  } else {
+    parTabsAvg = lapply(parTabsFull, function(x) {
+      badFits = sapply(x, function(l) {any(is.na(unlist(l)))})
+      x[badFits] = NULL
+      rNames = row.names(x[[1]])
+      cNames = colnames(x[[1]])
+      x = lapply(x, function(y) {array(y, dim=c(dim(y), 1))})
+      scoreArray = do.call("abind", list(x, along=3))
+      out = apply(scoreArray, 1:2, mean)
+      row.names(out) = rNames
+      colnames(out) = cNames
+      out
+    })
+    names(parTabsAvg) = models
+  }
   
-  # take a weighted average of MICS and DHS scores by total people in datasets
+  # take a weighted average of MICS and DHS scores by total people in datasets 
+  # in case of cluster validation
   nMICS = sum(edMICSval$ns)
   nUrbMICS = sum(edMICSval$ns[edMICSval$urban])
   nRurMICS = sum(edMICSval$ns[!edMICSval$urban])
@@ -2490,9 +2558,16 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975)) {
   wRurMICS = nRurMICS/nRurTotal
   wRurDHS = nRurDHS/nRurTotal
   
-  finalTabAvg = scoresTabsAvgDHS * wDHS + scoresTabsAvgMICS * wMICS
-  finalTabUrbAvg = scoresTabsUrbAvgDHS * wUrbDHS + scoresTabsUrbAvgMICS * wUrbMICS
-  finalTabRurAvg = scoresTabsRurAvgDHS * wRurDHS + scoresTabsRurAvgMICS * wRurMICS
+  if(!areal) {
+    finalTabAvg = scoresTabsAvgDHS * wDHS + scoresTabsAvgMICS * wMICS
+    finalTabUrbAvg = scoresTabsUrbAvgDHS * wUrbDHS + scoresTabsUrbAvgMICS * wUrbMICS
+    finalTabRurAvg = scoresTabsRurAvgDHS * wRurDHS + scoresTabsRurAvgMICS * wRurMICS
+  } else {
+    finalTabAvg = parTabsAvg
+    finalTabDHSAvg = scoresTabsAvgDHS
+    finalTabMICSAvg = scoresTabsAvgMICS
+  }
+  
   
   browser()
   #          Bias        Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
