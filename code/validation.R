@@ -2324,7 +2324,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
   
   # aggregate the results of all folds for each model
   if(areal) {
-    scoreTabsFull = list()
+    scoresTabsFull = list()
     parTabsFull = list()
   }
   scoresTabsDHS = list()
