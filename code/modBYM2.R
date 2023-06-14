@@ -765,6 +765,16 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
     phi_tmb_draws = expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))])
     sigmaSq_tmb_draws = 1/exp(SD0$par.fixed[names(SD0$par.fixed) == "log_tau"])
     
+    fixedMat = rbind(alpha_tmb_draws, 
+                     beta_tmb_draws, 
+                     sigmaSq_tmb_draws, 
+                     phi_tmb_draws)
+    betaNames = colnames(Xmat)
+    row.names(fixedMat) = c("(Int)", 
+                            betaNames, 
+                            "sigmaSq", 
+                            "phi")
+    
     # add effects to predictions
     gridDraws_tmb <- Amat %*% Eps
     gridDraws_tmb <- gridDraws_tmb + alpha
@@ -779,6 +789,10 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
       probDraws = logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=splineApprox)
       
       sigmaEpsSq_tmb_draws = sigmaEps^2
+      
+      fixedMat = rbind(fixedMat, 
+                       sigmaEpsSq_tmb_draws)
+      row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
     }
     
     preds = probDraws
@@ -788,6 +802,7 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
   list(popMat=popMat, 
        gridDraws=probDraws, 
        epsDraws=epsilon_tmb_draws, 
+       fixedMat=fixedMat, 
        alphaDraws=alpha_tmb_draws, 
        betaDraws=beta_tmb_draws, 
        sigmaSqDraws=sigmaSq_tmb_draws, 

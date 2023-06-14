@@ -1743,6 +1743,7 @@ getValidationFit = function(fold,
             
             if(!SD0$pdHess) {
               # try recalculating for fixed parameters numerically
+              warning("initial hessian non-PD. Trying another way...")
               Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
               SD0 <- sdreport( testObj, hessian.fixed=Hess,
                                getJointPrecision=TRUE,
@@ -1831,6 +1832,7 @@ getValidationFit = function(fold,
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975))
       preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+      preds$fixedMat = gridPreds$fixedMat
     }
   } else {
     preds = NULL
