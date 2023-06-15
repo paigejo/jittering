@@ -1413,6 +1413,9 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   fineIntPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$fineAvgsRur}))
   intPtAvgsUrb = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsUrb}))
   intPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsRur}))
+  errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
+  errorRur = intPtAvgsRur - fineIntPtAvgsRur
+  error = rbind(absErrorUrb, absErrorRur)
   absPctErrorUrb = abs(100*(intPtAvgsUrb - fineIntPtAvgsUrb)/fineIntPtAvgsUrb)
   absPctErrorRur = abs(100*(intPtAvgsRur - fineIntPtAvgsRur)/fineIntPtAvgsRur)
   absPctError = rbind(absPctErrorUrb, 
@@ -1528,7 +1531,14 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          absMeanPctErrorSD=absMeanPctErrorSD, 
          absMaxPctErrorSDUrb=absMaxPctErrorSDUrb, 
          absMaxPctErrorSDRur=absMaxPctErrorSDRur, 
-         absMaxPctErrorSD=absMaxPctErrorSD)
+         absMaxPctErrorSD=absMaxPctErrorSD, 
+         errorUrb=errorUrb, 
+         errorRur=errorRur, 
+         error=error, 
+         fineIntPtAvgsUrb=fineIntPtAvgsUrb, 
+         fineIntPtAvgsRur=fineIntPtAvgsRur, 
+         intPtAvgsUrb=intPtAvgsUrb,
+         intPtAvgsRur=intPtAvgsRur)
   } else {
     if(is.null(datUrb)) {
       stop("non-stratified integration point construction not currently supported")
@@ -1571,7 +1581,14 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          absMeanPctErrorSD=absMeanPctErrorSD, 
          absMaxPctErrorSDUrb=absMaxPctErrorSDUrb, 
          absMaxPctErrorSDRur=absMaxPctErrorSDRur, 
-         absMaxPctErrorSD=absMaxPctErrorSD)
+         absMaxPctErrorSD=absMaxPctErrorSD, 
+         errorUrb=errorUrb, 
+         errorRur=errorRur, 
+         error=error, 
+         fineIntPtAvgsUrb=fineIntPtAvgsUrb, 
+         fineIntPtAvgsRur=fineIntPtAvgsRur, 
+         intPtAvgsUrb=intPtAvgsUrb,
+         intPtAvgsRur=intPtAvgsRur)
   }
   
   save(intPtsMICS, file=outFile)
@@ -2244,7 +2261,7 @@ simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGATh
 
 # by default, finds resolution within 1% of fine scale average
 # tol: tolerance in percent
-getBestResMICS = function(startRes=25, tolMean=1, tolSD=5) {
+getBestResMICS = function(startRes=25, tolMean=1, tolSD=5, tolMax=25) {
   
   lastRes = startRes
   thisRes = startRes
@@ -2295,23 +2312,30 @@ getBestResMICS = function(startRes=25, tolMean=1, tolSD=5) {
     allAbsMaxPctErrorSD = c(allAbsMaxPctErrorSD, absMaxPctErrorSD)
     
     browser()
-    if((max(absMeanPctError) < tolMean) && (max(absMeanPctErrorSD) < tolSD)) {
+    if((max(absMeanPctError) < tolMean) && (max(absMeanPctErrorSD, na.rm=TRUE) < tolSD) && (max(absMaxPctError) < tolMax)) {
       finished = TRUE
     } else {
       allRes = c(allRes, thisRes)
       
-      if(is.null(lastAbsMeanPctError)) {
-        lastRes = thisRes
-        thisRes = ceiling(thisRes * 1.2)
-        lastAbsMeanPctError = absMeanPctError
-      } else {
-        # Reimann integrals converge at rate 1/n
-        C = mean(c(lastAbsMeanPctError/lastRes, absMeanPctError/thisRes))
-        # C/n = tolMean
-        lastRes = thisRes
-        thisRes = ceiling(C/tolMean)
+      # Reimann integrals converge at rate 1/n
+      Cmean = max(absMeanPctError)*thisRes
+      Cmax = max(absMaxPctError)*thisRes
+      Csd = max(absMeanPctErrorSD)*thisRes
+      
+      # C/n = tolMean
+      meanRes = ceiling(Cmean/tolMean)
+      maxRes = ceiling(Cmax/tolMax)
+      sdRes = ceiling(Csd/tolSD)
+      
+      lasRes = thisRes
+      thisRes = max(c(meanRes, maxRes, sdRes))
+      
+      if(thisRes == lastRes) {
+        stop("why???")
       }
       
+      print(paste0("absMeanPctError: ", max(absMeanPctError), ", absMaxPctError: ", max(absMaxPctError), ", absMeanPctErrorSD: ", max(absMeanPctErrorSD)))
+      print(paste0("newRes: ", thisRes, ", meanRes: ", meanRes, ", maxRes: ", maxRes, ", sdRes: ", sdRes))
     }
   }
   
