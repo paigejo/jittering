@@ -592,8 +592,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   nPtsUrbMICS = sum(inSampleLIndsUrbMICS)
   nPtsRurMICS = sum(inSampleLIndsRurMICS)
-  # KMICS = nrow(intPtsMICS$covsUrb)/sum(edMICSval$urban)
-  KMICS=25
+  KMICS = nrow(intPtsMICS$XUrb)/41
+  # KMICS=25
   
   # do some precomputation ----
   
@@ -1098,8 +1098,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   nPtsUrbMICS = sum(inSampleLIndsUrbMICS)
   nPtsRurMICS = sum(inSampleLIndsRurMICS)
-  # KMICS = nrow(intPtsMICS$covsUrb)/sum(edMICSval$urban)
-  KMICS=25
+  KMICS = nrow(intPtsMICS$XUrb)/41
+  # KMICS=25
   
   # do some precomputation ----
   
