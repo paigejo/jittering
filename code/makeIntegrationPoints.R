@@ -1516,7 +1516,19 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
     # return list of all matrices at the stratum rather than observation level
     intPtsMICS = list(strataMICS=strataMICS, 
          XUrb=allCovsUrb, XRur=allCovsRur, 
-         wUrban=wsUrban, wRural=wsRural)
+         wUrban=wsUrban, wRural=wsRural, 
+         absMeanPctErrorUrb=absMeanPctErrorUrb, 
+         absMeanPctErrorRur=absMeanPctErrorRur, 
+         absMeanPctError=absMeanPctError, 
+         absMaxPctErrorUrb=absMaxPctErrorUrb, 
+         absMaxPctErrorRur=absMaxPctErrorRur, 
+         absMaxPctError=absMaxPctError, 
+         absMeanPctErrorSDUrb=absMeanPctErrorSDUrb, 
+         absMeanPctErrorSDRur=absMeanPctErrorSDRur, 
+         absMeanPctErrorSD=absMeanPctErrorSD, 
+         absMaxPctErrorSDUrb=absMaxPctErrorSDUrb, 
+         absMaxPctErrorSDRur=absMaxPctErrorSDRur, 
+         absMaxPctErrorSD=absMaxPctErrorSD)
   } else {
     if(is.null(datUrb)) {
       stop("non-stratified integration point construction not currently supported")
@@ -2232,11 +2244,25 @@ simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGATh
 
 # by default, finds resolution within 1% of fine scale average
 # tol: tolerance in percent
-getBestResMICS = function(startRes=25, tolMean=5, tolSD=10) {
+getBestResMICS = function(startRes=25, tolMean=1, tolSD=5) {
   
   lastRes = startRes
   thisRes = startRes
+  lastAbsMeanPctError = NULL
   finished = FALSE
+  allRes = startRes
+  allAbsMeanPctErrorUrb = c()
+  allAbsMeanPctErrorRur = c()
+  allAbsMeanPctError = c()
+  allAbsMaxPctErrorUrb = c()
+  allAbsMaxPctErrorRur = c()
+  allAbsMaxPctError = c()
+  allAbsMeanPctErrorSDUrb = c()
+  allAbsMeanPctErrorSDRur = c()
+  allAbsMeanPctErrorSD = c()
+  allAbsMaxPctErrorSDUrb = c()
+  allAbsMaxPctErrorSDRur = c()
+  allAbsMaxPctErrorSD = c()
   while(!finished) {
     micsPts = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
                                            numPtsUrb = thisRes, numPtsRur=thisRes)
@@ -2255,13 +2281,55 @@ getBestResMICS = function(startRes=25, tolMean=5, tolSD=10) {
     absMaxPctErrorSDRur = micsPts$absMaxPctErrorSDRur
     absMaxPctErrorSD = micsPts$absMaxPctErrorSD
     
+    allAbsMeanPctErrorUrb = c(allAbsMeanPctErrorUrb, absMeanPctErrorUrb)
+    allAbsMeanPctErrorRur = c(allAbsMeanPctErrorRur, absMeanPctErrorRur)
+    allAbsMeanPctError = c(allAbsMeanPctError, absMeanPctError)
+    allAbsMaxPctErrorUrb = c(allAbsMaxPctErrorUrb, absMaxPctErrorUrb)
+    allAbsMaxPctErrorRur = c(allAbsMaxPctErrorRur, absMaxPctErrorRur)
+    allAbsMaxPctError = c(allAbsMaxPctError, absMaxPctError)
+    allAbsMeanPctErrorSDUrb = c(allAbsMeanPctErrorSDUrb, absMeanPctErrorSDUrb)
+    allAbsMeanPctErrorSDRur = c(allAbsMeanPctErrorSDRur, absMeanPctErrorSDRur)
+    allAbsMeanPctErrorSD = c(allAbsMeanPctErrorSD, absMeanPctErrorSD)
+    allAbsMaxPctErrorSDUrb = c(allAbsMaxPctErrorSDUrb, absMaxPctErrorSDUrb)
+    allAbsMaxPctErrorSDRur = c(allAbsMaxPctErrorSDRur, absMaxPctErrorSDRur)
+    allAbsMaxPctErrorSD = c(allAbsMaxPctErrorSD, absMaxPctErrorSD)
+    
+    browser()
     if((max(absMeanPctError) < tolMean) && (max(absMeanPctErrorSD) < tolSD)) {
       finished = TRUE
     } else {
-      browser()
+      allRes = c(allRes, thisRes)
+      
+      if(is.null(lastAbsMeanPctError)) {
+        lastRes = thisRes
+        thisRes = ceiling(thisRes * 1.2)
+        lastAbsMeanPctError = absMeanPctError
+      } else {
+        # Reimann integrals converge at rate 1/n
+        C = mean(c(lastAbsMeanPctError/lastRes, absMeanPctError/thisRes))
+        # C/n = tolMean
+        lastRes = thisRes
+        thisRes = ceiling(C/tolMean)
+      }
+      
     }
   }
   
+  browser()
+  
+  list(finalMICSpts=micsPts, allRes=allRes, 
+       allAbsMeanPctErrorUrb=allAbsMeanPctErrorUrb, 
+       allAbsMeanPctErrorRur=allAbsMeanPctErrorRur, 
+       allAbsMeanPctError=allAbsMeanPctError, 
+       allAbsMaxPctErrorUrb=allAbsMaxPctErrorUrb, 
+       allAbsMaxPctErrorRur=allAbsMaxPctErrorRur, 
+       allAbsMaxPctError=allAbsMaxPctError, 
+       allAbsMeanPctErrorSDUrb=allAbsMeanPctErrorSDUrb, 
+       allAbsMeanPctErrorSDRur=allAbsMeanPctErrorSDRur, 
+       allAbsMeanPctErrorSD=allAbsMeanPctErrorSD, 
+       allAbsMaxPctErrorSDUrb=allAbsMaxPctErrorSDUrb, 
+       allAbsMaxPctErrorSDRur=allAbsMaxPctErrorSDRur, 
+       allAbsMaxPctErrorSD=allAbsMaxPctErrorSD)
 }
 
 
