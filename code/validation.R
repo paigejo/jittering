@@ -2258,19 +2258,19 @@ scoreValidationPreds = function(fold,
       probDraws = preds$aggregationResults$p
       
       # calculate score
-      scoresDHS = getScoresDirectEstimates(logitDirectEsts=estsDHS$logit.est, 
-                                           logitDirectEstsVar=estsDHS$logit.var, 
-                                           estMat=probDraws, weights=1/estsDHS$var, 
+      scoresDHS = getScoresDirectEstimates(logitDirectEsts=estsDHS$logit.est[fold], 
+                                           logitDirectEstsVar=estsDHS$logit.var[fold], 
+                                           estMat=matrix(probDraws[fold,], nrow=1), 
                                            significance=c(.5, .8, .9, .95), 
                                            getAverage=TRUE, na.rm=TRUE)
-      scoresMICS = getScoresDirectEstimates(logitDirectEsts=estsMICS$logit.est, 
-                                           logitDirectEstsVar=estsMICS$logit.var, 
-                                           estMat=probDraws, weights=1/estsMICS$var, 
+      scoresMICS = getScoresDirectEstimates(logitDirectEsts=estsMICS$logit.est[fold], 
+                                           logitDirectEstsVar=estsMICS$logit.var[fold], 
+                                           estMat=matrix(probDraws[fold,], nrow=1), 
                                            significance=c(.5, .8, .9, .95), 
                                            getAverage=TRUE, na.rm=TRUE)
-      scores = getScoresDirectEstimates(logitDirectEsts=ests$logit.est, 
-                                        logitDirectEstsVar=ests$logit.var, 
-                                        estMat=probDraws, weights=1/ests$var, 
+      scores = getScoresDirectEstimates(logitDirectEsts=ests$logit.est[fold], 
+                                        logitDirectEstsVar=ests$logit.var[fold], 
+                                        estMat=matrix(probDraws[fold,], nrow=1), 
                                         significance=c(.5, .8, .9, .95), 
                                         getAverage=TRUE, na.rm=TRUE)
       
@@ -2481,9 +2481,9 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
     scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurMICS[!is.na(x[,1])]/sum(weightsRurMICS[!is.na(x[,1])]), "*"))}))
   } else {
     # no need for weighted averaging in this case
-    scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, colMeans))
-    scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, colMeans))
-    scoresTabsAvgFull = do.call("rbind", lapply(scoresTabsFull, colMeans))
+    scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, colMeans, na.rm=TRUE))
+    scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, colMeans, na.rm=TRUE))
+    scoresTabsAvgFull = do.call("rbind", lapply(scoresTabsFull, colMeans, na.rm=TRUE))
   }
   
   if(!areal) {
@@ -2565,7 +2565,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
     finalTabUrbAvg = scoresTabsUrbAvgDHS * wUrbDHS + scoresTabsUrbAvgMICS * wUrbMICS
     finalTabRurAvg = scoresTabsRurAvgDHS * wRurDHS + scoresTabsRurAvgMICS * wRurMICS
   } else {
-    finalTabAvg = parTabsAvg
+    finalTabAvg = scoresTabsAvgFull
     finalTabDHSAvg = scoresTabsAvgDHS
     finalTabMICSAvg = scoresTabsAvgMICS
   }

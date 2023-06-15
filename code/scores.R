@@ -1514,7 +1514,7 @@ sortWithNAs = function(x, ...) {
 
 # for validation against direct estimates based on left out data
 getScoresDirectEstimates = function(logitDirectEsts, logitDirectEstsVar, nsim=NULL, 
-                                    estMat, weights=rep(1, length(directEsts)), 
+                                    estMat, weights=rep(1, length(logitDirectEsts)), 
                                     significance=.8, getAverage=TRUE, 
                                     anyNAisNA=FALSE, returnNAs=FALSE, na.rm=FALSE, 
                                     setInfToNA=FALSE, throwOutAllNAs=FALSE) {
