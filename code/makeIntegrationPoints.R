@@ -1309,7 +1309,17 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         spatialAsCovariate=FALSE, 
                                         lambda=NULL, domainDiameter=NULL, 
                                         fileNameRoot="MICSintPts_", loadSavedIntPoints=TRUE, 
-                                        extractMethod="bilinear", outFile="savedOutput/global/intPtsMICS.RData") {
+                                        extractMethod="bilinear", outFile=NULL) {
+  
+  if(is.null(outFile)) {
+    if((numPtsUrb == numPtsRur) && (numPtsUrb == 25)) {
+      outFile = "savedOutput/global/intPtsMICS.RData"
+    } else if(numPtsUrb == numPtsRur) {
+      outFile = paste0("savedOutput/global/intPtsMICS_", numPtsUrb, ".RData")
+    } else {
+      outFile = paste0("savedOutput/global/intPtsMICS_u", numPtsUrb, "_r", numPtsRur, ".RData")
+    }
+  }
   
   if(is.null(domainDiameter)) {
     domainDiameter = 1463.733 # in km
@@ -1415,7 +1425,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   intPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsRur}))
   errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
   errorRur = intPtAvgsRur - fineIntPtAvgsRur
-  error = rbind(absErrorUrb, absErrorRur)
+  error = rbind(errorUrb, errorRur)
   absPctErrorUrb = abs(100*(intPtAvgsUrb - fineIntPtAvgsUrb)/fineIntPtAvgsUrb)
   absPctErrorRur = abs(100*(intPtAvgsRur - fineIntPtAvgsRur)/fineIntPtAvgsRur)
   absPctError = rbind(absPctErrorUrb, 
@@ -2261,7 +2271,7 @@ simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGATh
 
 # by default, finds resolution within 1% of fine scale average
 # tol: tolerance in percent
-getBestResMICS = function(startRes=25, tolMean=1, tolSD=5, tolMax=25) {
+getBestResMICS = function(startRes=25, tolMean=.01, tolMax=.05) {
   
   lastRes = startRes
   thisRes = startRes
@@ -2281,8 +2291,15 @@ getBestResMICS = function(startRes=25, tolMean=1, tolSD=5, tolMax=25) {
   allAbsMaxPctErrorSDRur = c()
   allAbsMaxPctErrorSD = c()
   while(!finished) {
-    micsPts = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                           numPtsUrb = thisRes, numPtsRur=thisRes)
+    thisOutfile = paste0("savedOutput/global/intPtsMICS_", thisRes, ".RData")
+    if(!file.exists(thisOutfile)) {
+      micsPts = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
+                                             numPtsUrb = thisRes, numPtsRur=thisRes, 
+                                             outFile=thisOutfile)
+    } else {
+      out = load(thisOutfile)
+      micsPts = intPtsMICS
+    }
     
     # get diagnostics
     absMeanPctErrorUrb = micsPts$absMeanPctErrorUrb
@@ -2311,31 +2328,38 @@ getBestResMICS = function(startRes=25, tolMean=1, tolSD=5, tolMax=25) {
     allAbsMaxPctErrorSDRur = c(allAbsMaxPctErrorSDRur, absMaxPctErrorSDRur)
     allAbsMaxPctErrorSD = c(allAbsMaxPctErrorSD, absMaxPctErrorSD)
     
+    fineIntPtAvgsUrb = micsPts$fineIntPtAvgsUrb
+    fineIntPtAvgsRur = micsPts$fineIntPtAvgsRur
+    intPtAvgsUrb = micsPts$intPtAvgsUrb
+    intPtAvgsRur = micsPts$intPtAvgsRur
+    error = micsPts$error
+    
+    meanErrors = colMeans(abs(error))
+    maxErrors = apply(abs(error), 2, max)
+    
     browser()
-    if((max(absMeanPctError) < tolMean) && (max(absMeanPctErrorSD, na.rm=TRUE) < tolSD) && (max(absMaxPctError) < tolMax)) {
+    if((max(meanErrors) < tolMean) && (max(maxErrors) < tolMax)) {
       finished = TRUE
     } else {
       allRes = c(allRes, thisRes)
       
       # Reimann integrals converge at rate 1/n
-      Cmean = max(absMeanPctError)*thisRes
-      Cmax = max(absMaxPctError)*thisRes
-      Csd = max(absMeanPctErrorSD)*thisRes
+      Cmean = max(meanErrors)*thisRes
+      Cmax = max(maxErrors)*thisRes
       
       # C/n = tolMean
       meanRes = ceiling(Cmean/tolMean)
       maxRes = ceiling(Cmax/tolMax)
-      sdRes = ceiling(Csd/tolSD)
       
       lasRes = thisRes
-      thisRes = max(c(meanRes, maxRes, sdRes))
+      thisRes = max(c(meanRes, maxRes))
       
       if(thisRes == lastRes) {
         stop("why???")
       }
       
-      print(paste0("absMeanPctError: ", max(absMeanPctError), ", absMaxPctError: ", max(absMaxPctError), ", absMeanPctErrorSD: ", max(absMeanPctErrorSD)))
-      print(paste0("newRes: ", thisRes, ", meanRes: ", meanRes, ", maxRes: ", maxRes, ", sdRes: ", sdRes))
+      print(paste0("meanError: ", max(meanErrors), ", maxError: ", max(maxErrors)))
+      print(paste0("newRes: ", thisRes, ", meanRes: ", meanRes, ", maxRes: ", maxRes))
     }
   }
   
