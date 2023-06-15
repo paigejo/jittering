@@ -366,6 +366,8 @@ getMICSstratumNigeria = function(subareas, areas) {
   stratumMICS = areas
   stratumMICS[goodSen] = senDistrict[goodSen]
   
+  # stratumMICS[stratumMICS == "FCT Abuja"] = "Federal Capital Territory"
+  
   stratumMICS
 }
 

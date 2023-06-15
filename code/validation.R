@@ -1828,6 +1828,7 @@ getValidationFit = function(fold,
                            model=model, 
                            quantiles=c(0.025, 0.1, 0.9, 0.975))
     } else {
+      browser()
       gridPreds = predGrid(SD0, obj, nsim=1000, admLevel="adm2", 
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975))

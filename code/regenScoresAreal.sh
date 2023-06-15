@@ -1,2 +1,2 @@
 #!/bin/bash
-sbatch --array=1-148 regenScoresareal.sbatch
+sbatch --array=1-148 regenScoresAreal.sbatch
