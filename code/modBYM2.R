@@ -634,11 +634,12 @@ predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh,
   hasNugget = "log_tauEps" %in% parnames
   
   if(!is.null(predAtArea)) {
-    if(admLevel == "stratMICS") {
-      popMat = popMat[popMat$stratumMICS == predAtArea,]
-    } else {
-      popMat = popMat[popMat$subarea == predAtArea,]
-    }
+    # if(admLevel == "stratMICS") {
+    #   popMat = popMat[popMat$stratumMICS == predAtArea,]
+    # } else {
+    #   popMat = popMat[popMat$subarea == predAtArea,]
+    # }
+    popMat = popMat[popMat$area == predAtArea,]
   }
   
   # load covariates at prediction locations
