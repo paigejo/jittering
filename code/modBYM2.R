@@ -370,14 +370,14 @@ runModBYM2jitter = function(modelName = c("")) {
   
 }
 
-plotPreds = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL, 
+plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL, 
                      arealPreds=NULL, normalized=TRUE, extractMethod="bilinear", 
                      nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
                      plotNameRoot="edFusion", plotNameRootAreal="Strat") {
   
   # get grid level predictions if need be
   if(is.null(gridPreds)) {
-    gridPreds = predGrid(SD0, tmbObj, popMat, normalized, 
+    gridPreds = predGrid(SD0, popMat, normalized, 
                          extractMethod, nsim, quantiles)
   }
   
@@ -454,12 +454,14 @@ plotPreds = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
   
   print(paste0("mean predicted urban prob: ", mean(preds[popMat$urban], na.rm=TRUE)))
   print(paste0("mean predicted rural prob: ", mean(preds[!popMat$urban], na.rm=TRUE)))
-  temp = tryCatch({
-    repOut = tmbObj$env$report(c(SD0$par.fixed, SD0$par.random))
-    print(paste0("mean data urban prob: ", mean(expit(c(repOut$latentFieldUrbMICS, repOut$latentFieldUrbDHS)), na.rm=TRUE)))
-    print(paste0("mean data rural prob: ", mean(expit(c(repOut$latentFieldRurMICS, repOut$latentFieldRurDHS)), na.rm=TRUE)))
-  }, error=function(e) {print(e)})
   
+  if(!is.null(tmbObj)) {
+    temp = tryCatch({
+      repOut = tmbObj$env$report(c(SD0$par.fixed, SD0$par.random))
+      print(paste0("mean data urban prob: ", mean(expit(c(repOut$latentFieldUrbMICS, repOut$latentFieldUrbDHS)), na.rm=TRUE)))
+      print(paste0("mean data rural prob: ", mean(expit(c(repOut$latentFieldRurMICS, repOut$latentFieldRurDHS)), na.rm=TRUE)))
+    }, error=function(e) {print(e)})
+  }
   
   if(!is.null(arealPreds)) {
     # plot areal predictions
@@ -565,13 +567,13 @@ plotPreds = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
   }
 }
 
-summaryTabBYM2 = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL, 
+summaryTabBYM2 = function(SD0, popMat=popMatNGAThresh, gridPreds=NULL, 
                           normalized=TRUE, extractMethod="bilinear", 
                           nsim=1000, quantiles=c(0.025, 0.975)) {
   
   # get grid level predictions if need be
   if(is.null(gridPreds)) {
-    gridPreds = predGrid(SD0, tmbObj, popMat, normalized, 
+    gridPreds = predGrid(SD0, popMat, normalized, 
                          extractMethod, nsim, quantiles)
   }
   
@@ -619,7 +621,7 @@ summaryTabBYM2 = function(SD0, tmbObj, popMat=popMatNGAThresh, gridPreds=NULL,
 # normalized: whether covariates are normalized
 # extractMethod: extraction method for covariates in terra:extract
 # predAtArea: name of area to predict at, if only 1
-predGrid = function(SD0, tmbObj, popMat=popMatNGAThresh, 
+predGrid = function(SD0, popMat=popMatNGAThresh, 
                     normalized=TRUE, extractMethod="bilinear", 
                     nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
                     splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
