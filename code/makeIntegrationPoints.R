@@ -1118,7 +1118,7 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
                                     poppsub=poppsubNGAThresh, 
                                     normalized=TRUE, useThreshPopMat=TRUE, 
                                     proj=projNigeria, projArea=projNigeriaArea, 
-                                    spatialAsCovariate=FALSE, 
+                                    spatialAsCovariate=FALSE, adm2AsCovariate=FALSE, 
                                     lambda=NULL, domainDiameter=NULL, 
                                     returnFineGrid=FALSE, testMode=FALSE, extractMethod="bilinear") {
   
@@ -1155,6 +1155,29 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     ENCoordsNorm = ENCoordsNorm * lambda
     
     X = cbind(X, ENCoordsNorm)
+  }
+  
+  if(adm2AsCovariate) {
+    subareaIDs = as.numeric(factor(fineIntPtsTab$subarea))
+    
+    # get new covariate: centers of subareas
+    meanXs = aggregate(ENCoords[,1], by=list(subareas=subareaIDs), mean)
+    meanYs = aggregate(ENCoords[,2], by=list(subareas=subareaIDs), mean)
+    thisXs = meanXs$x[match(subareaIDs, meanXs$subareas)]
+    thisYs = meanYs$x[match(subareaIDs, meanYs$subareas)]
+    
+    # test if stratum spans more distance vertically or horizontally. Order 
+    # subareas along longest dimension by their mean coordinate (DONT DO THIS)
+    # newSubareaIDs = order(meanCoords$x)
+    
+    # scale and center subareaIDs
+    # subareaCov = (newSubareaIDs - mean(newSubareaIDs))/sd(newSubareaIDs)
+    
+    # scale and center new coordinates
+    thisXs = (thisXs - mean(thisXs))/sd(thisXs)
+    thisYs = (thisYs - mean(thisYs))/sd(thisYs)
+    subareaCov = cbind(thisXs, thisYs)
+    X = cbind(X, subareaCov)
   }
   
   nPtsUrb = sum(urb, na.rm=TRUE)
@@ -1306,18 +1329,22 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         poppsub=poppsubNGAThresh, 
                                         normalized=TRUE, useThreshPopMat=TRUE, 
                                         proj=projNigeria, projArea=projNigeriaArea, 
-                                        spatialAsCovariate=FALSE, 
+                                        spatialAsCovariate=FALSE, adm2AsCovariate=FALSE, 
                                         lambda=NULL, domainDiameter=NULL, 
                                         fileNameRoot="MICSintPts_", loadSavedIntPoints=TRUE, 
                                         extractMethod="bilinear", outFile=NULL) {
   
   if(is.null(outFile)) {
+    adm2CovText = ""
+    if(adm2AsCovariate) {
+      adm2CovText = "_adm2Cov"
+    }
     if((numPtsUrb == numPtsRur) && (numPtsUrb == 25)) {
-      outFile = "savedOutput/global/intPtsMICS.RData"
+      outFile = paste0("savedOutput/global/intPtsMICS", adm2CovText, ".RData")
     } else if(numPtsUrb == numPtsRur) {
-      outFile = paste0("savedOutput/global/intPtsMICS_", numPtsUrb, ".RData")
+      outFile = paste0("savedOutput/global/intPtsMICS_", numPtsUrb, adm2CovText, ".RData")
     } else {
-      outFile = paste0("savedOutput/global/intPtsMICS_u", numPtsUrb, "_r", numPtsRur, ".RData")
+      outFile = paste0("savedOutput/global/intPtsMICS_u", numPtsUrb, "_r", numPtsRur, adm2CovText, ".RData")
     }
   }
   
@@ -1337,7 +1364,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                         "_norm", as.numeric(normalized), 
                         "_thresh", as.numeric(useThreshPopMat), 
                         "_spatCov", as.numeric(spatialAsCovariate), 
-                        "_lam", round(lambda, 4))
+                        "_lam", round(lambda, 4), 
+                        "_adm2Cov", as.numeric(adm2AsCovariate))
   
   # For each stratum, generate the integration points
   allIntPts = list()
@@ -1362,7 +1390,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                               stratumMICSNameVar=stratumMICSNameVar, 
                                               subareaMapDat=subareaMapDat, 
                                               subareaNameVar=subareaNameVar, 
-                                              poppsub=poppsub, 
+                                              poppsub=poppsub, adm2AsCovariate=adm2AsCovariate, 
                                               normalized=normalized, useThreshPopMat=useThreshPopMat, 
                                               proj=proj, projArea=projArea, 
                                               spatialAsCovariate=spatialAsCovariate, 
@@ -1605,6 +1633,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   
   intPtsMICS
 }
+
+
 
 # covariates include:
 #   intercept
@@ -2071,6 +2101,17 @@ getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20
   fineIntPtInfo = getDesignMat(fineGridCoordsLL, useThreshPopMat=useThreshPopMat, normalized=normalized, 
                                proj=proj, testMode=testMode, setMissingToAvg=setMissingToAvg)[,-1]
   fineIntPtInfo[,2] = urbVals
+  
+  # calibrate population to sum to correct totals within subareas x urban/rural 
+  # (but only the population used for calculating aggregation weights)
+  pointUrbText = sapply((fineIntPtInfo[,2]==1), function(x) {ifelse(x, "U", "R")})
+  pointSubareaUR = paste(adm2Vals, pointUrbText, sep="")
+  thisPoppsub = poppsub[adm2ToStratumMICS(poppsub$subarea) == stratumName,]
+  regionUR = c(paste(thisPoppsub$subarea, "U", sep=""), paste(thisPoppsub$subarea, "R", sep=""))
+  regionURpop = c(thisPoppsub$popUrb, thisPoppsub$popRur)
+  calPop = SUMMER::calibrateByRegion(fineIntPtInfo[,1], pointSubareaUR, regionUR, regionURpop)
+  
+  fineIntPtInfo[,1] = calPop
   
   finalPopMat = data.frame(east=fineGridCoordsEN[,1], north=fineGridCoordsEN[,2], 
                            lon=fineGridCoordsLL[,1], lat=fineGridCoordsLL[,2], 
