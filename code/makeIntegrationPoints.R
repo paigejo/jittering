@@ -1108,8 +1108,8 @@ makeJitterDataForTMB_BYM2 = function(intPtInfoDHS, ysDHS, urbanicityDHS, nsDHS,
 # proj: projection to use for the points
 # projArea: projection to use for the areas
 # spatialAsCovariate: whether to use easting/northing as a covariate
-# lambda: spatial scaling coefficient. Default is 1 / priorSD for 
-#   priorSD = (domainDiameter / 5) / 2
+# lambda: spatial scaling coefficient. Default is 1 / priorRange for 
+#   priorRange = (domainDiameter / 5) / 2
 # domainDiameter: used for calculating default lambda. Default is 1463.733 km, 
 #   Nigeria's diameter
 getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, numPtsRur=25, 
@@ -1147,8 +1147,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     # normalize spatial coordinates based on prior median effective range
     if(is.null(lambda)) {
-      priorSD = (domainDiameter / 5) / 2
-      lambda = 1 / priorSD
+      priorRange = (domainDiameter / 5) / 2
+      lambda = 1 / priorRange
     }
     
     ENCoordsNorm = sweep(ENCoords, 2, colMeans(ENCoords), FUN="-")
@@ -1173,9 +1173,14 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     # scale and center subareaIDs
     # subareaCov = (newSubareaIDs - mean(newSubareaIDs))/sd(newSubareaIDs)
     
+    if(is.null(lambda)) {
+      lambda = 1
+    }
+    
     # scale and center new coordinates
-    thisXs = (thisXs - mean(thisXs))/sd(thisXs)
-    thisYs = (thisYs - mean(thisYs))/sd(thisYs)
+    nSubareas = length(unique(subareaIDs))
+    thisXs = lambda * nSubareas * (thisXs - mean(thisXs))/sd(thisXs)
+    thisYs = lambda * nSubareas * (thisYs - mean(thisYs))/sd(thisYs)
     subareaCov = cbind(thisXs, thisYs)
     X = cbind(X, subareaCov)
   }
@@ -1317,8 +1322,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
 # proj: projection to use for the points
 # projArea: projection to use for the areas
 # spatialAsCovariate: whether to use easting/northing as a covariate
-# lambda: spatial scaling coefficient. Default is 1 / priorSD for 
-#   priorSD = (domainDiameter / 5) / 2
+# lambda: spatial scaling coefficient. Default is 1 / priorRange for 
+#   priorRange = (domainDiameter / 5) / 2
 # domainDiameter: used for calculating default lambda. Default is 1463.733 km, 
 #   Nigeria's diameter
 makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineStart=2.5, 
@@ -1334,10 +1339,21 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         fileNameRoot="MICSintPts_", loadSavedIntPoints=TRUE, 
                                         extractMethod="bilinear", outFile=NULL) {
   
+  # normalize spatial coordinates based on prior median effective range
+  if(is.null(lambda)) {
+    if(!adm2AsCovariate) {
+      priorRange = (domainDiameter / 5) / 2
+      lambda = 1 / priorRange
+    } else {
+      lambda = 1
+    }
+  }
+  
   if(is.null(outFile)) {
+    lambdaText = ifelse(lambda == 1, "", paste0("_lam", round(lambda, 2)))
     adm2CovText = ""
     if(adm2AsCovariate) {
-      adm2CovText = "_adm2Cov"
+      adm2CovText = paste0("_adm2Cov", lambdaText)
     }
     if((numPtsUrb == numPtsRur) && (numPtsUrb == 25)) {
       outFile = paste0("savedOutput/global/intPtsMICS", adm2CovText, ".RData")
@@ -1350,12 +1366,6 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   
   if(is.null(domainDiameter)) {
     domainDiameter = 1463.733 # in km
-  }
-  
-  # normalize spatial coordinates based on prior median effective range
-  if(is.null(lambda)) {
-    priorSD = (domainDiameter / 5) / 2
-    lambda = 1 / priorSD
   }
   
   # set file name root for saving the results
