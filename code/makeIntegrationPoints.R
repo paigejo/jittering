@@ -1211,6 +1211,10 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     totalPopUrb = aggregate(pop[urb], by=list(medoid=medoidIUrb), FUN=sum)
     weightsUrb = totalPopUrb[,2] / sum(totalPopUrb[,2])
     
+    if(adm2AsCovariate) {
+      XmatUrb = cbind(XmatUrb, matrix(as.numeric(outer(subareaIDs[urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs))))
+    }
+    
     # calculate averages of covariates, both fine scale and at the integration points
     finePopWeights = pop[urb]
     finePopWeights[is.na(finePopWeights)] = 0
@@ -1250,6 +1254,10 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     
     totalPopRur = aggregate(pop[!urb], by=list(medoid=medoidIRur), FUN=sum)
     weightsRur = totalPopRur[,2] / sum(totalPopRur[,2])
+    
+    if(adm2AsCovariate) {
+      XmatRur = cbind(XmatRur, matrix(as.numeric(outer(subareaIDs[!urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs))))
+    }
     
     # calculate averages of covariates, both fine scale and at the integration points
     finePopWeights = pop[!urb]
