@@ -1157,8 +1157,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     X = cbind(X, ENCoordsNorm)
   }
   
+  subareaIDs = as.numeric(factor(fineIntPtsTab$subarea))
   if(adm2AsCovariate) {
-    subareaIDs = as.numeric(factor(fineIntPtsTab$subarea))
     
     # get new covariate: centers of subareas
     meanXs = aggregate(ENCoords[,1], by=list(subareas=subareaIDs), mean)
@@ -1211,9 +1211,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     totalPopUrb = aggregate(pop[urb], by=list(medoid=medoidIUrb), FUN=sum)
     weightsUrb = totalPopUrb[,2] / sum(totalPopUrb[,2])
     
-    if(adm2AsCovariate) {
-      XmatUrb = cbind(XmatUrb, matrix(as.numeric(outer(subareaIDs[urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs))))
-    }
+    adm2Wurb = matrix(as.numeric(outer(subareaIDs[urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs)))
+    XmatUrb = cbind(XmatUrb, adm2Wurb)
     
     # calculate averages of covariates, both fine scale and at the integration points
     finePopWeights = pop[urb]
@@ -1226,6 +1225,10 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     # calculate ranges of covariates, both fine scale and at the integration points 
     fineSDUrb = apply(XmatUrb, 2, wtdSD, weights=finePopWeights)
     intSDUrb = apply(XmatUrb[sort(unique(medoidIUrb)),], 2, wtdSD, weights=weightsUrb)
+    
+    # get weights of admin2 areas
+    fineAdm2Wurb = colSums(sweep(adm2Wurb, 1, finePopWeights, "*"))
+    intAdm2Wurb = colSums(sweep(adm2Wurb[sort(unique(medoidIUrb)),], 1, weightsUrb, "*"))
   } else {
     hasUrbPop = FALSE
     XmatUrb = NULL
@@ -1255,9 +1258,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     totalPopRur = aggregate(pop[!urb], by=list(medoid=medoidIRur), FUN=sum)
     weightsRur = totalPopRur[,2] / sum(totalPopRur[,2])
     
-    if(adm2AsCovariate) {
-      XmatRur = cbind(XmatRur, matrix(as.numeric(outer(subareaIDs[!urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs))))
-    }
+    adm2Wrur = matrix(as.numeric(outer(subareaIDs[!urb], sort(unique(subareaIDs)), FUN="==")), ncol=length(unique(subareaIDs)))
+    XmatRur = cbind(XmatRur, adm2Wrur)
     
     # calculate averages of covariates, both fine scale and at the integration points
     finePopWeights = pop[!urb]
@@ -1270,6 +1272,10 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     # calculate ranges of covariates, both fine scale and at the integration points 
     fineSDRur = apply(XmatRur, 2, wtdSD, weights=finePopWeights)
     intSDRur = apply(XmatRur[sort(unique(medoidIRur)),], 2, wtdSD, weights=weightsRur)
+    
+    # get weights of admin2 areas
+    fineAdm2Wrur = colSums(sweep(adm2Wrur, 1, finePopWeights, "*"))
+    intAdm2Wrur = colSums(sweep(adm2Wrur[sort(unique(medoidIRur)),], 1, weightsRur, "*"))
   } else {
     hasRurPop = FALSE
     XmatRur = NULL
@@ -1307,7 +1313,11 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
        fineAvgsUrb=fineAvgsUrb, intAvgsUrb=intAvgsUrb, 
        fineAvgsRur=fineAvgsRur, intAvgsRur=intAvgsRur, 
        fineSDUrb=fineSDUrb, intSDUrb=intSDUrb, 
-       fineSDRur=fineSDRur, intSDRur=intSDRur)
+       fineSDRur=fineSDRur, intSDRur=intSDRur, 
+       fineAdm2Wurb = fineAdm2Wurb, 
+       intAdm2Wurb = intAdm2Wurb, 
+       fineAdm2Wrur = fineAdm2Wrur, 
+       intAdm2Wrur = intAdm2Wrur)
   
   if(returnFineGrid) {
     list(fineGrid = fineIntPtsTab, 
