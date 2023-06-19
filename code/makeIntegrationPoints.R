@@ -1243,6 +1243,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsUrb = NULL
     fineSDUrb = NULL
     intSDUrb = NULL
+    
+    fineAdm2Wrur = NULL
+    intAdm2Wrur = NULL
   }
   
   if(nPtsRur > 0) {
@@ -1290,6 +1293,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsRur = NULL
     fineSDRur = NULL
     intSDRur = NULL
+    
+    fineAdm2Wrur = NULL
+    intAdm2Wrur = NULL
   }
   
   # # assign fine grid points to each medoid
