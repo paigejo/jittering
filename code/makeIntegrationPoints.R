@@ -1312,6 +1312,30 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
   sortIUrb = which(fineIntPtsTab$urban)[sort(unique(medoidIUrb))]
   sortIRur = which(!fineIntPtsTab$urban)[sort(unique(medoidIRur))]
   
+  # get full set of aggregations
+  finePopWeightsUrb = pop[urb]
+  finePopWeightsUrb[is.na(finePopWeightsUrb)] = 0
+  finePopWeightsUrb = finePopWeightsUrb/sum(finePopWeightsUrb)
+  
+  finePopWeightsRur = pop[!urb]
+  finePopWeightsRur[is.na(finePopWeightsRur)] = 0
+  finePopWeightsRur = finePopWeightsRur/sum(finePopWeightsRur)
+  
+  finePopWeightsAll = rep(0, nrow(fineIntPtsTab))
+  finePopWeightsAll[urb] = finePopWeightsUrb
+  finePopWeightsAll[!urb] = finePopWeightsRur
+  
+  tabAdm2 = rbind(cbind(fine=TRUE, popWeights=finePopWeightsAll, fineIntPtsTab[,c(5:6, 8, 12:14, 16)]), 
+                  cbind(fine=FALSE, popWeights=c(weightsUrb, weightsRur), fineIntPtsTab[c(sortIUrb, sortIRur),c(5:6, 8, 12:14, 16)]))
+  
+  matAdm2 = as.matrix(tabAdm2[,-c(1:2, 4:5)])
+  matAdm2 = sweep(matAdm2, 1, tabAdm2$popWeights, "*")
+  tabAdm2Final = tabAdm2
+  tabAdm2Final[,-c(1:2, 4:5)] = matAdm2
+  stratAggs = aggregate(cbind(tabAdm2Final[,-c(1:2, 4:5)], weight=tabAdm2$popWeights), by=list(urb=tabAdm2$urban, fine=tabAdm2$fine), FUN=sum, drop=FALSE, na.rm=TRUE)
+  adm2Aggs = aggregate(cbind(tabAdm2Final[,-c(1:2, 4:5)], weight=tabAdm2$popWeights), by=list(fine=tabAdm2$fine, sub=tabAdm2$subarea, urb=tabAdm2$urban), FUN=sum, drop=FALSE, na.rm=TRUE)
+  
+  # return results
   out = list(strat=strat, hasUrbPop=hasUrbPop, hasRurPop=hasRurPop, 
        pts=fineIntPtsTab[c(sortIUrb, sortIRur),], weights=c(weightsUrb, weightsRur), 
        ptsUrb=fineIntPtsTab[sortIUrb,], weightsUrb=weightsUrb, 
@@ -1323,7 +1347,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
        fineAdm2Wurb = fineAdm2Wurb, 
        intAdm2Wurb = intAdm2Wurb, 
        fineAdm2Wrur = fineAdm2Wrur, 
-       intAdm2Wrur = intAdm2Wrur)
+       intAdm2Wrur = intAdm2Wrur, 
+       stratAggs=stratAggs, adm2Aggs=adm2Aggs)
   
   if(returnFineGrid) {
     list(fineGrid = fineIntPtsTab, 
