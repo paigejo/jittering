@@ -1481,10 +1481,22 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   wsRural = do.call("rbind", (lapply(allIntPts, function(x) {x$weightsRur})))
   
   # get average value of covariates
-  fineIntPtAvgsUrb = do.call("rbind", lapply(allIntPts, function(x) {x$fineAvgsUrb}))
-  fineIntPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$fineAvgsRur}))
-  intPtAvgsUrb = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsUrb}))
-  intPtAvgsRur = do.call("rbind", lapply(allIntPts, function(x) {x$intAvgsRur}))
+  fineIntPtAvgsUrb = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {matrix(x$fineAvgsUrb, nrow=1)}))
+  fineIntPtAvgsRur = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {
+    if(!is.null(x$fineAvgsRur)) {
+      matrix(x$fineAvgsRur, nrow=1)
+    } else {
+      NA
+    }
+  }))
+  intPtAvgsUrb = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {matrix(x$intAvgsUrb, nrow=1)}))
+  intPtAvgsRur = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {
+    if(!is.null(x$fineAvgsRur)) {
+      matrix(x$intAvgsRur, nrow=1)
+    } else {
+      NA
+    }
+  }))
   errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
   errorRur = intPtAvgsRur - fineIntPtAvgsRur
   error = rbind(errorUrb, errorRur)
@@ -1492,27 +1504,39 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   absPctErrorRur = abs(100*(intPtAvgsRur - fineIntPtAvgsRur)/fineIntPtAvgsRur)
   absPctError = rbind(absPctErrorUrb, 
                       absPctErrorRur)
-  absMeanPctErrorUrb = colMeans(absPctErrorUrb)
-  absMeanPctErrorRur = colMeans(absPctErrorRur)
-  absMeanPctError = colMeans(absPctError)
-  absMaxPctErrorUrb = apply(absPctErrorUrb, 2, max)
-  absMaxPctErrorRur = apply(absPctErrorRur, 2, max)
-  absMaxPctError = apply(absPctError, 2, max)
+  absMeanPctErrorUrb = colMeans(absPctErrorUrb, na.rm=TRUE)
+  absMeanPctErrorRur = colMeans(absPctErrorRur, na.rm=TRUE)
+  absMeanPctError = colMeans(absPctError, na.rm=TRUE)
+  absMaxPctErrorUrb = apply(absPctErrorUrb, 2, max, na.rm=TRUE)
+  absMaxPctErrorRur = apply(absPctErrorRur, 2, max, na.rm=TRUE)
+  absMaxPctError = apply(absPctError, 2, max, na.rm=TRUE)
   
-  fineIntPtSDUrb = do.call("rbind", lapply(allIntPts, function(x) {x$fineSDUrb}))
-  fineIntPtSDRur = do.call("rbind", lapply(allIntPts, function(x) {x$fineSDRur}))
-  intPtSDUrb = do.call("rbind", lapply(allIntPts, function(x) {x$intSDUrb}))
-  intPtSDRur = do.call("rbind", lapply(allIntPts, function(x) {x$intSDRur}))
+  fineIntPtSDUrb = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {matrix(x$fineSDUrb, nrow=1)}))
+  fineIntPtSDRur = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {
+    if(!is.null(x$fineAvgsRur)) {
+      matrix(x$fineSDRur, nrow=1)
+    } else {
+      NA
+    }
+  }))
+  intPtSDUrb = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {matrix(x$intSDUrb, nrow=1)}))
+  intPtSDRur = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {
+    if(!is.null(x$fineAvgsRur)) {
+      matrix(x$intSDRur, nrow=1)
+    } else {
+      NA
+    }
+  }))
   absPctErrorSDUrb = abs(100*(intPtSDUrb - fineIntPtSDUrb)/fineIntPtSDUrb)
   absPctErrorSDRur = abs(100*(intPtSDRur - fineIntPtSDRur)/fineIntPtSDRur)
   absPctErrorSD = rbind(absPctErrorSDUrb, 
                       absPctErrorSDRur)
-  absMeanPctErrorSDUrb = colMeans(absPctErrorSDUrb)
-  absMeanPctErrorSDRur = colMeans(absPctErrorSDRur)
-  absMeanPctErrorSD = colMeans(absPctErrorSD)
-  absMaxPctErrorSDUrb = apply(absPctErrorSDUrb, 2, max)
-  absMaxPctErrorSDRur = apply(absPctErrorSDRur, 2, max)
-  absMaxPctErrorSD = apply(absPctErrorSD, 2, max)
+  absMeanPctErrorSDUrb = colMeans(absPctErrorSDUrb, na.rm=TRUE)
+  absMeanPctErrorSDRur = colMeans(absPctErrorSDRur, na.rm=TRUE)
+  absMeanPctErrorSD = colMeans(absPctErrorSD, na.rm=TRUE)
+  absMaxPctErrorSDUrb = apply(absPctErrorSDUrb, 2, max, na.rm=TRUE)
+  absMaxPctErrorSDRur = apply(absPctErrorSDRur, 2, max, na.rm=TRUE)
+  absMaxPctErrorSD = apply(absPctErrorSD, 2, max, na.rm=TRUE)
   
   # make sure to fill in gaps where there is no urban or rural population
   hasUrbPop = sapply(allIntPts, function(x) {x$hasUrbPop})
