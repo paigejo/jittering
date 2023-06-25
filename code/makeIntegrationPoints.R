@@ -1523,8 +1523,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
     }
   }))
   
-  stratAggs = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$stratAggs)}))
-  adm2Aggs = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$adm2Aggs)}))
+  stratAggs = do.call("rbind", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$stratAggs)}))
+  adm2Aggs = do.call("rbind", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$adm2Aggs)}))
   
   errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
   errorRur = intPtAvgsRur - fineIntPtAvgsRur
