@@ -1522,6 +1522,10 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
       NA
     }
   }))
+  
+  stratAggs = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$stratAggs)}))
+  adm2Aggs = do.call("rbind.fill.matrix", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$adm2Aggs)}))
+  
   errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
   errorRur = intPtAvgsRur - fineIntPtAvgsRur
   error = rbind(errorUrb, errorRur)
@@ -1659,7 +1663,9 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          fineIntPtAvgsUrb=fineIntPtAvgsUrb, 
          fineIntPtAvgsRur=fineIntPtAvgsRur, 
          intPtAvgsUrb=intPtAvgsUrb,
-         intPtAvgsRur=intPtAvgsRur)
+         intPtAvgsRur=intPtAvgsRur, 
+         stratAggs=stratAggs, 
+         adm2Aggs=adm2Aggs)
   } else {
     if(is.null(datUrb)) {
       stop("non-stratified integration point construction not currently supported")
@@ -1709,7 +1715,9 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          fineIntPtAvgsUrb=fineIntPtAvgsUrb, 
          fineIntPtAvgsRur=fineIntPtAvgsRur, 
          intPtAvgsUrb=intPtAvgsUrb,
-         intPtAvgsRur=intPtAvgsRur)
+         intPtAvgsRur=intPtAvgsRur, 
+         stratAggs=stratAggs, 
+         adm2Aggs=adm2Aggs)
   }
   
   save(intPtsMICS, file=outFile)
