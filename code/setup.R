@@ -28,6 +28,7 @@ if(FALSE) {
   install.packages("WeightedCluster")
   install.packages("colorspace")
   install.packages("TMB")
+  install.packages("plyr")
   
   library(devtools)
   if(FALSE) {
@@ -71,6 +72,7 @@ library(shapefiles)
 library(devtools)
 library(colorspace)
 library(TMB)
+library(plyr)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
