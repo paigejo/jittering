@@ -675,11 +675,12 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
   # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
-  getInds = function(intPtI = 1, numPerStrat) {
-    unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
-  }
-  actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
+  # startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
+  # getInds = function(intPtI = 1, numPerStrat) {
+  #   unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
+  # }
+  # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   AUrbMICS = AUrbMICS[,actualIndexUrb]
@@ -696,7 +697,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
+  # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   ARurMICS = ARurMICS[,actualIndexRur]
@@ -722,7 +724,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
     # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
     # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
-    actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
+    # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
+    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
     XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
@@ -739,7 +742,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
-    actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
+    # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
+    actualIndexUrb = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
@@ -1181,11 +1185,12 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
   # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
-  getInds = function(intPtI = 1, numPerStrat) {
-    unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
-  }
-  actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
+  # startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
+  # getInds = function(intPtI = 1, numPerStrat) {
+  #   unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
+  # }
+  # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   AUrbMICS = AUrbMICS[,actualIndexUrb]
@@ -1202,7 +1207,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
+  # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   ARurMICS = ARurMICS[,actualIndexRur]
@@ -1231,7 +1237,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # obsIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), KMICS)
     # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
     # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
-    actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
+    # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
+    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
     XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
@@ -1248,7 +1255,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # obsIndexRur = rep(1:sum(numPerStratRurOutOfSample), KMICS)
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
-    actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
+    # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
+    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]

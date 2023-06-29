@@ -26,7 +26,8 @@ if(FALSE) {
   
   # make integration points if necessary
   intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                            numPtsRur=KMICS, numPtsUrb=KMICS)
+                                            numPtsRur=KMICS, numPtsUrb=KMICS, adm2AsCovariate=TRUE, 
+                                            lambda=1)
   # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
   # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE, 
   #                                         numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
@@ -61,12 +62,12 @@ if(FALSE) {
   # stratIndexUrb = unlist(mapply(rep, 1:nrow(AUrbMICS), each=numPerStratUrb * KMICS))
   # obsIndexUrb = rep(1:sum(numPerStratUrb), KMICS)
   # intPtIndexUrb = rep(1:sum(numPerStratUrb), each=KMICS)
-  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
-  startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
-  getInds = function(intPtI = 1, numPerStrat) {
-    unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
-  }
-  actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
+  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # startInds = seq(1, KMICS*length(admFinal@data$NAME_FINAL), by=KMICS)
+  # getInds = function(intPtI = 1, numPerStrat) {
+  #   unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
+  # }
+  # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
   XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -416,7 +417,6 @@ if(FALSE) {
       }
       else {
         print("Hessan not PD. Rerunning optimization with stricter tol...")
-        
       }
     }
     

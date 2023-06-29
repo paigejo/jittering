@@ -755,9 +755,11 @@ plotDatasets = function(kmres=5) {
   # plot MICS data ----
   # edMICS
   
+  covColScale = makeBlueGreenYellowSequentialColors(64)
+  
   # first average at the MICS stratum level
-  ys = aggregate(edMICS$secondaryEd, by=list(edMICS$Stratum), FUN=sum)
-  ns = aggregate(edMICS$secondaryEd, by=list(edMICS$Stratum), FUN=length)
+  ys = aggregate(edMICS$ys, by=list(edMICS$Stratum), FUN=sum)
+  ns = aggregate(edMICS$ns, by=list(edMICS$Stratum), FUN=sum)
   prevs = ys[,2]/ns[,2]
   
   pdf("figures/data/edMICS.pdf", width=5, height=3.8)
@@ -765,7 +767,7 @@ plotDatasets = function(kmres=5) {
   plotMapDat(mapDat=admFinal, cols=covColScale, 
              xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
              ylab="Latitude", main="Women's secondary education prevalence (MICS)", legend.mar=4.7,
-             addColorBar=TRUE, plotVar=prevs, varAreas=ys[,1])
+             addColorBar=TRUE, plotVar=prevs, varAreas=ys[,1], regionNames=admFinal$NAME_FINAL)
   plotMapDat(mapDat=sen, lwd=.5, new=FALSE,
              border=do.call("rgb", c(as.list(rep(0, 3)), list(1))))
   plotMapDat(mapDat=adm1, new=FALSE, lwd=1.5)

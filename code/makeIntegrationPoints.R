@@ -1526,6 +1526,15 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   stratAggs = do.call("rbind", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$stratAggs)}))
   adm2Aggs = do.call("rbind", lapply(allIntPts, function(x) {cbind(Strat=x$strat, x$adm2Aggs)}))
   
+  fineValsUrb = adm2Aggs[adm2Aggs$fine & adm2Aggs$urb, -c(1:4)]
+  intValsUrb = adm2Aggs[!adm2Aggs$fine & adm2Aggs$urb, -c(1:4)]
+  fineValsRur = adm2Aggs[adm2Aggs$fine & !adm2Aggs$urb, -c(1:4)]
+  intValsRur = adm2Aggs[!adm2Aggs$fine & !adm2Aggs$urb, -c(1:4)]
+  adm2MeanDiffUrb = colMeans(intValsUrb - fineValsUrb, na.rm=TRUE)
+  adm2MeanDiffRur = colMeans(intValsRur - fineValsRur, na.rm=TRUE)
+  adm2MaxDiffUrb = apply(intValsUrb - fineValsUrb, 2, max, na.rm=TRUE)
+  adm2MaxDiffRur = apply(intValsRur - fineValsRur, 2, max, na.rm=TRUE)
+  
   errorUrb = intPtAvgsUrb - fineIntPtAvgsUrb
   errorRur = intPtAvgsRur - fineIntPtAvgsRur
   error = rbind(errorUrb, errorRur)
@@ -1665,7 +1674,11 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          intPtAvgsUrb=intPtAvgsUrb,
          intPtAvgsRur=intPtAvgsRur, 
          stratAggs=stratAggs, 
-         adm2Aggs=adm2Aggs)
+         adm2Aggs=adm2Aggs, 
+         adm2MeanDiffUrb=adm2MeanDiffUrb, 
+         adm2MeanDiffRur=adm2MeanDiffRur, 
+         adm2MaxDiffUrb=adm2MaxDiffUrb, 
+         adm2MaxDiffRur=adm2MaxDiffRur)
   } else {
     if(is.null(datUrb)) {
       stop("non-stratified integration point construction not currently supported")
@@ -1717,7 +1730,11 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          intPtAvgsUrb=intPtAvgsUrb,
          intPtAvgsRur=intPtAvgsRur, 
          stratAggs=stratAggs, 
-         adm2Aggs=adm2Aggs)
+         adm2Aggs=adm2Aggs, 
+         adm2MeanDiffUrb=adm2MeanDiffUrb, 
+         adm2MeanDiffRur=adm2MeanDiffRur, 
+         adm2MaxDiffUrb=adm2MaxDiffUrb, 
+         adm2MaxDiffRur=adm2MaxDiffRur)
   }
   
   save(intPtsMICS, file=outFile)

@@ -419,7 +419,7 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
   }
   
   
-  hasNugget = is.null(sigmaEpsSqDraws)
+  hasNugget = !is.null(sigmaEpsSqDraws)
   if(hasNugget) {
     fixedMat = rbind(fixedMat, 
                      sigmaEpsSqDraws)

@@ -221,7 +221,7 @@ defineSurvey <- function(dat_obj, stratVar, useSamplingWeights=TRUE, nationalEst
     ## NOTE: -the clustID denote
     ##        one stage cluster design (clustID is cluster)
     ##       -This call below specifies our survey design
-    # TODO: check if weights should be NULL here
+    
     my.svydesign <- svydesign(id= ~clustID,
                               strata =NULL,
                               weights=NULL, data=dat_obj)
