@@ -170,7 +170,7 @@ stratKdhs = function(K=10, seed=1234) {
 
 # submodels of the BYM2 model
 
-getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
+getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -349,7 +349,7 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
                             hessian=TRUE, DLL=DLL))
 }
 
-getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
+getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -515,7 +515,7 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
+getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -1031,7 +1031,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE) {
+getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -1489,7 +1489,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
 
 # This function generates and saves all the validation datasets and input 
 # parameters for all models
-getAllValidationData = function(folds=1:20) {
+getAllValidationData = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
   
   # first generate M_d data
   print("generating data for M_d...")
@@ -1512,23 +1512,25 @@ getAllValidationData = function(folds=1:20) {
 
 # This function generates and saves all the validation datasets and input 
 # parameters for all models
-getAllValidationData2 = function(folds=1:20) {
+getAllValidationData2 = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
   
   # first generate M_d data
   print("generating data for M_d2...")
-  time1 = system.time(datMd2 <- lapply(folds, getValidationDataM_d, admLevel="adm2"))[3]
+  time1 = system.time(datMd2 <- lapply(folds, getValidationDataM_d, admLevel="adm2", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time1, " seconds. Now generating data for M_D2..."))
-  time2 = system.time(datMD2 <- lapply(folds, getValidationDataM_D, admLevel="adm2"))[3]
+  time2 = system.time(datMD2 <- lapply(folds, getValidationDataM_D, admLevel="adm2", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time2, " seconds. Now generating data for M_dm2..."))
-  time3 = system.time(datMdm2 <- lapply(folds, getValidationDataM_dm, admLevel="adm2"))[3]
+  time3 = system.time(datMdm2 <- lapply(folds, getValidationDataM_dm, admLevel="adm2", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time3, " seconds. Now generating data for M_DM2..."))
-  time4 = system.time(datMDM2 <- lapply(folds, getValidationDataM_DM, admLevel="adm2"))[3]
+  time4 = system.time(datMDM2 <- lapply(folds, getValidationDataM_DM, admLevel="adm2", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time4, " seconds. Now saving results..."))
   
-  save(datMd2, file="savedOutput/validation/datMd2.RData")
-  save(datMD2, file="savedOutput/validation/datM_D2.RData")
-  save(datMdm2, file="savedOutput/validation/datMdm2.RData")
-  save(datMDM2, file="savedOutput/validation/datM_DM2.RData")
+  # intParText = ifelse(res == 25, "", paste0("_", res, ""))
+  # intParText = ifelse(adm2AsCovariate, paste0(intParText, "_adm2Cov"), intParText)
+  save(datMd2, file=paste0("savedOutput/validation/datMd2.RData"))
+  save(datMD2, file=paste0("savedOutput/validation/datM_D2.RData"))
+  save(datMdm2, file=paste0("savedOutput/validation/datMdm2.RData"))
+  save(datMDM2, file=paste0("savedOutput/validation/datM_DM2.RData"))
   
   invisible(list(datMd2, datMD2, datMdm2, datMDM2))
 }

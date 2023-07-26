@@ -291,6 +291,10 @@ fitModelAtResolution = function(res, optRes=NULL) {
     )
   } else {
     # set initial parameters based on simple model
+    initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+    initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+    initAlpha = logit(initRurP)
+    initBeta1 = logit(initUrbP) - initAlpha
     
     tmb_paramsStart <- list(alpha = initAlpha, # intercept
                        beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
