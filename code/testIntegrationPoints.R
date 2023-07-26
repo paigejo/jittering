@@ -61,7 +61,7 @@ fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
 }
 
 # allRes=c(100, 125, 150, 175, 200, 225, 300)
-# fitModelAtResolution(res, 300)
+# fitModelAtResolution(125, 300)
 fitModelAtResolution = function(res, optRes=NULL) {
   # script for women's secondary education in Nigeria application
   
@@ -290,8 +290,114 @@ fitModelAtResolution = function(res, optRes=NULL) {
                        nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
     )
   } else {
-    # set initial parameters in the usual way
+    # set initial parameters based on simple model
     
+    tmb_paramsStart <- list(alpha = initAlpha, # intercept
+                       beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                       log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = 0, # SPDE parameter related to the range
+                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+    )
+    
+    # specify random effects
+    rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+    
+    # collect input data
+    
+    data_start = list(
+      y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
+      y_iRuralDHS=ysRurDHS, # 
+      n_iUrbanDHS=nsUrbDHS, # number binomial trials
+      n_iRuralDHS=nsRurDHS, # 
+      AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+      AprojRuralDHS=ARurDHS, # 
+      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+      X_betaRuralDHS=intPtsDHS$covsRur, # 
+      wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
+      wRuralDHS=intPtsDHS$wRural, # 
+      
+      Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
+      V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+      alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
+      beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
+      tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
+      gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
+      lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
+      lambdaTau=lambdaTau, # determines PC prior for tau
+      lambdaTauEps=lambdaTauEps, 
+      options=0 # 1 for adreport of log tau and logit phi
+    )
+    
+    # dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
+    dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
+    objStart <- MakeADFun(data=data_start,
+                     parameters=tmb_paramsStart,
+                     random=rand_effsStart,
+                     hessian=TRUE,
+                     DLL='modBYM2JitterDHS2')
+    # objFull <- MakeADFun(data=data_full,
+    #                      parameters=tmb_params,
+    #                      hessian=TRUE,
+    #                      DLL='modBYM2JitterFusionNugget2')
+    
+    lower = rep(-10, length(obj[['par']]))
+    upper = rep( 10, length(obj[['par']]))
+    
+    # make wrapper functions that print out parameters and function values
+    funWrapper = function(par, badParVal=1e10) {
+      if(any(par < lower) || any(par > upper)) {
+        return(badParVal)
+      }
+      print(par)
+      objVal = testObj[['fn']](par)
+      parNames = names(par)
+      parVals = par
+      parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+      parStr = paste(parStrs, collapse=", ")
+      print(paste0("objective: ", objVal, " for parameters, ", parStr))
+      objVal
+    }
+    
+    grWrapper = function(par, badParVal=1e10) {
+      if(any(par < lower) || any(par > upper)) {
+        return(rep(badParVal, length(par)))
+      }
+      print(par)
+      grVal = testObj[['gr']](par)
+      parNames = names(par)
+      parVals = par
+      parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+      parStr = paste(parStrs, collapse=", ")
+      grStr = paste(grVal, collapse=", ")
+      print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+      grVal
+    }
+    
+    testObj = objStart
+    optPar = testObj$par
+    testObj = objStart
+    testObj$env$inner.control = list(maxit=1000, tol10=1e-06)
+    testObj$env$tracepar = TRUE
+    optStart <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                  method = c("BFGS"), hessian = FALSE, control=list(reltol=1e-06))
+    optParStart = optStart$par
+    
+    # now set the initial parameters
+    tmb_params <- list(alpha = testObj$last.par[grepl("alpha", names(testObj$last.par))], # intercept
+                       beta = testObj$last.par[grepl("beta", names(testObj$last.par))], 
+                       log_tau = testObj$last.par[grepl("log_tau", names(testObj$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = testObj$last.par[grepl("logit_phi", names(testObj$last.par))], # SPDE parameter related to the range
+                       log_tauEps = testObj$last.par[grepl("log_tauEps", names(testObj$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                       Epsilon_bym2 = testObj$last.par[grepl("Epsilon_bym2", names(testObj$last.par))], # RE on mesh vertices
+                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                       nuggetUrbDHS = testObj$last.par[grepl("nuggetUrbDHS", names(testObj$last.par))], 
+                       nuggetRurDHS = testObj$last.par[grepl("nuggetRurDHS", names(testObj$last.par))]
+    )
   }
   
   
