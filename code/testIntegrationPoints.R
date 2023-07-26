@@ -49,7 +49,7 @@ testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
 fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
   optRes = max(allRes)
   
-  for(i in 1:length(allRes)) {
+  for(i in 1:(length(allRes)-1)) {
     thisRes = allRes[i]
     
     # fit the model at the current resolution using the optimum of the given 
@@ -60,7 +60,9 @@ fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
   invisible(NULL)
 }
 
-fitModelAtResolution = function(res, optRes) {
+# allRes=c(100, 125, 150, 175, 200, 225, 300)
+# fitModelAtResolution(res, 300)
+fitModelAtResolution = function(res, optRes=NULL) {
   # script for women's secondary education in Nigeria application
   
   # load datasets ----
@@ -272,21 +274,26 @@ fitModelAtResolution = function(res, optRes) {
     }
   }
   
+  if(!is.null(optRes)) {
+    # set initial parameters based on simple model
+    out = load(paste0("savedOutput/ed/fit2_", optRes, "_adm2Cov.RData"))
+    
+    tmb_params <- list(alpha = SD0$par.random[grepl("alpha", names(SD0$par.random))], # intercept
+                       beta = SD0$par.random[grepl("beta", names(SD0$par.random))], 
+                       log_tau = SD0$par.fixed[which(names(SD0$par.fixed) == "log_tau")], # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = SD0$par.fixed[grepl("phi", names(SD0$par.fixed))], # SPDE parameter related to the range
+                       log_tauEps = SD0$par.fixed[grepl("tauEps", names(SD0$par.fixed))], # Log tau (i.e. log spatial precision, Epsilon)
+                       Epsilon_bym2 = SD0$par.random[grepl("Epsilon", names(SD0$par.random))], # RE on mesh vertices
+                       nuggetUrbMICS = SD0$par.random[grepl("nuggetUrbMICS", names(SD0$par.random))], 
+                       nuggetRurMICS = SD0$par.random[grepl("nuggetRurMICS", names(SD0$par.random))], 
+                       nuggetUrbDHS = SD0$par.random[grepl("nuggetUrbDHS", names(SD0$par.random))], 
+                       nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
+    )
+  } else {
+    # set initial parameters in the usual way
+    
+  }
   
-  # set initial parameters based on optRes model
-  out = load(paste0("savedOutput/ed/fit2_", optRes, "_adm2Cov.RData"))
-  
-  tmb_params <- list(alpha = SD0$par.random[grepl("alpha", names(SD0$par.random))], # intercept
-                     beta = SD0$par.random[grepl("beta", names(SD0$par.random))], 
-                     log_tau = SD0$par.fixed[which(names(SD0$par.fixed) == "log_tau")], # Log tau (i.e. log spatial precision, Epsilon)
-                     logit_phi = SD0$par.fixed[grepl("phi", names(SD0$par.fixed))], # SPDE parameter related to the range
-                     log_tauEps = SD0$par.fixed[grepl("tauEps", names(SD0$par.fixed))], # Log tau (i.e. log spatial precision, Epsilon)
-                     Epsilon_bym2 = SD0$par.random[grepl("Epsilon", names(SD0$par.random))], # RE on mesh vertices
-                     nuggetUrbMICS = SD0$par.random[grepl("nuggetUrbMICS", names(SD0$par.random))], 
-                     nuggetRurMICS = SD0$par.random[grepl("nuggetRurMICS", names(SD0$par.random))], 
-                     nuggetUrbDHS = SD0$par.random[grepl("nuggetUrbDHS", names(SD0$par.random))], 
-                     nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
-  )
   
   # make TMB fun and grad ----
   # dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
