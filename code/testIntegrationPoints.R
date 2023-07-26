@@ -336,7 +336,6 @@ fitModelAtResolution = function(res, optRes=NULL) {
     )
     
     dyn.load( dynlib("code/modBYM2JitterDHS2"))
-    TMB::config(tmbad.sparse_hessian_compress = 1)
     objStart <- MakeADFun(data=data_start,
                      parameters=tmb_paramsStart,
                      random=rand_effsStart,
