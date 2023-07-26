@@ -342,8 +342,8 @@ fitModelAtResolution = function(res, optRes=NULL) {
                      hessian=TRUE,
                      DLL='modBYM2JitterDHS2')
     
-    lower = rep(-10, length(obj[['par']]))
-    upper = rep( 10, length(obj[['par']]))
+    lower = rep(-10, length(objStart[['par']]))
+    upper = rep( 10, length(objStart[['par']]))
     
     # make wrapper functions that print out parameters and function values
     funWrapper = function(par, badParVal=1e10) {
