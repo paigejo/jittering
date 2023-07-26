@@ -335,18 +335,13 @@ fitModelAtResolution = function(res, optRes=NULL) {
       options=0 # 1 for adreport of log tau and logit phi
     )
     
-    # dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-    dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
+    dyn.load( dynlib("code/modBYM2JitterDHS2"))
     TMB::config(tmbad.sparse_hessian_compress = 1)
     objStart <- MakeADFun(data=data_start,
                      parameters=tmb_paramsStart,
                      random=rand_effsStart,
                      hessian=TRUE,
                      DLL='modBYM2JitterDHS2')
-    # objFull <- MakeADFun(data=data_full,
-    #                      parameters=tmb_params,
-    #                      hessian=TRUE,
-    #                      DLL='modBYM2JitterFusionNugget2')
     
     lower = rep(-10, length(obj[['par']]))
     upper = rep( 10, length(obj[['par']]))
