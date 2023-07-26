@@ -396,6 +396,8 @@ fitModelAtResolution = function(res, optRes=NULL) {
                        nuggetUrbDHS = testObj$last.par[grepl("nuggetUrbDHS", names(testObj$last.par))], 
                        nuggetRurDHS = testObj$last.par[grepl("nuggetRurDHS", names(testObj$last.par))]
     )
+    
+    dyn.unload( dynlib("code/modBYM2JitterDHS2"))
   }
   
   
