@@ -385,16 +385,16 @@ fitModelAtResolution = function(res, optRes=NULL) {
     optParStart = optStart$par
     
     # now set the initial parameters
-    tmb_params <- list(alpha = testObj$last.par[grepl("alpha", names(testObj$last.par))], # intercept
-                       beta = testObj$last.par[grepl("beta", names(testObj$last.par))], 
-                       log_tau = testObj$last.par[grepl("log_tau", names(testObj$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = testObj$last.par[grepl("logit_phi", names(testObj$last.par))], # SPDE parameter related to the range
-                       log_tauEps = testObj$last.par[grepl("log_tauEps", names(testObj$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
-                       Epsilon_bym2 = testObj$last.par[grepl("Epsilon_bym2", names(testObj$last.par))], # RE on mesh vertices
+    tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
+                       beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
+                       log_tau = testObj$env$last.par[names(testObj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = testObj$env$last.par[grepl("logit_phi", names(testObj$env$last.par))], # SPDE parameter related to the range
+                       log_tauEps = testObj$env$last.par[grepl("log_tauEps", names(testObj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                       Epsilon_bym2 = testObj$env$last.par[grepl("Epsilon_bym2", names(testObj$env$last.par))], # RE on mesh vertices
                        nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
                        nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                       nuggetUrbDHS = testObj$last.par[grepl("nuggetUrbDHS", names(testObj$last.par))], 
-                       nuggetRurDHS = testObj$last.par[grepl("nuggetRurDHS", names(testObj$last.par))]
+                       nuggetUrbDHS = testObj$env$last.par[grepl("nuggetUrbDHS", names(testObj$env$last.par))], 
+                       nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
     )
     
     dyn.unload( dynlib("code/modBYM2JitterDHS2"))
