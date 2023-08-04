@@ -2190,14 +2190,6 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
     allPointsEN = allPointsEN[inArea,]
     allPointsLL = allPointsLL[inArea,]
     
-    if(nrow(allPointsEN) > maxPointsInitial) {
-      # Too many points, must remove some by decreasing resolution 10%. 
-      # Also multiply by factor of 2 since we will divide it by 2 at 
-      # beginning on the next loop
-      kmres = kmres*2 * 1.1 
-      next
-    }
-    
     # get subareas associated with the points (considering only subareas within 
     # relevant MICS stratum)
     theseSubareas = getRegion2(allPointsLL, mapDat=thisSubareaMapDat, nameVar=subareaNameVar)
@@ -2253,6 +2245,14 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
     }
     
     print(paste0("Fine grid has ", np, " ", urbText, " points"))
+    
+    if(np > maxPointsInitial) {
+      # Too many points, must remove some by decreasing resolution 10%. 
+      # Also multiply by factor of 2 since we will divide it by 2 at 
+      # beginning on the next loop
+      kmres = kmres*2 * 1.1 
+      next
+    }
   }
   adm2Vals = stratumPopMat$subarea[popMatIs]
   
