@@ -2292,7 +2292,7 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   }
   
   # also remove points from the wrong urbanicity
-  naCovRowIs = naCovRowIs | (fineIntPtInfo$urban != doUrb)
+  naCovRowIs = naCovRowIs | (finalPopMat$urban != doUrb)
   
   # browser()
   if(((sum(finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsUrb) && totalUrbPop > 0) || ((sum(!finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsRur) && totalRurPop > 0)) {
