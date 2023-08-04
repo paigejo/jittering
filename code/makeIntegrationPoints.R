@@ -2155,6 +2155,7 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   kmres = kmresStart * 2
   npUrb = 0
   npRur = 0
+  browser()
   while((npUrb < minPointsUrb) && (npRur < minPointsRur)) {
     kmres = kmres/2
     print(paste0("Constructing fine grid with resolution ", kmres))
@@ -2178,7 +2179,7 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
       # Too many points, must remove some by decreasing resolution 10%. 
       # Also multiply by factor of 2 since we will divide it by 2 at 
       # beginning on the next loop
-      kmres = kmres*2 * .9 
+      kmres = kmres*2 * 1.1 
       next
     }
     
@@ -2242,7 +2243,7 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
       npRur = minPointsRur
     }
   }
-  
+  browser()
   adm2Vals = stratumPopMat$subarea[popMatIs]
   
   fineGridCoordsEN = allPointsEN
@@ -2309,7 +2310,7 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   } else if(sum(!naCovRowIs) > maxPointsFinal) {
     warning(paste0("Number of fine grid points == ", sum(!naCovRowIs), " > ", maxPointsFinal = " maxPointsFinal. Decreasing resolution..."))
     
-    out = getFineIntPointsInfoMICShelper(stratumName=stratumName, kmresStart=kmres*.9, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
+    out = getFineIntPointsInfoMICShelper(stratumName=stratumName, kmresStart=kmres*1.1, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
                                    stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
                                    subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
                                    poppsub=poppsub, 
