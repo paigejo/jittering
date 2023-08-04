@@ -1120,7 +1120,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
                                     proj=projNigeria, projArea=projNigeriaArea, 
                                     spatialAsCovariate=FALSE, adm2AsCovariate=FALSE, 
                                     lambda=NULL, domainDiameter=NULL, 
-                                    returnFineGrid=FALSE, testMode=FALSE, extractMethod="bilinear") {
+                                    returnFineGrid=FALSE, testMode=FALSE, extractMethod="bilinear", 
+                                    maxPoints=13000) {
   
   
   fineIntPtsTab = getFineIntPointsInfoMICS(stratumName=strat, kmresStart=kmresFineStart, 
@@ -1129,7 +1130,8 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
                                            subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
                                            poppsub=poppsub, 
                                            normalized=normalized, useThreshPopMat=useThreshPopMat, 
-                                           proj=proj, projArea=projArea, testMode=testMode, extractMethod=extractMethod)
+                                           proj=proj, projArea=projArea, testMode=testMode, extractMethod=extractMethod, 
+                                           maxPoints=maxPoints)
   
   X = fineIntPtsTab[,c(11:14, 16)] # don't use urbanicity to generate clustering
   pop = fineIntPtsTab$pop
@@ -1386,7 +1388,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         spatialAsCovariate=FALSE, adm2AsCovariate=FALSE, 
                                         lambda=NULL, domainDiameter=NULL, 
                                         fileNameRoot="MICSintPts_", loadSavedIntPoints=TRUE, 
-                                        extractMethod="bilinear", outFile=NULL) {
+                                        extractMethod="bilinear", outFile=NULL, maxPoints=13000) {
   
   # normalize spatial coordinates based on prior median effective range
   if(is.null(lambda)) {
@@ -1454,7 +1456,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                               proj=proj, projArea=projArea, 
                                               spatialAsCovariate=spatialAsCovariate, 
                                               lambda=lambda, domainDiameter=domainDiameter, 
-                                              extractMethod=extractMethod)
+                                              extractMethod=extractMethod, maxPoints=maxPoints)
       
       save(thisIntPoints, file=paste0(fileNameRoot, "_i", i, ".RData"))
     }
@@ -1678,7 +1680,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          adm2MeanDiffUrb=adm2MeanDiffUrb, 
          adm2MeanDiffRur=adm2MeanDiffRur, 
          adm2MaxDiffUrb=adm2MaxDiffUrb, 
-         adm2MaxDiffRur=adm2MaxDiffRur)
+         adm2MaxDiffRur=adm2MaxDiffRur, 
+         maxPoints=maxPoints)
   } else {
     if(is.null(datUrb)) {
       stop("non-stratified integration point construction not currently supported")
@@ -1734,7 +1737,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          adm2MeanDiffUrb=adm2MeanDiffUrb, 
          adm2MeanDiffRur=adm2MeanDiffRur, 
          adm2MaxDiffUrb=adm2MaxDiffUrb, 
-         adm2MaxDiffRur=adm2MaxDiffRur)
+         adm2MaxDiffRur=adm2MaxDiffRur, 
+         maxPoints=maxPoints)
   }
   
   save(intPtsMICS, file=outFile)
@@ -2045,7 +2049,39 @@ getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20
                                     normalized=TRUE, useThreshPopMat=TRUE, 
                                     proj=projNigeria, projArea=projNigeriaArea, 
                                     testMode=FALSE, extractMethod="bilinear", 
-                                    setMissingToAvg=TRUE) {
+                                    setMissingToAvg=TRUE, maxPoints=13000) {
+  
+  fineInfoUrb = getFineIntPointsInfoMICShelper(stratumName, kmresStart, minPointsUrb, minPointsRur, 
+                                               stratumMICSMapDat, stratumMICSNameVar, 
+                                               subareaMapDat, subareaNameVar, 
+                                               poppsub, 
+                                               normalized, useThreshPopMat, 
+                                               proj, projArea, 
+                                               testMode, extractMethod, 
+                                               setMissingToAvg, maxPoints, doUrb=TRUE)
+  
+  fineInfoRur = getFineIntPointsInfoMICShelper(stratumName, kmresStart, minPointsUrb, minPointsRur, 
+                                               stratumMICSMapDat, stratumMICSNameVar, 
+                                               subareaMapDat, subareaNameVar, 
+                                               poppsub, 
+                                               normalized, useThreshPopMat, 
+                                               proj, projArea, 
+                                               testMode, extractMethod, 
+                                               setMissingToAvg, maxPoints, doUrb=FALSE)
+  
+  out = rbind(fineInfoUrb, fineInfoRur)
+}
+
+# helper function for getFineIntPointsInfoMICS, returning only the urban or rural 
+# fine integration grid depending on the value of doUrb.
+getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPointsUrb=20, minPointsRur=20, 
+                                    stratumMICSMapDat=admFinalFull, stratumMICSNameVar="NAME_FINAL", 
+                                    subareaMapDat=adm2Full, subareaNameVar="NAME_2", 
+                                    poppsub=poppsubNGAThresh, 
+                                    normalized=TRUE, useThreshPopMat=TRUE, 
+                                    proj=projNigeria, projArea=projNigeriaArea, 
+                                    testMode=FALSE, extractMethod="bilinear", 
+                                    setMissingToAvg=TRUE, maxPoints=13000, doUrb=TRUE) {
   
   # get saved urbanicity and population integration matrix
   if(useThreshPopMat) {
@@ -2236,11 +2272,29 @@ getFineIntPointsInfoMICS = function(stratumName, kmresStart=2.5, minPointsUrb=20
     # just return the entire set of results, don't continue to make the grid finer
   }
   
+  if(doUrb) {
+    minPointsRur = 0
+  } else {
+    minPointsUrb = 0
+  }
+  
+  # also remove points from the wrong urbanicity
+  naCovRowIs = naCovRowIs | (fineIntPtInfo$urban != doUrb)
+  
   # browser()
   if(((sum(finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsUrb) && totalUrbPop > 0) || ((sum(!finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsRur) && totalRurPop > 0)) {
     warning("NA covariates and zero pop points reduced number of urban and rural points to below minimum. Increasing resolution...")
     
     out = getFineIntPointsInfoMICS(stratumName=stratumName, kmresStart=kmres/2, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
+                                   stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
+                                   subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
+                                   poppsub=poppsub, 
+                                   normalized=normalized, useThreshPopMat=useThreshPopMat, 
+                                   proj=proj, projArea=projArea, extractMethod=extractMethod)
+  } else if(sum(!naCovRowIs) > maxPoints) {
+    warning(paste0("Number of fine grid points == ", sum(!naCovRowIs), " > ", maxPoints = " maxPoints. Decreasing resolution..."))
+    
+    out = getFineIntPointsInfoMICS(stratumName=stratumName, kmresStart=kmres*.9, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
                                    stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
                                    subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
                                    poppsub=poppsub, 
