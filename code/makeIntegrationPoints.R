@@ -2114,6 +2114,23 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   totalUrbPop = sum(thisPoppsub$popUrb)
   totalRurPop = sum(thisPoppsub$popRur)
   
+  # set quantities depending on doUrb, i.e. 
+  # whether we generate urban or rural int points
+  if(doUrb) {
+    urbText = "urban"
+    minPoints = minPointsUrb
+    totalPop = totalUrbPop
+  } else {
+    urbText = "rural"
+    minPoints = minPointsRur
+    totalPop = totalRurPop
+  }
+  
+  # only generate integration points if there is any population
+  if(totalPop == 0) {
+    return(NULL)
+  }
+  
   # subset subareaMapDat to subareas in relevant MICS stratum only
   subareaPolygons = SpatialPolygons(subareaMapDat@polygons)
   subareaPolygonI = which(subareaMapDat@data[[subareaNameVar]] %in% uniqueSubareas)
@@ -2153,10 +2170,8 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   eastRange = sort(bbox[1,])
   northRange = sort(bbox[2,])
   kmres = kmresStart * 2
-  npUrb = 0
-  npRur = 0
-  browser()
-  while((npUrb < minPointsUrb) && (npRur < minPointsRur)) {
+  np = 0
+  while(np < minPoints) {
     kmres = kmres/2
     print(paste0("Constructing fine grid with resolution ", kmres))
     eastPoints = seq(eastRange[1], eastRange[2], by=kmres)
@@ -2231,19 +2246,14 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
     popMatIs = unlist(sapply(1:nrow(allPointsEN), getPopMatIs))
     urbVals = stratumPopMat$urban[popMatIs]
     
-    npUrb = sum(urbVals, na.rm=TRUE)
-    npRur = sum(!urbVals, na.rm=TRUE)
-    
-    print(paste0("Fine grid has ", npUrb, " and ", npRur,  " urban and rural points respectively"))
-    
-    if(totalUrbPop == 0) {
-      npUrb = minPointsUrb
+    if(doUrb) {
+      np = sum(urbVals, na.rm=TRUE)
+    } else {
+      np = sum(!urbVals, na.rm=TRUE)
     }
-    if(totalRurPop == 0) {
-      npRur = minPointsRur
-    }
+    
+    print(paste0("Fine grid has ", np, " ", urbText, " points"))
   }
-  browser()
   adm2Vals = stratumPopMat$subarea[popMatIs]
   
   fineGridCoordsEN = allPointsEN
