@@ -2298,21 +2298,25 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
   if(((sum(finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsUrb) && totalUrbPop > 0) || ((sum(!finalPopMat$urban[!naCovRowIs], na.rm=TRUE) < minPointsRur) && totalRurPop > 0)) {
     warning("NA covariates and zero pop points reduced number of urban and rural points to below minimum. Increasing resolution...")
     
-    out = getFineIntPointsInfoMICS(stratumName=stratumName, kmresStart=kmres/2, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
+    out = getFineIntPointsInfoMICShelper(stratumName=stratumName, kmresStart=kmres/2, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
                                    stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
                                    subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
                                    poppsub=poppsub, 
                                    normalized=normalized, useThreshPopMat=useThreshPopMat, 
-                                   proj=proj, projArea=projArea, extractMethod=extractMethod)
+                                   proj=proj, projArea=projArea, extractMethod=extractMethod, 
+                                   setMissingToAvg=setMissingToAvg, maxPointsFinal=maxPointsFinal, maxPointsInitial=maxPointsInitial, 
+                                   doUrb=doUrb)
   } else if(sum(!naCovRowIs) > maxPointsFinal) {
     warning(paste0("Number of fine grid points == ", sum(!naCovRowIs), " > ", maxPointsFinal = " maxPointsFinal. Decreasing resolution..."))
     
-    out = getFineIntPointsInfoMICS(stratumName=stratumName, kmresStart=kmres*.9, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
+    out = getFineIntPointsInfoMICShelper(stratumName=stratumName, kmresStart=kmres*.9, minPointsUrb=minPointsUrb, minPointsRur=minPointsRur, 
                                    stratumMICSMapDat=stratumMICSMapDat, stratumMICSNameVar=stratumMICSNameVar, 
                                    subareaMapDat=subareaMapDat, subareaNameVar=subareaNameVar, 
                                    poppsub=poppsub, 
                                    normalized=normalized, useThreshPopMat=useThreshPopMat, 
-                                   proj=proj, projArea=projArea, extractMethod=extractMethod)
+                                   proj=proj, projArea=projArea, extractMethod=extractMethod, 
+                                   setMissingToAvg=setMissingToAvg, maxPointsFinal=maxPointsFinal, maxPointsInitial=maxPointsInitial, 
+                                   doUrb=doUrb)
   } else {
     out = cbind(finalPopMat, int=1, access=fineIntPtInfo[,3], elev=fineIntPtInfo[,4], distRiversLakes=fineIntPtInfo[,5], urbanicity=fineIntPtInfo[,6])[!naCovRowIs,]
     
