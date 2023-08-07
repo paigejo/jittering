@@ -290,7 +290,8 @@ fitModelAtResolution = function(res, optRes=NULL) {
                        nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
     )
   } else {
-    # set initial parameters based on simple model
+    # set initial parameters based on simple/unadjusted model
+    print("No initialization supplied for optimization. Starting optimization/model fitting for the unadjusted DHS model")
     initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
     initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
     initAlpha = logit(initRurP)
@@ -309,7 +310,13 @@ fitModelAtResolution = function(res, optRes=NULL) {
     # specify random effects
     rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
     
-    # collect input data
+    # collect input data, setting only first weights as nonzero (to 1)
+    wUrbanDHStemp=intPtsDHS$wUrban
+    wRuralDHStemp=intPtsDHS$wRural
+    wUrbanDHStemp[,1] = 1
+    wRuralDHStemp[,1] = 1
+    wUrbanDHStemp[,-1] = 0
+    wRuralDHStemp[,-1] = 0
     
     data_start = list(
       y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
@@ -320,8 +327,8 @@ fitModelAtResolution = function(res, optRes=NULL) {
       AprojRuralDHS=ARurDHS, # 
       X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
       X_betaRuralDHS=intPtsDHS$covsRur, # 
-      wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
-      wRuralDHS=intPtsDHS$wRural, # 
+      wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
+      wRuralDHS=wRuralDHStemp, # 
       
       Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
       V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
@@ -336,6 +343,7 @@ fitModelAtResolution = function(res, optRes=NULL) {
     )
     
     dyn.load( dynlib("code/modBYM2JitterDHS2"))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
     objStart <- MakeADFun(data=data_start,
                      parameters=tmb_paramsStart,
                      random=rand_effsStart,
@@ -383,6 +391,7 @@ fitModelAtResolution = function(res, optRes=NULL) {
     optStart <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
                   method = c("BFGS"), hessian = FALSE, control=list(reltol=1e-06))
     optParStart = optStart$par
+    print("Optimization/model fitting for the unadjusted DHS model complete")
     
     # now set the initial parameters
     tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
@@ -449,7 +458,6 @@ fitModelAtResolution = function(res, optRes=NULL) {
   }
   
   # * Run TMB ----
-  
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
     tolSeq = 1e-06
