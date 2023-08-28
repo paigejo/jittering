@@ -29,10 +29,14 @@ plotHellingerBernGetQ = function() {
 }
 
 # https://en.wikipedia.org/wiki/Hellinger_distance
-HellingerMVN = function(mu1, Prec1, mu2, Prec2) {
+HellingerMVN = function(mu1, Prec1, mu2, Prec2, eigen1=NULL, eigen2=NULL) {
   # get eigendecompositions of precision matrices
-  eigen1 = eigen(Prec1)
-  eigen2 = eigen(Prec2)
+  if(is.null(eigen1)) {
+    eigen1 = eigen(Prec1)
+  }
+  if(is.null(eigen2)) {
+    eigen2 = eigen(Prec2)
+  }
   
   # convert to eigendecompositions of the covariance matrices
   eigen1$values = 1/eigen1$values
@@ -113,20 +117,27 @@ testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 6
   distFromBest = numeric(length(allRes))
   distFromLast = c(length(allRes)-1)
   bestMu = muMat[,length(allRes)]
-  bestPrec = Precs[length(allRes)]
+  bestPrec = Precs[[length(allRes)]]
   for(i in 1:length(allRes)) {
     thisMu = muMat[,i]
-    thisPrec = Precs[i]
+    thisPrec = Precs[[i]]
     distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec)
     
     if(i > 1) {
       lastMu = muMat[,i-1]
-      lastPrec = Precs[i-1]
+      lastPrec = Precs[[i-1]]
       distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec)
     }
   }
   
   browser()
+  # plot results
+  
+  pdf(file=paste0("figures/integration/HellingerDistTest_", min(allRes), "_", max(allRes), ".pdf"), width=500, height=500)
+  distRange = range(c(distFromBest, distFromLast))
+  plot()
+  dev.off()
+  
 }
 
 fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
