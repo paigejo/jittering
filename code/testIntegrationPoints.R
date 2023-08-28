@@ -69,18 +69,64 @@ HellingerMVN = function(mu1, Prec1, mu2, Prec2) {
 
 testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 600, 700, 800, 900, 1000)) {
   
+  # first get parameter predictions and computation times in hours
   testMat = c()
   for(i in 1:length(allRes)) {
     thisRes = allRes[i]
     
     out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
     thisMeans = rowMeans(gridPreds$fixedMat)
-    testMat = rbind(testMat, thisMeans)
+    testMat = rbind(testMat, c(thisMeans, totalHrs=totalTime/60/60, sdHrs=sdTime/60/60))
   }
   row.names(testMat) = allRes
   
-  browser()
   print(round(testMat, 3))
+  
+  browser()
+  # Now get means and precisions of each posterior
+  muMat = c()
+  Precs = list()
+  for(i in 1:length(allRes)) {
+    thisRes = allRes[i]
+    
+    out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
+    thisMu = summary(SD0)[,1]
+    thisPrec = SD0$jointPrecision
+    
+    # permute mu so that it corresponds correctly to the joint precision
+    muNames = names(thisMu)
+    PrecNames = colnames(thisPrec)
+    # make sure the names come in this order:
+    permI = c(which(muNames == "alpha"), 
+              which(muNames == "beta"), 
+              which(muNames == "log_tau"), 
+              which(muNames == "logit_phi"), 
+              which(muNames == "log_tauEps"))
+    fixedNames = c("log_tau", "logit_phi", "log_tauEps", "alpha", "beta")
+    thisMu[muNames %in% fixedNames] = thisMu[muNames %in% fixedNames][permI]
+    
+    muMat = cbind(muMat, thisMu)
+    Precs = c(Precs, list(thisPrec))
+  }
+  
+  # calculate Hellinger distances
+  distFromBest = numeric(length(allRes))
+  distFromLast = c(length(allRes)-1)
+  bestMu = muMat[,length(allRes)]
+  bestPrec = Precs[length(allRes)]
+  for(i in 1:length(allRes)) {
+    thisMu = muMat[,i]
+    thisPrec = Precs[i]
+    distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec)
+    
+    if(i > 1) {
+      lastMu = muMat[,i-1]
+      lastPrec = Precs[i-1]
+      distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec)
+    }
+  }
+  
+  browser()
 }
 
 fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
