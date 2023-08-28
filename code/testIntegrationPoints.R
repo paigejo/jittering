@@ -28,9 +28,46 @@ plotHellingerBernGetQ = function() {
   plot(hs, ys, main="q", xlab="Hellinger Distance, H(Bern(.5), Bern(q))", ylab="q", type="l")
 }
 
+# https://en.wikipedia.org/wiki/Hellinger_distance
+HellingerMVN = function(mu1, Prec1, mu2, Prec2) {
+  # get eigendecompositions of precision matrices
+  eigen1 = eigen(Prec1)
+  eigen2 = eigen(Prec2)
+  
+  # convert to eigendecompositions of the covariance matrices
+  eigen1$values = 1/eigen1$values
+  eigen2$values = 1/eigen2$values
+  
+  # calculate eigendecomposition of average of covariance matrices
+  Sig1p1 = eigen1$vectors %*% diag(eigen1$values) %*% t(eigen1$vectors) + 
+    eigen2$vectors %*% diag(eigen2$values) %*% t(eigen2$vectors)
+  eigen1p2 = eigen(Sig1p1/2)
+  
+  # calculate log determinants
+  ldet1 = sum(log(eigen1$values))
+  ldet2 = sum(log(eigen2$values))
+  ldet1p2 = sum(log(eigen1p2$values))
+  
+  # calculate log of the determinant term
+  ldetTerm = (1/4) * (ldet1 + ldet2) - (1/2) * ldet1p2
+  
+  # calculate exponential argument
+  muDiff = mu1 - mu2
+  rightHalf = t(eigen1p2$vectors) %*% muDiff
+  expArg = -(1/8) * t(rightHalf) %*% diag(eigen1p2$values) %*% rightHalf
+  
+  # Battacharyya coefficient
+  BC = exp(ldetTerm + expArg)
+  
+  # Hellinger distance
+  d = sqrt(1 - BC)
+  
+  d
+}
+
 # TODO: do we calculate Hellinger distance from samples, or from evaluation of density?
 
-testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
+testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 600, 700, 800, 900, 1000)) {
   
   testMat = c()
   for(i in 1:length(allRes)) {
