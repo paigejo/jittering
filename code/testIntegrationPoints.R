@@ -78,9 +78,10 @@ testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 6
   for(i in 1:length(allRes)) {
     thisRes = allRes[i]
     
+    
     out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
     thisMeans = rowMeans(gridPreds$fixedMat)
-    testMat = rbind(testMat, c(thisMeans, totalHrs=totalTime/60/60, sdHrs=sdTime/60/60))
+    testMat = rbind(testMat, c(thisMeans))
   }
   row.names(testMat) = allRes
   
@@ -90,44 +91,61 @@ testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 6
   # Now get means and precisions of each posterior
   muMat = c()
   Precs = list()
+  totalTimes = c()
+  sdTimes = c()
   for(i in 1:length(allRes)) {
     thisRes = allRes[i]
     
     out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
     thisMu = summary(SD0)[,1]
     thisPrec = SD0$jointPrecision
+    totalTimes[i] = totalTime/60/60
+    sdTimes[i] = sdTime/60/60
     
     # permute mu so that it corresponds correctly to the joint precision
     muNames = names(thisMu)
     PrecNames = colnames(thisPrec)
     # make sure the names come in this order:
-    permI = c(which(muNames == "alpha"), 
-              which(muNames == "beta"), 
-              which(muNames == "log_tau"), 
+    permI = c(which(muNames == "log_tau"), 
               which(muNames == "logit_phi"), 
               which(muNames == "log_tauEps"))
-    fixedNames = c("log_tau", "logit_phi", "log_tauEps", "alpha", "beta")
-    thisMu[muNames %in% fixedNames] = thisMu[muNames %in% fixedNames][permI]
+    fixedNames = c("log_tau", "logit_phi", "log_tauEps")
+    thisMu = thisMu[muNames %in% fixedNames][permI]
+    
+    thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
     
     muMat = cbind(muMat, thisMu)
     Precs = c(Precs, list(thisPrec))
   }
+  
+  # print parameters and time taken
+  print(round(cbind(testMat, totalHrs=totalTimes, sdHrs=sdTimes), 3))
   
   # calculate Hellinger distances
   distFromBest = numeric(length(allRes))
   distFromLast = c(length(allRes)-1)
   bestMu = muMat[,length(allRes)]
   bestPrec = Precs[[length(allRes)]]
+  bestEig = eigen(bestPrec)
   for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
     thisMu = muMat[,i]
     thisPrec = Precs[[i]]
-    distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec)
+    if(i != length(allRes)) {
+      thisEig = eigen(thisPrec)
+    } else {
+      thisEig = bestEig
+    }
+    
+    distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec, eigen1=thisEig, eigen2=bestEig)
     
     if(i > 1) {
       lastMu = muMat[,i-1]
       lastPrec = Precs[[i-1]]
-      distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec)
+      distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec, eigen1=thisEig, eigen2=lastEig)
     }
+    lastEig = thisEig
   }
   
   browser()
@@ -135,7 +153,11 @@ testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 6
   
   pdf(file=paste0("figures/integration/HellingerDistTest_", min(allRes), "_", max(allRes), ".pdf"), width=500, height=500)
   distRange = range(c(distFromBest, distFromLast))
-  plot()
+  plot(allRes, distFromBest, ylim=distRange, main="Hellinger distance vs resolution", 
+       xlab="Number integration points", ylab="Hellinger distance", pch=19, col="black")
+  points(allRes[2:length(allRes)], distFromLast, pch=19, col="blue")
+  abline(h=0, lty=2, col="grey")
+  legend("topright", c("Distance from best", "Distance from last"), pch=19, col=c("black", "blue"))
   dev.off()
   
 }
