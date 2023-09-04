@@ -43,8 +43,8 @@ HellingerMVN = function(mu1, Prec1, mu2, Prec2, eigen1=NULL, eigen2=NULL) {
   eigen2$values = 1/eigen2$values
   
   # calculate eigendecomposition of average of covariance matrices
-  Sig1p1 = eigen1$vectors %*% diag(eigen1$values) %*% t(eigen1$vectors) + 
-    eigen2$vectors %*% diag(eigen2$values) %*% t(eigen2$vectors)
+  Sig1p1 = eigen1$vectors %*% diag(eigen1$values, nrow=length(eigen1$values)) %*% t(eigen1$vectors) + 
+    eigen2$vectors %*% diag(eigen2$values, nrow=length(eigen2$values)) %*% t(eigen2$vectors)
   eigen1p2 = eigen(Sig1p1/2)
   
   # calculate log determinants
@@ -69,95 +69,322 @@ HellingerMVN = function(mu1, Prec1, mu2, Prec2, eigen1=NULL, eigen2=NULL) {
   d
 }
 
+# https://en.wikipedia.org/wiki/Hellinger_distance
+HellingerUniveriate = function(samples1, samples2) {
+  require(kdensity)
+  
+  d1 = kdensity(samples1, start="gaussian", kernel="gaussian")
+  d2 = kdensity(samples2, start="gaussian", kernel="gaussian")
+  
+  # Battacharyya coefficient
+  BC = integrate(function(x) {sqrt(d1(x) * d2(x))}, lower=-Inf, upper=Inf)
+  BC = min(c(max(c(BC$value, 0)), 1)) # make sure BC is in [0, 1]
+  Hdist = sqrt(1 - BC)
+  
+  Hdist
+}
+
 # TODO: do we calculate Hellinger distance from samples, or from evaluation of density?
 
-testResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300, 400, 500, 600, 700, 800, 900, 1000)) {
+# nSamples: if NULL, use presaved prediction samples. Otherwise, a number 
+#     specifying the number of samples to take
+testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
+                         nSamples=NULL) {
   
-  # first get parameter predictions and computation times in hours
-  testMat = c()
-  for(i in 1:length(allRes)) {
-    thisRes = allRes[i]
-    
-    
-    out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
-    thisMeans = rowMeans(gridPreds$fixedMat)
-    testMat = rbind(testMat, c(thisMeans))
+  # # first get parameter predictions and computation times in hours
+  # testMat = c()
+  # for(i in 1:length(allRes)) {
+  #   thisRes = allRes[i]
+  #   
+  #   
+  #   out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
+  #   thisMeans = rowMeans(gridPreds$fixedMat)
+  #   testMat = rbind(testMat, c(thisMeans))
+  # }
+  # row.names(testMat) = allRes
+  # 
+  # print(round(testMat, 3))
+  # 
+  # browser()
+  # 
+  # # Now get means and precisions of each posterior
+  # muMat = c()
+  # Precs = list()
+  # totalTimes = c()
+  # sdTimes = c()
+  # for(i in 1:length(allRes)) {
+  #   thisRes = allRes[i]
+  #   
+  #   out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
+  #   thisMu = summary(SD0)[,1]
+  #   thisPrec = SD0$jointPrecision
+  #   totalTimes[i] = totalTime/60/60
+  #   sdTimes[i] = sdTime/60/60
+  #   
+  #   # permute mu so that it corresponds correctly to the joint precision
+  #   muNames = names(thisMu)
+  #   PrecNames = colnames(thisPrec)
+  #   # make sure the names come in this order:
+  #   permI = c(which(muNames == "log_tau"), 
+  #             which(muNames == "logit_phi"), 
+  #             which(muNames == "log_tauEps"))
+  #   fixedNames = c("log_tau", "logit_phi", "log_tauEps")
+  #   thisMu = thisMu[muNames %in% fixedNames][permI]
+  #   
+  #   thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
+  #   
+  #   muMat = cbind(muMat, thisMu)
+  #   Precs = c(Precs, list(thisPrec))
+  # }
+  # 
+  # # print parameters and time taken
+  # print(round(cbind(testMat, totalHrs=totalTimes, sdHrs=sdTimes), 3))
+  # 
+  # # D2
+  # out = load("savedOutput/ed/fit_D2.RData")
+  # thisMu = summary(SD0)[,1]
+  # thisPrec = SD0$jointPrecision
+  # 
+  # # calculate Hellinger distances
+  # distFromBest = numeric(length(allRes))
+  # distFromLast = c(length(allRes)-1)
+  # bestMu = muMat[,length(allRes)]
+  # bestPrec = Precs[[length(allRes)]]
+  # bestEig = eigen(bestPrec)
+  # for(i in 1:length(allRes)) {
+  #   print(paste0("i: ", i, "/", length(allRes)))
+  #   
+  #   thisMu = muMat[,i]
+  #   thisPrec = Precs[[i]]
+  #   if(i != length(allRes)) {
+  #     thisEig = eigen(thisPrec)
+  #   } else {
+  #     thisEig = bestEig
+  #   }
+  #   
+  #   distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec, eigen1=thisEig, eigen2=bestEig)
+  #   
+  #   if(i > 1) {
+  #     lastMu = muMat[,i-1]
+  #     lastPrec = Precs[[i-1]]
+  #     distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec, eigen1=thisEig, eigen2=lastEig)
+  #   }
+  #   lastEig = thisEig
+  # }
+  # 
+  # # calculate Hellinger distance matrix
+  # distMat = matrix(nrow=length(allRes), ncol=length(allRes))
+  # for(i in 1:length(allRes)) {
+  #   print(paste0("i: ", i, "/", length(allRes)))
+  #   
+  #   thisMui = muMat[,i]
+  #   thisPreci = Precs[[i]]
+  #   thisEigi = eigen(thisPreci)
+  #   
+  #   for(j in 1:length(allRes)) {
+  #     thisMuj = muMat[,j]
+  #     thisPrecj = Precs[[j]]
+  #     thisEigj = eigen(thisPrecj)
+  #     
+  #     if(i != j) {
+  #       distMat[i, j] = HellingerMVN(thisMui, thisPreci, thisMuj, thisPrecj, eigen1=thisEigi, eigen2=thisEigj)
+  #     } else {
+  #       distMat[i, j] = 0
+  #     }
+  #     
+  #   }
+  # }
+  # 
+  # colnames(distMat) = allRes
+  # row.names(distMat) = allRes
+  # print(round(distMat, 3))
+  # 
+  # # plot results
+  # 
+  # pdf(file=paste0("figures/integration/HellingerDistTest_", min(allRes), "_", max(allRes), ".pdf"), width=5, height=5)
+  # distRange = range(c(distFromBest, distFromLast))
+  # plot(allRes, distFromBest, ylim=distRange, main="Hellinger distance vs resolution", 
+  #      xlab="Number integration points", ylab="Hellinger distance", pch=19, col="black")
+  # points(allRes[2:length(allRes)], distFromLast, pch=19, col="blue")
+  # abline(h=0, lty=2, col="grey")
+  # legend("right", c("Distance from best", "Distance from last"), pch=19, col=c("black", "blue"))
+  # dev.off()
+  # 
+  # pdf(file=paste0("figures/integration/HellingerDistMat_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  # image.plot(list(x=allRes, y=allRes, z=distMat), main="Hellinger distance vs resolution", 
+  #            xlab="Number integration points", ylab="Number integration points", asp=1)
+  # dev.off()
+  
+  # resample if necessary ----
+  if(!is.null(nSamples)) {
+    for(i in 1:length(allRes)) {
+      print(paste0("i: ", i, "/", length(allRes)))
+      
+      resI = allRes[i]
+      out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+      
+      thisN = ncol(admin1Preds$aggregationResults$p)
+      
+      if(thisN != nSamples) {
+        out = load(paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+        
+        gridPreds = predGrid(SD0, admLevel="adm2", nsim=nSamples)
+        save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
+        out = load(paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
+        
+        stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+        admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+        admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+        save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
+        save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
+        save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
+      }
+    }
   }
-  row.names(testMat) = allRes
   
-  print(round(testMat, 3))
   
-  browser()
-  # Now get means and precisions of each posterior
-  muMat = c()
-  Precs = list()
-  totalTimes = c()
-  sdTimes = c()
-  for(i in 1:length(allRes)) {
-    thisRes = allRes[i]
-    
-    out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
-    thisMu = summary(SD0)[,1]
-    thisPrec = SD0$jointPrecision
-    totalTimes[i] = totalTime/60/60
-    sdTimes[i] = sdTime/60/60
-    
-    # permute mu so that it corresponds correctly to the joint precision
-    muNames = names(thisMu)
-    PrecNames = colnames(thisPrec)
-    # make sure the names come in this order:
-    permI = c(which(muNames == "log_tau"), 
-              which(muNames == "logit_phi"), 
-              which(muNames == "log_tauEps"))
-    fixedNames = c("log_tau", "logit_phi", "log_tauEps")
-    thisMu = thisMu[muNames %in% fixedNames][permI]
-    
-    thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
-    
-    muMat = cbind(muMat, thisMu)
-    Precs = c(Precs, list(thisPrec))
-  }
-  
-  # print parameters and time taken
-  print(round(cbind(testMat, totalHrs=totalTimes, sdHrs=sdTimes), 3))
-  
-  # calculate Hellinger distances
-  distFromBest = numeric(length(allRes))
-  distFromLast = c(length(allRes)-1)
-  bestMu = muMat[,length(allRes)]
-  bestPrec = Precs[[length(allRes)]]
-  bestEig = eigen(bestPrec)
+  # adm1 ----
+  # calculate Hellinger distance matrix (predictive admin1)
+  distMatAdm1Avg = matrix(nrow=length(allRes), ncol=length(allRes))
+  distMatAdm1Max = matrix(nrow=length(allRes), ncol=length(allRes))
+  distMatAdm190 = matrix(nrow=length(allRes), ncol=length(allRes))
   for(i in 1:length(allRes)) {
     print(paste0("i: ", i, "/", length(allRes)))
     
-    thisMu = muMat[,i]
-    thisPrec = Precs[[i]]
-    if(i != length(allRes)) {
-      thisEig = eigen(thisPrec)
-    } else {
-      thisEig = bestEig
-    }
+    resI = allRes[i]
+    out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
     
-    distFromBest[i] = HellingerMVN(thisMu, thisPrec, bestMu, bestPrec, eigen1=thisEig, eigen2=bestEig)
+    samplesI = admin1Preds$aggregationResults$p
     
-    if(i > 1) {
-      lastMu = muMat[,i-1]
-      lastPrec = Precs[[i-1]]
-      distFromLast[i-1] = HellingerMVN(thisMu, thisPrec, lastMu, lastPrec, eigen1=thisEig, eigen2=lastEig)
+    for(j in 1:i) {
+      resJ = allRes[j]
+      
+      if(i != j) {
+        out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resJ, "_adm2Cov.RData"))
+        
+        samplesJ = admin1Preds$aggregationResults$p
+        
+        nAreas = nrow(samplesI)
+        dists = numeric(nAreas)
+        for(k in 1:nAreas) {
+          dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+        }
+        distMatAdm1Avg[i, j] = mean(dists)
+        distMatAdm1Max[i, j] = max(dists)
+        distMatAdm190[i, j] = quantile(prob=.9, dists)
+      } else {
+        distMatAdm1Avg[i, j] = 0
+        distMatAdm1Max[i, j] = 0
+        distMatAdm190[i, j] = 0
+      }
     }
-    lastEig = thisEig
+  }
+  for(i in 1:(length(allRes)-1)) {
+    for(j in (i+1):length(allRes)) {
+      distMatAdm1Avg[i, j] = distMatAdm1Avg[j,i]
+      distMatAdm1Max[i, j] = distMatAdm1Max[j,i]
+      distMatAdm190[i, j] = distMatAdm190[j,i]
+    }
   }
   
-  browser()
-  # plot results
+  colnames(distMatAdm1Avg) = allRes
+  row.names(distMatAdm1Avg) = allRes
+  colnames(distMatAdm1Max) = allRes
+  row.names(distMatAdm1Max) = allRes
+  colnames(distMatAdm190) = allRes
+  row.names(distMatAdm190) = allRes
+  print(round(distMatAdm1Avg, 3))
+  print(round(distMatAdm1Max, 3))
+  print(round(distMatAdm190, 3))
   
-  pdf(file=paste0("figures/integration/HellingerDistTest_", min(allRes), "_", max(allRes), ".pdf"), width=500, height=500)
-  distRange = range(c(distFromBest, distFromLast))
-  plot(allRes, distFromBest, ylim=distRange, main="Hellinger distance vs resolution", 
-       xlab="Number integration points", ylab="Hellinger distance", pch=19, col="black")
-  points(allRes[2:length(allRes)], distFromLast, pch=19, col="blue")
-  abline(h=0, lty=2, col="grey")
-  legend("topright", c("Distance from best", "Distance from last"), pch=19, col=c("black", "blue"))
+  # plot results
+  browser()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm1Avg_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm1Avg), main="Hellinger distance vs resolution (Adm1 Avg)", 
+       xlab="Number integration points", ylab="Number integration points", asp=1)
+  dev.off()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm1Max_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm1Max), main="Hellinger distance vs resolution (Adm1 Max)", 
+             xlab="Number integration points", ylab="Number integration points", asp=1)
+  dev.off()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm1Q90_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm190), main="Hellinger distance vs resolution (Adm1 Q90)", 
+             xlab="Number integration points", ylab="Number integration points", asp=1)
+  dev.off()
+  
+  # adm2 ----
+  # calculate Hellinger distance matrix (predictive admin2)
+  distMatAdm2Avg = matrix(nrow=length(allRes), ncol=length(allRes))
+  distMatAdm2Max = matrix(nrow=length(allRes), ncol=length(allRes))
+  distMatAdm290 = matrix(nrow=length(allRes), ncol=length(allRes))
+  for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
+    resI = allRes[i]
+    out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+    
+    samplesI = admin2Preds$aggregationResults$p
+    
+    for(j in 1:i) {
+      resJ = allRes[j]
+      
+      if(i != j) {
+        out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", resJ, "_adm2Cov.RData"))
+        
+        samplesJ = admin2Preds$aggregationResults$p
+        
+        nAreas = nrow(samplesI)
+        dists = numeric(nAreas)
+        for(k in 1:nAreas) {
+          dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+        }
+        distMatAdm2Avg[i, j] = mean(dists)
+        distMatAdm2Max[i, j] = max(dists)
+        distMatAdm290[i, j] = quantile(prob=.9, dists)
+      } else {
+        distMatAdm2Avg[i, j] = 0
+        distMatAdm2Max[i, j] = 0
+        distMatAdm290[i, j] = 0
+      }
+    }
+  }
+  for(i in 1:(length(allRes)-1)) {
+    for(j in (i+1):length(allRes)) {
+      distMatAdm2Avg[i, j] = distMatAdm2Avg[j,i]
+      distMatAdm2Max[i, j] = distMatAdm2Max[j,i]
+      distMatAdm290[i, j] = distMatAdm290[j,i]
+    }
+  }
+  
+  colnames(distMatAdm2Avg) = allRes
+  row.names(distMatAdm2Avg) = allRes
+  colnames(distMatAdm2Max) = allRes
+  row.names(distMatAdm2Max) = allRes
+  colnames(distMatAdm290) = allRes
+  row.names(distMatAdm290) = allRes
+  print(round(distMatAdm2Avg, 3))
+  print(round(distMatAdm2Max, 3))
+  print(round(distMatAdm290, 3))
+  
+  # plot results
+  browser()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm2Avg_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm2Avg), main="Hellinger distance vs resolution (Adm2 Avg)", 
+             xlab="Number integration points", ylab="Number integration points", asp=1)
+  dev.off()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm2Max_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm2Max), main="Hellinger distance vs resolution (Adm2 Max)", 
+             xlab="Number integration points", ylab="Number integration points", asp=1)
+  dev.off()
+  
+  pdf(file=paste0("figures/integration/HellingerDistMatAdm2Q90_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
+  image.plot(list(x=allRes, y=allRes, z=distMatAdm290), main="Hellinger distance vs resolution (Adm2 Q90)", 
+             xlab="Number integration points", ylab="Number integration points", asp=1)
   dev.off()
   
 }
