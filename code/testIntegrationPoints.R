@@ -229,8 +229,8 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
         out = load(paste0("savedOutput/ed/fit2_", resI, "_adm2Cov.RData"))
         
         gridPreds = predGrid(SD0, admLevel="adm2", nsim=nSamples)
-        save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
-        out = load(paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
+        # save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
+        # out = load(paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
         
         stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
         admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
