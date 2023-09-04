@@ -727,10 +727,11 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
     }
     else {
       browser()
-      probDraws = logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
-                                             gridDraws_tmb), logisticApprox=FALSE, 
-                                       splineApprox=splineApprox)
-      # probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb))
+      probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
+                                              gridDraws_tmb), logisticApprox=FALSE, 
+                                        splineApprox=splineApprox)
+      # logitNormMeanGrouped is muuuuuuch faster than:
+      # system.time(probDraws <- matrix(logitNormMean(cbind(c(gridDraws_tmb[,1:500]), rep(sqrt(sigmaEpsSq_tmb_draws[1:500]), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb)))
       
       if(FALSE) {
         # test spline approximation timing and accuracy versus regular
