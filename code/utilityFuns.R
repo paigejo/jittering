@@ -1194,6 +1194,37 @@ logitNormMean = function(muSigmaMat, parClust=NULL, logisticApproximation=TRUE, 
   }
 }
 
+# Similar to logitNormMean, except assumes one sigma at the top of each column
+# of muSigmaMat
+logitNormMeanGrouped = function(muSigmaMat, logisticApproximation=TRUE, splineApproximation=FALSE, parClust=NULL, ...) {
+  if(is.matrix(muSigmaMat) && ncol(muSigmaMat) > 1) {
+    if(is.null(parClust)) {
+      apply(muSigmaMat, 2, logitNormMeanGrouped, 
+            logisticApproximation=logisticApproximation, 
+            splineApproximation=splineApproximation, ...)
+    } else {
+      parApply(parClust, muSigmaMat, 2, logitNormMeanGrouped, 
+               logisticApproximation=logisticApproximation, 
+               splineApproximation=splineApproximation, ...)
+    }
+  } else {
+    sigma = muSigmaMat[1]
+    mus = muSigmaMat[-1]
+    
+    if(is.na(sigma)) {
+      rep(NA, length(mus))
+    } else if(sigma == 0) {
+      expit(mus)
+    } else if (splineApproximation) {
+      logitNormMeanSplineApprox(mus, sigma, ...)$vals
+    } else {
+      logitNormMean(muSigmaMat=cbind(mus, sigma), parClust=parClust, 
+                    logisticApproximation=logisticApproximation, 
+                    splineApproximation=splineApproximation, ...)
+    }
+  }
+}
+
 # Approximates logitNormMean at a single value of sigma and many mus using spline 
 # on a logit scale. npts determines number of values of mu in the range of mu 
 # over which the monotonic spline function is generated.

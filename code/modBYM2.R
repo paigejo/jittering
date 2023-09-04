@@ -726,7 +726,11 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
       probDraws = expit(gridDraws_tmb)
     }
     else {
-      probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb))
+      browser()
+      probDraws = logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
+                                             gridDraws_tmb), logisticApprox=FALSE, 
+                                       splineApprox=splineApprox)
+      # probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb))
       
       if(FALSE) {
         # test spline approximation timing and accuracy versus regular
