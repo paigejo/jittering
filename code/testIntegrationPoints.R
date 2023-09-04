@@ -226,18 +226,18 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
       thisN = ncol(admin1Preds$aggregationResults$p)
       
       if(thisN != nSamples) {
-        out = load(paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+        out = load(paste0("savedOutput/ed/fit2_", resI, "_adm2Cov.RData"))
         
         gridPreds = predGrid(SD0, admLevel="adm2", nsim=nSamples)
-        save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
-        out = load(paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
+        save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
+        out = load(paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
         
         stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
         admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
         admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-        save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
-        save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
-        save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
+        save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", resI, "_adm2Cov.RData"))
+        save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+        save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", resI, "_adm2Cov.RData"))
       }
     }
   }
