@@ -726,7 +726,6 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
       probDraws = expit(gridDraws_tmb)
     }
     else {
-      browser()
       probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
                                               gridDraws_tmb), logisticApprox=FALSE, 
                                         splineApprox=splineApprox)
