@@ -71,6 +71,10 @@ HellingerMVN = function(mu1, Prec1, mu2, Prec2, eigen1=NULL, eigen2=NULL) {
 
 # https://en.wikipedia.org/wiki/Hellinger_distance
 HellingerUniveriate = function(samples1, samples2) {
+  if(any(is.na(c(samples1, samples2)))) {
+    warning("some samples are NA, returning NA Hellinger distance")
+    return(NA)
+  }
   require(kdensity)
   
   d1 = kdensity(samples1, start="gaussian", kernel="gaussian")
@@ -339,11 +343,12 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
         nAreas = nrow(samplesI)
         dists = numeric(nAreas)
         for(k in 1:nAreas) {
+          
           dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
         }
-        distMatAdm2Avg[i, j] = mean(dists)
-        distMatAdm2Max[i, j] = max(dists)
-        distMatAdm290[i, j] = quantile(prob=.9, dists)
+        distMatAdm2Avg[i, j] = mean(dists, na.rm=TRUE)
+        distMatAdm2Max[i, j] = max(dists, na.rm=TRUE)
+        distMatAdm290[i, j] = quantile(prob=.9, dists, na.rm=TRUE)
       } else {
         distMatAdm2Avg[i, j] = 0
         distMatAdm2Max[i, j] = 0
