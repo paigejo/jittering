@@ -96,53 +96,53 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
                          nSamples=NULL, saveGridPreds=FALSE) {
   
   # first get parameter predictions and computation times in hours
-  # testMat = c()
-  # for(i in 4:length(allRes)) {
-  #   thisRes = allRes[i]
-  # 
-  # 
-  #   out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
-  #   thisMeans = rowMeans(gridPreds$fixedMat)
-  #   testMat = rbind(testMat, c(thisMeans))
-  # }
-  # row.names(testMat) = allRes[4:length(allRes)]
-  # 
-  # print(round(testMat, 3))
-  # # 
-  # # browser()
-  # # 
-  # # Now get means and precisions of each posterior
-  # muMat = c()
-  # Precs = list()
-  # totalTimes = c()
-  # sdTimes = c()
-  # for(i in 1:length(allRes)) {
-  #   thisRes = allRes[i]
-  # 
-  #   out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
-  #   thisMu = summary(SD0)[,1]
-  #   thisPrec = SD0$jointPrecision
-  #   totalTimes[i] = totalTime/60/60
-  #   sdTimes[i] = sdTime/60/60
-  # 
-  #   # permute mu so that it corresponds correctly to the joint precision
-  #   muNames = names(thisMu)
-  #   PrecNames = colnames(thisPrec)
-  #   # make sure the names come in this order:
-  #   permI = c(which(muNames == "log_tau"),
-  #             which(muNames == "logit_phi"),
-  #             which(muNames == "log_tauEps"))
-  #   fixedNames = c("log_tau", "logit_phi", "log_tauEps")
-  #   thisMu = thisMu[muNames %in% fixedNames][permI]
-  # 
-  #   thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
-  # 
-  #   muMat = cbind(muMat, thisMu)
-  #   Precs = c(Precs, list(thisPrec))
-  # }
-  # 
-  # # print parameters and time taken
-  # print(round(cbind(testMat, totalHrs=totalTimes, sdHrs=sdTimes), 3))
+  testMat = c()
+  for(i in 4:length(allRes)) {
+    thisRes = allRes[i]
+
+
+    out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
+    thisMeans = rowMeans(gridPreds$fixedMat)
+    testMat = rbind(testMat, c(thisMeans))
+  }
+  row.names(testMat) = allRes[4:length(allRes)]
+
+  print(round(testMat, 3))
+  #
+  # browser()
+  #
+  # Now get means and precisions of each posterior
+  muMat = c()
+  Precs = list()
+  totalTimes = c()
+  sdTimes = c()
+  for(i in 1:length(allRes)) {
+    thisRes = allRes[i]
+
+    out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
+    thisMu = summary(SD0)[,1]
+    thisPrec = SD0$jointPrecision
+    totalTimes[i] = totalTime/60/60
+    sdTimes[i] = sdTime/60/60
+
+    # permute mu so that it corresponds correctly to the joint precision
+    muNames = names(thisMu)
+    PrecNames = colnames(thisPrec)
+    # make sure the names come in this order:
+    permI = c(which(muNames == "log_tau"),
+              which(muNames == "logit_phi"),
+              which(muNames == "log_tauEps"))
+    fixedNames = c("log_tau", "logit_phi", "log_tauEps")
+    thisMu = thisMu[muNames %in% fixedNames][permI]
+
+    thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
+
+    muMat = cbind(muMat, thisMu)
+    Precs = c(Precs, list(thisPrec))
+  }
+
+  # print parameters and time taken
+  print(round(cbind(testMat, totalHrs=totalTimes, sdHrs=sdTimes), 3))
   # 
   # # D2
   # out = load("savedOutput/ed/fit_D2.RData")
