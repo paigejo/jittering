@@ -93,24 +93,24 @@ HellingerUniveriate = function(samples1, samples2) {
 # nSamples: if NULL, use presaved prediction samples. Otherwise, a number 
 #     specifying the number of samples to take
 testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
-                         nSamples=NULL) {
+                         nSamples=NULL, saveGridPreds=FALSE) {
   
-  # # first get parameter predictions and computation times in hours
+  # first get parameter predictions and computation times in hours
   # testMat = c()
-  # for(i in 1:length(allRes)) {
+  # for(i in 4:length(allRes)) {
   #   thisRes = allRes[i]
-  #   
-  #   
+  # 
+  # 
   #   out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
   #   thisMeans = rowMeans(gridPreds$fixedMat)
   #   testMat = rbind(testMat, c(thisMeans))
   # }
-  # row.names(testMat) = allRes
+  # row.names(testMat) = allRes[4:length(allRes)]
   # 
   # print(round(testMat, 3))
-  # 
-  # browser()
-  # 
+  # # 
+  # # browser()
+  # # 
   # # Now get means and precisions of each posterior
   # muMat = c()
   # Precs = list()
@@ -118,25 +118,25 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   # sdTimes = c()
   # for(i in 1:length(allRes)) {
   #   thisRes = allRes[i]
-  #   
+  # 
   #   out = load(paste0("savedOutput/ed/fit2_", thisRes, "_adm2Cov.RData"))
   #   thisMu = summary(SD0)[,1]
   #   thisPrec = SD0$jointPrecision
   #   totalTimes[i] = totalTime/60/60
   #   sdTimes[i] = sdTime/60/60
-  #   
+  # 
   #   # permute mu so that it corresponds correctly to the joint precision
   #   muNames = names(thisMu)
   #   PrecNames = colnames(thisPrec)
   #   # make sure the names come in this order:
-  #   permI = c(which(muNames == "log_tau"), 
-  #             which(muNames == "logit_phi"), 
+  #   permI = c(which(muNames == "log_tau"),
+  #             which(muNames == "logit_phi"),
   #             which(muNames == "log_tauEps"))
   #   fixedNames = c("log_tau", "logit_phi", "log_tauEps")
   #   thisMu = thisMu[muNames %in% fixedNames][permI]
-  #   
+  # 
   #   thisPrec = thisPrec[PrecNames %in% fixedNames, PrecNames %in% fixedNames]
-  #   
+  # 
   #   muMat = cbind(muMat, thisMu)
   #   Precs = c(Precs, list(thisPrec))
   # }
@@ -233,8 +233,9 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
         out = load(paste0("savedOutput/ed/fit2_", resI, "_adm2Cov.RData"))
         
         gridPreds = predGrid(SD0, admLevel="adm2", nsim=nSamples)
-        # save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
-        # out = load(paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
+        if(saveGridPreds) {
+          save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", resI, "_adm2Cov.RData"))
+        }
         
         stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
         admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
@@ -306,7 +307,7 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   
   pdf(file=paste0("figures/integration/HellingerDistMatAdm1Avg_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
   image.plot(list(x=allRes, y=allRes, z=distMatAdm1Avg), main="Hellinger distance vs resolution (Adm1 Avg)", 
-       xlab="Number integration points", ylab="Number integration points", asp=1)
+             xlab="Number integration points", ylab="Number integration points", asp=1)
   dev.off()
   
   pdf(file=paste0("figures/integration/HellingerDistMatAdm1Max_", min(allRes), "_", max(allRes), ".pdf"), width=5.25, height=5)
@@ -410,7 +411,8 @@ fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
 
 # allRes=c(100, 125, 150, 175, 200, 225, 300)
 # fitModelAtResolution(125, 300)
-fitModelAtResolution = function(res, optRes=NULL) {
+# fitModel: if FALSE, loads the already fitted model
+fitModelAtResolution = function(res, optRes=NULL, fitModel=TRUE) {
   # script for women's secondary education in Nigeria application
   
   # load datasets ----
@@ -622,84 +624,159 @@ fitModelAtResolution = function(res, optRes=NULL) {
     }
   }
   
-  if(!is.null(optRes)) {
-    # set initial parameters based on simple model
-    out = load(paste0("savedOutput/ed/fit2_", optRes, "_adm2Cov.RData"))
-    
-    tmb_params <- list(alpha = SD0$par.random[grepl("alpha", names(SD0$par.random))], # intercept
-                       beta = SD0$par.random[grepl("beta", names(SD0$par.random))], 
-                       log_tau = SD0$par.fixed[which(names(SD0$par.fixed) == "log_tau")], # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = SD0$par.fixed[grepl("phi", names(SD0$par.fixed))], # SPDE parameter related to the range
-                       log_tauEps = SD0$par.fixed[grepl("tauEps", names(SD0$par.fixed))], # Log tau (i.e. log spatial precision, Epsilon)
-                       Epsilon_bym2 = SD0$par.random[grepl("Epsilon", names(SD0$par.random))], # RE on mesh vertices
-                       nuggetUrbMICS = SD0$par.random[grepl("nuggetUrbMICS", names(SD0$par.random))], 
-                       nuggetRurMICS = SD0$par.random[grepl("nuggetRurMICS", names(SD0$par.random))], 
-                       nuggetUrbDHS = SD0$par.random[grepl("nuggetUrbDHS", names(SD0$par.random))], 
-                       nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
-    )
-  } else {
-    # set initial parameters based on simple/unadjusted model
-    print("No initialization supplied for optimization. Starting optimization/model fitting for the unadjusted DHS model")
-    initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-    initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
-    initAlpha = logit(initRurP)
-    initBeta1 = logit(initUrbP) - initAlpha
-    
-    tmb_paramsStart <- list(alpha = initAlpha, # intercept
-                       beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
-                       log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = 0, # SPDE parameter related to the range
-                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-    )
-    
-    # specify random effects
-    rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
-    
-    # collect input data, setting only first weights as nonzero (to 1)
-    wUrbanDHStemp=intPtsDHS$wUrban
-    wRuralDHStemp=intPtsDHS$wRural
-    wUrbanDHStemp[,1] = 1
-    wRuralDHStemp[,1] = 1
-    wUrbanDHStemp[,-1] = 0
-    wRuralDHStemp[,-1] = 0
-    
-    data_start = list(
-      y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
-      y_iRuralDHS=ysRurDHS, # 
-      n_iUrbanDHS=nsUrbDHS, # number binomial trials
-      n_iRuralDHS=nsRurDHS, # 
-      AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-      AprojRuralDHS=ARurDHS, # 
-      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
-      X_betaRuralDHS=intPtsDHS$covsRur, # 
-      wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-      wRuralDHS=wRuralDHStemp, # 
+  if(fitModel == TRUE) {
+    if(!is.null(optRes)) {
+      # set initial parameters based on simple model
+      out = load(paste0("savedOutput/ed/fit2_", optRes, "_adm2Cov.RData"))
       
-      Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
-      V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
-      alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
-      beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
-      tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
-      gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
-      lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
-      lambdaTau=lambdaTau, # determines PC prior for tau
-      lambdaTauEps=lambdaTauEps, 
-      options=0 # 1 for adreport of log tau and logit phi
-    )
+      tmb_params <- list(alpha = SD0$par.random[grepl("alpha", names(SD0$par.random))], # intercept
+                         beta = SD0$par.random[grepl("beta", names(SD0$par.random))], 
+                         log_tau = SD0$par.fixed[which(names(SD0$par.fixed) == "log_tau")], # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = SD0$par.fixed[grepl("phi", names(SD0$par.fixed))], # SPDE parameter related to the range
+                         log_tauEps = SD0$par.fixed[grepl("tauEps", names(SD0$par.fixed))], # Log tau (i.e. log spatial precision, Epsilon)
+                         Epsilon_bym2 = SD0$par.random[grepl("Epsilon", names(SD0$par.random))], # RE on mesh vertices
+                         nuggetUrbMICS = SD0$par.random[grepl("nuggetUrbMICS", names(SD0$par.random))], 
+                         nuggetRurMICS = SD0$par.random[grepl("nuggetRurMICS", names(SD0$par.random))], 
+                         nuggetUrbDHS = SD0$par.random[grepl("nuggetUrbDHS", names(SD0$par.random))], 
+                         nuggetRurDHS = SD0$par.random[grepl("nuggetRurDHS", names(SD0$par.random))]
+      )
+    } else {
+      # set initial parameters based on simple/unadjusted model
+      print("No initialization supplied for optimization. Starting optimization/model fitting for the unadjusted DHS model")
+      initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+      initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+      initAlpha = logit(initRurP)
+      initBeta1 = logit(initUrbP) - initAlpha
+      
+      tmb_paramsStart <- list(alpha = initAlpha, # intercept
+                              beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                              log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                              logit_phi = 0, # SPDE parameter related to the range
+                              log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                              Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                              nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                              nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+      )
+      
+      # specify random effects
+      rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+      
+      # collect input data, setting only first weights as nonzero (to 1)
+      wUrbanDHStemp=intPtsDHS$wUrban
+      wRuralDHStemp=intPtsDHS$wRural
+      wUrbanDHStemp[,1] = 1
+      wRuralDHStemp[,1] = 1
+      wUrbanDHStemp[,-1] = 0
+      wRuralDHStemp[,-1] = 0
+      
+      data_start = list(
+        y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
+        y_iRuralDHS=ysRurDHS, # 
+        n_iUrbanDHS=nsUrbDHS, # number binomial trials
+        n_iRuralDHS=nsRurDHS, # 
+        AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+        AprojRuralDHS=ARurDHS, # 
+        X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+        X_betaRuralDHS=intPtsDHS$covsRur, # 
+        wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
+        wRuralDHS=wRuralDHStemp, # 
+        
+        Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
+        V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+        alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
+        beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
+        tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
+        gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
+        lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
+        lambdaTau=lambdaTau, # determines PC prior for tau
+        lambdaTauEps=lambdaTauEps, 
+        options=0 # 1 for adreport of log tau and logit phi
+      )
+      
+      dyn.load( dynlib("code/modBYM2JitterDHS2"))
+      TMB::config(tmbad.sparse_hessian_compress = 1)
+      objStart <- MakeADFun(data=data_start,
+                            parameters=tmb_paramsStart,
+                            random=rand_effsStart,
+                            hessian=TRUE,
+                            DLL='modBYM2JitterDHS2')
+      
+      lower = rep(-10, length(objStart[['par']]))
+      upper = rep( 10, length(objStart[['par']]))
+      
+      # make wrapper functions that print out parameters and function values
+      funWrapper = function(par, badParVal=1e10) {
+        if(any(par < lower) || any(par > upper)) {
+          return(badParVal)
+        }
+        print(par)
+        objVal = testObj[['fn']](par)
+        parNames = names(par)
+        parVals = par
+        parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+        parStr = paste(parStrs, collapse=", ")
+        print(paste0("objective: ", objVal, " for parameters, ", parStr))
+        objVal
+      }
+      
+      grWrapper = function(par, badParVal=1e10) {
+        if(any(par < lower) || any(par > upper)) {
+          return(rep(badParVal, length(par)))
+        }
+        print(par)
+        grVal = testObj[['gr']](par)
+        parNames = names(par)
+        parVals = par
+        parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+        parStr = paste(parStrs, collapse=", ")
+        grStr = paste(grVal, collapse=", ")
+        print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+        grVal
+      }
+      
+      testObj = objStart
+      optPar = testObj$par
+      testObj = objStart
+      testObj$env$inner.control = list(maxit=1000, tol10=1e-06)
+      testObj$env$tracepar = TRUE
+      optStart <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                        method = c("BFGS"), hessian = FALSE, control=list(reltol=1e-06))
+      optParStart = optStart$par
+      print("Optimization/model fitting for the unadjusted DHS model complete")
+      
+      # now set the initial parameters
+      tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
+                         beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
+                         log_tau = testObj$env$last.par[names(testObj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = testObj$env$last.par[grepl("logit_phi", names(testObj$env$last.par))], # SPDE parameter related to the range
+                         log_tauEps = testObj$env$last.par[grepl("log_tauEps", names(testObj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                         Epsilon_bym2 = testObj$env$last.par[grepl("Epsilon_bym2", names(testObj$env$last.par))], # RE on mesh vertices
+                         nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                         nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                         nuggetUrbDHS = testObj$env$last.par[grepl("nuggetUrbDHS", names(testObj$env$last.par))], 
+                         nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
+      )
+      
+      dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+    }
     
-    dyn.load( dynlib("code/modBYM2JitterDHS2"))
+    
+    # make TMB fun and grad ----
+    # dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
+    dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
     TMB::config(tmbad.sparse_hessian_compress = 1)
-    objStart <- MakeADFun(data=data_start,
-                     parameters=tmb_paramsStart,
-                     random=rand_effsStart,
+    obj <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     random=rand_effs,
                      hessian=TRUE,
-                     DLL='modBYM2JitterDHS2')
+                     DLL='modBYM2JitterFusionNugget2')
+    # objFull <- MakeADFun(data=data_full,
+    #                      parameters=tmb_params,
+    #                      hessian=TRUE,
+    #                      DLL='modBYM2JitterFusionNugget2')
     
-    lower = rep(-10, length(objStart[['par']]))
-    upper = rep( 10, length(objStart[['par']]))
+    lower = rep(-10, length(obj[['par']]))
+    upper = rep( 10, length(obj[['par']]))
     
     # make wrapper functions that print out parameters and function values
     funWrapper = function(par, badParVal=1e10) {
@@ -731,171 +808,98 @@ fitModelAtResolution = function(res, optRes=NULL) {
       grVal
     }
     
-    testObj = objStart
-    optPar = testObj$par
-    testObj = objStart
-    testObj$env$inner.control = list(maxit=1000, tol10=1e-06)
-    testObj$env$tracepar = TRUE
-    optStart <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
-                  method = c("BFGS"), hessian = FALSE, control=list(reltol=1e-06))
-    optParStart = optStart$par
-    print("Optimization/model fitting for the unadjusted DHS model complete")
-    
-    # now set the initial parameters
-    tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
-                       beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
-                       log_tau = testObj$env$last.par[names(testObj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = testObj$env$last.par[grepl("logit_phi", names(testObj$env$last.par))], # SPDE parameter related to the range
-                       log_tauEps = testObj$env$last.par[grepl("log_tauEps", names(testObj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
-                       Epsilon_bym2 = testObj$env$last.par[grepl("Epsilon_bym2", names(testObj$env$last.par))], # RE on mesh vertices
-                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                       nuggetUrbDHS = testObj$env$last.par[grepl("nuggetUrbDHS", names(testObj$env$last.par))], 
-                       nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
-    )
-    
-    dyn.unload( dynlib("code/modBYM2JitterDHS2"))
-  }
-  
-  
-  # make TMB fun and grad ----
-  # dyn.load( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  dyn.load( dynlib("code/modBYM2JitterFusionNugget2"))
-  TMB::config(tmbad.sparse_hessian_compress = 1)
-  obj <- MakeADFun(data=data_full,
-                   parameters=tmb_params,
-                   random=rand_effs,
-                   hessian=TRUE,
-                   DLL='modBYM2JitterFusionNugget2')
-  # objFull <- MakeADFun(data=data_full,
-  #                      parameters=tmb_params,
-  #                      hessian=TRUE,
-  #                      DLL='modBYM2JitterFusionNugget2')
-  
-  lower = rep(-10, length(obj[['par']]))
-  upper = rep( 10, length(obj[['par']]))
-  
-  # make wrapper functions that print out parameters and function values
-  funWrapper = function(par, badParVal=1e10) {
-    if(any(par < lower) || any(par > upper)) {
-      return(badParVal)
-    }
-    print(par)
-    objVal = testObj[['fn']](par)
-    parNames = names(par)
-    parVals = par
-    parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
-    parStr = paste(parStrs, collapse=", ")
-    print(paste0("objective: ", objVal, " for parameters, ", parStr))
-    objVal
-  }
-  
-  grWrapper = function(par, badParVal=1e10) {
-    if(any(par < lower) || any(par > upper)) {
-      return(rep(badParVal, length(par)))
-    }
-    print(par)
-    grVal = testObj[['gr']](par)
-    parNames = names(par)
-    parVals = par
-    parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
-    parStr = paste(parStrs, collapse=", ")
-    grStr = paste(grVal, collapse=", ")
-    print(paste0("gradient: ", grStr, " for parameters, ", parStr))
-    grVal
-  }
-  
-  # * Run TMB ----
-  {
-    # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
-    tolSeq = 1e-06
-    testObj = obj
-    optPar = testObj$par
-    startTime = proc.time()[3]
-    for(thisTol in tolSeq) {
+    # * Run TMB ----
+    {
+      # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+      tolSeq = 1e-06
       testObj = obj
-      testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
-      testObj$env$tracepar = TRUE
-      print(paste0("optimizing for tol = ", thisTol, "."))
-      opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
-                    method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
-      optPar = opt1$par
-      if(!is.null(opt1$message)) {
-        print(paste0("error for tol = ", thisTol, ". Message:"))
-        print(opt1$message)
-        next
-      }
-      else {
-        print(paste0("completed optimization for tol = ", thisTol, ""))
-        
-        ## Get standard errors
-        print("getting standard errors...")
-        sdTime = system.time({
-          SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
-                               bias.correct = TRUE,
-                               bias.correct.control = list(sd = TRUE))
-          
-          if(!SD0$pdHess) {
-            # try recalculating for fixed parameters numerically
-            warning("Using alternative method for hessian calculation...")
-            Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
-            SD0 <- sdreport( testObj, hessian.fixed=Hess,
-                             getJointPrecision=TRUE,
-                             bias.correct = TRUE,
-                             bias.correct.control = list(sd = TRUE) )
-            
-            # system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
-            # 15.82288 minutes, not PD
-            # system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
-          }
-        }
-        )[3]
-        # SD0
-        print(sdTime/60)
-        # 3.9447 minutes for intern=FALSE
-        
-        if(SD0$pdHess) {
-          print("Optimization and PD hess calculation done!")
-          break
+      optPar = testObj$par
+      startTime = proc.time()[3]
+      for(thisTol in tolSeq) {
+        testObj = obj
+        testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
+        testObj$env$tracepar = TRUE
+        print(paste0("optimizing for tol = ", thisTol, "."))
+        opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                      method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+        optPar = opt1$par
+        if(!is.null(opt1$message)) {
+          print(paste0("error for tol = ", thisTol, ". Message:"))
+          print(opt1$message)
+          next
         }
         else {
-          print("Hessan not PD. Rerunning optimization with stricter tol...")
+          print(paste0("completed optimization for tol = ", thisTol, ""))
           
+          ## Get standard errors
+          print("getting standard errors...")
+          sdTime = system.time({
+            SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                 bias.correct = TRUE,
+                                 bias.correct.control = list(sd = TRUE))
+            
+            if(!SD0$pdHess) {
+              # try recalculating for fixed parameters numerically
+              warning("Using alternative method for hessian calculation...")
+              Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
+              SD0 <- sdreport( testObj, hessian.fixed=Hess,
+                               getJointPrecision=TRUE,
+                               bias.correct = TRUE,
+                               bias.correct.control = list(sd = TRUE) )
+              
+              # system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
+              # 15.82288 minutes, not PD
+              # system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
+            }
+          }
+          )[3]
+          # SD0
+          print(sdTime/60)
+          # 3.9447 minutes for intern=FALSE
+          
+          if(SD0$pdHess) {
+            print("Optimization and PD hess calculation done!")
+            break
+          }
+          else {
+            print("Hessan not PD. Rerunning optimization with stricter tol...")
+            
+          }
         }
+        
+        
+        
       }
-      
-      
-      
+      endTime = proc.time()[3]
+      sdTime/60
+      totalTime = endTime - startTime
+      print(paste0("optimization took ", totalTime/60, " minutes"))
+      # optimization took ~511.460316666667 minutes (for intern=FALSE)
     }
-    endTime = proc.time()[3]
-    sdTime/60
-    totalTime = endTime - startTime
-    print(paste0("optimization took ", totalTime/60, " minutes"))
-    # optimization took ~511.460316666667 minutes (for intern=FALSE)
-  }
-  
-  
-  # opt0 <- nlminb(start       =    obj[['par']],
-  #                objective   =    obj[['fn']],
-  #                gradient    =    obj[['gr']],
-  #                lower = rep(-10, length(obj[['par']])),
-  #                upper = rep( 10, length(obj[['par']])),
-  #                control     =    list(trace=1))
-  
-  # * TMB Posterior Sampling ----
-  
-  
-  ## summary(SD0, 'report')
-  ## summary(SD0, 'fixed')
-  
-  tmbReport = obj$report()
-  if(trueObjectSize(obj) < .3*2^30) {
-    save(SD0, obj, tmbReport, totalTime, sdTime, file=paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+    
+    
+    # opt0 <- nlminb(start       =    obj[['par']],
+    #                objective   =    obj[['fn']],
+    #                gradient    =    obj[['gr']],
+    #                lower = rep(-10, length(obj[['par']])),
+    #                upper = rep( 10, length(obj[['par']])),
+    #                control     =    list(trace=1))
+    
+    # * TMB Posterior Sampling ----
+    
+    
+    ## summary(SD0, 'report')
+    ## summary(SD0, 'fixed')
+    
+    tmbReport = obj$report()
+    if(trueObjectSize(obj) < .3*2^30) {
+      save(SD0, obj, tmbReport, totalTime, sdTime, file=paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+    } else {
+      save(SD0, tmbReport, totalTime, sdTime, file=paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+    }
   } else {
-    save(SD0, tmbReport, totalTime, sdTime, file=paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
+    out = load(paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
   }
-  
-  out = load(paste0("savedOutput/ed/fit2_", res, "_adm2Cov.RData"))
   
   gridPreds = predGrid(SD0, admLevel="adm2")
   # \begin{table}[ht]
