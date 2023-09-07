@@ -411,8 +411,8 @@ fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
 
 # allRes=c(100, 125, 150, 175, 200, 225, 300)
 # fitModelAtResolution(125, 300)
-# fitModel: if FALSE, loads the already fitted model
-fitModelAtResolution = function(res, optRes=NULL, fitModel=TRUE) {
+# predGridOnly: if TRUE, loads the already fitted model to regenerate gridPreds
+fitModelAtResolution = function(res, optRes=NULL, predGridOnly=FALSE) {
   # script for women's secondary education in Nigeria application
   
   # load datasets ----
@@ -624,7 +624,7 @@ fitModelAtResolution = function(res, optRes=NULL, fitModel=TRUE) {
     }
   }
   
-  if(fitModel == TRUE) {
+  if(!predGridOnly) {
     if(!is.null(optRes)) {
       # set initial parameters based on simple model
       out = load(paste0("savedOutput/ed/fit2_", optRes, "_adm2Cov.RData"))
@@ -921,50 +921,53 @@ fitModelAtResolution = function(res, optRes=NULL, fitModel=TRUE) {
   # \end{tabular}
   # \end{table}
   save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
-  out = load(paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
   
-  stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
-  admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
-  admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-  save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
-  save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
-  save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
-  out = load(paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
-  out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
-  out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
-  
-  summaryTabBYM2(SD0, popMat=popMatNGAThresh, 
-                 gridPreds=gridPreds)
-  # \begin{table}[ht]
-  # \centering
-  # \begin{tabular}{rrrr}
-  # \hline
-  # & Est & Q0.025 & Q0.975 \\
-  # \hline
-  # X.Int. & -1.79 & -1.93 & -1.64 \\
-  # beta & 0.93 & 0.79 & 1.06 \\
-  # beta.1 & -0.04 & -0.23 & 0.15 \\
-  # beta.2 & 0.13 & -0.11 & 0.41 \\
-  # beta.3 & 0.04 & -0.36 & 0.44 \\
-  # beta.4 & 0.82 & 0.64 & 1.00 \\
-  # sigmaSq & 0.90 & 0.75 & 1.07 \\
-  # phi & 0.13 & 0.11 & 0.15 \\
-  # sigmaEpsSq & 0.50 & 0.46 & 0.54 \\
-  # \hline
-  # \end{tabular}
-  # \end{table}
-  plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-            gridPreds=gridPreds, arealPreds=NULL, 
-            plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"))
-  plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-            gridPreds=gridPreds, arealPreds=stratPreds, 
-            plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Strat")
-  plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-            gridPreds=gridPreds, arealPreds=admin1Preds, 
-            plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Admin1")
-  plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-            gridPreds=gridPreds, arealPreds=admin2Preds, 
-            plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Admin2")
+  if(!predGridOnly) {
+    out = load(paste0("savedOutput/ed/gridPreds2_", res, "_adm2Cov.RData"))
+    
+    stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+    admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+    admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+    save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
+    save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
+    save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
+    out = load(paste0("savedOutput/ed/stratPredsM_DM2_", res, "_adm2Cov.RData"))
+    out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", res, "_adm2Cov.RData"))
+    out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", res, "_adm2Cov.RData"))
+    
+    summaryTabBYM2(SD0, popMat=popMatNGAThresh, 
+                   gridPreds=gridPreds)
+    # \begin{table}[ht]
+    # \centering
+    # \begin{tabular}{rrrr}
+    # \hline
+    # & Est & Q0.025 & Q0.975 \\
+    # \hline
+    # X.Int. & -1.79 & -1.93 & -1.64 \\
+    # beta & 0.93 & 0.79 & 1.06 \\
+    # beta.1 & -0.04 & -0.23 & 0.15 \\
+    # beta.2 & 0.13 & -0.11 & 0.41 \\
+    # beta.3 & 0.04 & -0.36 & 0.44 \\
+    # beta.4 & 0.82 & 0.64 & 1.00 \\
+    # sigmaSq & 0.90 & 0.75 & 1.07 \\
+    # phi & 0.13 & 0.11 & 0.15 \\
+    # sigmaEpsSq & 0.50 & 0.46 & 0.54 \\
+    # \hline
+    # \end{tabular}
+    # \end{table}
+    plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+              gridPreds=gridPreds, arealPreds=NULL, 
+              plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"))
+    plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+              gridPreds=gridPreds, arealPreds=stratPreds, 
+              plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Strat")
+    plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+              gridPreds=gridPreds, arealPreds=admin1Preds, 
+              plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Admin1")
+    plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+              gridPreds=gridPreds, arealPreds=admin2Preds, 
+              plotNameRoot=paste0("edFusionM_DM2_", res, "_adm2Cov"), plotNameRootAreal="Admin2")
+  }
   
   invisible(NULL)
 }
