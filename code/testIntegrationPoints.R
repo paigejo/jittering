@@ -95,12 +95,12 @@ HellingerUniveriate = function(samples1, samples2) {
 testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
                          nSamples=NULL, saveGridPreds=FALSE) {
   
+  # parameter table -----
   # first get parameter predictions and computation times in hours
   testMat = c()
   for(i in 4:length(allRes)) {
     thisRes = allRes[i]
-
-
+    
     out = load(paste0("savedOutput/ed/gridPreds2_", thisRes, "_adm2Cov.RData"))
     thisMeans = rowMeans(gridPreds$fixedMat)
     testMat = rbind(testMat, c(thisMeans))
@@ -219,6 +219,87 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   #            xlab="Number integration points", ylab="Number integration points", asp=1)
   # dev.off()
   
+  # Adm1 averages ----
+  urbDiffsAdm1 = c()
+  rurDiffsAdm1 = c()
+  fineIntPtAvgsUrbAdm1 = c()
+  fineIntPtAvgsRurAdm1 = c()
+  for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
+    resI = allRes[i]
+    out = load(paste0("savedOutput/global/intPtsMICS_", resI, "_adm2Cov.RData"))
+    
+    covNames = colnames(intPtsMICS$XUrb)[c(12:14, 16)]
+    urbDiffsAdm1 = rbind(urbDiffsAdm1, intPtsMICS$errorUrb[,2:5])
+    rurDiffsAdm1 = rbind(rurDiffsAdm1, intPtsMICS$errorRur[,2:5])
+    fineIntPtAvgsUrbAdm1 = rbind(fineIntPtAvgsUrbAdm1, intPtsMICS$fineIntPtAvgsUrb[,2:5])
+    fineIntPtAvgsRurAdm1 = rbind(fineIntPtAvgsRurAdm1, intPtsMICS$fineIntPtAvgsRur[,2:5])
+  }
+  colnames(urbDiffsAdm1) = covNames
+  colnames(rurDiffsAdm1) = covNames
+  colnames(fineIntPtAvgsUrbAdm1) = covNames
+  colnames(fineIntPtAvgsRurAdm1) = covNames
+  urbAvgsAdm1 = urbDiffsAdm1 + fineIntPtAvgsUrbAdm1
+  rurAvgsAdm1 = rurDiffsAdm1 + fineIntPtAvgsRurAdm1
+  absUrbDiffsAdm1 = abs(urbDiffsAdm1)
+  absRurDiffsAdm1 = abs(rurDiffsAdm1)
+  
+  cols = rainbow(2*4)
+  colsUrb = cols[1:4]
+  colsRur = cols[5:8]
+  pchUrb = c(17, 15, 18, 19) # filled in triangle, square, diamond, circle
+  pchRur = c(24, 22, 23, 21) # hollow triangle, square, diamond, circle
+  ltyUrb = ltyRur = 1:4
+  
+  # plot results
+  pdf(file=paste0("figures/integration/Adm1AvgAbsErr_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(absUrbDiffsAdm1, absRurDiffsAdm1))
+  plot(allRes, rep(NA, length(allRes)), log="y", main="Admin1 mean absolute error", 
+       xlab="Resolution", ylab="Error", ylim=errRange)
+  for(i in 1:ncol(absUrbDiffsAdm1)) {
+    lines(allRes, absUrbDiffsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, absUrbDiffsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, absRurDiffsAdm1[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, absRurDiffsAdm1[,i], col=colsRur[i], pch=pchRur[i])
+  }
+  legend("topright", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur))
+  dev.off()
+  
+  # Adm2 averages ----
+  urbDiffsAdm2 = c()
+  rurDiffsAdm2 = c()
+  for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
+    resI = allRes[i]
+    out = load(paste0("savedOutput/global/intPtsMICS_", resI, "_adm2Cov.RData"))
+    
+    covNames = colnames(intPtsMICS$XUrb)[c(12:14, 16)]
+    urbDiffsAdm2 = rbind(urbDiffsAdm2, intPtsMICS$adm2MeanDiffUrb[,2:5])
+    rurDiffsAdm2 = rbind(rurDiffsAdm2, intPtsMICS$adm2MeanDiffRur[,2:5])
+  }
+  colnames(urbDiffsAdm2) = covNames
+  colnames(rurDiffsAdm2) = covNames
+  absUrbDiffsAdm2 = abs(urbDiffsAdm2)
+  absRurDiffsAdm2 = abs(rurDiffsAdm2)
+  
+  # plot results
+  pdf(file=paste0("figures/integration/Adm2AvgAbsErr_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(absUrbDiffsAdm2, absRurDiffsAdm2))
+  plot(allRes, rep(NA, length(allRes)), log="y", main="Admin2 mean absolute error", 
+       xlab="Resolution", ylab="Error", ylim=errRange)
+  for(i in 1:ncol(absUrbDiffsAdm2)) {
+    lines(allRes, absUrbDiffsAdm2[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, absUrbDiffsAdm2[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, absRurDiffsAdm2[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, absRurDiffsAdm2[,i], col=colsRur[i], pch=pchRur[i])
+  }
+  legend("topright", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur))
+  dev.off()
+  
   # resample if necessary ----
   if(!is.null(nSamples)) {
     for(i in 1:length(allRes)) {
@@ -250,54 +331,67 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   
   # adm1 ----
   # calculate Hellinger distance matrix (predictive admin1)
-  distMatAdm1Avg = matrix(nrow=length(allRes), ncol=length(allRes))
-  distMatAdm1Max = matrix(nrow=length(allRes), ncol=length(allRes))
-  distMatAdm190 = matrix(nrow=length(allRes), ncol=length(allRes))
-  for(i in 1:length(allRes)) {
-    print(paste0("i: ", i, "/", length(allRes)))
-    
-    resI = allRes[i]
-    out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
-    
-    samplesI = admin1Preds$aggregationResults$p
-    
-    for(j in 1:i) {
-      resJ = allRes[j]
+  if(!file.exists(paste0("savedOutput/integration/adm1Dists_", min(allRes), "_", max(allRes), ".RData"))) {
+    distMatAdm1Avg = matrix(nrow=length(allRes), ncol=length(allRes))
+    distMatAdm1Max = matrix(nrow=length(allRes), ncol=length(allRes))
+    distMatAdm190 = matrix(nrow=length(allRes), ncol=length(allRes))
+    for(i in 1:length(allRes)) {
+      print(paste0("i: ", i, "/", length(allRes)))
       
-      if(i != j) {
-        out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resJ, "_adm2Cov.RData"))
+      resI = allRes[i]
+      out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+      
+      samplesI = admin1Preds$aggregationResults$p
+      
+      for(j in 1:i) {
+        resJ = allRes[j]
         
-        samplesJ = admin1Preds$aggregationResults$p
-        
-        nAreas = nrow(samplesI)
-        dists = numeric(nAreas)
-        for(k in 1:nAreas) {
-          dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+        if(i != j) {
+          out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resJ, "_adm2Cov.RData"))
+          
+          samplesJ = admin1Preds$aggregationResults$p
+          
+          nAreas = nrow(samplesI)
+          dists = numeric(nAreas)
+          for(k in 1:nAreas) {
+            dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+          }
+          distMatAdm1Avg[i, j] = mean(dists)
+          distMatAdm1Max[i, j] = max(dists)
+          distMatAdm190[i, j] = quantile(prob=.9, dists)
+        } else {
+          distMatAdm1Avg[i, j] = 0
+          distMatAdm1Max[i, j] = 0
+          distMatAdm190[i, j] = 0
         }
-        distMatAdm1Avg[i, j] = mean(dists)
-        distMatAdm1Max[i, j] = max(dists)
-        distMatAdm190[i, j] = quantile(prob=.9, dists)
-      } else {
-        distMatAdm1Avg[i, j] = 0
-        distMatAdm1Max[i, j] = 0
-        distMatAdm190[i, j] = 0
       }
     }
-  }
-  for(i in 1:(length(allRes)-1)) {
-    for(j in (i+1):length(allRes)) {
-      distMatAdm1Avg[i, j] = distMatAdm1Avg[j,i]
-      distMatAdm1Max[i, j] = distMatAdm1Max[j,i]
-      distMatAdm190[i, j] = distMatAdm190[j,i]
+    for(i in 1:(length(allRes)-1)) {
+      for(j in (i+1):length(allRes)) {
+        distMatAdm1Avg[i, j] = distMatAdm1Avg[j,i]
+        distMatAdm1Max[i, j] = distMatAdm1Max[j,i]
+        distMatAdm190[i, j] = distMatAdm190[j,i]
+      }
+    }
+    
+    colnames(distMatAdm1Avg) = allRes
+    row.names(distMatAdm1Avg) = allRes
+    colnames(distMatAdm1Max) = allRes
+    row.names(distMatAdm1Max) = allRes
+    colnames(distMatAdm190) = allRes
+    row.names(distMatAdm190) = allRes
+    
+    save(allRes, distMatAdm1Avg, distMatAdm1Max, distMatAdm190, 
+         file=paste0("savedOutput/integration/adm1Dists_", min(allRes), "_", max(allRes), ".RData"))
+  } else {
+    tempAllRes = allRes
+    out = load(paste0("savedOutput/integration/adm1Dists_", min(allRes), "_", max(allRes), ".RData"))
+    
+    if(!all.equal(tempAllRes, allRes)) {
+      stop("loaded admin1Dists file has wrong resolutions")
     }
   }
   
-  colnames(distMatAdm1Avg) = allRes
-  row.names(distMatAdm1Avg) = allRes
-  colnames(distMatAdm1Max) = allRes
-  row.names(distMatAdm1Max) = allRes
-  colnames(distMatAdm190) = allRes
-  row.names(distMatAdm190) = allRes
   print(round(distMatAdm1Avg, 3))
   print(round(distMatAdm1Max, 3))
   print(round(distMatAdm190, 3))
@@ -321,56 +415,70 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   dev.off()
   
   # adm2 ----
-  # calculate Hellinger distance matrix (predictive admin2)
-  distMatAdm2Avg = matrix(nrow=length(allRes), ncol=length(allRes))
-  distMatAdm2Max = matrix(nrow=length(allRes), ncol=length(allRes))
-  distMatAdm290 = matrix(nrow=length(allRes), ncol=length(allRes))
-  for(i in 1:length(allRes)) {
-    print(paste0("i: ", i, "/", length(allRes)))
-    
-    resI = allRes[i]
-    out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
-    
-    samplesI = admin2Preds$aggregationResults$p
-    
-    for(j in 1:i) {
-      resJ = allRes[j]
+  
+  if(!file.exists(paste0("savedOutput/integration/adm2Dists_", min(allRes), "_", max(allRes), ".RData"))) {
+    # calculate Hellinger distance matrix (predictive admin2)
+    distMatAdm2Avg = matrix(nrow=length(allRes), ncol=length(allRes))
+    distMatAdm2Max = matrix(nrow=length(allRes), ncol=length(allRes))
+    distMatAdm290 = matrix(nrow=length(allRes), ncol=length(allRes))
+    for(i in 1:length(allRes)) {
+      print(paste0("i: ", i, "/", length(allRes)))
       
-      if(i != j) {
-        out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", resJ, "_adm2Cov.RData"))
+      resI = allRes[i]
+      out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+      
+      samplesI = admin2Preds$aggregationResults$p
+      
+      for(j in 1:i) {
+        resJ = allRes[j]
         
-        samplesJ = admin2Preds$aggregationResults$p
-        
-        nAreas = nrow(samplesI)
-        dists = numeric(nAreas)
-        for(k in 1:nAreas) {
+        if(i != j) {
+          out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", resJ, "_adm2Cov.RData"))
           
-          dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+          samplesJ = admin2Preds$aggregationResults$p
+          
+          nAreas = nrow(samplesI)
+          dists = numeric(nAreas)
+          for(k in 1:nAreas) {
+            
+            dists[k] = HellingerUniveriate(samplesI[k,], samplesJ[k,])
+          }
+          distMatAdm2Avg[i, j] = mean(dists, na.rm=TRUE)
+          distMatAdm2Max[i, j] = max(dists, na.rm=TRUE)
+          distMatAdm290[i, j] = quantile(prob=.9, dists, na.rm=TRUE)
+        } else {
+          distMatAdm2Avg[i, j] = 0
+          distMatAdm2Max[i, j] = 0
+          distMatAdm290[i, j] = 0
         }
-        distMatAdm2Avg[i, j] = mean(dists, na.rm=TRUE)
-        distMatAdm2Max[i, j] = max(dists, na.rm=TRUE)
-        distMatAdm290[i, j] = quantile(prob=.9, dists, na.rm=TRUE)
-      } else {
-        distMatAdm2Avg[i, j] = 0
-        distMatAdm2Max[i, j] = 0
-        distMatAdm290[i, j] = 0
       }
     }
-  }
-  for(i in 1:(length(allRes)-1)) {
-    for(j in (i+1):length(allRes)) {
-      distMatAdm2Avg[i, j] = distMatAdm2Avg[j,i]
-      distMatAdm2Max[i, j] = distMatAdm2Max[j,i]
-      distMatAdm290[i, j] = distMatAdm290[j,i]
+    for(i in 1:(length(allRes)-1)) {
+      for(j in (i+1):length(allRes)) {
+        distMatAdm2Avg[i, j] = distMatAdm2Avg[j,i]
+        distMatAdm2Max[i, j] = distMatAdm2Max[j,i]
+        distMatAdm290[i, j] = distMatAdm290[j,i]
+      }
+    }
+    
+    colnames(distMatAdm2Avg) = allRes
+    row.names(distMatAdm2Avg) = allRes
+    colnames(distMatAdm2Max) = allRes
+    row.names(distMatAdm2Max) = allRes
+    colnames(distMatAdm290) = allRes
+    row.names(distMatAdm290) = allRes
+    
+    save(allRes, distMatAdm2Avg, distMatAdm2Max, distMatAdm290, 
+         file=paste0("savedOutput/integration/adm2Dists_", min(allRes), "_", max(allRes), ".RData"))
+  } else {
+    tempAllRes = allRes
+    out = load(paste0("savedOutput/integration/adm2Dists_", min(allRes), "_", max(allRes), ".RData"))
+    
+    if(!all.equal(tempAllRes, allRes)) {
+      stop("loaded admin2Dists file has wrong resolutions")
     }
   }
   
-  colnames(distMatAdm2Avg) = allRes
-  row.names(distMatAdm2Avg) = allRes
-  colnames(distMatAdm2Max) = allRes
-  row.names(distMatAdm2Max) = allRes
-  colnames(distMatAdm290) = allRes
-  row.names(distMatAdm290) = allRes
   print(round(distMatAdm2Avg, 3))
   print(round(distMatAdm2Max, 3))
   print(round(distMatAdm290, 3))
