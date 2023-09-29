@@ -1614,8 +1614,8 @@ getValidationFit = function(fold,
   if(model == "Md2") {
     # now set the initial parameters
     print("Initializing optimization for the unadjusted DHS model")
-    initUrbP = sum(c(edMICSInSample$ys[edMICSInSample$urban]))/sum(c(edMICSInSample$ns[edMICSInSample$urban]))
-    initRurP = sum(c(edMICSInSample$ys[!edMICSInSample$urban]))/sum(c(edMICSInSample$ns[!edMICSInSample$urban]))
+    initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
+    initRurP = sum(c(edInSample$y[!edInSample$urban]))/sum(c(edInSample$n[!edInSample$urban]))
     initAlpha = logit(initRurP)
     initBeta1 = logit(initUrbP) - initAlpha
     
@@ -1630,8 +1630,8 @@ getValidationFit = function(fold,
     )
   } else if(model %in% c("MD2", "Mdm2", "MDM2")) {
     print("Initializing optimization via the unadjusted DHS model")
-    initUrbP = sum(c(edMICSInSample$ys[edMICSInSample$urban]))/sum(c(edMICSInSample$ns[edMICSInSample$urban]))
-    initRurP = sum(c(edMICSInSample$ys[!edMICSInSample$urban]))/sum(c(edMICSInSample$ns[!edMICSInSample$urban]))
+    initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
+    initRurP = sum(c(edInSample$y[!edInSample$urban]))/sum(c(edInSample$n[!edInSample$urban]))
     initAlpha = logit(initRurP)
     initBeta1 = logit(initUrbP) - initAlpha
     
