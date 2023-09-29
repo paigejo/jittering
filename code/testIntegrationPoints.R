@@ -220,10 +220,8 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   # dev.off()
   
   # Adm1 averages ----
-  urbDiffsAdm1 = c()
-  rurDiffsAdm1 = c()
-  fineIntPtAvgsUrbAdm1 = c()
-  fineIntPtAvgsRurAdm1 = c()
+  urbMADsAdm1 = c()
+  rurMADsAdm1 = c()
   for(i in 1:length(allRes)) {
     print(paste0("i: ", i, "/", length(allRes)))
     
@@ -231,19 +229,14 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
     out = load(paste0("savedOutput/global/intPtsMICS_", resI, "_adm2Cov.RData"))
     
     covNames = colnames(intPtsMICS$XUrb)[c(12:14, 16)]
-    urbDiffsAdm1 = rbind(urbDiffsAdm1, intPtsMICS$errorUrb[,2:5])
-    rurDiffsAdm1 = rbind(rurDiffsAdm1, intPtsMICS$errorRur[,2:5])
-    fineIntPtAvgsUrbAdm1 = rbind(fineIntPtAvgsUrbAdm1, intPtsMICS$fineIntPtAvgsUrb[,2:5])
-    fineIntPtAvgsRurAdm1 = rbind(fineIntPtAvgsRurAdm1, intPtsMICS$fineIntPtAvgsRur[,2:5])
+    thisAbsErrorsUrbAdm1 = abs(intPtsMICS$errorUrb[,2:5])
+    thisAbsErrorsRurAdm1 = abs(intPtsMICS$errorRur[,2:5])
+    
+    urbMADsAdm1 = rbind(urbMADsAdm1, colMeans(thisAbsErrorsUrbAdm1, na.rm=TRUE))
+    rurMADsAdm1 = rbind(rurMADsAdm1, colMeans(thisAbsErrorsRurAdm1, na.rm=TRUE))
   }
-  colnames(urbDiffsAdm1) = covNames
-  colnames(rurDiffsAdm1) = covNames
-  colnames(fineIntPtAvgsUrbAdm1) = covNames
-  colnames(fineIntPtAvgsRurAdm1) = covNames
-  urbAvgsAdm1 = urbDiffsAdm1 + fineIntPtAvgsUrbAdm1
-  rurAvgsAdm1 = rurDiffsAdm1 + fineIntPtAvgsRurAdm1
-  absUrbDiffsAdm1 = abs(urbDiffsAdm1)
-  absRurDiffsAdm1 = abs(rurDiffsAdm1)
+  colnames(urbMADsAdm1) = covNames
+  colnames(rurMADsAdm1) = covNames
   
   cols = rainbow(2*4)
   colsUrb = cols[1:4]
@@ -253,51 +246,71 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   ltyUrb = ltyRur = 1:4
   
   # plot results
-  pdf(file=paste0("figures/integration/Adm1AvgAbsErr_", min(allRes), "_", max(allRes), ".pdf"))
-  errRange = range(c(absUrbDiffsAdm1, absRurDiffsAdm1))
-  plot(allRes, rep(NA, length(allRes)), log="y", main="Admin1 mean absolute error", 
+  pdf(file=paste0("figures/integration/Adm1MAD_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(urbMADsAdm1, rurMADsAdm1))
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Admin1 mean absolute error", 
        xlab="Resolution", ylab="Error", ylim=errRange)
-  for(i in 1:ncol(absUrbDiffsAdm1)) {
-    lines(allRes, absUrbDiffsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
-    points(allRes, absUrbDiffsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
-    lines(allRes, absRurDiffsAdm1[,i], col=colsRur[i], lty=ltyRur[i])
-    points(allRes, absRurDiffsAdm1[,i], col=colsRur[i], pch=pchRur[i])
+  for(i in 1:ncol(urbMADsAdm1)) {
+    lines(allRes, urbMADsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, urbMADsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, rurMADsAdm1[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, rurMADsAdm1[,i], col=colsRur[i], pch=pchRur[i])
   }
-  legend("topright", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
-         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur))
+  legend("bottomleft", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
   dev.off()
   
   # Adm2 averages ----
-  urbDiffsAdm2 = c()
-  rurDiffsAdm2 = c()
+  urbMADsAdm2 = c()
+  rurMADsAdm2 = c()
   for(i in 1:length(allRes)) {
     print(paste0("i: ", i, "/", length(allRes)))
     
     resI = allRes[i]
     out = load(paste0("savedOutput/global/intPtsMICS_", resI, "_adm2Cov.RData"))
     
-    covNames = colnames(intPtsMICS$XUrb)[c(12:14, 16)]
-    urbDiffsAdm2 = rbind(urbDiffsAdm2, intPtsMICS$adm2MeanDiffUrb[,2:5])
-    rurDiffsAdm2 = rbind(rurDiffsAdm2, intPtsMICS$adm2MeanDiffRur[,2:5])
+    if("adm2Aggs" %in% names(intPtsMICS)) {
+      allAdm2Aggs = intPtsMICS$adm2Aggs
+      urbAggsFine = as.matrix(allAdm2Aggs[allAdm2Aggs$urb & allAdm2Aggs$fine,5:10])
+      urbAggsInt = as.matrix(allAdm2Aggs[allAdm2Aggs$urb & !allAdm2Aggs$fine,5:10])
+      rurAggsFine = as.matrix(allAdm2Aggs[!allAdm2Aggs$urb & allAdm2Aggs$fine,5:10])
+      rurAggsInt = as.matrix(allAdm2Aggs[!allAdm2Aggs$urb & !allAdm2Aggs$fine,5:10])
+      
+      thisAbsErrorsUrbAdm2 = colMeans(abs(urbAggsInt - urbAggsFine), na.rm=TRUE)
+      thisAbsErrorsRurAdm2 = colMeans(abs(rurAggsInt - rurAggsFine), na.rm=TRUE)
+      
+      covNames = names(thisAbsErrorsUrbAdm2)
+      urbMADsAdm2 = rbind(urbMADsAdm2, thisAbsErrorsUrbAdm2)
+      rurMADsAdm2 = rbind(rurMADsAdm2, thisAbsErrorsRurAdm2)
+    } else {
+      urbMADsAdm2 = rbind(urbMADsAdm2, NA)
+      rurMADsAdm2 = rbind(rurMADsAdm2, NA)
+    }
   }
-  colnames(urbDiffsAdm2) = covNames
-  colnames(rurDiffsAdm2) = covNames
-  absUrbDiffsAdm2 = abs(urbDiffsAdm2)
-  absRurDiffsAdm2 = abs(rurDiffsAdm2)
+  colnames(urbMADsAdm2) = covNames
+  colnames(rurMADsAdm2) = covNames
+  
+  cols = rainbow(2*6)
+  colsUrb = cols[1:6]
+  colsRur = cols[7:12]
+  pchUrb = pchRur = 15:20
+  ltyUrb = ltyRur = 1:6
   
   # plot results
-  pdf(file=paste0("figures/integration/Adm2AvgAbsErr_", min(allRes), "_", max(allRes), ".pdf"))
-  errRange = range(c(absUrbDiffsAdm2, absRurDiffsAdm2))
-  plot(allRes, rep(NA, length(allRes)), log="y", main="Admin2 mean absolute error", 
+  pdf(file=paste0("figures/integration/Adm2MAD_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(urbMADsAdm2, rurMADsAdm2), na.rm=TRUE)
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Admin2 mean absolute error", 
        xlab="Resolution", ylab="Error", ylim=errRange)
-  for(i in 1:ncol(absUrbDiffsAdm2)) {
-    lines(allRes, absUrbDiffsAdm2[,i], col=colsUrb[i], lty=ltyUrb[i])
-    points(allRes, absUrbDiffsAdm2[,i], col=colsUrb[i], pch=pchUrb[i])
-    lines(allRes, absRurDiffsAdm2[,i], col=colsRur[i], lty=ltyRur[i])
-    points(allRes, absRurDiffsAdm2[,i], col=colsRur[i], pch=pchRur[i])
+  for(i in 1:ncol(urbMADsAdm2)) {
+    lines(allRes, urbMADsAdm2[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, urbMADsAdm2[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, rurMADsAdm2[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, rurMADsAdm2[,i], col=colsRur[i], pch=pchRur[i])
   }
-  legend("topright", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
-         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur))
+  # legend("left", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+  #        pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
+  legend(x=50, y=1e-5, c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
   dev.off()
   
   # resample if necessary ----
@@ -425,7 +438,7 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
       print(paste0("i: ", i, "/", length(allRes)))
       
       resI = allRes[i]
-      out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", resI, "_adm2Cov.RData"))
+      out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", resI, "_adm2Cov.RData"))
       
       samplesI = admin2Preds$aggregationResults$p
       

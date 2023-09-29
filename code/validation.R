@@ -170,14 +170,15 @@ stratKdhs = function(K=10, seed=1234) {
 
 # submodels of the BYM2 model
 
-getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
+getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=300, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
   
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
+  # load("savedOutput/global/intPtsMICS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -349,14 +350,15 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
                             hessian=TRUE, DLL=DLL))
 }
 
-getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
+getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=300, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
   
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
+  # load("savedOutput/global/intPtsMICS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -515,7 +517,7 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
+getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=300, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -523,7 +525,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
+  # load("savedOutput/global/intPtsMICS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -1031,7 +1034,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
 }
 
 # fold is 1-20, with 1-10 removing part of DHS data and 11-20 removing part of MICS data
-getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=100, adm2AsCovariate=TRUE) {
+getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FALSE, res=300, adm2AsCovariate=TRUE) {
   KDHSurb = 11 # 3 rings of 5 each
   KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
   admLevel = match.arg(admLevel)
@@ -1039,7 +1042,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   # load in the precomputed integration points
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
+  # load("savedOutput/global/intPtsMICS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -1512,7 +1516,7 @@ getAllValidationData = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
 
 # This function generates and saves all the validation datasets and input 
 # parameters for all models
-getAllValidationData2 = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
+getAllValidationData2 = function(folds=1:20, res=300, adm2AsCovariate=TRUE) {
   
   # first generate M_d data
   print("generating data for M_d2...")
@@ -1537,17 +1541,17 @@ getAllValidationData2 = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
 
 # This function generates and saves all the areal validation datasets and input 
 # parameters for all models, 1 for each of the 37 admin1 States in Nigeria
-getAllValidationData2Areal = function(folds=1:37) {
+getAllValidationData2Areal = function(folds=1:37, res=300) {
   
   # first generate M_d data
   print("generating data for M_d2...")
-  time1 = system.time(datMd2areal <- lapply(folds, getValidationDataM_d, admLevel="adm2", areal=TRUE))[3]
+  time1 = system.time(datMd2areal <- lapply(folds, getValidationDataM_d, res=res, admLevel="adm2", areal=TRUE))[3]
   print(paste0("Took ", time1, " seconds. Now generating data for M_D2..."))
-  time2 = system.time(datMD2areal <- lapply(folds, getValidationDataM_D, admLevel="adm2", areal=TRUE))[3]
+  time2 = system.time(datMD2areal <- lapply(folds, getValidationDataM_D, res=res, admLevel="adm2", areal=TRUE))[3]
   print(paste0("Took ", time2, " seconds. Now generating data for M_dm2..."))
-  time3 = system.time(datMdm2areal <- lapply(folds, getValidationDataM_dm, admLevel="adm2", areal=TRUE))[3]
+  time3 = system.time(datMdm2areal <- lapply(folds, getValidationDataM_dm, res=res, admLevel="adm2", areal=TRUE))[3]
   print(paste0("Took ", time3, " seconds. Now generating data for M_DM2..."))
-  time4 = system.time(datMDM2areal <- lapply(folds, getValidationDataM_DM, admLevel="adm2", areal=TRUE))[3]
+  time4 = system.time(datMDM2areal <- lapply(folds, getValidationDataM_DM, res=res, admLevel="adm2", areal=TRUE))[3]
   print(paste0("Took ", time4, " seconds. Now saving results..."))
   
   save(datMd2areal, file="savedOutput/validation/datMd2areal.RData")
@@ -1585,6 +1589,7 @@ getValidationFit = function(fold,
   if(areal) {
     fnameRoot = paste0(fnameRoot, "areal", collapse="")
   }
+  # fnameRoot = paste0(fnameRoot, "_", res, collapse="")
   
   fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
   out = load(fname)
@@ -1605,24 +1610,172 @@ getValidationFit = function(fold,
   edOutOfSample = dat$edOutOfSample
   edMICSOutOfSample = dat$edMICSOutOfSample
   
-  # set starting values to full M_DM optimum
-  # dat$MakeADFunInputs$parameters$alpha = -1.7905689 # intercept
-  # dat$MakeADFunInputs$parameters$beta = c(.6, -.62, .19, .13, .12)
-  # dat$MakeADFunInputs$parameters$log_tau = 0.6306069 # Log tau (i.e. log spatial precision, Epsilon)
-  # dat$MakeADFunInputs$parameters$logit_phi = 2.4493192 # SPDE parameter related to the range
-  # dat$MakeADFunInputs$parameters$log_tauEps = -0.4203604 # Log tau (i.e. log spatial precision, Epsilon)
-  dat$MakeADFunInputs$parameters$alpha = -2.19427268 # intercept
-  dat$MakeADFunInputs$parameters$beta = c(0.56250562, 0.01287842, 0.10090683, 0.09207191, 1.25325119)
-  dat$MakeADFunInputs$parameters$log_tau = -0.08209775 # Log tau (i.e. log spatial precision, Epsilon)
-  dat$MakeADFunInputs$parameters$logit_phi = -1.78428461 # SPDE parameter related to the range
-  dat$MakeADFunInputs$parameters$log_tauEps = 0.64672006 # Log tau (i.e. log spatial precision, Epsilon)
-  if(randomBeta) {
-    dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+  # initialize with simple/unadjusted model ----
+  if(model == "Md2") {
+    # now set the initial parameters
+    print("Initializing optimization for the unadjusted DHS model")
+    initUrbP = sum(c(edMICSInSample$ys[edMICSInSample$urban]))/sum(c(edMICSInSample$ns[edMICSInSample$urban]))
+    initRurP = sum(c(edMICSInSample$ys[!edMICSInSample$urban]))/sum(c(edMICSInSample$ns[!edMICSInSample$urban]))
+    initAlpha = logit(initRurP)
+    initBeta1 = logit(initUrbP) - initAlpha
+    
+    tmb_params <- list(alpha = initAlpha, # intercept
+                            beta = c(initBeta1, rep(0, ncol(dat$MakeADFunInputs$data$X_betaUrbanDHS)-1)), 
+                            log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                            logit_phi = 0, # SPDE parameter related to the range
+                            log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                            Epsilon_bym2 = rep(0, ncol(dat$MakeADFunInputs$data$Q_bym2)), # RE on mesh vertices
+                            nuggetUrbDHS = rep(0, sum(edInSample$urban)), 
+                            nuggetRurDHS = rep(0, sum(!edInSample$urban))
+    )
+  } else if(model %in% c("MD2", "Mdm2", "MDM2")) {
+    print("Initializing optimization via the unadjusted DHS model")
+    initUrbP = sum(c(edMICSInSample$ys[edMICSInSample$urban]))/sum(c(edMICSInSample$ns[edMICSInSample$urban]))
+    initRurP = sum(c(edMICSInSample$ys[!edMICSInSample$urban]))/sum(c(edMICSInSample$ns[!edMICSInSample$urban]))
+    initAlpha = logit(initRurP)
+    initBeta1 = logit(initUrbP) - initAlpha
+    
+    tmb_paramsStart <- list(alpha = initAlpha, # intercept
+                            beta = c(initBeta1, rep(0, ncol(dat$MakeADFunInputs$data$X_betaUrbanDHS)-1)), 
+                            log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                            logit_phi = 0, # SPDE parameter related to the range
+                            log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                            Epsilon_bym2 = rep(0, ncol(dat$MakeADFunInputs$data$Q_bym2)), # RE on mesh vertices
+                            nuggetUrbDHS = rep(0, sum(edInSample$urban)), 
+                            nuggetRurDHS = rep(0, sum(!edInSample$urban))
+    )
+    
+    # specify random effects
+    rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+    
+    # collect input data, setting only first weights as nonzero (to 1)
+    wUrbanDHStemp=dat$MakeADFunInputs$data$wUrbanDHS
+    wRuralDHStemp=dat$MakeADFunInputs$data$wRuralDHS
+    wUrbanDHStemp[,1] = 1
+    wRuralDHStemp[,1] = 1
+    wUrbanDHStemp[,-1] = 0
+    wRuralDHStemp[,-1] = 0
+    
+    data_start = list(
+      y_iUrbanDHS=dat$MakeADFunInputs$data$y_iUrbanDHS, # same as above but for DHS survey
+      y_iRuralDHS=dat$MakeADFunInputs$data$y_iRuralDHS, # 
+      n_iUrbanDHS=dat$MakeADFunInputs$data$n_iUrbanDHS, # number binomial trials
+      n_iRuralDHS=dat$MakeADFunInputs$data$n_iRuralDHS, # 
+      AprojUrbanDHS=dat$MakeADFunInputs$data$AprojUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+      AprojRuralDHS=dat$MakeADFunInputs$data$AprojUrbanMICS, # 
+      X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+      X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
+      wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
+      wRuralDHS=wRuralDHStemp, # 
+      
+      Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
+      V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+      alpha_pri=dat$MakeADFunInputs$data$alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
+      beta_pri=dat$MakeADFunInputs$data$beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
+      tr=dat$MakeADFunInputs$data$tr, # precomputed for Q_bym2
+      gammaTildesm1=dat$MakeADFunInputs$data$gammaTildesm1, # precomputed for Q_bym2
+      lambdaPhi=dat$MakeADFunInputs$data$lambdaPhi, # precomputed for Q_bym2
+      lambdaTau=dat$MakeADFunInputs$data$lambdaTau, # determines PC prior for tau
+      lambdaTauEps=dat$MakeADFunInputs$data$lambdaTauEps, 
+      options=0 # 1 for adreport of log tau and logit phi
+    )
+    
+    dyn.load( dynlib("code/modBYM2JitterDHS2"))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
+    objStart <- MakeADFun(data=data_start,
+                          parameters=tmb_paramsStart,
+                          random=rand_effsStart,
+                          hessian=TRUE,
+                          DLL='modBYM2JitterDHS2')
+    
+    lower = rep(-10, length(objStart[['par']]))
+    upper = rep( 10, length(objStart[['par']]))
+    
+    # make wrapper functions that print out parameters and function values
+    funWrapper = function(par, badParVal=1e10) {
+      if(any(par < lower) || any(par > upper)) {
+        return(badParVal)
+      }
+      print(par)
+      objVal = testObj[['fn']](par)
+      parNames = names(par)
+      parVals = par
+      parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+      parStr = paste(parStrs, collapse=", ")
+      print(paste0("objective: ", objVal, " for parameters, ", parStr))
+      objVal
+    }
+    
+    grWrapper = function(par, badParVal=1e10) {
+      if(any(par < lower) || any(par > upper)) {
+        return(rep(badParVal, length(par)))
+      }
+      print(par)
+      grVal = testObj[['gr']](par)
+      parNames = names(par)
+      parVals = par
+      parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
+      parStr = paste(parStrs, collapse=", ")
+      grStr = paste(grVal, collapse=", ")
+      print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+      grVal
+    }
+    
+    testObj = objStart
+    optPar = testObj$par
+    testObj = objStart
+    testObj$env$inner.control = list(maxit=1000, tol10=1e-06)
+    testObj$env$tracepar = TRUE
+    optStart <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                      method = c("BFGS"), hessian = FALSE, control=list(reltol=1e-06))
+    optParStart = optStart$par
+    print("Optimization/model fitting for the unadjusted DHS model complete")
+    
+    # now set the initial parameters
+    if(model == "MD2") {
+      tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
+                         beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
+                         log_tau = testObj$env$last.par[names(testObj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = testObj$env$last.par[grepl("logit_phi", names(testObj$env$last.par))], # SPDE parameter related to the range
+                         log_tauEps = testObj$env$last.par[grepl("log_tauEps", names(testObj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                         Epsilon_bym2 = testObj$env$last.par[grepl("Epsilon_bym2", names(testObj$env$last.par))], # RE on mesh vertices
+                         nuggetUrbDHS = testObj$env$last.par[grepl("nuggetUrbDHS", names(testObj$env$last.par))], 
+                         nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
+      )
+    } else if(model %in% c("Mdm2", "MDM2")) {
+      tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
+                         beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
+                         log_tau = testObj$env$last.par[names(testObj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = testObj$env$last.par[grepl("logit_phi", names(testObj$env$last.par))], # SPDE parameter related to the range
+                         log_tauEps = testObj$env$last.par[grepl("log_tauEps", names(testObj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                         Epsilon_bym2 = testObj$env$last.par[grepl("Epsilon_bym2", names(testObj$env$last.par))], # RE on mesh vertices
+                         nuggetUrbMICS = rep(0, length(dat$MakeADFunInputs$data$y_iUrbanMICS)), 
+                         nuggetRurMICS = rep(0, length(dat$MakeADFunInputs$data$y_iRuralMICS)), 
+                         nuggetUrbDHS = testObj$env$last.par[grepl("nuggetUrbDHS", names(testObj$env$last.par))], 
+                         nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
+      )
+    }
+    
+    dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+  } else {
+    stop("other model no longer supported")
   }
-  if(randomAlpha) {
-    dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
-  }
+  browser()
+  # 
+  # dat$MakeADFunInputs$parameters$alpha = -2.19427268 # intercept
+  # dat$MakeADFunInputs$parameters$beta = c(0.56250562, 0.01287842, 0.10090683, 0.09207191, 1.25325119)
+  # dat$MakeADFunInputs$parameters$log_tau = -0.08209775 # Log tau (i.e. log spatial precision, Epsilon)
+  # dat$MakeADFunInputs$parameters$logit_phi = -1.78428461 # SPDE parameter related to the range
+  # dat$MakeADFunInputs$parameters$log_tauEps = 0.64672006 # Log tau (i.e. log spatial precision, Epsilon)
+  # if(randomBeta) {
+  #   dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+  # }
+  # if(randomAlpha) {
+  #   dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
+  # }
+  # 
   
+  dat$MakeADFunInputs$parameters = tmb_params
   MakeADFunInputs = dat$MakeADFunInputs
   MakeADFunInputsFull = MakeADFunInputs
   MakeADFunInputsFull$random = NULL
@@ -1637,6 +1790,7 @@ getValidationFit = function(fold,
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
     TMB::config(tmbad.sparse_hessian_compress = 1)
+    MakeADFunInputs$parameters = tmb_params
     
     if(FALSE) {
       dimLen = function(x) {

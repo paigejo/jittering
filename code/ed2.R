@@ -78,8 +78,8 @@ if(FALSE) {
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
-  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
+  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
   XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
@@ -558,7 +558,7 @@ if(FALSE) {
 save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit2.RData")
 out = load("savedOutput/ed/fit2.RData")
 
-gridPreds = predGrid(SD0, obj, admLevel="adm2")
+gridPreds = predGrid(SD0, admLevel="adm2")
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}

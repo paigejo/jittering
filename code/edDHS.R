@@ -155,7 +155,8 @@ grWrapper = function(par, badParVal=1e10) {
 }
 
 {
-  tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+  # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+  tolSeq = 1e-06
   testObj = obj
   optPar = testObj$par
   startTime = proc.time()[3]
@@ -177,14 +178,29 @@ grWrapper = function(par, badParVal=1e10) {
       
       ## Get standard errors
       print("getting standard errors...")
-      sdTime = system.time(
+      sdTime = system.time({
         SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                              bias.correct = TRUE,
                              bias.correct.control = list(sd = TRUE))
+        
+        if(!SD0$pdHess) {
+          # try recalculating for fixed parameters numerically
+          warning("Using alternative method for hessian calculation...")
+          Hess = numDeriv::hessian( func=testObj$fn, x=optPar )
+          SD0 <- sdreport( testObj, hessian.fixed=Hess,
+                           getJointPrecision=TRUE,
+                           bias.correct = TRUE,
+                           bias.correct.control = list(sd = TRUE) )
+          
+          # system.time(HessTest <- numDeriv::jacobian(func=objFull$gr, x=testObj$env$last.par.best))
+          # 15.82288 minutes, not PD
+          # system.time(HessTest2 <- numDeriv::hessian(func=objFull$fn, x=testObj$env$last.par.best))
+        }
+      }
       )[3]
       # SD0
       print(sdTime/60)
-      #  minutes for intern=FALSE
+      # 3.9447 minutes for intern=FALSE
       
       if(SD0$pdHess) {
         print("Optimization and PD hess calculation done!")
@@ -192,7 +208,6 @@ grWrapper = function(par, badParVal=1e10) {
       }
       else {
         print("Hessan not PD. Rerunning optimization with stricter tol...")
-        
       }
     }
     
@@ -322,25 +337,49 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, objFull, totalTime, sdTime, file="savedOutput/ed/fit.RData")
-out = load("savedOutput/ed/fit.RData")
+save(SD0, obj, objFull, totalTime, sdTime, file="savedOutput/ed/fitDHS.RData")
+out = load("savedOutput/ed/fitDHS.RData")
 
-gridPreds = predGrid(SD0, obj)
-save(gridPreds, file="savedOutput/ed/gridPreds.RData")
-out = load("savedOutput/ed/gridPreds.RData")
+gridPreds = predGrid(SD0)
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\
+# \hline
+# (Int) & -2.51 & -2.73 & -2.66 & -2.37 & -2.29 \\
+# urb & 0.47 & 0.20 & 0.30 & 0.65 & 0.72 \\
+# access & -0.34 & -0.46 & -0.41 & -0.26 & -0.22 \\
+# elev & -0.41 & -0.51 & -0.47 & -0.34 & -0.31 \\
+# distRiversLakes & 0.41 & 0.31 & 0.35 & 0.47 & 0.50 \\
+# popValsNorm & 1.08 & 0.82 & 0.91 & 1.24 & 1.33 \\
+# sigmaSq & 1.83 & 0.20 & 0.35 & 3.71 & 7.86 \\
+# phi & 0.23 & 0.03 & 0.06 & 0.46 & 0.65 \\
+# sigmaEpsSq & 2.36 & 2.07 & 2.17 & 2.57 & 2.67 \\
+# \hline
+# \end{tabular}
+# \end{table}
+save(gridPreds, file="savedOutput/ed/gridPredsDHS.RData")
+out = load("savedOutput/ed/gridPredsDHS.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+admin1Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPreds.RData")
-save(admin2Preds, file="savedOutput/ed/admin2Preds.RData")
-out = load("savedOutput/ed/stratPreds.RData")
-out = load("savedOutput/ed/admin2Preds.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsDHS.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsDHS.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsDHS.RData")
+out = load("savedOutput/ed/stratPredsDHS.RData")
+out = load("savedOutput/ed/admin1PredsDHS.RData")
+out = load("savedOutput/ed/admin2PredsDHS.RData")
 
-summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
+summaryTabBYM2(SD0, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionTest", plotNameRootAreal="Strat")
+          plotNameRoot="edDHS", plotNameRootAreal="Strat")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin1Preds, 
+          plotNameRoot="edDHS", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusion", plotNameRootAreal="Admin2")
+          plotNameRoot="edDHS", plotNameRootAreal="Admin2")
