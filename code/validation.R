@@ -1566,7 +1566,7 @@ getAllValidationData2Areal = function(folds=1:37, res=300) {
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                             regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, 
-                            fromOptPar=FALSE, areal=FALSE) {
+                            fromOptPar=FALSE, areal=FALSE, nsim=10000) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1989,12 +1989,12 @@ getValidationFit = function(fold,
   # predict at the left out clusters
   if(hessPD) {
     if(!areal) {
-      preds = predClusters(nsim=1000, fold, SD0, obj, 
+      preds = predClusters(nsim=nsim, fold, SD0, obj, 
                            model=model, 
                            quantiles=c(0.025, 0.1, 0.9, 0.975))
     } else {
-      browser()
-      gridPreds = predGrid(SD0, obj, nsim=1000, admLevel="adm2", 
+      # browser()
+      gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975))
       preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
