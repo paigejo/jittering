@@ -606,7 +606,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
   
   out = load("savedOutput/global/intPtsDHS.RData")
-  out = load("savedOutput/global/intPtsMICS.RData")
+  # out = load("savedOutput/global/intPtsMICS.RData")
+  out = load(paste0("savedOutput/global/intPtsMICS", "_", res, ifelse(adm2AsCovariate, "_adm2Cov", ""), ".RData"))
   
   
   if(admLevel == "admFinal") {
@@ -1760,7 +1761,7 @@ getValidationFit = function(fold,
   } else {
     stop("other model no longer supported")
   }
-  browser()
+  
   # 
   # dat$MakeADFunInputs$parameters$alpha = -2.19427268 # intercept
   # dat$MakeADFunInputs$parameters$beta = c(0.56250562, 0.01287842, 0.10090683, 0.09207191, 1.25325119)
@@ -2019,7 +2020,7 @@ getValidationFit = function(fold,
 predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                        addBinVar=TRUE) {
+                        addBinVar=TRUE, res=300) {
   
   # clean input arguments
   model = match.arg(model)
