@@ -2017,6 +2017,7 @@ getValidationFit = function(fold,
   save(SD0, obj, objFull, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   
   allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal)
+  dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
   list(SD0, obj, objFull, totalTime, sdTime, hessPD, allScores)
 }
