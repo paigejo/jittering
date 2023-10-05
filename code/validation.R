@@ -1648,6 +1648,12 @@ getValidationFit = function(fold,
     
     # specify random effects
     rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+    if(randomBeta) {
+      rand_effsStart = c("beta", rand_effsStart)
+    }
+    if(randomAlpha) {
+      rand_effsStart = c("alpha", rand_effsStart)
+    }
     
     # collect input data, setting only first weights as nonzero (to 1)
     wUrbanDHStemp=dat$MakeADFunInputs$data$wUrbanDHS
@@ -1768,13 +1774,14 @@ getValidationFit = function(fold,
   # dat$MakeADFunInputs$parameters$log_tau = -0.08209775 # Log tau (i.e. log spatial precision, Epsilon)
   # dat$MakeADFunInputs$parameters$logit_phi = -1.78428461 # SPDE parameter related to the range
   # dat$MakeADFunInputs$parameters$log_tauEps = 0.64672006 # Log tau (i.e. log spatial precision, Epsilon)
-  # if(randomBeta) {
-  #   dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
-  # }
-  # if(randomAlpha) {
-  #   dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
-  # }
-  # 
+  
+  # add covariate and intercept effects to random effects if specified by user
+  if(randomBeta) {
+    dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+  }
+  if(randomAlpha) {
+    dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
+  }
   
   dat$MakeADFunInputs$parameters = tmb_params
   MakeADFunInputs = dat$MakeADFunInputs
@@ -1931,6 +1938,9 @@ getValidationFit = function(fold,
           }
           else {
             # try some other ways of calculating the hessian:
+            print("Hessian not PD. Using empirical Bayes inference.")
+            
+            
             print("Hessian not PD. Testing other SD calculations...")
             print(SD0)
             SD0testSkipDelta <- TMB::sdreport(testObj, getJointPrecision=TRUE,
