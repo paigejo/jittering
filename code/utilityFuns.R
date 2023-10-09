@@ -1530,7 +1530,7 @@ generateJobList = function(workDir="savedOutput/validation/folds/",
 generateJobListValidation = function(workDir="savedOutput/validation/folds/", 
                            filePrefix="scores", fileSuffix=".RData", 
                            iNames=c("Md2", "M_D2", "Mdm2", "M_DM2"), 
-                           jNames=paste(paste("fold", 1:20, sep=""), ".", sep=""), 
+                           jNames=NULL, 
                            extensiveCheck=FALSE, extensiveCheckNULL=FALSE, 
                            areal=TRUE, 
                            excludeFiles=c("d_", "D_", "dm_", "DM_")) {
@@ -1541,6 +1541,15 @@ generateJobListValidation = function(workDir="savedOutput/validation/folds/",
   } else {
     excludeFiles = c(excludeFiles, 
                      c("d2_", "D2_", "dm2_", "DM2_"))
+  }
+  
+  if(is.null(jNames)) {
+    if(!areal) {
+      paste(paste("fold", 1:20, sep=""), ".", sep="")
+    } else {
+      paste(paste("fold", 1:37, sep=""), ".", sep="")
+    }
+    
   }
   
   # save current directory to return to later. Set directory to job file locations
