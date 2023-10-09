@@ -1545,9 +1545,9 @@ generateJobListValidation = function(workDir="savedOutput/validation/folds/",
   
   if(is.null(jNames)) {
     if(!areal) {
-      paste(paste("fold", 1:20, sep=""), ".", sep="")
+      jNames = paste(paste("fold", 1:20, sep=""), ".", sep="")
     } else {
-      paste(paste("fold", 1:37, sep=""), ".", sep="")
+      jNames = paste(paste("fold", 1:37, sep=""), ".", sep="")
     }
     
   }
