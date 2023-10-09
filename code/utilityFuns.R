@@ -1473,7 +1473,7 @@ generateJobList = function(workDir="savedOutput/validation/folds/",
   if(length(missingJobInds) == 0) {
     setwd(thisDir)
     print("No missing jobs")
-    return(invsible(NULL))
+    return(invisible(NULL))
   }else if(length(missingJobInds) == 1) {
     setwd(thisDir)
     return(missingJobInds)
@@ -1617,7 +1617,7 @@ generateJobListValidation = function(workDir="savedOutput/validation/folds/",
   if(length(missingJobInds) == 0) {
     setwd(thisDir)
     print("No missing jobs")
-    return(invsible(NULL))
+    return(invisible(NULL))
   }else if(length(missingJobInds) == 1) {
     setwd(thisDir)
     return(missingJobInds)
