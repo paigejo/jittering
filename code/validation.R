@@ -1669,7 +1669,7 @@ getValidationFit = function(fold,
       n_iUrbanDHS=dat$MakeADFunInputs$data$n_iUrbanDHS, # number binomial trials
       n_iRuralDHS=dat$MakeADFunInputs$data$n_iRuralDHS, # 
       AprojUrbanDHS=dat$MakeADFunInputs$data$AprojUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-      AprojRuralDHS=dat$MakeADFunInputs$data$AprojUrbanMICS, # 
+      AprojRuralDHS=dat$MakeADFunInputs$data$AprojRuralDHS, # 
       X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
       X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
       wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
