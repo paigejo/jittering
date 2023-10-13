@@ -2031,7 +2031,7 @@ getValidationFit = function(fold,
 predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                        addBinVar=TRUE, res=300) {
+                        addBinVar=TRUE, res=300, maxIterChunk=2000) {
   
   # clean input arguments
   model = match.arg(model)
@@ -2184,11 +2184,23 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     }
     
     # get latent preds at cluster integration points
-    clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
+    matMultChunk = function(X1, X2, maxIterChunk=maxIterChunk) {
+      matMultChunkHelper = function(colStart=1) {
+        inds = colStart:min(c(colStart + maxIterChunk-1, ncol(X2)))
+        X1 %*% X2[,inds]
+      }
+      
+      startIs = seq(1, ncol(X2), by=maxIterChunk)
+      do.call("cbind", lapply(startIs, matMultChunkHelper))
+    }
+    
+    # clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
+    clustIntDrawsUrb <- as.matrix(matMultChunk(bigAurb, epsilon_tmb_draws))
     clustIntDrawsUrb <- sweep(clustIntDrawsUrb, 2, alpha_tmb_draws, '+')
     clustIntDrawsUrb <- clustIntDrawsUrb + (Xurb %*% beta_tmb_draws)
     
-    clustIntDrawsRur <- as.matrix(bigArur %*% epsilon_tmb_draws)
+    # clustIntDrawsRur <- as.matrix(bigArur %*% epsilon_tmb_draws)
+    clustIntDrawsRur <- as.matrix(matMultChunk(bigArur, epsilon_tmb_draws))
     clustIntDrawsRur <- sweep(clustIntDrawsRur, 2, alpha_tmb_draws, '+')
     clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
     
