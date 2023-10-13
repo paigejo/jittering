@@ -2184,13 +2184,13 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     }
     
     # get latent preds at cluster integration points
-    matMultChunk = function(X1, X2, maxIterChunk=maxIterChunk) {
+    matMultChunk = function(X1, X2, nColMax=maxIterChunk) {
       matMultChunkHelper = function(colStart=1) {
-        inds = colStart:min(c(colStart + maxIterChunk-1, ncol(X2)))
+        inds = colStart:min(c(colStart + nColMax-1, ncol(X2)))
         X1 %*% X2[,inds]
       }
       
-      startIs = seq(1, ncol(X2), by=maxIterChunk)
+      startIs = seq(1, ncol(X2), by=nColMax)
       do.call("cbind", lapply(startIs, matMultChunkHelper))
     }
     
