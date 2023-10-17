@@ -1612,7 +1612,7 @@ getValidationFit = function(fold,
   edMICSOutOfSample = dat$edMICSOutOfSample
   
   # initialize with simple/unadjusted model ----
-  if(model == "Md2") {
+  if((model == "Md2") && !regenModFit) {
     # now set the initial parameters
     print("Initializing optimization for the unadjusted DHS model")
     initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
@@ -1629,7 +1629,7 @@ getValidationFit = function(fold,
                             nuggetUrbDHS = rep(0, sum(edInSample$urban)), 
                             nuggetRurDHS = rep(0, sum(!edInSample$urban))
     )
-  } else if(model %in% c("MD2", "Mdm2", "MDM2")) {
+  } else if((model %in% c("MD2", "Mdm2", "MDM2")) && !regenModFit) {
     print("Initializing optimization via the unadjusted DHS model")
     initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
     initRurP = sum(c(edInSample$y[!edInSample$urban]))/sum(c(edInSample$n[!edInSample$urban]))
@@ -1764,8 +1764,6 @@ getValidationFit = function(fold,
     }
     
     dyn.unload( dynlib("code/modBYM2JitterDHS2"))
-  } else {
-    stop("other model no longer supported")
   }
   
   # 
