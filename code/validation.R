@@ -2003,7 +2003,7 @@ getValidationFit = function(fold,
                            model=model, 
                            quantiles=c(0.025, 0.1, 0.9, 0.975))
     } else {
-      # browser()
+      browser()
       gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975))
@@ -2637,6 +2637,10 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
         
         thisParTabMICS = c(thisParTabMICS, list(foldParTab))
       } else {
+        # if((model == "Md2") || (model == "MDM2")) {
+        #   browser()
+        # }
+        
         thisScoresTabDHS = rbind(thisScoresTabDHS, scoresDHS)
         thisScoresTabMICS = rbind(thisScoresTabMICS, scoresMICS)
         thisScoresTabFull = rbind(thisScoresTabFull, scores)
@@ -2673,6 +2677,11 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
     scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, colMeans, na.rm=TRUE))
     scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, colMeans, na.rm=TRUE))
     scoresTabsAvgFull = do.call("rbind", lapply(scoresTabsFull, colMeans, na.rm=TRUE))
+    
+    colMeds = function(x) {apply(x, 2, median, na.rm=TRUE)}
+    scoresTabsMedDHS = do.call("rbind", lapply(scoresTabsDHS, colMeds))
+    scoresTabsMedMICS = do.call("rbind", lapply(scoresTabsMICS, colMeds))
+    scoresTabsMedFull = do.call("rbind", lapply(scoresTabsFull, colMeds))
   }
   
   if(!areal) {
@@ -2753,22 +2762,35 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
     finalTabAvg = scoresTabsAvgDHS * wDHS + scoresTabsAvgMICS * wMICS
     finalTabUrbAvg = scoresTabsUrbAvgDHS * wUrbDHS + scoresTabsUrbAvgMICS * wUrbMICS
     finalTabRurAvg = scoresTabsRurAvgDHS * wRurDHS + scoresTabsRurAvgMICS * wRurMICS
+    
+    finalTabDHSAvg = scoresTabsAvgDHS
+    finalTabMICSAvg = scoresTabsAvgMICS
+    finalTabDHSMed = NULL
+    finalTabMICSMed = NULL
   } else {
     finalTabAvg = scoresTabsAvgFull
     finalTabDHSAvg = scoresTabsAvgDHS
     finalTabMICSAvg = scoresTabsAvgMICS
+    
+    finalTabMed = scoresTabsMedFull
+    finalTabDHSMed = scoresTabsMedDHS
+    finalTabMICSMed = scoresTabsMedMICS
+    
+    finalTabUrbAvg = NULL
+    finalTabRurAvg = NULL
   }
   
-  # print out tables ----
+  # save/print out tables ----
   
   browser()
+  
+  
+  # old results: ----
+  
   #          Bias        Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95
   # 1 0.003537896 0.09405488 0.0940674 0.3067041 0.1726749       0.7729948       0.9801325        1.110449        1.239974
   #   Coverage50 Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95
   # 1  0.3782958  0.6722866  0.8125554  0.8765654 0.3623988 0.6269316 0.7425313 0.8279065
-  
-  
-  # old results: ----
   
   # finalTabAvg
   #              Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
@@ -2855,7 +2877,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
   # phi              0.69022354 0.00670695  0.6770004  0.6816572  0.6987463  0.703217893
   # sigmaEpsSq       1.63425590 0.07128903  1.5005885  1.5434381  1.7262691  1.777046946
   
-  # new results: ----
+  # newer old results: ----
   # finalTabAvg
   #              Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
   # [1,] -0.001195913 0.10194118 0.10255866 0.3199920 0.1815174       0.7936561       0.9894571       1.0665475       1.1303076  0.3305173
@@ -2940,6 +2962,8 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
   # sigmaSq          0.37362761 0.036815456  0.3071483  0.32805320  0.4224336  0.4500976
   # phi              0.82253770 0.005424617  0.8117663  0.81553814  0.8294229  0.8329414
   # sigmaEpsSq       1.41296094 0.065694832  1.2892284  1.32994917  1.4973411  1.5449716
+  
+  # new results: ----
 }
 
 # function for getting combined MICS and DHS direct estimates at the admin1 level
