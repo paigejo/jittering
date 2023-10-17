@@ -1764,6 +1764,9 @@ getValidationFit = function(fold,
     }
     
     dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+  } else {
+    # we still need inputs to make the AD function
+    tmb_params = dat$MakeADFunInputs$parameters
   }
   
   # 
