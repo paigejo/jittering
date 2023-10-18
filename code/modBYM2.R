@@ -880,6 +880,10 @@ simBYM2fromPrior = function(nsim=1, bym2ArgsTMB=NULL, level=c("adm2", "admFinal"
   }
   
   stop("Not yet implemented")
+  # // Calculate the quadratic form Eps tau [(1-phi) I + phi Q_besag^+]^(-1) Eps^T
+  # // = Eps tau [I + phi (Q_besag^+ - I)]^(-1) Eps^T
+  # // = Eps tau V [I + phi (GammaTilde - I)]^(-1) V^T Eps^T
+  # // i.e. the sum of squares of tau^0.5 Eps V diag(1/(1 + phi*gammaTildesm1))
 }
 
 
