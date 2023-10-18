@@ -13,8 +13,19 @@ expit2 <- function(x) {
 
 expit <- function(x) {
   res = 1/(1+exp(-x))
-  res[x > 100] = 1
-  res[x < -100] = 0
+  # tested via (logit(expit(37)), logit(expit(-710)))
+  res[x > 36] = 1
+  res[x < -709] = 0
+  res
+}
+
+expitBad <- function(x) {
+  res = 1/(1+exp(-x))
+  res
+}
+
+expitBad2 <- function(x) {
+  res = 1/(1+exp(-x))
   res
 }
 
@@ -1234,8 +1245,43 @@ logitNormMeanGrouped = function(muSigmaMat, logisticApproximation=TRUE, splineAp
 # doi:10.1137/0904045.
 logitNormMeanSplineApprox = function(mus, sigma, npts=250, ...) {
   
-  rangeExpitMu = expit(range(mus))
-  seqMus = logit(seq(rangeExpitMu[1], rangeExpitMu[2], l=npts))
+  rangeMu = range(mus)
+  rangeExpitMu = expit(rangeMu)
+  if(!any(rangeExpitMu %in% c(0, 1))) {
+    # all values of mu are in a good range for numerical evaluation. 
+    # Construct evaluation grid on probability scale
+    seqMus = logit(seq(rangeExpitMu[1], rangeExpitMu[2], l=npts))
+  } else {
+    # some values of mu outside of a good range for numerical evaluation. 
+    # Stitch together evaluation grids on probability and logit scales. 
+    if(all(rangeExpitMu %in% c(0, 1))) {
+      if(all(rangeExpitMu == 0)) {
+        seqMus = seq(rangeMu[1], rangeMu[2], l=npts)
+      } else if(all(rangeExpitMu == 1)) {
+        seqMus = seq(rangeMu[1], rangeMu[2], l=npts)
+      } else if(all(rangeExpitMu %in% c(0, 1))) {
+        nPtsBelow = nPtsAbove = ceiling(npts/10)
+        nPtsGood = round(npts*.8)
+        goodRange = c(-709, 36)
+        seqMus = c(seq(rangeMu[1], goodRange[1], l=nPtsBelow), 
+                   logit(seq(expit(goodRange[1]), expit(goodRange[2]), l=nPtsGood)), 
+                   seq(goodRange[2], rangeMu[2], l=nPtsAbove))
+      }
+    } else if(rangeExpitMu[1] == 0) {
+      nPtsBelow = ceiling(npts/10)
+      nPtsGood = round(npts*.9)
+      goodRange = c(-709, 36)
+      seqMus = c(seq(rangeMu[1], goodRange[1], l=nPtsBelow), 
+                 logit(seq(expit(goodRange[1]), expit(goodRange[2]), l=nPtsGood)))
+    } else if(rangeExpitMu[2] == 1) {
+      nPtsAbove = ceiling(npts/10)
+      nPtsGood = round(npts*.9)
+      goodRange = c(-709, 36)
+      seqMus = c(logit(seq(expit(goodRange[1]), expit(goodRange[2]), l=nPtsGood)), 
+                 seq(goodRange[2], rangeMu[2], l=nPtsAbove))
+    }
+  }
+  
   
   muSigmaMat = cbind(seqMus, sigma)
   vals = logit(logitNormMean(muSigmaMat, logisticApproximation=FALSE, splineApproximation=FALSE))
@@ -1244,7 +1290,7 @@ logitNormMeanSplineApprox = function(mus, sigma, npts=250, ...) {
   
   outVals = expit(spFun(mus))
   
-  list(vals = outVals, fun=spFun, range=logit(rangeExpitMu))
+  list(vals = outVals, fun=spFun, range=rangeMu)
 }
 
 getPixelIndex = function(eastNorth, popMat=NULL, clusterAreas=NULL, enforceSameArea=TRUE) {

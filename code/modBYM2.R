@@ -863,7 +863,24 @@ predArea = function(gridPreds, areaVarName="stratumMICS",
   c(arealPreds, list(adm=adm))
 }
 
-
+simBYM2fromPrior = function(nsim=1, bym2ArgsTMB=NULL, level=c("adm2", "admFinal"), 
+                            logTau=1, logitPhi=0) {
+  level = match.arg(level)
+  
+  if(is.null(bym2ArgsTMB)) {
+    if(admLevel == "admFinal") {
+      out = load("savedOutput/global/admFinalMat.RData")
+      bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3, 
+                                               constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+    } else {
+      out = load("savedOutput/global/adm2Mat.RData")
+      bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
+                                               constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+    }
+  }
+  
+  stop("Not yet implemented")
+}
 
 
 
