@@ -1611,6 +1611,40 @@ getValidationFit = function(fold,
   edOutOfSample = dat$edOutOfSample
   edMICSOutOfSample = dat$edMICSOutOfSample
   
+  # specify random effects
+  if(!sep) {
+    rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+    rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
+    if(randomBeta) {
+      rand_effsStart = c("beta", rand_effsStart)
+    }
+    if(randomAlpha) {
+      rand_effsStart = c("alpha", rand_effsStart)
+    }
+  } else {
+    rand_effsStart <- c('w_bym2Star', 'u_bym2Star', 'nuggetUrbDHS', 'nuggetRurDHS')
+    if(randomBeta) {
+      rand_effsStart = c("beta", rand_effsStart)
+    }
+    if(randomAlpha) {
+      rand_effsStart = c("alpha", rand_effsStart)
+    }
+    
+    # in this case, must also change random effects input into main TMB call...
+    if(model %in% c("Md2", "MD2")) {
+      dat$MakeADFunInputs$random = c('w_bym2Star', 'u_bym2Star', 'nuggetUrbDHS', 'nuggetRurDHS')
+    } else {
+      dat$MakeADFunInputs$random = c('w_bym2Star', 'u_bym2Star', 'nuggetUrbMICS', 'nuggetRurMICS', 'nuggetUrbDHS', 'nuggetRurDHS')
+    }
+    if(randomBeta) {
+      dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
+    }
+    if(randomAlpha) {
+      dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
+    }
+    
+  }
+  
   # initialize with simple/unadjusted model ----
   if((model == "Md2") && regenModFit) {
     # now set the initial parameters
@@ -1717,26 +1751,6 @@ getValidationFit = function(fold,
                               nuggetRurDHS = rep(0, sum(!edInSample$urban))
       )
     }
-    
-    # specify random effects
-    if(!sep) {
-      rand_effsStart <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'beta', 'alpha')
-      if(randomBeta) {
-        rand_effsStart = c("beta", rand_effsStart)
-      }
-      if(randomAlpha) {
-        rand_effsStart = c("alpha", rand_effsStart)
-      }
-    } else {
-      rand_effsStart <- c('w_bym2Star', 'u_bym2Star', 'nuggetUrbDHS', 'nuggetRurDHS')
-      if(randomBeta) {
-        rand_effsStart = c("beta", rand_effsStart)
-      }
-      if(randomAlpha) {
-        rand_effsStart = c("alpha", rand_effsStart)
-      }
-    }
-    
     
     # collect input data, setting only first weights as nonzero (to 1)
     wUrbanDHStemp=dat$MakeADFunInputs$data$wUrbanDHS
