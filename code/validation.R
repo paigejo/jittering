@@ -1978,8 +1978,8 @@ getValidationFit = function(fold,
   
   dat$MakeADFunInputs$parameters = tmb_params
   MakeADFunInputs = dat$MakeADFunInputs
-  MakeADFunInputsFull = MakeADFunInputs
-  MakeADFunInputsFull$random = NULL
+  # MakeADFunInputsFull = MakeADFunInputs
+  # MakeADFunInputsFull$random = NULL
   
   # make sure we set the out of sample data correctly for 'DHS data only' models
   if(is.null(edMICSOutOfSample)) {
@@ -2105,7 +2105,7 @@ getValidationFit = function(fold,
           options=0 # 1 for adreport of log tau and logit phi
         )
       }
-      dat$MakeADFunInputs$data = newDat
+      MakeADFunInputs$data = newDat
     }
     
     if(FALSE) {
@@ -2148,7 +2148,7 @@ getValidationFit = function(fold,
     # Error in getParameterOrder(data, parameters, new.env(), DLL = DLL) : 
     #   Error when reading the variable: 'AprojUrbanDHS'. Please check data and parameters.
     obj <- do.call("MakeADFun", MakeADFunInputs)
-    objFull <- do.call("MakeADFun", MakeADFunInputsFull)
+    # objFull <- do.call("MakeADFun", MakeADFunInputsFull)
     
     lower = rep(-10, length(obj[['par']]))
     upper = rep( 10, length(obj[['par']]))
@@ -2336,12 +2336,12 @@ getValidationFit = function(fold,
     preds = NULL
   }
   
-  save(SD0, obj, objFull, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
+  save(SD0, obj, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   
   allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal)
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
-  list(SD0, obj, objFull, totalTime, sdTime, hessPD, allScores)
+  list(SD0, obj, totalTime, sdTime, hessPD, allScores)
 }
 
 # make predictions for a set of clusters of one type (MICS or DHS)
