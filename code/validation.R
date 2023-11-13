@@ -2327,7 +2327,7 @@ getValidationFit = function(fold,
     }
     
     # save fit model before generating predictions
-    save(SD0, obj, objFull, totalTime, sdTime, hessPD, file=paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
+    save(SD0, obj, totalTime, sdTime, hessPD, file=paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   } else {
     out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   }
