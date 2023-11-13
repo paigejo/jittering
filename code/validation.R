@@ -1646,6 +1646,7 @@ getValidationFit = function(fold,
   }
   
   # initialize with simple/unadjusted model ----
+  optParStart = c(0, 0, 0)
   if((model == "Md2") && regenModFit) {
     # now set the initial parameters
     print("Initializing optimization for the unadjusted DHS model")
@@ -2202,7 +2203,7 @@ getValidationFit = function(fold,
       # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
       tolSeq = 1e-06
       testObj = obj
-      optPar = testObj$par
+      optPar = optParStart
       if(fromOptPar) {
         if(file.exists(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))) {
           # load optPar (replacing the default value) from file if requested
