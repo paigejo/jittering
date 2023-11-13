@@ -2006,16 +2006,22 @@ getValidationFit = function(fold,
     if(sep) {
       # reconstruct data to include indices rather than A matrices. Also add in 
       # QinvRowSums:
-      
-      areaidxlocUrbanMICS = apply(dat$MakeADFunInputs$data$AprojUrbanMICS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRuralMICS = apply(dat$MakeADFunInputs$data$AprojRuralMICS, 1, function(x) {match(1, x)}) - 1
-      areaidxlocUrbanMICS = as.integer(areaidxlocUrbanMICS)
-      areaidxlocRuralMICS = as.integer(areaidxlocRuralMICS)
-      
-      areaidxlocUrbanDHS = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRuralDHS = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
-      areaidxlocUrbanDHS = as.integer(areaidxlocUrbanDHS)
-      areaidxlocRuralDHS = as.integer(areaidxlocRuralDHS)
+      if(model %in% c("Mdm2", "MDM2")) {
+        areaidxlocUrbanMICS = apply(dat$MakeADFunInputs$data$AprojUrbanMICS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+        areaidxlocRuralMICS = apply(dat$MakeADFunInputs$data$AprojRuralMICS, 1, function(x) {match(1, x)}) - 1
+        areaidxlocUrbanMICS = as.integer(areaidxlocUrbanMICS)
+        areaidxlocRuralMICS = as.integer(areaidxlocRuralMICS)
+        
+        areaidxlocUrbanDHS = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+        areaidxlocRuralDHS = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
+        areaidxlocUrbanDHS = as.integer(areaidxlocUrbanDHS)
+        areaidxlocRuralDHS = as.integer(areaidxlocRuralDHS)
+      } else {
+        areaidxlocUrban = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+        areaidxlocRural = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
+        areaidxlocUrban = as.integer(areaidxlocUrban)
+        areaidxlocRural = as.integer(areaidxlocRural)
+      }
       
       # conditioning by Kriging from Eq (2.30) in Rue Held:
       # Ax = e (for A = (0^T 1^T), e = 0), x = (w^T u^T)^T
