@@ -58,7 +58,9 @@ makeQBYM2repar = function(graphObj, constr=TRUE, scale.model=TRUE) {
   Q
 }
 
-prepareBYM2argumentsForTMB = function(graphObj, u=0.5, alpha=2/3, constr=TRUE, scale.model=TRUE, tol=1e-8, matrixType=c("spam", "TsparseMatrix")) {
+prepareBYM2argumentsForTMB = function(graphObj, u=0.5, alpha=2/3, constr=TRUE, 
+                                      scale.model=TRUE, tol=1e-8, 
+                                      matrixType=c("spam", "TsparseMatrix")) {
   matrixType = match.arg(matrixType)
   
   # make Q
@@ -85,7 +87,7 @@ prepareBYM2argumentsForTMB = function(graphObj, u=0.5, alpha=2/3, constr=TRUE, s
   list(lambda=lambda, Q=Q, tr=tr, gammaTildesm1=gammaTildesm1, V=out$vectors)
 }
 
-dBYM2phiPC = function(phi, lambda, logitPhi=FALSE, Q=NULL, gammaTildesm1=NULL, tr=NULL, doLog=FALSE, tol=1e-8) {
+dBYM2phiPC = function(phi, lambda, logitPhi=FALSE, Q=NULL, gammaTildesm1=NULL, tr=NULL, doLog=FALSE, tol=1e-8, returnPts=FALSE) {
   if(!logitPhi && (length(phi) == 1) && ((phi == 0) || (phi == 1))) {
     if(doLog) {
       return(-Inf)
@@ -99,7 +101,7 @@ dBYM2phiPC = function(phi, lambda, logitPhi=FALSE, Q=NULL, gammaTildesm1=NULL, t
       return(0)
     }
   }
-
+  
   if(is.null(gammaTildesm1)) {
     if(is.null(Q)) {
       stop("must either provide Q or gammaTildesm1 and tr")
@@ -146,10 +148,256 @@ dBYM2phiPC = function(phi, lambda, logitPhi=FALSE, Q=NULL, gammaTildesm1=NULL, t
     ldensity = lexpDensity + ljacobian
   }
   
-  if(!doLog) {
-    exp(ldensity)
+  if(!returnPts) {
+    if(!doLog) {
+      exp(ldensity)
+    } else {
+      ldensity
+    }
   } else {
-    ldensity
+    if(!doLog) {
+      c(density=exp(ldensity), jacobian=exp(ljacobian), d=d)
+    } else {
+      c(ldensity=ldensity, ljacobian=ljacobian, d=d)
+    }
+  }
+  
+}
+
+debugINLABYM2phi = function(graph, Q, eigenvalues = NULL, marginal.variances = NULL, 
+                            rankdef, alpha, u = 1/2, lambda, scale.model = TRUE, return.as.table = FALSE, 
+                            adjust.for.con.comp = TRUE, eps = sqrt(.Machine$double.eps), 
+                            debug = FALSE) {
+  my.debug <- function(...) if (debug) 
+    cat("*** debug *** inla.pc.bym.phi: ", ..., "\n")
+  stopifnot(scale.model == TRUE)
+  stopifnot(adjust.for.con.comp == TRUE)
+  res <- NULL
+  if (missing(eigenvalues) && missing(marginal.variances)) {
+    if (missing(graph) && !missing(Q)) {
+      Q <- inla.as.sparse(Q)
+    }
+    else if (!missing(graph) && missing(Q)) {
+      Q <- inla.pc.bym.Q(graph)
+    }
+    else if (missing(graph) && missing(Q)) {
+      stop("Either <Q> or <graph> must be given.")
+    }
+    else {
+      stop("Only one of <Q> and <graph> can be given.")
+    }
+    res <- inla.bym.constr.internal(Q, adjust.for.con.comp = adjust.for.con.comp)
+    if (missing(rankdef)) {
+      rankdef <- res$rankdef
+    }
+    n <- dim(Q)[1]
+    res <- inla.scale.model.bym.internal(Q, adjust.for.con.comp = adjust.for.con.comp)
+    Q <- res$Q
+    f <- mean(res$var, na.rm = TRUE) - 1
+    use.eigenvalues <- FALSE
+  }
+  else {
+    n <- length(eigenvalues)
+    eigenvalues <- pmax(0, sort(eigenvalues, decreasing = TRUE))
+    gamma.invm1 <- c(1/eigenvalues[1:(n - rankdef)], rep(0, 
+                                                         rankdef)) - 1
+    f <- mean(marginal.variances) - 1
+    use.eigenvalues <- TRUE
+  }
+  if (use.eigenvalues) {
+    phi.s <- 1/(1 + exp(-seq(-15, 12, len = 1000)))
+    d <- numeric(length(phi.s))
+    k <- 1
+    for (phi in phi.s) {
+      aa <- n * phi * f
+      bb <- sum(log1p(phi * gamma.invm1))
+      d[k] <- (if (aa >= bb) 
+        sqrt(aa - bb)
+        else NA)
+      k <- k + 1
+    }
+  }
+  else {
+    phi.s <- 1/(1 + exp(-c(seq(-15, 0, len = 40), 1:12)))
+    d <- numeric(length(phi.s))
+    log.q1.det <- inla.sparse.det.bym(Q, adjust.for.con.comp = adjust.for.con.comp, 
+                                      constr = res$constr, rankdef = rankdef)
+    d <- c(unlist(inla.mclapply(phi.s, function(phi) {
+      aa <- n * phi * f
+      bb <- (n * log((1 - phi)/phi) + inla.sparse.det.bym(Q + 
+                                                            phi/(1 - phi) * Diagonal(n), adjust.for.con.comp = adjust.for.con.comp, 
+                                                          constr = res$constr, rankdef = rankdef) - (log.q1.det - 
+                                                                                                       n * log(phi)))
+      my.debug("aa=", aa, " bb=", bb, " sqrt(", aa - bb, 
+               ")")
+      return(if (aa >= bb) sqrt(aa - bb) else NA)
+    })))
+  }
+  names(d) <- NULL
+  remove <- is.na(d)
+  my.debug(paste(sum(remove), "out of", length(remove), "removed"))
+  d <- d[!remove]
+  phi.s <- phi.s[!remove]
+  remove <- 1:6
+  d <- d[-remove]
+  phi.s <- phi.s[-remove]
+  phi.intern <- log(phi.s/(1 - phi.s))
+  ff.d <- splinefun(phi.intern, log(d))
+  phi.intern <- seq(min(phi.intern) - 0, max(phi.intern), 
+                    len = 10000)
+  phi.s <- 1/(1 + exp(-phi.intern))
+  d <- exp(ff.d(phi.intern))
+  ff.d.core <- splinefun(phi.intern, log(d))
+  ff.d <- function(phi.intern, deriv = 0) {
+    if (deriv == 0) {
+      return(exp(ff.d.core(phi.intern)))
+    }
+    else if (deriv == 1) {
+      return(exp(ff.d.core(phi.intern)) * ff.d.core(phi.intern, 
+                                                    deriv = 1))
+    }
+    else {
+      stop("ERROR")
+    }
+  }
+  f.d <- function(phi.s) ff.d(log(phi.s/(1 - phi.s)))
+  d <- f.d(phi.s)
+  if (missing(lambda)) {
+    stopifnot(alpha > 0 && alpha < 1 && u > 0)
+    lambda <- -log(1 - alpha)/f.d(u)
+  }
+  log.jac <- log(abs(ff.d(phi.intern, deriv = 1)))
+  log.prior <- log(lambda) - lambda * d + log.jac
+  ssum <- sum(exp(log.prior) * (c(0, diff(phi.intern)) + c(diff(phi.intern), 
+                                                           0)))/2
+  my.debug("empirical integral of the prior = ", ssum, ". correct it.")
+  log.prior <- log.prior - log(ssum)
+  if (return.as.table) {
+    my.debug("return prior as a table on phi.intern")
+    theta.prior.table <- paste(c("table:", cbind(phi.intern, 
+                                                 log.prior)), sep = "", collapse = " ")
+    return(theta.prior.table)
+  }
+  else {
+    my.debug("return prior as a function of phi")
+    prior.theta.1 <- splinefun(phi.intern, log.prior + phi.intern + 
+                                 2 * log(1 + exp(-phi.intern)))
+    prior.phi <- function(phi) prior.theta.1(log(phi/(1 - 
+                                                        phi)))
+    return(prior.phi)
+  }
+}
+
+dBYM2naive = function(x, phi, tau=1, Q=NULL, V=NULL, gammaTildesm1=NULL, 
+                      logitPhi=FALSE, logTau=FALSE, precomputedValues=NULL, 
+                      doLog=TRUE, returnComponents=FALSE) {
+  if(logitPhi) {
+    lPhi = phi
+    phi = expit(lPhi)
+  }
+  if(logTau) {
+    lTau = tau
+    tau = exp(lTau)
+  }
+  
+  if(!is.null(precomputedValues)) {
+    Q = precomputedValues$Q
+    V = precomputedValues$V
+    gammaTildesm1 = precomputedValues$gammaTildesm1
+  }
+  
+  # calculate Sigma
+  # // Calculate the quadratic form Eps tau [(1-phi) I + phi Q_besag^+]^(-1) Eps^T
+  # // = Eps tau [I + phi (Q_besag^+ - I)]^(-1) Eps^T
+  # // = Eps tau V [I + phi (GammaTilde - I)]^(-1) V^T Eps^T
+  # // i.e. the sum of squares of tau^0.5 Eps V diag(1/sqrt(1 + phi*gammaTildesm1))
+  Sigma = (V %*% diag(1 + phi*(gammaTildesm1)) %*% t(V))/tau
+  Q = (V %*% diag(1/(1 + phi*(gammaTildesm1))) %*% t(V))*tau
+  
+  # get the log determinant of Sigma
+  # logDet = log(det(Sigma))
+  logDet = sum(log(1 + phi*(gammaTildesm1))) - length(x) * log(tau)
+  
+  # get the quadratic form:
+  quadForm = t(x) %*% Q %*% x
+  
+  # combine to get the log likelihood
+  k = nrow(Q)
+  ldensity = -0.5 * (logDet + quadForm + k*log(2*pi))
+  
+  if(!doLog) {
+    val = exp(ldensity)
+  } else {
+    val = ldensity
+  }
+  
+  if(returnComponents) {
+    list(val=val, logDet=logDet, quadForm=quadForm)
+  } else {
+    val
+  }
+}
+
+dBYM2sepNaive = function(u, v, phi, tau=1, Q=NULL, V=NULL, gammaTildesm1=NULL, 
+                         logitPhi=FALSE, logTau=FALSE, precomputedValues=NULL, 
+                         doLog=TRUE, returnComponents=FALSE, includeDetQinv=FALSE) {
+  if(logitPhi) {
+    lPhi = phi
+    phi = expit(lPhi)
+  }
+  if(logTau) {
+    lTau = tau
+    tau = exp(lTau)
+  } else {
+    lTau = log(tau)
+  }
+  
+  if(!is.null(precomputedValues)) {
+    Q = precomputedValues$Q
+    V = precomputedValues$V
+    gammaTildesm1 = precomputedValues$gammaTildesm1
+  }
+  
+  nAreas = nrow(Q)
+  
+  # calculate Sigma for Besag part
+  # // leave out the log determinant of the Q term, since it is constant, 
+  # // but include the term for the parameters. In other words, calculate part of: 
+  # // log |(1/tau) * phi * Q^+| + log|(1/tau) * (1-phi) * I| 
+  # //   = nAreas * log(phi / tau) + log|Q^+| + nAreas * log((1-phi) / tau)
+  # //   = nAreas * log(phi (1 - phi) / tau^2) + log|Q^+|
+  # //   = nAreas * log(phi (1 - phi) / tau^2) + C
+  # // Type logDetTau = Type(nAreas) * log(phi * (1.0 - phi) / pow(tau, 2));
+  # Type logDetTau = Type(nAreas) * (log(phi) + log(Type(1.0) - phi) - Type(2.0) * log_tau);
+  if(!includeDetQinv) {
+    logDet = nAreas * (log(phi) + log(1 - phi) - 2 * lTau)
+  } else {
+    logDet = nAreas * (log(phi) + log(1 - phi) - 2 * lTau) + sum(log1p(gammaTildesm1))
+  }
+  
+  # get the quadratic forms:
+  quadFormV = (tau/phi) * (t(v) %*% Q %*% v)
+  quadFormU = (tau/(1-phi)) * sum(u^2)
+  quadForm = quadFormU + quadFormV
+  
+  # combine to get the log likelihood
+  k = nAreas
+  ldensity = -0.5 * (logDet + quadForm)
+  
+  if(includeDetQinv) {
+    ldensity = ldensity + k*log(2*pi)
+  }
+  
+  if(!doLog) {
+    val = exp(ldensity)
+  } else {
+    val = ldensity
+  }
+  
+  if(returnComponents) {
+    list(val=as.numeric(as.matrix(val)), logDet=logDet, quadForm=quadForm)
+  } else {
+    as.numeric(as.matrix(val))
   }
 }
 
@@ -261,8 +509,14 @@ testpBYM2phiPC = function(u=0.5, alpha=2/3, graphFile = "~/git/U5MR/Kenyaadm1.gr
   
   gammas = 1/(gammaTildesm1+1)
   gammas[gammaTildesm1 == -1] = 0
+  margVars = diag(pcArgs$V %*% diag(pcArgs$gammaTildesm1+1) %*% t(pcArgs$V))
   out = INLA:::inla.pc.bym.phi(Q=Qtest, lambda=lambda, rankdef=1)
+  out2 = INLA:::inla.pc.bym.phi(Q=Qtest, lambda=lambda, rankdef=1, eigenvalues=gammas, marginal.variances=margVars)
   # out = INLA:::inla.pc.bym.phi(Q=Qtest, lambda=lambda, eigenvalues=gammas, rankdef=1, marginal.variances=gammas)
+  browser()
+  
+  logDensityVals2 = sapply(logit(phis), dBYM2phiPC, lambda=lambda, Q=Q, gammaTildesm1=gammaTildesm1, tr=tr, doLog=TRUE, logitPhi=TRUE)
+  head(cbind(logDensityVals, logDensityVals2, out(phis), out2(phis)))
   
   pdf(file="~/git/jittering/figures/test/pcPhi.pdf", width=8, height=8)
   par(mfrow=c(2,2))
@@ -278,6 +532,21 @@ testpBYM2phiPC = function(u=0.5, alpha=2/3, graphFile = "~/git/U5MR/Kenyaadm1.gr
   plot(phis, out(phis), type="l", col="blue", 
        main=expression(paste("INLA log PC prior ", phi)), 
        xlab=expression(phi), ylab="Log density")
+  dev.off()
+  
+  pdf(file="~/git/jittering/figures/test/pcPhi2.pdf", width=5, height=5)
+  ylim = range(c(logDensityVals, out(phis)))
+  plot(phis, logDensityVals, type="l", col="blue", 
+       main=expression(paste("Log PC prior ", phi)), 
+       xlab=expression(phi), ylab="Log density", ylim=ylim)
+  lines(phis, out(phis), col="black")
+  legend("top", c("My version", "INLA version"), lty=1, col=c("blue", "black"))
+  dev.off()
+  
+  pdf(file="~/git/jittering/figures/test/pcPhiDiff.pdf", width=5, height=5)
+  plot(phis, logDensityVals - out(phis), type="l", col="blue", 
+       main=expression(paste("Log PC prior ", phi, " difference")), 
+       xlab=expression(phi), ylab="Log density difference")
   dev.off()
   
   dBYM2phiPC(0.5, lambda=lambda, Q=Q, gammaTildesm1=gammaTildesm1, tr=tr)
@@ -362,15 +631,86 @@ pBYM2phiPCnumericalINLA = function(logitPhi, lambda, Q=NULL, gammaTildesm1=NULL,
 
 
 # run the jittering model
-runModBYM2jitter = function(modelName = c("")) {
+# same as runBYM2, except fits a single data set (the ed global data frame)
+# doPredsAtPostMean: if TRUE, fix all model hyperparameters at the posterior mean 
+# getPosteriorDensity: EXPERIMENTAL: evaluate the posterior density of direct estimates using multivariate normal approximation
+runBYM2simple = function(dat=ed, covMat=NULL, graph="savedOutput/global/adm2Graph.dat", 
+                         areaOrder=sort(unique(dat$subarea)), previousResult=NULL, 
+                         doValidation=FALSE, Nsim = 1000, 
+                         strategy="eb", int.strategy="ccd", 
+                         fast=TRUE, getJointDraws=FALSE) {
   
-  ys = dat$ys
-  ns = dat$ns
+  # Define formula
+  if(!is.null(covMat)) {
+    formula = y ~ X +
+      f(idx, model="bym2",
+        graph=graph, scale.model=TRUE, constr=TRUE, 
+        hyper=list(prec=list(param=c(1, 0.1), prior="pc.prec"), 
+                   phi=list(param=c(0.5, 2/3), prior="pc"))) +
+      f(idxEps, model = "iid",
+        hyper = list(prec = list(prior = "pc.prec", param = c(1,0.1))))
+  } else {
+    formula = y ~ 1 +
+      f(idx, model="bym2",
+        graph=graph, scale.model=TRUE, constr=TRUE, 
+        hyper=list(prec=list(param=c(1, 0.1), prior="pc.prec"), 
+                   phi=list(param=c(0.5, 2/3), prior="pc"))) +
+      f(idxEps, model = "iid",
+        hyper = list(prec = list(prior = "pc.prec", param = c(1,0.1))))
+  }
   
+  # INLA data
+  subareas = dat$subarea
+  if(!is.null(covMat)) {
+    dat = list(y = dat$y,
+               Ntrials = dat$n,
+               X = covMat, 
+               idx = as.numeric(match(subareas, areaOrder)),
+               idxEps = 1:length(dat$y))
+  } else {
+    dat = list(y = dat$y,
+               Ntrials = dat$n,
+               idx = as.numeric(match(subareas, areaOrder)),
+               idxEps = 1:length(dat$y))
+  }
   
+  # set posterior approximation strategy
+  control.inla = list(strategy=strategy, int.strategy=int.strategy, 
+                      fast=fast)
+  
+  # initialize the fitting process based on a previous optimum if necessary
+  modeControl = inla.set.control.mode.default()
+  if(!is.null(previousResult)) {
+    # initialize the fitting process based on a previous optimum
+    # modeControl$result = previousResult
+    modeControl$theta = previousResult$mode$theta
+    modeControl$x = previousResult$mode$x
+    modeControl$restart = !fixedParameters
+    modeControl$fixed = fixedParameters
+  }
+  
+  # Run model
+  print("fitting BYM2 model...")
+  result = inla(formula = formula, 
+                family="binomial",
+                Ntrials = Ntrials,
+                data=dat, 
+                control.compute=list(config=TRUE), 
+                quantiles=c(0.1, 0.5, 0.9), 
+                control.mode=modeControl)
+  
+  if(getJointDraws) {
+    samples = inla.posterior.sample(n = Nsim, result = result)
+    
+    browser()
+    
+    result = c(list(mod=result, samples=samples))
+  }
+  
+  result
 }
 
-plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL, 
+plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL, 
                      arealPreds=NULL, normalized=TRUE, extractMethod="bilinear", 
                      nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
                      plotNameRoot="edFusion", plotNameRootAreal="Strat") {
@@ -400,16 +740,21 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
                      betaDraws, 
                      sigmaSqDraws, 
                      phiDraws)
-    betaNames = rep("beta", nrow(betaDraws))
+    if(!is.null(betaDraws)) {
+      betaNames = rep("beta", nrow(betaDraws))
+    } else {
+      betaNames = NULL
+    }
+    
     row.names(fixedMat) = c("(Int)", 
                             betaNames, 
                             "sigmaSq", 
                             "phi")
   } else {
     fixedMat = matrix(c(alphaDraws, 
-                     betaDraws, 
-                     sigmaSqDraws, 
-                     phiDraws), ncol=1)
+                        betaDraws, 
+                        sigmaSqDraws, 
+                        phiDraws), ncol=1)
     betaDraws = matrix(betaDraws, ncol=1)
     betaNames = rep("beta", nrow(betaDraws))
     row.names(fixedMat) = c("(Int)", 
@@ -468,14 +813,18 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
     adm = arealPreds$adm
     orderedAreas = arealPreds$aggregationResults$region
     arealDraws = arealPreds$aggregationResults$p
+    doAdm2 = identical(adm, adm2)
     arealMean = rowMeans(arealDraws)
     arealQuants = apply(arealDraws, 1, quantile, prob=quantiles, na.rm=TRUE)
     arealQuants[!is.finite(arealQuants)] = NA
     
+    lwd = ifelse(doAdm2, .6, 1)
+    border = ifelse(doAdm2, rgb(.6, .6, .6), "black")
+    
     pdf(paste0("figures/ed/", plotNameRoot, "Pred", plotNameRootAreal, ".pdf"), width=5, height=3.8)
     par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
     plotMapDat(adm, arealMean, varAreas=orderedAreas, regionNames=orderedAreas, 
-               cols=predCols, crosshatchNADensity=30, 
+               cols=predCols, crosshatchNADensity=30, lwd=lwd, border=border, 
                xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
                ylab="Latitude", main="Predictions", legend.mar=4.7)
     if(length(arealMean) > 41) {
@@ -484,7 +833,7 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
     dev.off()
   }
   
-  if(!SD0$pdHess) {
+  if(!is.null(SD0) && !SD0$pdHess) {
     warning("SD0 hessian not PD. Only predictions plotted")
     return(invisible(NULL))
   }
@@ -505,7 +854,7 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
       pdf(paste0("figures/ed/", plotNameRoot, "Quant", thisQuant, plotNameRootAreal, ".pdf"), width=5, height=3.8)
       par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
       plotMapDat(adm, arealQuants[,i], varAreas=orderedAreas, regionNames=orderedAreas, 
-                 cols=quantCols, crosshatchNADensity=30, 
+                 cols=quantCols, crosshatchNADensity=30, lwd=lwd, border=border, 
                  xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
                  ylab="Latitude", main=paste0(thisQuant, "th quantile"), legend.mar=4.7, zlim=range(arealQuants, na.rm=TRUE))
       if(length(arealMean) > 41) {
@@ -556,7 +905,7 @@ plotPreds = function(SD0, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
       pdf(paste0("figures/ed/", plotNameRoot, "CI", thisWidthLevel*100, plotNameRootAreal, ".pdf"), width=5, height=3.8)
       par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
       plotMapDat(adm, thisArealWidth, varAreas=orderedAreas, regionNames=orderedAreas, 
-                 cols=quantCols, crosshatchNADensity=30, 
+                 cols=quantCols, crosshatchNADensity=30, lwd=lwd, border=border, 
                  xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
                  ylab="Latitude", main=paste0(round(thisWidthLevel*100), "% CI Width"), legend.mar=4.7)
       if(length(arealMean) > 41) {
@@ -621,19 +970,33 @@ summaryTabBYM2 = function(SD0, popMat=popMatNGAThresh, gridPreds=NULL,
 # normalized: whether covariates are normalized
 # extractMethod: extraction method for covariates in terra:extract
 # predAtArea: name of area to predict at, if only 1
-predGrid = function(SD0, popMat=popMatNGAThresh, 
+predGrid = function(SD0=NULL, popMat=popMatNGAThresh, 
                     normalized=TRUE, extractMethod="bilinear", 
                     nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
                     splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
-                    predAtArea=NULL) {
+                    predAtArea=NULL, sep=FALSE, QinvSumsNorm=NULL, 
+                    includedCovs=c("urb", "access", "elev", "distRiversLakes", "popValsNorm"), 
+                    constrParameterization=FALSE, obj=NULL) {
   admLevel = match.arg(admLevel)
   
   # get parameters
-  alpha = SD0$par.fixed[1]
-  beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
-  beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
-  parnames = names(SD0$par.fixed)
-  hasNugget = "log_tauEps" %in% parnames
+  if(!is.null(SD0)) {
+    alpha = SD0$par.fixed[1]
+    beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
+    beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
+    parnames = names(SD0$par.fixed)
+    hasNugget = "log_tauEps" %in% parnames
+  } else {
+    allPar = obj$env$last.par
+    alpha = allPar[grepl("alpha", names(allPar))]
+    beta = allPar[grepl("beta", names(allPar))]
+    log_tauEpsI = grep("log_tauEps", names(allPar))
+    log_tauEps = allPar[log_tauEpsI]
+    log_tau = allPar[-log_tauEpsI][grepl("log_tauEps", names(allPar))]
+    parnames = names(SD0$par.fixed)
+  }
+  
+  
   
   if(!is.null(predAtArea)) {
     # if(admLevel == "stratMICS") {
@@ -653,6 +1016,10 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
   popSD = popSDCalThresh
   popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
   Xmat = cbind(Xmat[,3:6], popValsNorm)
+  tempNames = colnames(Xmat)
+  includeI = colnames(Xmat) %in% includedCovs
+  Xmat = cbind(Xmat[,includeI])
+  colnames(Xmat) = tempNames[includeI]
   
   # get projection matrix at prediction locations
   if(admLevel == "stratMICS") {
@@ -685,22 +1052,65 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
     t.draws <- rmvnorm_prec(mu = mu , chol_prec = L, n.sims = nsim)
     
     # extract fixed effects and random effects from draws
-    parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
-    epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
+    # parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
+    parnames <- colnames(SD0$jointPrecision)
+    
     alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
     beta_tmb_draws    <- t.draws[parnames == 'beta',]
     sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
     phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
     
-    fixedMat = rbind(alpha_tmb_draws, 
-                     beta_tmb_draws, 
-                     sigmaSq_tmb_draws, 
-                     phi_tmb_draws)
-    betaNames = colnames(Xmat)
-    row.names(fixedMat) = c("(Int)", 
-                            betaNames, 
-                            "sigmaSq", 
-                            "phi")
+    # get the spatial effect
+    if(!sep) {
+      epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
+    } else {
+      wStar  <- t.draws[parnames == 'w_bym2Star',]
+      uStar  <- t.draws[parnames == 'u_bym2Star',] # uStar is unit var scaled
+      
+      if(is.null(QinvSumsNorm)) {
+        if(admLevel == "adm2") {
+          out = load("savedOutput/global/adm2Mat.RData")
+          admMat = adm2Mat
+        } else if(admLevel == "admFinal") {
+          out = load("savedOutput/global/admFinalMat.RData")
+          admMat = admFinalMat
+        }
+        
+        bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
+                                                 constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+        Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+        QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+      }
+      
+      # get how much u reduced by sum to zero constraint to u, then scale
+      uSums = colSums(uStar)
+      uFacs = uSums * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
+      reduceU = outer(QinvSumsNorm, c(uFacs))
+      
+      # adjust Epsilon = w for the constraint on u
+      epsilon_tmb_draws = wStar - reduceU
+    }
+    
+    includeBeta = any(parnames == "beta")
+    
+    if(includeBeta) {
+      fixedMat = rbind(alpha_tmb_draws, 
+                       beta_tmb_draws, 
+                       sigmaSq_tmb_draws, 
+                       phi_tmb_draws)
+      betaNames = colnames(Xmat)
+      row.names(fixedMat) = c("(Int)", 
+                              betaNames, 
+                              "sigmaSq", 
+                              "phi")
+    } else {
+      fixedMat = rbind(alpha_tmb_draws, 
+                       sigmaSq_tmb_draws, 
+                       phi_tmb_draws)
+      row.names(fixedMat) = c("(Int)", 
+                              "sigmaSq", 
+                              "phi")
+    }
     
     if(hasNugget) {
       sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
@@ -717,10 +1127,30 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
     colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
     print(xtable(parSummary, digits=2))
     
+    # reparameterize epsilon if need be
+    if(constrParameterization) {
+      if(admLevel == "adm2") {
+        out = load("savedOutput/global/adm2Mat.RData")
+        admMat = adm2Mat
+      } else if(admLevel == "admFinal") {
+        out = load("savedOutput/global/admFinalMat.RData")
+        admMat = admFinalMat
+      }
+      
+      bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
+                                               constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+      Vtilde = bym2ArgsTMB$V[,-ncol(bym2ArgsTMB$V)]
+      gammaTildesm1 = bym2ArgsTMB$gammaTildesm1
+      lambdas = sweep((1.0 + outer(gammaTildesm1[1:(length(gammaTildesm1)-1)], c(phi_tmb_draws))), 2, sigmaSq_tmb_draws, "*")
+      epsilon_tmb_draws = Vtilde %*% (sqrt(lambdas) * epsilon_tmb_draws)
+    }
+    
     # add effects to predictions
     gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
     gridDraws_tmb <- sweep(gridDraws_tmb, 2, alpha_tmb_draws, '+')
-    gridDraws_tmb <- gridDraws_tmb + (Xmat%*% beta_tmb_draws)
+    if(includeBeta) {
+      gridDraws_tmb <- gridDraws_tmb + (Xmat%*% beta_tmb_draws)
+    }
     
     if(!hasNugget) {
       probDraws = expit(gridDraws_tmb)
@@ -820,6 +1250,163 @@ predGrid = function(SD0, popMat=popMatNGAThresh,
        pdHess=SD0$pdHess)
 }
 
+# normalized: whether covariates are normalized
+# extractMethod: extraction method for covariates in terra:extract
+# predAtArea: name of area to predict at, if only 1
+predGridINLA = function(mod, popMat=popMatNGAThresh, 
+                        normalized=TRUE, extractMethod="bilinear", 
+                        nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
+                        splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
+                        predAtArea=NULL, 
+                        includedCovs=c("urb", "access", "elev", "distRiversLakes", "popValsNorm")) {
+  admLevel = match.arg(admLevel)
+  
+  if(!is.null(predAtArea)) {
+    # if(admLevel == "stratMICS") {
+    #   popMat = popMat[popMat$stratumMICS == predAtArea,]
+    # } else {
+    #   popMat = popMat[popMat$subarea == predAtArea,]
+    # }
+    popMat = popMat[popMat$area == predAtArea,]
+  }
+  
+  # get projection matrix at prediction locations
+  if(admLevel == "stratMICS") {
+    Amat = t(makeApointToArea(popMat$stratumMICS, admFinal$NAME_FINAL)) # nrow(popMat) x 41
+  } else {
+    Amat = t(makeApointToArea(popMat$subarea, adm2Full$NAME_2)) # nrow(popMat) x (# admin2 areas)
+  }
+  
+  samples = inla.posterior.sample(n = nsim, result=mod)
+  
+  # extract fixed effects and random effects from draws
+  # parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
+  # parnames <- colnames(SD0$jointPrecision)
+  
+  alphaI = which("(Intercept):1" == row.names(samples[[1]]$latent))
+  tauI = which(names(samples[[1]]$hyperpar) == "Precision for idx")
+  phiI = which(names(samples[[1]]$hyperpar) == "Phi for idx")
+  tauEpsI = which(names(samples[[1]]$hyperpar) == "Precision for idxEps")
+  alpha_tmb_draws    <- sapply(samples, function(x) {x$latent[alphaI]})
+  sigmaSq_tmb_draws    <- 1/sapply(samples, function(x) {x$hyperpar[tauI]})
+  phi_tmb_draws    <- sapply(samples, function(x) {x$hyperpar[phiI]})
+  sigmaEpsSq_tmb_draws    <- 1/sapply(samples, function(x) {x$hyperpar[tauEpsI]})
+  
+  # get the spatial effect
+  bym2I = grep("idx:", row.names(samples[[1]]$latent))
+  wI = bym2I[1:ncol(Amat)]
+  epsilon_tmb_draws  <- sapply(samples, function(x) {x$latent[wI]})
+  
+  includedCovNames = includedCovs
+  includedCovNames[includedCovNames == "popValsNorm"] = "pop"
+  includedCovNames = paste0(includedCovNames, ":1")
+  betaI = which(row.names(samples[[1]]$latent) %in% includedCovNames)
+  includeBeta = length(betaI) > 0
+  if(includeBeta) {
+    beta_tmb_draws    <- sapply(samples, function(x) {x$latent[betaI]})
+  } else {
+    beta_tmb_draws = NULL
+  }
+  
+  if(includeBeta) {
+    # load covariates at prediction locations
+    LLcoords = cbind(popMat$lon, popMat$lat)
+    Xmat = getDesignMat(LLcoords, normalized)
+    
+    out = load("savedOutput/global/popMeanSDCal.RData")
+    popMean = popMeanCalThresh
+    popSD = popSDCalThresh
+    popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+    Xmat = cbind(Xmat[,3:6], popValsNorm)
+    tempNames = colnames(Xmat)
+    includeI = colnames(Xmat) %in% includedCovs
+    Xmat = cbind(Xmat[,includeI])
+    colnames(Xmat) = tempNames[includeI]
+    
+    fixedMat = rbind(alpha_tmb_draws, 
+                     beta_tmb_draws, 
+                     sigmaSq_tmb_draws, 
+                     phi_tmb_draws, 
+                     sigmaEpsSq_tmb_draws)
+    betaNames = colnames(Xmat)
+    row.names(fixedMat) = c("(Int)", 
+                            betaNames, 
+                            "sigmaSq", 
+                            "phi", 
+                            "sigmaEpsSq")
+  } else {
+    fixedMat = rbind(alpha_tmb_draws, 
+                     sigmaSq_tmb_draws, 
+                     phi_tmb_draws, 
+                     sigmaEpsSq_tmb_draws)
+    row.names(fixedMat) = c("(Int)", 
+                            "sigmaSq", 
+                            "phi", 
+                            "sigmaEpsSq")
+  }
+  
+  # Make parameter summary tables
+  parMeans = rowMeans(fixedMat)
+  parQuants = t(apply(fixedMat, 1, quantile, probs=quantiles))
+  parSummary = cbind(parMeans, parQuants)
+  colnames(parSummary)[1] = "Est"
+  colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
+  print(xtable(parSummary, digits=2))
+  
+  # add effects to predictions
+  gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
+  gridDraws_tmb <- sweep(gridDraws_tmb, 2, alpha_tmb_draws, '+')
+  if(includeBeta) {
+    gridDraws_tmb <- gridDraws_tmb + (Xmat%*% beta_tmb_draws)
+  }
+  
+  probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
+                                          gridDraws_tmb), logisticApprox=FALSE, 
+                                    splineApprox=splineApprox)
+  # logitNormMeanGrouped is muuuuuuch faster than:
+  # system.time(probDraws <- matrix(logitNormMean(cbind(c(gridDraws_tmb[,1:500]), rep(sqrt(sigmaEpsSq_tmb_draws[1:500]), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb)))
+  
+  if(FALSE) {
+    # test spline approximation timing and accuracy versus regular
+    first2Sigmas = 1:(2*nrow(gridDraws_tmb))
+    inMat = cbind(c(gridDraws_tmb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(gridDraws_tmb)))[first2Sigmas,]
+    system.time(probDrawsSp <- matrix(logitNormMean(inMat, logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(gridDraws_tmb)))[3]
+    # elapsed 
+    # 0.038
+    system.time(probDrawsReg <- matrix(logitNormMean(inMat, logisticApprox=FALSE, splineApprox=FALSE), nrow=nrow(gridDraws_tmb)))[3]
+    # elapsed 
+    # 3.966 
+    # 0.038 / 3.966
+    # 0.009581442 (less than 1% of the time!!!)
+    
+    mean(abs(probDrawsSp - probDrawsReg))
+    # 8.469822e-08
+    
+    mean((probDrawsSp - probDrawsReg)^2)
+    # 1.753772e-10
+    
+    orderI = order(inMat[,1])
+    plot(inMat[orderI,1], probDrawsSp[orderI], type="l", col="purple")
+    lines(inMat[orderI,1], probDrawsReg[orderI], col="green")
+  }
+  
+  preds = rowMeans(probDraws)
+  quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
+  
+  list(popMat=popMat, 
+       gridDraws=probDraws, 
+       epsDraws=epsilon_tmb_draws, 
+       fixedMat=fixedMat, 
+       alphaDraws=alpha_tmb_draws, 
+       betaDraws=beta_tmb_draws, 
+       sigmaSqDraws=sigmaSq_tmb_draws, 
+       phiDraws=phi_tmb_draws, 
+       logitGridDrawsNoNug=gridDraws_tmb, 
+       sigmaEpsSqDraws=sigmaEpsSq_tmb_draws, 
+       quants=quants, 
+       pdHess=SD0$pdHess)
+}
+
 # for now, just uses smooth latent aggregation model
 predArea = function(gridPreds, areaVarName="stratumMICS", 
                     adm=NULL, orderedAreas=NULL, estZeroPopAreas=FALSE) {
@@ -863,9 +1450,9 @@ predArea = function(gridPreds, areaVarName="stratumMICS",
   c(arealPreds, list(adm=adm))
 }
 
-simBYM2fromPrior = function(nsim=1, bym2ArgsTMB=NULL, level=c("adm2", "admFinal"), 
+simBYM2fromPrior = function(nsim=1, bym2ArgsTMB=NULL, admLevel=c("adm2", "admFinal"), 
                             logTau=1, logitPhi=0) {
-  level = match.arg(level)
+  admLevel = match.arg(admLevel)
   
   if(is.null(bym2ArgsTMB)) {
     if(admLevel == "admFinal") {
@@ -878,15 +1465,104 @@ simBYM2fromPrior = function(nsim=1, bym2ArgsTMB=NULL, level=c("adm2", "admFinal"
                                                constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
     }
   }
+  V = bym2ArgsTMB$V
+  gammatildesm1 = bym2ArgsTMB$gammaTildesm1
   
-  stop("Not yet implemented")
+  # out = eigen.spam(tempQ, symmetric=TRUE)
+  # gammas = out$values
+  # gammaTildes = 1/gammas
+  # gammaTildes[abs(gammas) < tol] = 0
+  # gammaTildesm1 = gammaTildes - 1
+  # // Q_besag = V Lambda V^T is the eigendecomposition of Q_besag
   # // Calculate the quadratic form Eps tau [(1-phi) I + phi Q_besag^+]^(-1) Eps^T
   # // = Eps tau [I + phi (Q_besag^+ - I)]^(-1) Eps^T
   # // = Eps tau V [I + phi (GammaTilde - I)]^(-1) V^T Eps^T
   # // i.e. the sum of squares of tau^0.5 Eps V diag(1/(1 + phi*gammaTildesm1))
+  
+  # We are interested in the Variance matrix:
+  # tau^(-1) V [I + phi (GammaTilde - I)] V^T
+  # = tau^(-1) V [I + phi (GammaTildesm1)]^(1/2) [I + phi (GammaTildesm1)]^(1/2) V^T
+  zMat = matrix(rnorm(nsim*nrow(V)), ncol=nsim)
+  sigma = 1/sqrt(exp(logTau))
+  phi = expit(logitPhi)
+  sims = sigma * V %*% sweep(zMat, 1, sqrt(1 + phi*gammatildesm1), "*")
+  
+  return(sims)
 }
 
+simBYM2fromPrior2 = function(nsim=1, bym2ArgsTMB=NULL, admLevel=c("adm2", "admFinal"), 
+                             logTau=1, logitPhi=0, tol=1e-8) {
+  admLevel = match.arg(admLevel)
+  tau = exp(logTau)
+  sigma = 1/sqrt(tau)
+  phi = expit(logitPhi)
+  
+  if(admLevel == "admFinal") {
+    out = load("savedOutput/global/admFinalMat.RData")
+    Qbesag = makeQBesag(admFinalMat, constr=TRUE, scale.model=TRUE)
+  } else {
+    out = load("savedOutput/global/adm2Mat.RData")
+    Qbesag = makeQBesag(adm2Mat, constr=TRUE, scale.model=TRUE)
+  }
+  
+  eigenQ = eigen(Qbesag)
+  V = eigenQ$vectors
+  gammas = eigenQ$values
+  
+  nullVals = abs(gammas < tol)
+  gammas[nullVals] = 0
+  
+  gammaTildes = 1/gammas
+  gammaTildes[abs(gammas) < tol] = 0
+  # gammaTildesm1 = gammaTildes - 1
+  
+  
+  
+  # out = eigen.spam(tempQ, symmetric=TRUE)
+  # gammas = out$values
+  # gammaTildes = 1/gammas
+  # gammaTildes[abs(gammas) < tol] = 0
+  # gammaTildesm1 = gammaTildes - 1
+  # // Q_besag = V Lambda V^T is the eigendecomposition of Q_besag
+  # // Calculate the quadratic form Eps tau [(1-phi) I + phi Q_besag^+]^(-1) Eps^T
+  # // = Eps tau [I + phi (Q_besag^+ - I)]^(-1) Eps^T
+  # // = Eps tau V [I + phi (GammaTilde - I)]^(-1) V^T Eps^T
+  # // i.e. the sum of squares of tau^0.5 Eps V diag(1/(1 + phi*gammaTildesm1))
+  
+  # We are interested in the Variance matrix:
+  # tau^(-1) V [phi GammaTilde] V^T
+  # tau^(-1) ( V [phi GammaTilde]^(-1/2) [phi GammaTilde]^(-1/2) V^T )
+  zMat = matrix(rnorm(nsim*nrow(V)), ncol=nsim)
+  sims = sigma * V %*% sweep(zMat, 1, sqrt(phi*gammaTildes), "*")
+  sims = sims + sqrt(1-phi)*sigma * matrix(rnorm(nsim*nrow(V)), ncol=nsim)
+  return(sims)
+}
 
+plotBYM2priorCIwidth80 = function(tau=1, phi=.5, nsim=1000, bym2ArgsTMB=NULL) {
+  
+  sims1 = simBYM2fromPrior(nsim=nsim, bym2ArgsTMB=bym2ArgsTMB, admLevel="adm2", 
+                           logTau=log(tau), logitPhi=logit(phi))
+  sims2 = simBYM2fromPrior2(nsim=nsim, bym2ArgsTMB=bym2ArgsTMB, admLevel="adm2", 
+                            logTau=log(tau), logitPhi=logit(phi))
+  
+  upper80 = expit(apply(sims1, 1, quantile, prob=.9))
+  lower80 = expit(apply(sims1, 1, quantile, prob=.1))
+  width80 = upper80 - lower80
+  
+  upper80 = expit(apply(sims2, 1, quantile, prob=.9))
+  lower80 = expit(apply(sims2, 1, quantile, prob=.1))
+  width802 = upper80 - lower80
+  
+  # determine which is Lake Chad
+  lakeChadI = which(adm2@data$NAME_2 == "Lake Chad")
+  width80[lakeChadI] = NA
+  width802[lakeChadI] = NA
+  
+  plotMapDat(adm2, width80, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             crosshatchNADensity=30)
+  plotMapDat(adm2, width802, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             crosshatchNADensity=30)
+}
 
 
 

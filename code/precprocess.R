@@ -1246,11 +1246,13 @@ dev.off()
 
 save(admFinalMat, file="savedOutput/global/admFinalMat.RData")
 
+inla.write.graph(admFinalMat, filename="savedOutput/global/admFinalGraph.dat")
+
 # Admin2 level
 require(spdep)
 adm2Mat <- poly2nb(SpatialPolygons(adm2@polygons))
 adm2Mat <- nb2mat(adm2Mat, zero.policy = TRUE)
-colnames(adm2Mat) = adm2$NAME_FINAL
+colnames(adm2Mat) = adm2$NAME_2
 
 cent <- getSpPPolygonsLabptSlots(adm2)
 cols <- rainbow(min(10,
@@ -1276,7 +1278,18 @@ pdf('figures/test/adm2_neighb.pdf', height = 4, width = 4)
 }
 dev.off()
 
+# plot distance structure for testing
+require(igraph)
+adm2graph = graph_from_adjacency_matrix(adm2Mat!=0, mode="undirected", diag=FALSE)
+dists = distances(adm2graph, v=1)
+pdf('figures/test/adm2_dist1.pdf', height = 5, width = 5)
+plotMapDat(adm2, dists, varAreas=adm2$NAME_2, regionNames=adm2$NAME_2, 
+           main="Distance (does adm2Mat order match adm2's?)")
+dev.off()
+
 save(adm2Mat, file="savedOutput/global/adm2Mat.RData")
+
+inla.write.graph(adm2Mat, filename="savedOutput/global/adm2Graph.dat")
 
 # EAs per area (No household per area info published) ----
 # apparently, average household size is 5.0 based on the 2017 MICS

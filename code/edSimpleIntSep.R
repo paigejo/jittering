@@ -21,9 +21,6 @@ KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
 JInnerRural = 3
 JOuterRural = 1
 
-includedCovs = rep(TRUE, 5)
-includedCovs = c(TRUE, rep(FALSE, 4))
-
 if(FALSE) {
   # do some precomputation ----
   
@@ -41,14 +38,14 @@ if(FALSE) {
                                           JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
                                           JOuterRural=JOuterRural, adminMap=adm2Full)
   
-  out = load("savedOutput/global/intPtsDHS.RData")
-  out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  load("savedOutput/global/intPtsDHS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
-  AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
-  ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
+  AUrbDHS = makeApointToArea(ed$subarea[ed$urban], adm2$NAME_2) # 775 x 569 nArea x nObsUrb
+  ARurDHS = makeApointToArea(ed$subarea[!ed$urban], adm2$NAME_2) # 775 x 810
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
@@ -122,35 +119,34 @@ if(FALSE) {
   # intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
   # intPtsMICS$wUrban = wUrban
   # intPtsMICS$wRural = wRural
-  intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
-  intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
+  intPtsDHS$covsUrb = intPtsDHS$covsUrb[1:nrow(AUrbDHS),-1] # don't include intercepts
+  intPtsDHS$covsRur = intPtsDHS$covsRur[1:nrow(ARurDHS),-1]
   
   # convert A matrices to sparse matrices
   # AUrbMICS = as(AUrbMICS, "sparseMatrix")
   # ARurMICS = as(ARurMICS, "sparseMatrix")
-  AUrbDHS = as(AUrbDHS, "sparseMatrix")
-  ARurDHS = as(ARurDHS, "sparseMatrix")
+  # AUrbDHS = as(AUrbDHS, "sparseMatrix")
+  # ARurDHS = as(ARurDHS, "sparseMatrix")
   # AUrbMICS = as.matrix(AUrbMICS)
   # ARurMICS = as.matrix(ARurMICS)
-  # AUrbDHS = as.matrix(AUrbDHS)
-  # ARurDHS = as.matrix(ARurDHS)
+  AUrbDHS = as.matrix(AUrbDHS)
+  ARurDHS = as.matrix(ARurDHS)
   
-  # put integration weight entirely on observed cluster location
-  intPtsDHS$wUrban[,1] = 1
-  intPtsDHS$wUrban[,-1] = 0
-  intPtsDHS$wRural[,1] = 1
-  intPtsDHS$wRural[,-1] = 0
+  areaidxlocUrban = apply(AUrbDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+  areaidxlocRural = apply(ARurDHS, 1, function(x) {match(1, x)}) - 1
+  areaidxlocUrban = as.integer(areaidxlocUrban)
+  areaidxlocRural = as.integer(areaidxlocRural)
   
-  save(AUrbDHS, ARurDHS, intPtsDHS, 
+  save(areaidxlocUrban, areaidxlocRural, intPtsDHS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/edMd2Inputs.RData")
+       file="savedOutput/global/edSimpleIntSepInputs.RData")
   
   # compile model ----
   # dyn.unload( dynlib("code/modBYM2JitterDHS2sparse"))
   # compile( "code/modBYM2JitterDHS2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modBYM2JitterDHS2"))
-  compile( "code/modBYM2JitterDHS2.cpp", 
+  dyn.unload( dynlib("code/modBYM2simpleIntSep"))
+  compile("code/modBYM2simpleIntSep.cpp", 
            framework="TMBad", safebounds=FALSE)
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterDHS2  -DTMB_LIB_INIT=R_init_modBYM2JitterDHS2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterDHS2.cpp -o code/modBYM2JitterDHS2.o
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterDHS2.so code/modBYM2JitterDHS2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
@@ -161,35 +157,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edMd2Inputs.RData")
-
-if(FALSE) {
-  # test covariates
-  wuI = c(intPtsDHS$wUrban) != 0
-  wrI = c(intPtsDHS$wRural) != 0
-  predCols = makeBlueGreenYellowSequentialColors(64)
-  pts = cbind(c(intPtsDHS$xUrban)[wuI], c(intPtsDHS$yUrban)[wuI])
-  lonLat = projNigeria(pts, inverse=TRUE)
-  plotWithColor(lonLat[,1], lonLat[,2], intPtsDHS$covsUrb[wuI, 1], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLat[,1], lonLat[,2], intPtsDHS$covsUrb[wuI, 2], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLat[,1], lonLat[,2], intPtsDHS$covsUrb[wuI, 3], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLat[,1], lonLat[,2], intPtsDHS$covsUrb[wuI, 4], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLat[,1], lonLat[,2], intPtsDHS$covsUrb[wuI, 5], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-}
+out = load("savedOutput/global/edSimpleIntSepInputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -201,34 +169,54 @@ bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3,
 lambdaTau = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for bym2 precision
 lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
 
+# conditioning by Kriging from Eq (2.30) in Rue Held:
+# Ax = e (for A = 1^T, e = 0)
+# x* = x - Q^-1 A^T (A Q^-1 A^T)^-1 (A x - e)
+# x* = x - V GammaTilde V^T 1 (1^T V GammaTilde V^T 1)^-1 (1^T x - 0)
+# x* = x - V GammaTilde 1 (1^T GammaTilde 1)^-1 (1^T x)
+# x* = x - V gammaTilde [1/(1^T gammaTilde)] (1^T x)
+# x* = x - constrWs (1^T x)
+# constrWts = (bym2ArgsTMB$V %*% (bym2ArgsTMB$gammaTildesm1+1))/sum(bym2ArgsTMB$gammaTildesm1+1)
+
+# conditioning by Kriging from Eq (2.30) in Rue Held:
+# Ax = e (for A = (0^T 1^T), e = 0), x = (w^T u^T)^T
+# x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x - e)
+# x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x)
+# x* = x - (Q_x^-1 A^T A x) / sum(Q^+)
+# x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
+# for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
+# Hence, we need Q_{+:}^+ / sum(Q^+):
+Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+
 # Specify inputs for TMB ----
 
 ## specify random effects
-rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'alpha', 'beta')
+# rand_effs <- c('Epsilon_bym2', 'nuggetUrbDHS', 'nuggetRurDHS', 'alpha', 'beta')
+rand_effs <- c('alpha', 'w_bym2Star', 'u_bym2Star', 'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data
-# covs: urb, access, elev, distRiversLakes, pop
-intPtsDHS$covsUrb = matrix(intPtsDHS$covsUrb[,includedCovs], ncol=sum(includedCovs))
-intPtsDHS$covsRur = matrix(intPtsDHS$covsRur[,includedCovs], ncol=sum(includedCovs))
 
 data_full = list(
   y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
   y_iRuralDHS=ysRurDHS, # 
   n_iUrbanDHS=nsUrbDHS, # number binomial trials
   n_iRuralDHS=nsRurDHS, # 
-  AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  AprojRuralDHS=ARurDHS, # 
-  X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
-  X_betaRuralDHS=intPtsDHS$covsRur, # 
-  wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
-  wRuralDHS=intPtsDHS$wRural, # 
+  # AprojUrbanDHS=AUrbDHS, # [nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  # AprojRuralDHS=ARurDHS, # 
+  areaidxlocUrban=areaidxlocUrban, # nObsUrban length vector of areal indices associated with each observation
+  areaidxlocRural=areaidxlocRural, # nObsRural length vector of areal indices associated with each observation
+  # X_betaUrbanDHS=intPtsDHS$covsUrb, # [nObsUrban] x nPar design matrix
+  # X_betaRuralDHS=intPtsDHS$covsRur, # 
   
   Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
-  V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+  # V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
   alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
   beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
   tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
   gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
+  # constrWts=constrWts, 
+  QinvSumsNorm=QinvSumsNorm, 
   lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
   lambdaTau=lambdaTau, # determines PC prior for tau
   lambdaTauEps=lambdaTauEps, 
@@ -250,6 +238,8 @@ if(FALSE) {
   # for testing purposes
   sapply(data_full, anyna)
   sapply(data_full, myDim)
+  sapply(data_full, class)
+  sapply(data_full, range)
   hist(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS, breaks=50)
   hist(data_full$y_iRuralDHS/data_full$n_iRuralDHS, breaks=50)
   hist(data_full$n_iUrbanDHS-data_full$y_iUrbanDHS, breaks=seq(-0.5, 17.5, by=1))
@@ -271,34 +261,45 @@ if(FALSE) {
 }
 
 # initial parameters
-initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
-initAlpha = logit(initRurP)
-initBeta1 = logit(initUrbP) - initAlpha
+initAlpha = logit(sum(c(data_full$y_iUrbanDHS, data_full$y_iRuralDHS))/sum(c(data_full$n_iUrbanDHS, data_full$n_iRuralDHS)))
 
-tmb_params <- list(alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
-                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
                    log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   alpha = initAlpha, # intercept
+                   w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
+if(FALSE) {
+  tmb_params <- obj$env$last.par
+  
+  tmb_params <- list(alpha = SD0$par.random[1], # intercept
+                     beta = SD0$par.random[2:6], 
+                     log_tau = optPar[1], # Log tau (i.e. log spatial precision, Epsilon)
+                     logit_phi = optPar[2], # SPDE parameter related to the range
+                     log_tauEps = optPar[3], # Log tau (i.e. log spatial precision, Epsilon)
+                     Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+  )
+}
+
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modBYM2JitterDHS2sparse"))
-dyn.load( dynlib("code/modBYM2JitterDHS2"))
-TMB::config(tmbad.sparse_hessian_compress = 1)
+dyn.load( dynlib("code/modBYM2simpleIntSep"))
+# TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modBYM2JitterDHS2')
+                 DLL='modBYM2simpleIntSep')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,
-#                      DLL='modBYM2JitterDHS2')
+#                      DLL='modBYM2simpleIntSep')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -335,28 +336,46 @@ grWrapper = function(par, badParVal=1e10) {
 
 if(FALSE) {
   # testing before running optimization
-  initAlphaBeta = rep(1, 6)
-  initParFull = objFull$par
-  initParFull[1:6] = initAlphaBeta
-  initParFull$
-  objFull$fn(initParFull)
+  # initAlphaBeta = rep(1, 6)
+  # initParFull = objFull$par
+  # initParFull[1:6] = initAlphaBeta
+  # initParFull$
+  #   objFull$fn(initParFull)
   
   # test cases
   obj$fn(rep(0, 3))
+  obj$fn(rep(0.01, 3))
   obj$fn(rep(0.5, 3))
   obj$fn(rep(1, 3))
+  system.time(obj$fn(rep(0, 3)))
+  # user  system elapsed 
+  # 18.285   0.072  18.367 
+  system.time(obj$gr(rep(0, 3)))
+  # user  system elapsed 
+  # 11.458   0.269  11.767 
+  obj$gr(rep(0.01, 3))
+  # objFull$gr(obj$env$last.par)
+  obj$fn(optParINLA)
+  optParINLA
   
   testRep = obj$report(obj$env$last.par)
+  cbind(sapply(testRep, range), 
+        range(obj$env$last.par[grepl("nuggetUrbDHS", names(obj$env$last.par))]), 
+        range(obj$env$last.par[grepl("nuggetRurDHS", names(obj$env$last.par))]))
   
   logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]
   tau = exp(logTau)
   logitPhi = obj$env$last.par[names(obj$env$last.par) == "logit_phi"]
   phi = expit(logitPhi)
-  testRep$bym2LogLik
-  dBYM2naive(x=obj$env$last.par[grepl("Epsilon", names(obj$env$last.par))], 
+  uVecStar = obj$env$last.par[grepl("u_bym2", names(obj$env$last.par))]
+  vVecStar = obj$env$last.par[grepl("v_bym2", names(obj$env$last.par))]
+  uVec = testRep$u_bym2
+  vVec = testRep$v_bym2
+  dBYM2sepNaive(uVec, vVec, 
              phi=phi, 
              tau=tau, 
              precomputedValues=bym2ArgsTMB)
+  testRep$bym2LogLik
   
   testRep$logPriTau
   logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]
@@ -372,6 +391,10 @@ if(FALSE) {
   dPCprec(tau=tauEps, lambda=lambdaTauEps, doLog=TRUE) + logTauEps
   testRep$logPriTauEps
   
+  alpha = obj$env$last.par[grepl("alpha", names(obj$env$last.par))]
+  dnorm(alpha, 0, alpha_pri[2], log=TRUE)
+  testRep$alphaPri
+  
   logitPhi = obj$env$last.par[names(obj$env$last.par) == "logit_phi"]
   phi = expit(logitPhi)
   lambdaPhi = data_full$lambdaPhi
@@ -385,6 +408,30 @@ if(FALSE) {
   sigmaEps = sqrt(1/tauEps)
   testRep$nuggetLogLik
   sum(dnorm(nuggets, sd=sigmaEps, log=TRUE))
+  
+  allYs = c(data_full$y_iUrbanDHS, data_full$y_iRuralDHS)
+  allNs = c(data_full$n_iUrbanDHS, data_full$n_iRuralDHS)
+  latentEffects = alpha + (uVec + vVec)[c(data_full$areaidxlocUrban+1, 
+                                          data_full$areaidxlocRural+1)] + 
+    nuggets
+  
+  sum(dbinom(allYs, allNs, expit(latentEffects), log=TRUE))
+  sum(c(testRep$lliksUrbDHS, testRep$lliksRurDHS))
+  
+  dBYM2sepNaive(uVec, vVec, 
+                phi=phi, 
+                tau=tau, 
+                precomputedValues=bym2ArgsTMB) + 
+    dPCprec(tau=tau, lambda=lambdaTau, doLog=TRUE) + logTau + 
+    dPCprec(tau=tauEps, lambda=lambdaTauEps, doLog=TRUE) + logTauEps + 
+    dBYM2phiPC(phi=logitPhi, lambda=lambdaPhi, logitPhi=TRUE, Q=data_full$Q_bym2, 
+               gammaTildesm1=data_full$gammaTildesm1, tr=data_full$tr, doLog=TRUE) + 
+    sum(dnorm(nuggets, sd=sigmaEps, log=TRUE)) + 
+    dnorm(alpha, 0, alpha_pri[2], log=TRUE) + 
+    sum(dbinom(allYs, allNs, expit(latentEffects), log=TRUE))
+  
+  objFull$fn(obj$env$last.par)
+  
   
   alpha = obj$env$last.par[grepl("alpha", names(obj$env$last.par))]
   betas = obj$env$last.par[grepl("beta", names(obj$env$last.par))]
@@ -415,18 +462,12 @@ if(FALSE) {
   
   testRep = obj$report()
   
-  range(testRep$latentFieldUrbMICS)
-  range(testRep$latentFieldRurMICS)
   range(testRep$latentFieldUrbDHS)
   range(testRep$latentFieldRurDHS)
   
-  range(testRep$fe_iUrbanMICS)
-  range(testRep$fe_iRuralMICS)
   range(testRep$fe_iUrbanDHS)
   range(testRep$fe_iRuralDHS)
   
-  range(testRep$projepsilon_iUrbanMICS)
-  range(testRep$projepsilon_iRuralMICS)
   range(testRep$projepsilon_iUrbanDHS)
   range(testRep$projepsilon_iRuralDHS)
   
@@ -448,7 +489,6 @@ if(FALSE) {
 # set start of optimization
 # obj$par = optParINLA
 # obj$par = optPar
-
 {
   # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
   tolSeq = 1e-06
@@ -499,7 +539,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 29.2183499999999 minutes (for intern=FALSE)
+  # optimization took 13.8692666666667 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -528,7 +568,7 @@ if(!SD0$pdHess) {
                         random=rand_effs,
                         map=map, 
                         hessian=TRUE,
-                        DLL='modBYM2JitterFusionNugget')
+                        DLL='modBYM2simple')
   testObj = objFixed
   thisOptPar = optPar[-which(names(optPar) == "log_tauEps")]
   lower = lower[-which(names(optPar) == "log_tauEps")]
@@ -595,88 +635,22 @@ if(!SD0$pdHess) {
 # * TMB Posterior Sampling ----
 
 if(FALSE) {
-  predCols = makeBlueGreenYellowSequentialColors(64)
+  hessTime = system.time(testHess <- hessian(testObj$fn, optPar))[3]
+  hessTime/60
+  # 10.28792 minutes for intern=FALSE
+  eig = eigen(testHess)
+  eig
   
-  obj$fn(optParINLA)
-  testRep = obj$report()
-  names(testRep)
+  for(i in 1:length(eig$values)) {
+    thisVal = eig$values[i]
+    thisVec = eig$vectors[,i]
+    barplot(eig$vectors[,i], names.arg=names(SD0$par.fixed), 
+            main=paste0("Eigenvector ", i, " with value ", thisVal))
+  }
   
-  wuI = c(intPtsDHS$wUrban) != 0
-  ptsUrbAll = cbind(c(intPtsDHS$xUrban), c(intPtsDHS$yUrban))
-  lonLatUrbAll = projNigeria(ptsUrbAll, inverse=TRUE)
-  ptsUrb = ptsUrbAll[wuI,]
-  lonLatUrb = lonLatUrbAll[wuI,]
-  
-  wrI = c(intPtsDHS$wRural) != 0
-  ptsRurAll = cbind(c(intPtsDHS$xRural), c(intPtsDHS$yRural))
-  lonLatRurAll = projNigeria(ptsRurAll, inverse=TRUE)
-  ptsRur = ptsRurAll[wuI,]
-  lonLatRur = lonLatRurAll[wuI,]
-  
-  latentFieldUrb = testRep$latentFieldUrbDHS
-  plotWithColor(lonLatUrbAll[,1], lonLatUrbAll[,2], latentFieldUrb, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  latentFieldRur = testRep$latentFieldRurDHS
-  plotWithColor(lonLatRurAll[,1], lonLatRurAll[,2], latentFieldRur, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  fe_iUrbanDHS = testRep$fe_iUrbanDHS
-  plotWithColor(lonLatUrbAll[,1], lonLatUrbAll[,2], fe_iUrbanDHS, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  alpha = obj$env$last.par[names(obj$env$last.par) == "alpha"]
-  betas = obj$env$last.par[names(obj$env$last.par) == "beta"]
-  trueFEsUrb = alpha + intPtsDHS$covsUrb %*% betas
-  
-  plotWithColor(lonLatUrbAll[wuI,1], lonLatUrbAll[wuI,2], trueFEsUrb[wuI], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLatUrbAll[wuI,1], lonLatUrbAll[wuI,2], fe_iUrbanDHS[wuI], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  fe_iRuralDHS = testRep$fe_iRuralDHS
-  plotWithColor(lonLatRurAll[wrI,1], lonLatRurAll[wrI,2], fe_iRuralDHS[wrI], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  trueFEsRur = alpha + intPtsDHS$covsRur %*% betas
-  plotWithColor(lonLatRurAll[wrI,1], lonLatRurAll[wrI,2], trueFEsRur[wrI], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  plotWithColor(lonLatRurAll[wrI,1], lonLatRurAll[wrI,2], fe_iRuralDHS[wrI], asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm1, new=FALSE)
-  
-  projepsilon_iUrbanDHS = testRep$projepsilon_iUrbanDHS
-  plotWithColor(lonLatUrbAll[,1], lonLatUrbAll[,2], projepsilon_iUrbanDHS, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm2, new=FALSE)
-  
-  projepsilon_iRuralDHS = testRep$projepsilon_iRuralDHS
-  plotWithColor(lonLatRurAll[,1], lonLatRurAll[,2], projepsilon_iRuralDHS, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm2, new=FALSE)
-  
-  predsUrb = testRep$projepsilon_iUrbanDHS + testRep$fe_iUrbanDHS
-  plotWithColor(lonLatUrbAll[,1], lonLatUrbAll[,2], predsUrb, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm2, new=FALSE)
-  
-  predsRur = testRep$projepsilon_iRuralDHS + testRep$fe_iRuralDHS
-  plotWithColor(lonLatRurAll[,1], lonLatRurAll[,2], predsRur, asp=1, 
-                pch=19, cex=.6, colScale=predCols, xlab="lon", ylab="lat")
-  plotMapDat(adm2, new=FALSE)
-  
-  # test different parts of likelihood
-  testRep$bym2LogLik
-  
+  testObj$fn(SD0$par.fixed)
+  testObj$fn(SD0$par.fixed + eig$vectors[,9]*.05)
+  testObj$fn(SD0$par.fixed - eig$vectors[,9]*.05)
 }
 
 
@@ -684,24 +658,35 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitMd2.RData")
-out = load("savedOutput/ed/fitMd2.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitSimpleIntSep2.RData")
+out = load("savedOutput/ed/fitSimpleIntSep2.RData")
+
+predCols = makeBlueGreenYellowSequentialColors(64)
+quantCols = makePurpleYellowSequentialColors(64)
+
+testRep = obj$report()
+plotMapDat(adm2, expit(testRep$w_bym2 + obj$env$last.par[names(obj$env$last.par) == "alpha"]), varAreas=adm2$NAME_2, 
+           regionNames=adm2$NAME_2, border="grey", cols=predCols)
+plotMapDat(adm1, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, new=FALSE)
+
+tau = exp(optPar[1])
+phi = expit(optPar[2])
+tauEps = exp(optPar[3])
+plotMapDat(adm2, expit(sqrt(tau)*(sqrt(phi)*testRep$u_bym2 + sqrt((1-phi))*testRep$v_bym2) + obj$env$last.par[1]), varAreas=adm2$NAME_2, 
+           regionNames=adm2$NAME_2, border="grey")
+plotMapDat(adm1, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, new=FALSE)
+
+plotMapDat(adm2, sqrt(tau)*(sqrt(phi)*testRep$u_bym2 + (1-sqrt(phi))*testRep$v_bym2) + obj$env$last.par[1], varAreas=adm2$NAME_2, 
+           regionNames=adm2$NAME_2, border="grey")
+plotMapDat(adm1, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, new=FALSE)
 
 # gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
 #                      predAtArea=foldArea,
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-if(useEnvCovs) {
-  gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
-                       quantiles=c(0.025, 0.1, 0.9, 0.975))
-} else {
-  includedCovNames = c("urb", "access", "elev", "distRiversLakes", "popValsNorm")[includedCovs]
-  gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
-                       quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                       includedCovs=includedCovNames)
-}
-
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+                     quantiles=c(0.025, 0.1, 0.9, 0.975))
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
@@ -720,18 +705,18 @@ if(useEnvCovs) {
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsMd2.RData")
-out = load("savedOutput/ed/gridPredsMd2.RData")
+save(gridPreds, file="savedOutput/ed/gridPredsSimpleIntSep2.RData")
+out = load("savedOutput/ed/gridPredsSimpleIntSep2.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsMd2.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsMd2.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsMd2.RData")
-out = load("savedOutput/ed/stratPredsMd2.RData")
-out = load("savedOutput/ed/admin1PredsMd2.RData")
-out = load("savedOutput/ed/admin2PredsMd2.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsSimpleIntSep2.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsSimpleIntSep2.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsSimpleIntSep2.RData")
+out = load("savedOutput/ed/stratPredsSimpleIntSep2.RData")
+out = load("savedOutput/ed/admin1PredsSimpleIntSep2.RData")
+out = load("savedOutput/ed/admin2PredsSimpleIntSep2.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -739,32 +724,32 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \centering
 # \begin{tabular}{rrrr}
 # \hline
-# & Est & Q0.025 & Q0.975 \\ 
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\
 # \hline
-# X.Int. & -1.76 & -1.92 & -1.60 \\ 
-# beta & 0.30 & 0.15 & 0.46 \\ 
-# beta.1 & -0.18 & -0.39 & 0.02 \\ 
-# beta.2 & 0.17 & -0.13 & 0.48 \\ 
-# beta.3 & 0.07 & -1.96 & 1.96 \\ 
-# beta.4 & 0.81 & 0.62 & 1.01 \\ 
-# sigmaSq & 1.00 & 0.82 & 1.20 \\ 
+# X.Int. & -1.76 & -1.91 & -1.61 \\ 
+# beta & 0.30 & 0.14 & 0.45 \\ 
+# beta.1 & -0.19 & -0.41 & 0.02 \\ 
+# beta.2 & 0.18 & -0.10 & 0.49 \\ 
+# beta.3 & 0.03 & -1.85 & 1.88 \\ 
+# beta.4 & 0.81 & 0.61 & 1.01 \\ 
+# sigmaSq & 0.99 & 0.81 & 1.21 \\ 
 # phi & 0.95 & 0.94 & 0.96 \\ 
-# sigmaEpsSq & 0.92 & 0.83 & 1.01 \\ 
+# sigmaEpsSq & 0.92 & 0.82 & 1.02 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edMd2")
+          plotNameRoot="edSimpleIntSep2")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Strat")
+          plotNameRoot="edSimpleIntSep2", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Admin1")
+          plotNameRoot="edSimpleIntSep2", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Admin2")
+          plotNameRoot="edSimpleIntSep2", plotNameRootAreal="Admin2")
 
 if(FALSE) {
   logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]

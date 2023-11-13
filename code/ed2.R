@@ -14,7 +14,7 @@ out = load("savedOutput/global/edMICS.RData")
 # KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
 # JInnerRural = 4
 # JOuterRural = 4
-KMICS=25
+KMICS=300
 KDHSurb = 11 # 3 rings of 5 each
 JInnerUrban = 3
 KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
@@ -40,7 +40,8 @@ if(FALSE) {
                                           JOuterRural=JOuterRural, adminMap=adm2Full)
   
   load("savedOutput/global/intPtsDHS.RData")
-  load("savedOutput/global/intPtsMICS.RData")
+  # load("savedOutput/global/intPtsMICS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
@@ -141,11 +142,11 @@ if(FALSE) {
   save(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
        ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/ed2Inputs.RData")
+       file=paste0("savedOutput/global/ed2Inputs_", KMICS, ".RData"))
   
   # compile model ----
-  dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
-  compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
+  # dyn.unload( dynlib("code/modBYM2JitterFusionNugget2sparse"))
+  # compile( "code/modBYM2JitterFusionNugget2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
   dyn.unload( dynlib("code/modBYM2JitterFusionNugget2"))
   compile( "code/modBYM2JitterFusionNugget2.cpp", 
@@ -159,7 +160,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/ed2Inputs.RData")
+out = load(paste0("savedOutput/global/ed2Inputs_", KMICS, ".RData"))
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -250,21 +251,35 @@ if(FALSE) {
 }
 
 # initial parameters
-initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
-initAlpha = logit(initRurP)
-initBeta1 = logit(initUrbP) - initAlpha
+# initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+# initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+# initAlpha = logit(initRurP)
+# initBeta1 = logit(initUrbP) - initAlpha
+# 
+# tmb_params <- list(alpha = initAlpha, # intercept
+#                    beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
+#                    log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+#                    logit_phi = 0, # SPDE parameter related to the range
+#                    log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+#                    Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+#                    nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+#                    nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+#                    nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+#                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+# )
 
-tmb_params <- list(alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(intPtsMICS$XUrb)-1)), 
-                   log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                   Epsilon_bym2 = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                   nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+# load Md2 model fit for initialization
+out = load(paste0("savedOutput/ed/fitMd2.RData"))
+tmb_params <- list(alpha = obj$env$last.par[grepl("alpha", names(obj$env$last.par))], # intercept
+                   beta = obj$env$last.par[grepl("beta", names(obj$env$last.par))], 
+                   log_tau = obj$env$last.par[names(obj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                   logit_phi = obj$env$last.par[grepl("logit_phi", names(obj$env$last.par))], # SPDE parameter related to the range
+                   log_tauEps = obj$env$last.par[grepl("log_tauEps", names(obj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                   Epsilon_bym2 = obj$env$last.par[grepl("Epsilon_bym2", names(obj$env$last.par))], # RE on mesh vertices
+                   nuggetUrbMICS = rep(0, length(ysUrbMICS)), 
+                   nuggetRurMICS = rep(0, length(ysRurMICS)), 
+                   nuggetUrbDHS = obj$env$last.par[grepl("nuggetUrbDHS", names(obj$env$last.par))], 
+                   nuggetRurDHS = obj$env$last.par[grepl("nuggetRurDHS", names(obj$env$last.par))]
 )
 
 # make TMB fun and grad ----
@@ -330,7 +345,8 @@ if(FALSE) {
   # 54.5 for non-sparse
   # 55.3 for sparse
   
-  testRep = obj$report()
+  testRep = obj$report(obj$env$last.par)
+  
   
   range(testRep$latentFieldUrbMICS)
   range(testRep$latentFieldRurMICS)
@@ -383,6 +399,18 @@ if(FALSE) {
       next
     }
     else {
+      # make sure last.par is at the optimum
+      parI = match(c("log_tau", "logit_phi", "log_tauEps"), names(obj$env$last.par))
+      if(any(obj$env$last.par[parI] != optPar)) {
+        if(any(obj$env$last.par[parI] != optPar)) {
+          # must run function one last time at the optimum so last.par is correct
+          invisible(obj(optPar))
+        } else {
+          # last.par.best is at the optimum
+          obj$env$last.par = obj$env$last.par.best
+        }
+      }
+      
       print(paste0("completed optimization for tol = ", thisTol, ""))
       
       ## Get standard errors
@@ -427,7 +455,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took ~125.95185 minutes (for intern=FALSE)
+  # optimization took ~125.95185 minutes (583.903483333334 for KMICS==300)
 }
 
 if(FALSE) {
@@ -439,6 +467,108 @@ if(FALSE) {
   
   tempEig = eigen(tempHess)
   range(tempEig$values)
+  
+  # test BYM2 density and its components
+  optPar
+  # Md2:
+  #    log_tau  logit_phi log_tauEps 
+  # 0.01614742 2.96815322 0.09006356 
+  #    log_tau  logit_phi log_tauEps 
+  # 0.00655655 2.97995880 0.08650453
+  testRep = obj$report(obj$env$last.par)
+  testRep$bym2LogLik
+  dBYM2naive(x=obj$env$last.par[grepl("Epsilon", names(obj$env$last.par))], 
+             phi=expit(obj$env$last.par[names(obj$env$last.par) == "logit_phi"]), 
+             tau=exp(obj$env$last.par[names(obj$env$last.par) == "log_tau"]), 
+             precomputedValues=bym2ArgsTMB)
+  
+  testRep$logPriTau
+  logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]
+  tau = exp(logTau)
+  lambdaTau = data_full$lambdaTau
+  logTauEps = obj$env$last.par[names(obj$env$last.par) == "log_tauEps"]
+  tauEps = exp(logTauEps)
+  lambdaTauEps = data_full$lambdaTauEps
+  
+  dPCprec(tau=tau, lambda=lambdaTau, doLog=TRUE) + logTau
+  testRep$logPriTau
+  
+  logTau
+  testRep$ljacobianTau
+  
+  dPCprec(tau=tau, lambda=lambdaTau, doLog=TRUE)
+  testRep$ldensityTau
+  
+  log(lambdaTau) - log(2)
+  testRep$firstPt
+  
+  -(3/2)*logTau
+  testRep$secondPt
+  
+  -lambdaTau/sqrt(tau)
+  testRep$thirdPt
+  
+  dPCprec(tau=tau, lambda=lambdaTau, doLog=TRUE) + logTau/2
+  testRep$ldensityTau
+  
+  dPCprec(tau=tauEps, lambda=lambdaTauEps, doLog=TRUE) + logTauEps
+  testRep$logPriTauEps
+  
+  dPCprec(tau=tauEps, lambda=lambdaTauEps, doLog=TRUE)
+  testRep$logPriTauEps
+  
+  lastPar = obj$env$last.par
+  obj$fn(rep(0, 3))
+  testPar = obj$env$last.par
+  testRep2 = obj$report(testPar)
+  
+  tauEps = exp(0)
+  dPCprec(tau=tauEps, lambda=lambdaTauEps, doLog=TRUE) + log(tauEps)
+  testRep$logPriTauEps
+  
+  objFull <- MakeADFun(data=data_full,
+                       parameters=tmb_params,
+                       hessian=TRUE,
+                       DLL='modBYM2JitterFusionNugget2')
+  testRepFull = objFull$report(obj$env$last.par)
+  
+  system.time(test <- obj$fn(obj$par))
+  # 363.236  for non-sparse
+  # 355.211 for sparse
+  
+  system.time(test <- obj$gr(obj$par))
+  # 54.5 for non-sparse
+  # 55.3 for sparse
+  
+  testRep = obj$report()
+  
+  range(testRep$latentFieldUrbMICS)
+  range(testRep$latentFieldRurMICS)
+  range(testRep$latentFieldUrbDHS)
+  range(testRep$latentFieldRurDHS)
+  
+  range(testRep$fe_iUrbanMICS)
+  range(testRep$fe_iRuralMICS)
+  range(testRep$fe_iUrbanDHS)
+  range(testRep$fe_iRuralDHS)
+  
+  range(testRep$projepsilon_iUrbanMICS)
+  range(testRep$projepsilon_iRuralMICS)
+  range(testRep$projepsilon_iUrbanDHS)
+  range(testRep$projepsilon_iRuralDHS)
+  
+  range(testRep$liksUrbMICS)
+  range(testRep$liksRurMICS)
+  range(testRep$liksUrbDHS)
+  range(testRep$liksRurDHS)
+  
+  range(testRep$logDet)
+  sapply(testRep, range)
+  
+  any(apply(data_full$wUrbanDHS, 1, function(x) {all(x == 0)}))
+  any(apply(data_full$wRuralDHS, 1, function(x) {all(x == 0)}))
+  any(apply(data_full$wUrbanMICS, 1, function(x) {all(x == 0)}))
+  any(apply(data_full$wRuralMICS, 1, function(x) {all(x == 0)}))
 }
 
 if(!SD0$pdHess) {
@@ -555,8 +685,8 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fit2.RData")
-out = load("savedOutput/ed/fit2.RData")
+save(SD0, obj, totalTime, sdTime, file=paste0("savedOutput/ed/fit2_", KMICS, ".RData"))
+out = load(paste0("savedOutput/ed/fit2_", KMICS, ".RData"))
 
 gridPreds = predGrid(SD0, admLevel="adm2")
 # \begin{table}[ht]
@@ -565,30 +695,30 @@ gridPreds = predGrid(SD0, admLevel="adm2")
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.76 & -1.90 & -1.84 & -1.68 & -1.64 \\ 
-# urb & 0.38 & 0.25 & 0.30 & 0.46 & 0.50 \\ 
-# access & -0.12 & -0.30 & -0.24 & 0.01 & 0.07 \\ 
-# elev & 0.21 & 0.01 & 0.08 & 0.34 & 0.40 \\ 
-# distRiversLakes & 0.06 & -0.27 & -0.15 & 0.29 & 0.40 \\ 
-# popValsNorm & 0.87 & 0.70 & 0.76 & 0.99 & 1.04 \\ 
-# sigmaSq & 0.97 & 0.81 & 0.86 & 1.09 & 1.16 \\ 
-# phi & 0.12 & 0.10 & 0.11 & 0.13 & 0.14 \\ 
-# sigmaEpsSq & 0.39 & 0.36 & 0.37 & 0.41 & 0.43 \\ 
+# (Int) & -1.73 & -1.88 & -1.83 & -1.63 & -1.59 \\ 
+# urb & 0.38 & 0.23 & 0.28 & 0.49 & 0.53 \\ 
+# access & -0.12 & -0.32 & -0.24 & 0.00 & 0.06 \\ 
+# elev & 0.20 & -0.04 & 0.05 & 0.36 & 0.44 \\ 
+# distRiversLakes & -0.02 & -1.42 & -0.93 & 0.89 & 1.35 \\ 
+# popValsNorm & 0.85 & 0.64 & 0.71 & 1.00 & 1.06 \\ 
+# sigmaSq & 1.34 & 1.12 & 1.19 & 1.51 & 1.60 \\ 
+# phi & 0.87 & 0.85 & 0.85 & 0.88 & 0.89 \\ 
+# sigmaEpsSq & 0.42 & 0.38 & 0.40 & 0.44 & 0.46 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPreds2.RData")
-out = load("savedOutput/ed/gridPreds2.RData")
+save(gridPreds, file=paste0("savedOutput/ed/gridPreds2_", KMICS, ".RData"))
+out = load(paste0("savedOutput/ed/gridPreds2_", KMICS, ".RData"))
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DM2.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DM2.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DM2.RData")
-out = load("savedOutput/ed/stratPredsM_DM2.RData")
-out = load("savedOutput/ed/admin1PredsM_DM2.RData")
-out = load("savedOutput/ed/admin2PredsM_DM2.RData")
+save(stratPreds, file=paste0("savedOutput/ed/stratPredsM_DM2_", KMICS, ".RData"))
+save(admin1Preds, file=paste0("savedOutput/ed/admin1PredsM_DM2_", KMICS, ".RData"))
+save(admin2Preds, file=paste0("savedOutput/ed/admin2PredsM_DM2_", KMICS, ".RData"))
+out = load(paste0("savedOutput/ed/stratPredsM_DM2_", KMICS, ".RData"))
+out = load(paste0("savedOutput/ed/admin1PredsM_DM2_", KMICS, ".RData"))
+out = load(paste0("savedOutput/ed/admin2PredsM_DM2_", KMICS, ".RData"))
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -598,29 +728,29 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# X.Int. & -1.76 & -1.90 & -1.64 \\ 
-# beta & 0.38 & 0.25 & 0.50 \\ 
-# beta.1 & -0.12 & -0.30 & 0.07 \\ 
-# beta.2 & 0.21 & 0.01 & 0.40 \\ 
-# beta.3 & 0.06 & -0.27 & 0.40 \\ 
-# beta.4 & 0.87 & 0.70 & 1.04 \\ 
-# sigmaSq & 0.97 & 0.81 & 1.16 \\ 
-# phi & 0.12 & 0.10 & 0.14 \\ 
-# sigmaEpsSq & 0.39 & 0.36 & 0.43 \\ 
+# X.Int. & -1.73 & -1.88 & -1.59 \\ 
+# beta & 0.38 & 0.23 & 0.53 \\ 
+# beta.1 & -0.12 & -0.32 & 0.06 \\ 
+# beta.2 & 0.20 & -0.04 & 0.44 \\ 
+# beta.3 & -0.02 & -1.42 & 1.35 \\ 
+# beta.4 & 0.85 & 0.64 & 1.06 \\ 
+# sigmaSq & 1.34 & 1.12 & 1.60 \\ 
+# phi & 0.87 & 0.85 & 0.89 \\ 
+# sigmaEpsSq & 0.42 & 0.38 & 0.46 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DM2")
+          plotNameRoot=paste0("edFusionM_DM2_", KMICS))
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Strat")
+          plotNameRoot=paste0("edFusionM_DM2_", KMICS), plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin1")
+          plotNameRoot=paste0("edFusionM_DM2_", KMICS), plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DM2", plotNameRootAreal="Admin2")
+          plotNameRoot=paste0("edFusionM_DM2_", KMICS), plotNameRootAreal="Admin2")
 
 

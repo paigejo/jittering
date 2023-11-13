@@ -382,6 +382,7 @@ myQuiltPlot = function(x, y, z, zlim=NULL, colScale=tim.colors(), nx=64, ny=NULL
 # mapDat: a SpatialPolygonsDataFrame object, where each polygon may have a value you wish to plot
 # plotVar: if null, plot the areal boundaries only. Else plot plotVar values for each area
 # varAreas: area names associated with plotVar
+# regionNames: the names of the areas in mapDat, in the order they appear, e.g. mapDat@NAME_1
 # zlim: range of the response
 # project: if FALSE, plot with lon/lat coordinates.  Otherwise, plot with projected coords 
 #          using myProjection function.  This can be used when plotting the projected `easting' 

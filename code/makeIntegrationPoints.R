@@ -2347,14 +2347,14 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
 # function for simulating fake MICS points using pop density
 simMICSlocs = function(nsim=20, popMat=popMatNGAThresh, targetPopMat=popMatNGAThresh, 
                        poppsub=poppsubNGAThresh, saveFile="savedOutput/validation/simEdMICS.RData", 
-                       seed=123) {
+                       seed=123, KMICS=300) {
   set.seed(seed)
   
   # load in MICS data and integration points
   out = load("savedOutput/global/edMICS.RData")
   out=load("~/git/jittering/savedOutput/validation/edMICSval.RData")
   out = load("savedOutput/global/ed.RData")
-  out = load("savedOutput/global/intPtsMICS.RData")
+  out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   
   # we need the following format for the faux easpa to input to SUMMER and 
   # simulate the population. Only EAUrb, EARur, and EATotal matter for what we 

@@ -149,8 +149,8 @@ if(FALSE) {
   # dyn.unload( dynlib("code/modBYM2JitterDHS2sparse"))
   # compile( "code/modBYM2JitterDHS2sparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modBYM2JitterDHS2"))
-  compile( "code/modBYM2JitterDHS2.cpp", 
+  dyn.unload( dynlib("code/modMd2Constr"))
+  compile( "code/modMd2Constr.cpp", 
            framework="TMBad", safebounds=FALSE)
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modBYM2JitterDHS2  -DTMB_LIB_INIT=R_init_modBYM2JitterDHS2  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modBYM2JitterDHS2.cpp -o code/modBYM2JitterDHS2.o
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modBYM2JitterDHS2.so code/modBYM2JitterDHS2.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
@@ -161,7 +161,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edMd2Inputs.RData")
+out = load("savedOutput/global/edMd2ConstrInputs.RData")
 
 if(FALSE) {
   # test covariates
@@ -339,7 +339,7 @@ if(FALSE) {
   initParFull = objFull$par
   initParFull[1:6] = initAlphaBeta
   initParFull$
-  objFull$fn(initParFull)
+    objFull$fn(initParFull)
   
   # test cases
   obj$fn(rep(0, 3))
@@ -755,16 +755,16 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edMd2")
+          plotNameRoot="edMd2Constr")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Strat")
+          plotNameRoot="edMd2Constr", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Admin1")
+          plotNameRoot="edMd2Constr", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edMd2", plotNameRootAreal="Admin2")
+          plotNameRoot="edMd2Constr", plotNameRootAreal="Admin2")
 
 if(FALSE) {
   logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]
