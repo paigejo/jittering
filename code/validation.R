@@ -1902,7 +1902,7 @@ getValidationFit = function(fold,
       if(!all(testObj$env$last.par.best[parI] == optPar)) {
         # last.par.best is not the optimum.
         # must run function one last time at the optimum so last.par is correct
-        invisible(testObj(optPar))
+        invisible(funWrapper(optPar))
       } else {
         # last.par.best is at the optimum. set last.par to be last.par.best
         testObj$env$last.par = testObj$env$last.par.best
@@ -2234,7 +2234,7 @@ getValidationFit = function(fold,
             if(!all(obj$env$last.par.best[parI] == optPar)) {
               # last.par.best is not the optimum.
               # must run function one last time at the optimum so last.par is correct
-              invisible(obj(optPar))
+              invisible(funWrapper(optPar))
             } else {
               # last.par.best is at the optimum. set last.par to be last.par.best
               obj$env$last.par = obj$env$last.par.best
