@@ -2008,6 +2008,7 @@ getValidationFit = function(fold,
     } else {
       MakeADFunInputs$DLL = "modM_D2Sep"
     }
+    dat$MakeADFunInputs$DLL = MakeADFunInputs$DLL
   }
   
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
@@ -2339,7 +2340,6 @@ getValidationFit = function(fold,
                            model=model, sep=sep, 
                            quantiles=c(0.025, 0.1, 0.9, 0.975))
     } else {
-      browser()
       gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975), sep=sep)
