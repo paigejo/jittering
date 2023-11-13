@@ -1642,8 +1642,8 @@ getValidationFit = function(fold,
                          nuggetRurDHS = rep(0, sum(!edInSample$urban))
       )
       
-      areaidxlocUrban = apply(dat$MakeADFunInputs$data$AUrbDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRural = apply(dat$MakeADFunInputs$data$ARurDHS, 1, function(x) {match(1, x)}) - 1
+      areaidxlocUrban = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+      areaidxlocRural = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
       areaidxlocUrban = as.integer(areaidxlocUrban)
       areaidxlocRural = as.integer(areaidxlocRural)
       
@@ -1771,8 +1771,8 @@ getValidationFit = function(fold,
         options=0 # 1 for adreport of log tau and logit phi
       )
     } else {
-      areaidxlocUrban = apply(dat$MakeADFunInputs$data$AUrbDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRural = apply(dat$MakeADFunInputs$data$ARurDHS, 1, function(x) {match(1, x)}) - 1
+      areaidxlocUrban = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+      areaidxlocRural = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
       areaidxlocUrban = as.integer(areaidxlocUrban)
       areaidxlocRural = as.integer(areaidxlocRural)
       
@@ -2007,13 +2007,13 @@ getValidationFit = function(fold,
       # reconstruct data to include indices rather than A matrices. Also add in 
       # QinvRowSums:
       
-      areaidxlocUrbanMICS = apply(dat$MakeADFunInputs$data$AUrbMICS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRuralMICS = apply(dat$MakeADFunInputs$data$ARurMICS, 1, function(x) {match(1, x)}) - 1
+      areaidxlocUrbanMICS = apply(dat$MakeADFunInputs$data$AprojUrbanMICS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+      areaidxlocRuralMICS = apply(dat$MakeADFunInputs$data$AprojRuralMICS, 1, function(x) {match(1, x)}) - 1
       areaidxlocUrbanMICS = as.integer(areaidxlocUrbanMICS)
       areaidxlocRuralMICS = as.integer(areaidxlocRuralMICS)
       
-      areaidxlocUrbanDHS = apply(dat$MakeADFunInputs$data$AUrbDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
-      areaidxlocRuralDHS = apply(dat$MakeADFunInputs$data$ARurDHS, 1, function(x) {match(1, x)}) - 1
+      areaidxlocUrbanDHS = apply(dat$MakeADFunInputs$data$AprojUrbanDHS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
+      areaidxlocRuralDHS = apply(dat$MakeADFunInputs$data$AprojRuralDHS, 1, function(x) {match(1, x)}) - 1
       areaidxlocUrbanDHS = as.integer(areaidxlocUrbanDHS)
       areaidxlocRuralDHS = as.integer(areaidxlocRuralDHS)
       
