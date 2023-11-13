@@ -1672,8 +1672,8 @@ getValidationFit = function(fold,
         areaidxlocRural = areaidxlocRural, 
         X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
         X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-        wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-        wRuralDHS=wRuralDHStemp, # 
+        wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
+        wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
         
         # V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
         Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
@@ -1756,8 +1756,8 @@ getValidationFit = function(fold,
         AprojRuralDHS=dat$MakeADFunInputs$data$AprojRuralDHS, # 
         X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
         X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-        wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-        wRuralDHS=wRuralDHStemp, # 
+        wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
+        wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
         
         V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
         Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
@@ -1801,8 +1801,8 @@ getValidationFit = function(fold,
         areaidxlocRural = areaidxlocRural, 
         X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
         X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-        wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-        wRuralDHS=wRuralDHStemp, # 
+        wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
+        wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
         
         # V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
         Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
@@ -2043,8 +2043,8 @@ getValidationFit = function(fold,
           areaidxlocRuralMICS = areaidxlocRuralMICS, 
           X_betaUrbanMICS=dat$MakeADFunInputs$data$X_betaUrbanMICS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
           X_betaRuralMICS=dat$MakeADFunInputs$data$X_betaRuralMICS, # 
-          wUrbanMICS=wUrbanMICStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-          wRuralMICS=wRuralMICStemp, # 
+          wUrbanMICS=dat$MakeADFunInputs$data$wUrbanMICS, # nObsUrban x nIntegrationPointsUrban weight matrix
+          wRuralMICS=dat$MakeADFunInputs$data$wRuralMICS, # 
           
           y_iUrbanDHS=dat$MakeADFunInputs$data$y_iUrbanDHS, # same as above but for DHS survey
           y_iRuralDHS=dat$MakeADFunInputs$data$y_iRuralDHS, # 
@@ -2056,8 +2056,8 @@ getValidationFit = function(fold,
           areaidxlocRuralDHS = areaidxlocRuralDHS, 
           X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
           X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-          wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-          wRuralDHS=wRuralDHStemp, # 
+          wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
+          wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
           
           # V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
           Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
@@ -2083,8 +2083,8 @@ getValidationFit = function(fold,
           areaidxlocRural = areaidxlocRural, 
           X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
           X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-          wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
-          wRuralDHS=wRuralDHStemp, # 
+          wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
+          wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
           
           # V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
           Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
