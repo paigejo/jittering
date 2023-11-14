@@ -1897,13 +1897,13 @@ getValidationFit = function(fold,
     
     # make sure last.par is at the optimum
     parI = match(c("log_tau", "logit_phi", "log_tauEps"), names(testObj$env$last.par))
-    if(!all(testObj$env$last.par[parI] == optPar)) {
+    if(!all(testObj$env$last.par[parI] == optStart)) {
       # last.par is not the optimum. Check last.par.best
       
-      if(!all(testObj$env$last.par.best[parI] == optPar)) {
+      if(!all(testObj$env$last.par.best[parI] == optStart)) {
         # last.par.best is not the optimum.
         # must run function one last time at the optimum so last.par is correct
-        invisible(funWrapper(optPar))
+        invisible(funWrapper(optStart))
       } else {
         # last.par.best is at the optimum. set last.par to be last.par.best
         testObj$env$last.par = testObj$env$last.par.best
@@ -1982,14 +1982,6 @@ getValidationFit = function(fold,
   # dat$MakeADFunInputs$parameters$log_tau = -0.08209775 # Log tau (i.e. log spatial precision, Epsilon)
   # dat$MakeADFunInputs$parameters$logit_phi = -1.78428461 # SPDE parameter related to the range
   # dat$MakeADFunInputs$parameters$log_tauEps = 0.64672006 # Log tau (i.e. log spatial precision, Epsilon)
-  
-  # add covariate and intercept effects to random effects if specified by user
-  if(randomBeta) {
-    dat$MakeADFunInputs$random = c("beta", dat$MakeADFunInputs$random)
-  }
-  if(randomAlpha) {
-    dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
-  }
   
   dat$MakeADFunInputs$parameters = tmb_params
   MakeADFunInputs = dat$MakeADFunInputs
