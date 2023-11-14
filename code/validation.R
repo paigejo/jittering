@@ -1897,13 +1897,13 @@ getValidationFit = function(fold,
     
     # make sure last.par is at the optimum
     parI = match(c("log_tau", "logit_phi", "log_tauEps"), names(testObj$env$last.par))
-    if(!all(testObj$env$last.par[parI] == optStart)) {
+    if(!all(testObj$env$last.par[parI] == optParStart)) {
       # last.par is not the optimum. Check last.par.best
       
-      if(!all(testObj$env$last.par.best[parI] == optStart)) {
+      if(!all(testObj$env$last.par.best[parI] == optParStart)) {
         # last.par.best is not the optimum.
         # must run function one last time at the optimum so last.par is correct
-        invisible(funWrapper(optStart))
+        invisible(funWrapper(optParStart))
       } else {
         # last.par.best is at the optimum. set last.par to be last.par.best
         testObj$env$last.par = testObj$env$last.par.best
