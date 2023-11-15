@@ -1565,7 +1565,7 @@ getAllValidationData2Areal = function(folds=1:37, res=300) {
 
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                            regenModFit=FALSE, randomBeta=FALSE, randomAlpha=FALSE, 
+                            regenModFit=FALSE, regenPreds=TRUE, randomBeta=FALSE, randomAlpha=FALSE, 
                             fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE) {
   # clean input arguments
   model = match.arg(model)
@@ -2004,7 +2004,7 @@ getValidationFit = function(fold,
     dat$MakeADFunInputs$DLL = MakeADFunInputs$DLL
   }
   
-  if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
+  if(!regenPreds && (regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData")))) {
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
     
@@ -2327,23 +2327,28 @@ getValidationFit = function(fold,
   }
   
   # predict at the left out clusters/areas
-  if(hessPD) {
-    if(!areal) {
-      preds = predClusters(nsim=nsim, fold, SD0, obj, 
-                           model=model, sep=sep, 
-                           quantiles=c(0.025, 0.1, 0.9, 0.975))
+  if(regenPreds) {
+    if(hessPD) {
+      if(!areal) {
+        preds = predClusters(nsim=nsim, fold, SD0, obj, 
+                             model=model, sep=sep, 
+                             quantiles=c(0.025, 0.1, 0.9, 0.975))
+      } else {
+        gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
+                             predAtArea=foldArea,
+                             quantiles=c(0.025, 0.1, 0.9, 0.975), sep=sep)
+        preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+        preds$fixedMat = gridPreds$fixedMat
+      }
     } else {
-      gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
-                       predAtArea=foldArea,
-                       quantiles=c(0.025, 0.1, 0.9, 0.975), sep=sep)
-      preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm2@data$NAME_2)
-      preds$fixedMat = gridPreds$fixedMat
+      preds = NULL
     }
+    
+    save(SD0, obj, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   } else {
-    preds = NULL
+    out = load(paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   }
   
-  save(SD0, obj, totalTime, sdTime, hessPD, preds, file=paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   
   allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal)
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
