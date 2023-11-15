@@ -2326,7 +2326,7 @@ getValidationFit = function(fold,
     out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
   }
   
-  # predict at the left out clusters
+  # predict at the left out clusters/areas
   if(hessPD) {
     if(!areal) {
       preds = predClusters(nsim=nsim, fold, SD0, obj, 
@@ -2336,7 +2336,7 @@ getValidationFit = function(fold,
       gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
                        predAtArea=foldArea,
                        quantiles=c(0.025, 0.1, 0.9, 0.975), sep=sep)
-      preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+      preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm2@data$NAME_2)
       preds$fixedMat = gridPreds$fixedMat
     }
   } else {
