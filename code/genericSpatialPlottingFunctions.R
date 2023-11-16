@@ -588,8 +588,11 @@ makeRedBlueDivergingColors = function(n, valRange=NULL, center=NULL, rev=FALSE, 
       diverging_hcl(n, h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev)
     else
       scale_colour_continuous_diverging(h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev, n_interp=n)
-  }
-  else {
+  } else if(!is.null(valRange)) {
+    if(is.null(center)) {
+      center = mean(valRange)
+    }
+    
     # in this case we want white to be at the center of valRange if center is NULL
     if(!ggplot) {
       propUp = (valRange[2] - center) / diff(valRange)
@@ -607,6 +610,8 @@ makeRedBlueDivergingColors = function(n, valRange=NULL, center=NULL, rev=FALSE, 
         center = min(valRange) + abs(diff(valRange))/2
       scale_colour_continuous_diverging(h1=10, h2=-115, c1=90, l1=40, l2=100, p1=0.9, rev=rev, n_interp=n, mid=center)
     }
+  } else {
+    stop("if center is provided, must also provide valRange")
   }
 }
 
@@ -696,6 +701,41 @@ combineTwoScales = function(n, scale1, scale2, args1, args2) {
 # convert a single color sequential scale into a diverging scale
 makeDivergingScale = function(n, scale, ...) {
   do.call("combineTwoScales", list(n=n, scale1=scale, scale2=scale, args1=list(...), args2=list(...)))
+}
+
+twoColorScale = function(n, col1=rgb(.8,.8,.8), col2="green") {
+  rgb1 = c(col2rgb(col1))
+  rgb2 = c(col2rgb(col2))
+  props = seq(0, 1, l=n)
+  cols = sapply(props, function(x) {x*rgb2 + (1-x)*rgb1})
+  cols[cols < 0] = 0
+  cols[cols > 255] = 255
+  colStrs = apply(cols, 2, function(x) {do.call("rgb", as.list(x/255))})
+}
+
+ThreeColorDivergingScale = function(n, vals=NULL, valRange=NULL, center=NULL, col1="green", col2=rgb(.8,.8,.8), col3="blue") {
+  if(!is.null(vals)) {
+    valRange = range(vals)
+  }
+  if(is.null(center) && !is.null(valRange)) {
+    center = mean(valRange)
+  }
+  
+  if(is.null(valRange) && is.null(center)) {
+    n1 = round(n/2)
+    n2 = n - n1
+  } else if(!is.null(valRange)) {
+    
+    # in this case we want white to be at the center of valRange if center is NULL
+    propUp = (valRange[2] - center) / diff(valRange)
+    propDown = 1 - propUp
+    n1 = round(n * propDown)
+    n2 = n - n1
+  } else {
+    stop("if center is provided, must also provide valRange")
+  }
+  
+  c(twoColorScale(n1, col1, col2), twoColorScale(n2+1, col2, col3)[-1])
 }
 
 # centers a color scale at its midpoint. Returns vector of the centered color scale. 

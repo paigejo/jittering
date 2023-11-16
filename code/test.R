@@ -88,3 +88,47 @@ testA.projUrban = AUrban[1:length(ysUrban),]
 image.plot(as.matrix(A.projUrban))
 image.plot(as.matrix(testA.projUrban))
 all.equal(as.matrix(A.projUrban), as.matrix(testA.projUrban))
+
+# Check which DHS points have misclassified urbanicity under our 
+# classification (assuming DHS coordinates are exact)
+LLcoords = cbind(ed$lon, ed$lat)
+Xmat = getDesignMat(LLcoords, normalized=TRUE)
+head(Xmat)
+classUrban = Xmat[,3]
+pdf("figures/test/urbanMisclassPts.pdf", width=6, height=6)
+plot(LLcoords[,1], LLcoords[,2], col=c("black", "red")[(ed$urban != classUrban) + 1], pch=19, cex=.3, asp=1)
+plotMapDat(adm1, new=FALSE)
+dev.off()
+
+predCols = makeBlueGreenYellowSequentialColors(64)
+quantCols = makePurpleYellowSequentialColors(64)
+
+# calculate percentage of points in each adm1 area with misclassified urbanicity
+out = aggregate(ed$urban != classUrban, by=list(ed$area), FUN=mean, drop=FALSE)
+out = out[match(out$Group.1, adm1$NAME_1),]
+pdf("figures/test/urbanMisclassAdm1.pdf", width=6, height=6)
+plotMapDat(adm1, out$x, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, asp=1, cols=predCols)
+dev.off()
+
+# calculate percentage of points in each adm1 area with misclassified urbanicity
+out = aggregate(ed$urban != classUrban, by=list(factor(ed$subarea, levels=adm2$NAME_2)), FUN=mean, drop=FALSE)
+out = out[match(out$Group.1, adm2$NAME_2),]
+pdf("figures/test/urbanMisclassAdm2.pdf", width=6, height=6)
+plotMapDat(adm2, out$x, varAreas=adm2$NAME_2, regionNames=adm2$NAME_2, asp=1, border=rgb(.6, .6, .6), lwd=.6, col=rev(quantCols))
+plotMapDat(adm1, lwd=1, new=FALSE)
+dev.off()
+
+
+
+urbCols = makeBlueSequentialColors(64)
+urbColsDiverging = ThreeColorDivergingScale(64, valRange=range(poppaNGA$pctUrb), center=median(poppaNGA$pctUrb), 
+                                            col1="green", col2=rgb(.95,.95,.95), col3="blue")
+pdf("figures/test/pctUrbanAdm1.pdf", width=6, height=6)
+plotMapDat(adm1, poppaNGA$pctUrb, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, asp=1, cols=urbColsDiverging)
+dev.off()
+
+out = aggregate(edMICS$ns, by=list(edMICS$Area), FUN=sum, drop=FALSE)
+out = out[match(out$Group.1, adm1$NAME_1),]
+pdf("figures/test/nMICSadm1.pdf", width=6, height=6)
+plotMapDat(adm1, out$x, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, asp=1, cols=predCols)
+dev.off()
