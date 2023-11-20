@@ -1274,7 +1274,6 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   }
   
   # w matrices are nStrata x K. They should be nObs x K
-  browser()
   wUrban = intPtsMICS$wUrban
   stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
   wUrban = wUrban[stratIndexUrbW,]
