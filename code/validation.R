@@ -2213,7 +2213,7 @@ getValidationFit = function(fold,
                       method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
         optPar = opt1$par
         
-        save(optPar, file=paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
+        save(optPar, opt1, file=paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))
         if(!is.null(opt1$message)) {
           print(paste0("error for tol = ", thisTol, ". Message:"))
           print(opt1$message)
@@ -2365,7 +2365,7 @@ getValidationFit = function(fold,
 predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                        addBinVar=TRUE, res=300, maxIterChunk=2000, 
+                        addBinVar=TRUE, res=300, maxIterChunk=1000, 
                         sep=TRUE, QinvSumsNorm=NULL) {
   
   # clean input arguments
@@ -2625,6 +2625,12 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     zeroCols = seq(nrow(Wrur)+1, ncol(Wrur), by=nrow(Wrur)+1)
     Wrur = Wrur[,-zeroCols]
     probDrawsRur = Wrur %*% probIntDrawsRur
+    
+    # sometimes numerical roundoff makes the above sums just barely outside of [0,1]
+    probDrawsUrb[probDrawsUrb < 0] = 0
+    probDrawsUrb[probDrawsUrb > 1] = 1
+    probDrawsRur[probDrawsRur < 0] = 0
+    probDrawsRur[probDrawsRur > 1] = 1
     
     # calculate central prediction before binomial variation is added in
     predsUrb = rowMeans(probDrawsUrb)
