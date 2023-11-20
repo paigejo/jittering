@@ -2372,7 +2372,23 @@ predClusters = function(nsim=1000, fold, SD0, obj,
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
                         addBinVar=TRUE, res=300, maxIterChunk=1000, 
-                        sep=TRUE, QinvSumsNorm=NULL) {
+                        sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE) {
+  
+  # compute QinvSumsNorm if necessary
+  if(sep && is.null(QinvSumsNorm)) {
+    if(admLevel == "adm2") {
+      out = load("savedOutput/global/adm2Mat.RData")
+      admMat = adm2Mat
+    } else if(admLevel == "admFinal") {
+      out = load("savedOutput/global/admFinalMat.RData")
+      admMat = admFinalMat
+    }
+    
+    bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
+                                             constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+    Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+    QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+  }
   
   # clean input arguments
   model = match.arg(model)
@@ -2436,6 +2452,73 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD", "Md2", "MD2")), 11, fold)
   out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", foldMod, ".RData"))
   
+  # get predictions in chunks for MICS folds because they are memory intensive to create
+  if((fold > 10) && maxIterChunk < nsim) {
+    
+    startI = 1
+    endI = maxIterChunk
+    
+    while(startI <= nsim) {
+      
+      # calculate this chunk of predictions
+      thisNsim = endI - startI + 1
+      out = predClusters(nsim=thisNsim, fold=fold, SD0=SD0, obj=obj, 
+                         model=model, 
+                         quantiles=quantiles, 
+                         addBinVar=addBinVar, res=res, maxIterChunk=maxIterChunk, 
+                         sep=sep, QinvSumsNorm=QinvSumsNorm, verbose=FALSE)
+      
+      # concatenate results
+      if(startI == 1) {
+        probDrawsUrb = matrix(nrow=nrow(out$probDrawsUrb), ncol=nsim)
+        probDrawsRur = matrix(nrow=nrow(out$probDrawsRur), ncol=nsim)
+        probDrawsUrb[,startI:endI] = out$probDrawsUrb
+        probDrawsRur[,startI:endI] = out$probDrawsRur
+        predsUrb = out$predsUrb
+        predsRur = out$predsRur
+        fixedMat = matrix(nrow=nrow(fixedMat), ncol=nsim)
+        fixedMat[,startI:endI] = out$fixedMat
+      } else {
+        probDrawsUrb[,startI:endI] = out$probDrawsUrb
+        probDrawsRur[,startI:endI] = out$probDrawsRur
+        thisWt = thisNsim/endI
+        predsUrb = thisWt * out$predsUrb + (1-thisWt) * predsUrb
+        predsRur = thisWt * out$predsRur + (1-thisWt) * predsRur
+        fixedMat[,startI:endI] = out$fixedMat
+      }
+      
+      # update indices
+      startI = endI + 1
+      endI = min(c(endI + maxIterChunk, nsim))
+    }
+    
+    # do final postprocessing/get summary statistics
+    
+    # Make parameter summary tables
+    parMeans = rowMeans(fixedMat)
+    parQuants = t(apply(fixedMat, 1, quantile, probs=quantiles))
+    parSummary = cbind(parMeans, parQuants)
+    colnames(parSummary)[1] = "Est"
+    colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
+    print(xtable(parSummary, digits=2))
+    
+    # calculate predictive quantiles
+    quantsUrb = apply(probDrawsUrb, 1, quantile, probs=quantiles, na.rm=TRUE)
+    quantsRur = apply(probDrawsRur, 1, quantile, probs=quantiles, na.rm=TRUE)
+    
+    # get responses and ns for each cluster
+    yUrb = leftOutDat$y_iUrbanMICS
+    yRur = leftOutDat$y_iRuralMICS
+    nUrb = leftOutDat$n_iUrbanMICS
+    nRur = leftOutDat$n_iRuralMICS
+    
+    return(list(probDrawsUrb=probDrawsUrb, probDrawsRur=probDrawsRur,
+                predsUrb=predsUrb, predsRur=predsRur,
+                parSummary=parSummary, fixedMat=fixedMat,
+                quantsUrb=quantsUrb, quantsRur=quantsRur,
+                yUrb=yUrb, yRur=yRur, nUrb=nUrb, nRur=nRur))
+  }
+  
   # generate predictions at the left out clusters
   
   # generate draws
@@ -2479,21 +2562,6 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       wStar  <- t.draws[parnames == 'w_bym2Star',]
       uStar  <- t.draws[parnames == 'u_bym2Star',] # uStar is unit var scaled
       
-      if(is.null(QinvSumsNorm)) {
-        if(admLevel == "adm2") {
-          out = load("savedOutput/global/adm2Mat.RData")
-          admMat = adm2Mat
-        } else if(admLevel == "admFinal") {
-          out = load("savedOutput/global/admFinalMat.RData")
-          admMat = admFinalMat
-        }
-        
-        bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
-                                                 constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-        Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
-        QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
-      }
-      
       # get how much u reduced by sum to zero constraint to u, then scale
       uSums = colSums(uStar)
       uFacs = uSums * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
@@ -2517,7 +2585,9 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     parSummary = cbind(parMeans, parQuants)
     colnames(parSummary)[1] = "Est"
     colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
-    print(xtable(parSummary, digits=2))
+    if(verbose) {
+      print(xtable(parSummary, digits=2))
+    }
     
     # add effects to predictions
     if(fold <= 10) {
@@ -2558,23 +2628,25 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     }
     
     # get latent preds at cluster integration points
-    matMultChunk = function(X1, X2, nColMax=maxIterChunk) {
-      matMultChunkHelper = function(colStart=1) {
-        inds = colStart:min(c(colStart + nColMax-1, ncol(X2)))
-        X1 %*% X2[,inds]
-      }
-      
-      startIs = seq(1, ncol(X2), by=nColMax)
-      do.call("cbind", lapply(startIs, matMultChunkHelper))
-    }
+    # matMultChunk = function(X1, X2, nColMax=maxIterChunk) {
+    #   matMultChunkHelper = function(colStart=1) {
+    #     inds = colStart:min(c(colStart + nColMax-1, ncol(X2)))
+    #     X1 %*% X2[,inds]
+    #   }
+    #   
+    #   startIs = seq(1, ncol(X2), by=nColMax)
+    #   do.call("cbind", lapply(startIs, matMultChunkHelper))
+    # }
     
-    # clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
-    clustIntDrawsUrb <- as.matrix(matMultChunk(bigAurb, epsilon_tmb_draws))
+    clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
+    # clustIntDrawsUrb <- as.matrix(matMultChunk(bigAurb, epsilon_tmb_draws))
+    rm(bigAurb)
     clustIntDrawsUrb <- sweep(clustIntDrawsUrb, 2, alpha_tmb_draws, '+')
     clustIntDrawsUrb <- clustIntDrawsUrb + (Xurb %*% beta_tmb_draws)
     
-    # clustIntDrawsRur <- as.matrix(bigArur %*% epsilon_tmb_draws)
-    clustIntDrawsRur <- as.matrix(matMultChunk(bigArur, epsilon_tmb_draws))
+    clustIntDrawsRur <- as.matrix(bigArur %*% epsilon_tmb_draws)
+    # clustIntDrawsRur <- as.matrix(matMultChunk(bigArur, epsilon_tmb_draws))
+    rm(bigArur)
     clustIntDrawsRur <- sweep(clustIntDrawsRur, 2, alpha_tmb_draws, '+')
     clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
     
