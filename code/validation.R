@@ -1118,7 +1118,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # intPtsDHS = makeAllIntegrationPointsDHS(cbind(ed$east, ed$north), ed$urban, popPrior=TRUE)
   
   out = load("savedOutput/global/intPtsDHS.RData")
-  out = load("savedOutput/global/intPtsMICS.RData")
+  out = load(paste0("savedOutput/global/intPtsMICS", "_", res, ifelse(adm2AsCovariate, "_adm2Cov", ""), ".RData"))
   
   
   if(admLevel == "admFinal") {
@@ -1274,6 +1274,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   }
   
   # w matrices are nStrata x K. They should be nObs x K
+  browser()
   wUrban = intPtsMICS$wUrban
   stratIndexUrbW = unlist(mapply(rep, 1:nrow(wUrban), each=numPerStratUrb))
   wUrban = wUrban[stratIndexUrbW,]
