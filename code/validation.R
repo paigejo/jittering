@@ -2374,22 +2374,6 @@ predClusters = function(nsim=1000, fold, SD0, obj,
                         addBinVar=TRUE, res=300, maxIterChunk=1000, 
                         sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE) {
   
-  # compute QinvSumsNorm if necessary
-  if(sep && is.null(QinvSumsNorm)) {
-    if(admLevel == "adm2") {
-      out = load("savedOutput/global/adm2Mat.RData")
-      admMat = adm2Mat
-    } else if(admLevel == "admFinal") {
-      out = load("savedOutput/global/admFinalMat.RData")
-      admMat = admFinalMat
-    }
-    
-    bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
-                                             constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-    Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
-    QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
-  }
-  
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -2451,6 +2435,22 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   
   foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD", "Md2", "MD2")), 11, fold)
   out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", foldMod, ".RData"))
+  
+  # compute QinvSumsNorm if necessary
+  if(sep && is.null(QinvSumsNorm)) {
+    if(admLevel == "adm2") {
+      out = load("savedOutput/global/adm2Mat.RData")
+      admMat = adm2Mat
+    } else if(admLevel == "admFinal") {
+      out = load("savedOutput/global/admFinalMat.RData")
+      admMat = admFinalMat
+    }
+    
+    bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
+                                             constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+    Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+    QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+  }
   
   # get predictions in chunks for MICS folds because they are memory intensive to create
   if((fold > 10) && maxIterChunk < nsim) {
