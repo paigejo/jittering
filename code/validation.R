@@ -2465,7 +2465,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       out = predClusters(nsim=thisNsim, fold=fold, SD0=SD0, obj=obj, 
                          model=model, 
                          quantiles=quantiles, 
-                         addBinVar=addBinVar, res=res, maxIterChunk=maxIterChunk, 
+                         addBinVar=addBinVar, maxIterChunk=maxIterChunk, 
                          sep=sep, QinvSumsNorm=QinvSumsNorm, verbose=FALSE)
       
       # concatenate results
