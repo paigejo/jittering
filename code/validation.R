@@ -1566,7 +1566,7 @@ getAllValidationData2Areal = function(folds=1:37, res=300) {
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                             regenModFit=FALSE, regenPreds=TRUE, randomBeta=FALSE, randomAlpha=FALSE, 
-                            fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE) {
+                            fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE, forceRegenIfMissing=TRUE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1643,6 +1643,12 @@ getValidationFit = function(fold,
       dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
     }
     
+  }
+  
+  # if the file doesn't exist, recreate it.
+  if(forceRegenIfMissing) {
+    regenModFit = regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))
+    regenPreds = regenPreds || !file.exists(paste0("savedOutput/validation/folds/preds", fnameRoot, "_fold", fold, ".RData"))
   }
   
   # initialize with simple/unadjusted model ----

@@ -28,9 +28,9 @@ fold = j
 # randomBeta = ifelse(model=="MDM", TRUE, FALSE)
 randomBeta = TRUE
 randomAlpha = TRUE
-system.time(out <- getValidationFit(fold, model, regenModFit=TRUE, 
+system.time(out <- getValidationFit(fold, model, regenModFit=FALSE, 
                                     randomBeta=randomBeta, randomAlpha=randomAlpha, 
-                                    fromOptPar=FALSE, sep=TRUE))
+                                    fromOptPar=FALSE, sep=TRUE, forceRegenIfMissing=TRUE))
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
 

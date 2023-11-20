@@ -2,7 +2,7 @@
 #SBATCH --job-name runValidation2      # Set a name for your job. This is especially useful if you have multiple jobs queued.
 #SBATCH --partition CPUQ    # Slurm partition to use
 #SBATCH --ntasks 1          # Number of tasks to run. By default, one CPU core will be allocated per task
-#SBATCH --time 1-00:00        # Wall time limit in D-HH:MM
+#SBATCH --time 3-00:00        # Wall time limit in D-HH:MM
 #SBATCH --mem-per-cpu=20000     # Memory limit for each tasks (in MB) 6850
 #SBATCH -o runValidation2_%A_%a.out    # File to which STDOUT will be written
 #SBATCH -e runValidation2_%A_%a.err    # File to which STDERR will be written
