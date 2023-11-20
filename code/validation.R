@@ -2371,7 +2371,7 @@ getValidationFit = function(fold,
 predClusters = function(nsim=1000, fold, SD0, obj, 
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                        addBinVar=TRUE, res=300, maxIterChunk=1000, 
+                        addBinVar=TRUE, maxIterChunk=1000, 
                         sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE) {
   
   # clean input arguments
@@ -2476,7 +2476,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
         probDrawsRur[,startI:endI] = out$probDrawsRur
         predsUrb = out$predsUrb
         predsRur = out$predsRur
-        fixedMat = matrix(nrow=nrow(fixedMat), ncol=nsim)
+        fixedMat = matrix(nrow=nrow(out$fixedMat), ncol=nsim)
         fixedMat[,startI:endI] = out$fixedMat
       } else {
         probDrawsUrb[,startI:endI] = out$probDrawsUrb
