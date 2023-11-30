@@ -747,7 +747,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
-    actualIndexUrb = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
+    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
     ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
