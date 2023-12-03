@@ -221,8 +221,8 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   out = load("savedOutput/global/intPtsDHS.RData")
   
   if(admLevel == "admFinal") {
-    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+    AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   } else {
     AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
     ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -398,8 +398,8 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   
   # use integration points
   if(admLevel == "admFinal") {
-    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+    AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   } else {
     AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
     ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -611,8 +611,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   
   if(admLevel == "admFinal") {
-    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+    AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   } else {
     AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
     ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -697,7 +697,9 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   transformIUrb = allAreaIs + (allIntIs-1)*nAreas
   XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  AUrbMICS = AUrbMICS[,transformIUrb]
+  if(admLevel == "adm2") {
+    AUrbMICS = AUrbMICS[,transformIUrb]
+  }
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
@@ -725,7 +727,9 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   transformIRur = allAreaIs + (allIntIs-1)*nAreas
   XRur = XRur[transformIRur,]
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = ARurMICS[,transformIRur]
+  if(admLevel == "adm2") {
+    ARurMICS = ARurMICS[,transformIRur]
+  }
   
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
@@ -762,7 +766,9 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     transformIUrb = allAreaIs + (allIntIs-1)*nAreas
     XUrbOutOfSample = XUrbOutOfSample[transformIUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
+    if(admLevel == "adm2") {
+      AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
+    }
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
@@ -791,7 +797,9 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     transformIRur = allAreaIs + (allIntIs-1)*nAreas
     XRurOutOfSample = XRurOutOfSample[transformIRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
+    if(admLevel == "adm2") {
+      ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
+    }
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -1163,8 +1171,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   
   if(admLevel == "admFinal") {
-    AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-    ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+    AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+    ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   } else {
     AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
     ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -1249,7 +1257,9 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   transformIUrb = allAreaIs + (allIntIs-1)*nAreas
   XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  AUrbMICS = AUrbMICS[,transformIUrb]
+  if(admLevel == "adm2") {
+    AUrbMICS = AUrbMICS[,transformIUrb]
+  }
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
@@ -1277,7 +1287,9 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   transformIRur = allAreaIs + (allIntIs-1)*nAreas
   XRur = XRur[transformIRur,]
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = ARurMICS[,transformIRur]
+  if(admLevel == "adm2") {
+    ARurMICS = ARurMICS[,transformIRur] 
+  }
   
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
@@ -1318,7 +1330,9 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     transformIUrb = allAreaIs + (allIntIs-1)*nAreas
     XUrbOutOfSample = XUrbOutOfSample[transformIUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
+    if(admLevel == "adm2") {
+      AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
+    }
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
@@ -1347,7 +1361,9 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     transformIRur = allAreaIs + (allIntIs-1)*nAreas
     XRurOutOfSample = XRurOutOfSample[transformIRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
+    if(admLevel == "adm2") {
+      ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
+    }
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -1581,13 +1597,13 @@ getAllValidationData = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
   
   # first generate M_d data
   print("generating data for M_d...")
-  time1 = system.time(datMd <- lapply(folds, getValidationDataM_d))[3]
+  time1 = system.time(datMd <- lapply(folds, getValidationDataM_d, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time1, " seconds. Now generating data for M_D..."))
-  time2 = system.time(datMD <- lapply(folds, getValidationDataM_D))[3]
+  time2 = system.time(datMD <- lapply(folds, getValidationDataM_D, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time2, " seconds. Now generating data for M_dm..."))
-  time3 = system.time(datMdm <- lapply(folds, getValidationDataM_dm))[3]
+  time3 = system.time(datMdm <- lapply(folds, getValidationDataM_dm, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time3, " seconds. Now generating data for M_DM..."))
-  time4 = system.time(datMDM <- lapply(folds, getValidationDataM_DM))[3]
+  time4 = system.time(datMDM <- lapply(folds, getValidationDataM_DM, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
   print(paste0("Took ", time4, " seconds. Now saving results..."))
   
   save(datMd, file="savedOutput/validation/datMd.RData")
@@ -1596,6 +1612,29 @@ getAllValidationData = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
   save(datMDM, file="savedOutput/validation/datM_DM.RData")
   
   invisible(list(datMd, datMD, datMdm, datMDM))
+}
+
+# This function generates and saves all the validation datasets and input 
+# parameters for all models
+getAllValidationDataAreal = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
+  
+  # first generate M_d data
+  print("generating data for M_d...")
+  time1 = system.time(datMdareal <- lapply(folds, getValidationDataM_d, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  print(paste0("Took ", time1, " seconds. Now generating data for M_D..."))
+  time2 = system.time(datMDareal <- lapply(folds, getValidationDataM_D, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  print(paste0("Took ", time2, " seconds. Now generating data for M_dm..."))
+  time3 = system.time(datMdmareal <- lapply(folds, getValidationDataM_dm, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  print(paste0("Took ", time3, " seconds. Now generating data for M_DM..."))
+  time4 = system.time(datMDMareal <- lapply(folds, getValidationDataM_DM, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  print(paste0("Took ", time4, " seconds. Now saving results..."))
+  
+  save(datMdareal, file="savedOutput/validation/datMdareal.RData")
+  save(datMDareal, file="savedOutput/validation/datM_Dareal.RData")
+  save(datMdmareal, file="savedOutput/validation/datMdmareal.RData")
+  save(datMDMareal, file="savedOutput/validation/datM_DMareal.RData")
+  
+  invisible(list(datMdareal, datMDareal, datMdmareal, datMDMareal))
 }
 
 # This function generates and saves all the validation datasets and input 
@@ -1653,6 +1692,7 @@ getValidationFit = function(fold,
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
+  admLevel = ifelse(model %in% c("Md", "MD", "Mdm", "MDM"), 1, 2)
   
   out = load("savedOutput/validation/edVal.RData")
   areas = sort(unique(edVal$area))
@@ -1714,7 +1754,7 @@ getValidationFit = function(fold,
     }
     
     # in this case, must also change random effects input into main TMB call...
-    if(model %in% c("Md2", "MD2")) {
+    if(model %in% c("Md", "MD", "Md2", "MD2")) {
       dat$MakeADFunInputs$random = c('w_bym2Star', 'u_bym2Star', 'nuggetUrbDHS', 'nuggetRurDHS')
     } else {
       dat$MakeADFunInputs$random = c('w_bym2Star', 'u_bym2Star', 'nuggetUrbMICS', 'nuggetRurMICS', 'nuggetUrbDHS', 'nuggetRurDHS')
@@ -1736,7 +1776,7 @@ getValidationFit = function(fold,
   
   # initialize with simple/unadjusted model ----
   optParStart = c(0, 0, 0)
-  if((model == "Md2") && regenModFit) {
+  if(((model == "Md2") || (model == "Md")) && regenModFit) {
     # now set the initial parameters
     print("Initializing optimization for the unadjusted DHS model")
     initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
@@ -1812,7 +1852,7 @@ getValidationFit = function(fold,
         options=0 # 1 for adreport of log tau and logit phi
       )
     }
-  } else if((model %in% c("MD2", "Mdm2", "MDM2")) && regenModFit && !fromOptPar) {
+  } else if((model %in% c("MD", "Mdm", "MDM", "MD2", "Mdm2", "MDM2")) && regenModFit && !fromOptPar) {
     print("Initializing optimization via the unadjusted DHS model")
     initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
     initRurP = sum(c(edInSample$y[!edInSample$urban]))/sum(c(edInSample$n[!edInSample$urban]))
@@ -1923,21 +1963,35 @@ getValidationFit = function(fold,
     }
     
     if(!sep) {
-      dyn.load( dynlib("code/modBYM2JitterDHS2"))
-      TMB::config(tmbad.sparse_hessian_compress = 1)
-      objStart <- MakeADFun(data=data_start,
-                            parameters=tmb_paramsStart,
-                            random=rand_effsStart,
-                            hessian=TRUE,
-                            DLL='modBYM2JitterDHS2')
+      if(admLevel == 2) {
+        dyn.load( dynlib("code/modBYM2JitterDHS2"))
+        TMB::config(tmbad.sparse_hessian_compress = 1)
+        objStart <- MakeADFun(data=data_start,
+                              parameters=tmb_paramsStart,
+                              random=rand_effsStart,
+                              hessian=TRUE,
+                              DLL='modBYM2JitterDHS2')
+      } else {
+        stop("admLevel == 1 and !sep not currently supported")
+      }
     } else {
-      dyn.load( dynlib("code/modM_D2Sep"))
-      TMB::config(tmbad.sparse_hessian_compress = 1)
-      objStart <- MakeADFun(data=data_start,
-                            parameters=tmb_paramsStart,
-                            random=rand_effsStart,
-                            hessian=TRUE,
-                            DLL='modM_D2Sep')
+      if(admLevel == 2) {
+        dyn.load( dynlib("code/modM_D2Sep"))
+        TMB::config(tmbad.sparse_hessian_compress = 1)
+        objStart <- MakeADFun(data=data_start,
+                              parameters=tmb_paramsStart,
+                              random=rand_effsStart,
+                              hessian=TRUE,
+                              DLL='modM_D2Sep')
+      } else {
+        dyn.load( dynlib("code/modM_DSep"))
+        TMB::config(tmbad.sparse_hessian_compress = 1)
+        objStart <- MakeADFun(data=data_start,
+                              parameters=tmb_paramsStart,
+                              random=rand_effsStart,
+                              hessian=TRUE,
+                              DLL='modM_DSep')
+      }
     }
     
     
@@ -2000,7 +2054,7 @@ getValidationFit = function(fold,
     }
     
     # now set the initial parameters based on the previous optimization
-    if(model == "MD2") {
+    if(model %in% c("MD", "MD2")) {
       if(!sep) {
         tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
                            beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
@@ -2024,7 +2078,7 @@ getValidationFit = function(fold,
         )
       }
       
-    } else if(model %in% c("Mdm2", "MDM2")) {
+    } else if(model %in% c("Mdm", "MDM", "Mdm2", "MDM2")) {
       if(!sep) {
         tmb_params <- list(alpha = testObj$env$last.par[grepl("alpha", names(testObj$env$last.par))], # intercept
                            beta = testObj$env$last.par[grepl("beta", names(testObj$env$last.par))], 
@@ -2054,10 +2108,18 @@ getValidationFit = function(fold,
       
     }
     
-    if(!sep) {
-      dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+    if(admLevel == 2) {
+      if(!sep) {
+        dyn.unload( dynlib("code/modBYM2JitterDHS2"))
+      } else {
+        dyn.unload( dynlib("code/modM_D2Sep"))
+      }
     } else {
-      dyn.unload( dynlib("code/modM_D2Sep"))
+      if(!sep) {
+        stop("adm1 level and !sep not supported")
+      } else {
+        dyn.unload( dynlib("code/modM_DSep"))
+      }
     }
     
   } else {
@@ -2085,12 +2147,23 @@ getValidationFit = function(fold,
   
   # adjust the DLL if we are using the seperated parameterization
   if(sep) {
-    if(model %in% c("Mdm2", "MDM2")) {
-      MakeADFunInputs$DLL = "modM_DM2Sep"
+    if(admLevel == 2) {
+      if(model %in% c("Mdm2", "MDM2")) {
+        MakeADFunInputs$DLL = "modM_DM2Sep"
+      } else {
+        MakeADFunInputs$DLL = "modM_D2Sep"
+      }
     } else {
-      MakeADFunInputs$DLL = "modM_D2Sep"
+      if(model %in% c("Mdm", "MDM")) {
+        MakeADFunInputs$DLL = "modM_DMSep"
+      } else {
+        MakeADFunInputs$DLL = "modM_DSep"
+      }
     }
+    
     dat$MakeADFunInputs$DLL = MakeADFunInputs$DLL
+  } else {
+    stop("!sep Deprecated")
   }
   
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
@@ -2103,7 +2176,7 @@ getValidationFit = function(fold,
     if(sep) {
       # reconstruct data to include indices rather than A matrices. Also add in 
       # QinvRowSums:
-      if(model %in% c("Mdm2", "MDM2")) {
+      if(model %in% c("Mdm", "MDM", "Mdm2", "MDM2")) {
         areaidxlocUrbanMICS = apply(dat$MakeADFunInputs$data$AprojUrbanMICS, 1, function(x) {match(1, x)}) - 1 # TMB indices start from 0
         areaidxlocRuralMICS = apply(dat$MakeADFunInputs$data$AprojRuralMICS, 1, function(x) {match(1, x)}) - 1
         areaidxlocUrbanMICS = as.integer(areaidxlocUrbanMICS)
@@ -2134,7 +2207,7 @@ getValidationFit = function(fold,
       # make sure prior agrees with INLA
       beta_pri = c(0, sqrt(1000))
       
-      if(model %in% c("Mdm2", "MDM2")) {
+      if(model %in% c("Mdm", "MDM", "Mdm2", "MDM2")) {
         newDat = list(
           y_iUrbanMICS=dat$MakeADFunInputs$data$y_iUrbanMICS, # same as above but for MICS survey
           y_iRuralMICS=dat$MakeADFunInputs$data$y_iRuralMICS, # 
@@ -2416,6 +2489,7 @@ getValidationFit = function(fold,
   }
   
   # predict at the left out clusters/areas
+  admLevelString = ifelse(admLevel == 1, "stratMICS", "adm2")
   if(regenPreds) {
     if(hessPD) {
       if(!areal) {
@@ -2423,7 +2497,7 @@ getValidationFit = function(fold,
                              model=model, sep=sep, 
                              quantiles=c(0.025, 0.1, 0.9, 0.975))
       } else {
-        gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
+        gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel=admLevelString, 
                              predAtArea=foldArea,
                              quantiles=c(0.025, 0.1, 0.9, 0.975), sep=sep)
         preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
@@ -2525,7 +2599,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     if(admLevel == "adm2") {
       out = load("savedOutput/global/adm2Mat.RData")
       admMat = adm2Mat
-    } else if(admLevel == "admFinal") {
+    } else if(admLevel == "stratMICS") {
       out = load("savedOutput/global/admFinalMat.RData")
       admMat = admFinalMat
     }

@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name runValidation      # Set a name for your job. This is especially useful if you have multiple jobs queued.
+#SBATCH --job-name runValidationAreal      # Set a name for your job. This is especially useful if you have multiple jobs queued.
 #SBATCH --partition CPUQ    # Slurm partition to use
 #SBATCH --ntasks 1          # Number of tasks to run. By default, one CPU core will be allocated per task
 #SBATCH --time 1-00:00        # Wall time limit in D-HH:MM
 #SBATCH --mem-per-cpu=8000     # Memory limit for each tasks (in MB) 6850
-#SBATCH -o runValidation_%A_%a.out    # File to which STDOUT will be written
-#SBATCH -e runValidation_%A_%a.err    # File to which STDERR will be written
+#SBATCH -o runValidationAreal_%A_%a.out    # File to which STDOUT will be written
+#SBATCH -e runValidationAreal_%A_%a.err    # File to which STDERR will be written
 #SBATCH --mail-type=ALL       # Type of email notification- BEGIN,END,FAIL,ALL
 #SBATCH --mail-user=john.paige@ntnu.no # Email to which notifications will be sent
 #SBATCH --account=share-ie-imf # see https://www.hpc.ntnu.no/idun/getting-started-on-idun/accounting/ share-ie-imf
@@ -29,4 +29,4 @@
 module load R/4.2.1-foss-2022a
 module load GDAL/3.5.0-foss-2022a
 
-Rscript --verbose runValidation.R ${SLURM_ARRAY_TASK_ID} > runValidation_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout
+Rscript --verbose runValidationAreal.R ${SLURM_ARRAY_TASK_ID} > runValidationAreal_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout
