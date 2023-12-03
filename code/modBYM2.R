@@ -1071,7 +1071,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         if(admLevel == "adm2") {
           out = load("savedOutput/global/adm2Mat.RData")
           admMat = adm2Mat
-        } else if(admLevel == "admFinal") {
+        } else if(admLevel == "stratMICS") {
           out = load("savedOutput/global/admFinalMat.RData")
           admMat = admFinalMat
         }
@@ -1132,7 +1132,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       if(admLevel == "adm2") {
         out = load("savedOutput/global/adm2Mat.RData")
         admMat = adm2Mat
-      } else if(admLevel == "admFinal") {
+      } else if(admLevel == "stratMICS") {
         out = load("savedOutput/global/admFinalMat.RData")
         admMat = admFinalMat
       }

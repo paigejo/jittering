@@ -684,10 +684,20 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   #   unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
   # }
   # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  # AUrbMICS = AUrbMICS[,actualIndexUrb]
+  startStratInds = which(XUrb$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+  nAreas = nrow(XUrb)/KMICS
+  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrb[x])})) # length nUrb, range = 1:41. gives area index for each obs
+  allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+  nUrb = length(allAreaIs)/KMICS
+  allIntIs = rep(1:KMICS, each=nUrb) # length nUrb*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  transformIUrb = allAreaIs + (allIntIs-1)*nAreas
+  XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
-  AUrbMICS = AUrbMICS[,actualIndexUrb]
+  AUrbMICS = AUrbMICS[,transformIUrb]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
@@ -702,10 +712,20 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # ARurMICS = ARurMICS[,actualIndexRur]
+  startStratInds = which(XRur$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+  nAreas = nrow(XRur)/KMICS
+  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRur[x])})) # length nRur, range = 1:41. gives area index for each obs
+  allAreaIs = rep(areaI, KMICS) # length nRur*KMICS, range = 1:41. gives area index for each integration point of each observation
+  nRur = length(allAreaIs)/KMICS
+  allIntIs = rep(1:KMICS, each=nRur) # length nRur*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  transformIRur = allAreaIs + (allIntIs-1)*nAreas
+  XRur = XRur[transformIRur,]
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = ARurMICS[,actualIndexRur]
+  ARurMICS = ARurMICS[,transformIRur]
   
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
@@ -729,10 +749,20 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
     # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
     # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
-    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
-    XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
+    # XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    # AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
+    startStratInds = which(XUrbOutOfSample$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+    nAreas = nrow(XUrbOutOfSample)/KMICS
+    areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrbOutOfSample[x])})) # length nUrb, range = 1:41. gives area index for each obs
+    allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+    nUrb = length(allAreaIs)/KMICS
+    allIntIs = rep(1:KMICS, each=nUrb) # length nUrb*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+    transformIUrb = allAreaIs + (allIntIs-1)*nAreas
+    XUrbOutOfSample = XUrbOutOfSample[transformIUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
+    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
@@ -747,10 +777,21 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
-    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
-    XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
+    # XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    # XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    # ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
+    
+    startStratInds = which(XRurOutOfSample$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+    nAreas = nrow(XRurOutOfSample)/KMICS
+    areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRurOutOfSample[x])})) # length nRur, range = 1:41. gives area index for each obs
+    allAreaIs = rep(areaI, KMICS) # length nRur*KMICS, range = 1:41. gives area index for each integration point of each observation
+    nRur = length(allAreaIs)/KMICS
+    allIntIs = rep(1:KMICS, each=nRur) # length nRur*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+    transformIRur = allAreaIs + (allIntIs-1)*nAreas
+    XRurOutOfSample = XRurOutOfSample[transformIRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
+    ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -1195,10 +1236,20 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   #   unlist(mapply(rep, startInds+intPtI-1, each=numPerStrat))
   # }
   # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
-  actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrb), each=rep(numPerStratUrb, times=KMICS)))
+  # XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
+  # AUrbMICS = AUrbMICS[,actualIndexUrb]
+  startStratInds = which(XUrb$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+  nAreas = nrow(XUrb)/KMICS
+  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrb[x])})) # length nUrb, range = 1:41. gives area index for each obs
+  allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+  nUrb = length(allAreaIs)/KMICS
+  allIntIs = rep(1:KMICS, each=nUrb) # length nUrb*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  transformIUrb = allAreaIs + (allIntIs-1)*nAreas
+  XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
-  AUrbMICS = AUrbMICS[,actualIndexUrb]
+  AUrbMICS = AUrbMICS[,transformIUrb]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
   stratRur = XRur$strat
@@ -1213,10 +1264,20 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # intPtIndexRur = rep(1:sum(numPerStratRur), each=KMICS)
   # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
-  actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
-  XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
+  # XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
+  # XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  # ARurMICS = ARurMICS[,actualIndexRur]
+  startStratInds = which(XRur$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+  nAreas = nrow(XRur)/KMICS
+  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRur[x])})) # length nRur, range = 1:41. gives area index for each obs
+  allAreaIs = rep(areaI, KMICS) # length nRur*KMICS, range = 1:41. gives area index for each integration point of each observation
+  nRur = length(allAreaIs)/KMICS
+  allIntIs = rep(1:KMICS, each=nRur) # length nRur*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  transformIRur = allAreaIs + (allIntIs-1)*nAreas
+  XRur = XRur[transformIRur,]
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-  ARurMICS = ARurMICS[,actualIndexRur]
+  ARurMICS = ARurMICS[,transformIRur]
   
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
@@ -1243,10 +1304,21 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # intPtIndexUrb = rep(1:sum(numPerStratUrbOutOfSample), each=KMICS)
     # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
     # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrbOutOfSample))
-    actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
-    XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # actualIndexUrb = unlist(mapply(rep, 1:nrow(XUrbOutOfSample), each=rep(numPerStratUrbOutOfSample, times=KMICS)))
+    # XUrbOutOfSample = XUrbOutOfSample[actualIndexUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
+    # XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    # AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
+    
+    startStratInds = which(XUrbOutOfSample$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+    nAreas = nrow(XUrbOutOfSample)/KMICS
+    areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrbOutOfSample[x])})) # length nUrb, range = 1:41. gives area index for each obs
+    allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+    nUrb = length(allAreaIs)/KMICS
+    allIntIs = rep(1:KMICS, each=nUrb) # length nUrb*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+    transformIUrb = allAreaIs + (allIntIs-1)*nAreas
+    XUrbOutOfSample = XUrbOutOfSample[transformIUrb,] # now XUrbOutOfSample is [K * nObsUrb] x nVar
     XUrbOutOfSample = XUrbOutOfSample[,names(XUrbOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,actualIndexUrb]
+    AUrbMICSOutOfSample = AUrbMICSOutOfSample[,transformIUrb]
     
     XRurOutOfSample = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
     stratRur = XRurOutOfSample$strat
@@ -1261,10 +1333,21 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     # intPtIndexRur = rep(1:sum(numPerStratRurOutOfSample), each=KMICS)
     # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
     # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRurOutOfSample))
-    actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
-    XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    # actualIndexRur = unlist(mapply(rep, 1:nrow(XRurOutOfSample), each=rep(numPerStratRurOutOfSample, times=KMICS)))
+    # XRurOutOfSample = XRurOutOfSample[actualIndexRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
+    # XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+    # ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
+    
+    startStratInds = which(XRurOutOfSample$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+    nAreas = nrow(XRurOutOfSample)/KMICS
+    areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRurOutOfSample[x])})) # length nRur, range = 1:41. gives area index for each obs
+    allAreaIs = rep(areaI, KMICS) # length nRur*KMICS, range = 1:41. gives area index for each integration point of each observation
+    nRur = length(allAreaIs)/KMICS
+    allIntIs = rep(1:KMICS, each=nRur) # length nRur*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+    transformIRur = allAreaIs + (allIntIs-1)*nAreas
+    XRurOutOfSample = XRurOutOfSample[transformIRur,] # now XRurOutOfSample is [K * nObsRur] x nVar
     XRurOutOfSample = XRurOutOfSample[,names(XRurOutOfSample) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
-    ARurMICSOutOfSample = ARurMICSOutOfSample[,actualIndexRur]
+    ARurMICSOutOfSample = ARurMICSOutOfSample[,transformIRur]
   }
   else {
     AUrbMICSOutOfSample = NULL
@@ -2357,6 +2440,7 @@ getValidationFit = function(fold,
   
   
   allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal)
+  
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
   list(SD0, obj, totalTime, sdTime, hessPD, allScores)

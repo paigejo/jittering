@@ -77,16 +77,16 @@ Type objective_function<Type>::operator() ()
   // DATA_INTEGER( flag ); // flag == 0 => no data contribution added to jnll
   
   // Data (all except for X_ij is a vector of length num_i)
-  DATA_VECTOR( y_iUrbanMICS );   // obs per binomial experiment at point i (clust)
-  DATA_VECTOR( y_iRuralMICS );
-  DATA_VECTOR( n_iUrbanMICS );   // Trials per cluster
-  DATA_VECTOR( n_iRuralMICS );
-  DATA_IVECTOR(areaidxlocUrbanMICS); // vector of length n_iUrbanMICS * KMICS of areal indices
-  DATA_IVECTOR(areaidxlocRuralMICS); // vector of length n_iRuralMICS * KMICS of areal indices
-  DATA_MATRIX( X_betaUrbanMICS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
-  DATA_MATRIX( X_betaRuralMICS );  // first nObsRural rows correspond to first int pt
-  DATA_ARRAY( wUrbanMICS ); // nObsUrban x nIntegrationPointsUrban weight matrix
-  DATA_ARRAY( wRuralMICS ); // nObsRural x nIntegrationPointsRural weight matrix
+  DATA_VECTOR( y_iUrbanDHS );   // obs per binomial experiment at point i (clust)
+  DATA_VECTOR( y_iRuralDHS );
+  DATA_VECTOR( n_iUrbanDHS );   // Trials per cluster
+  DATA_VECTOR( n_iRuralDHS );
+  DATA_IVECTOR(areaidxlocUrban); // vector of length n_iUrbanDHS of areal indices
+  DATA_IVECTOR(areaidxlocRural); // vector of length n_iRuralDHS of areal indices
+  DATA_MATRIX( X_betaUrbanDHS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
+  DATA_MATRIX( X_betaRuralDHS );  // first nObsRural rows correspond to first int pt
+  DATA_ARRAY( wUrbanDHS ); // nObsUrban x nIntegrationPointsUrban weight matrix
+  DATA_ARRAY( wRuralDHS ); // nObsRural x nIntegrationPointsRural weight matrix
   
   // DATA_MATRIX( V_bym2 ); // Q_bym2 = V Lamda V^T is the eigendecomposition of Q_bym2
   DATA_SPARSE_MATRIX( Q_bym2 ); // really, the precision matrix for the structured, Besag component u
@@ -127,19 +127,19 @@ Type objective_function<Type>::operator() ()
   // these are labelled "Star" because the constraint has not yet been put on them
   PARAMETER_VECTOR( w_bym2Star );
   PARAMETER_VECTOR( u_bym2Star );
-  PARAMETER_VECTOR( nuggetUrbMICS );
-  PARAMETER_VECTOR( nuggetRurMICS );
+  PARAMETER_VECTOR( nuggetUrbDHS );
+  PARAMETER_VECTOR( nuggetRurDHS );
   
   // ~~~~~~~~~------------------------------------------------~~
   // SECOND, we define all other objects that we need internally
   // ~~~~~~~~~------------------------------------------------~~
   
   // calculated values from data
-  int num_iUrbanMICS = y_iUrbanMICS.size();   // Number of urban data points in space
-  int num_iRuralMICS = y_iRuralMICS.size();   // Number of rural data points in space
+  int num_iUrbanDHS = y_iUrbanDHS.size();   // Number of urban data points in space
+  int num_iRuralDHS = y_iRuralDHS.size();   // Number of rural data points in space
   int nAreas = u_bym2Star.size();               // Number of areas
-  int n_integrationPointsUrbanMICS = wUrbanMICS.cols();    // number of integration points for each observation
-  int n_integrationPointsRuralMICS = wRuralMICS.cols();
+  int n_integrationPointsUrbanDHS = wUrbanDHS.cols();    // number of integration points for each observation
+  int n_integrationPointsRuralDHS = wRuralDHS.cols();
   
   // Transform some of our parameters
   // Type sqrtTau = exp(Type(0.5) * log_tau);
@@ -180,6 +180,9 @@ Type objective_function<Type>::operator() ()
   
   // objective function -- joint negative log-likelihood/posterior
   Type jnll = 0.0;
+  
+  vector<Type> projepsilon_iUrbanDHS(num_iUrbanDHS);
+  vector<Type> projepsilon_iRuralDHS(num_iRuralDHS);
   
   // Project GP approx from mesh points to data points
   // projepsilon_iUrbanDHS = (AprojUrbanDHS * Epsilon_bym2.matrix()).col(0);
@@ -287,11 +290,11 @@ Type objective_function<Type>::operator() ()
   
   // add in iid nugget model
   Type nuggetLogLik = 0.0;
-  for(int i = 0; i< nuggetUrbMICS.size(); i++) {
-    nuggetLogLik += dnorm(nuggetUrbMICS(i), Type(0), sigmaEps, true); // N(mean, sd);
+  for(int i = 0; i< nuggetUrbDHS.size(); i++) {
+    nuggetLogLik += dnorm(nuggetUrbDHS(i), Type(0), sigmaEps, true); // N(mean, sd);
   }
-  for(int i = 0; i< nuggetRurMICS.size(); i++) {
-    nuggetLogLik += dnorm(nuggetRurMICS(i), Type(0), sigmaEps, true); // N(mean, sd);
+  for(int i = 0; i< nuggetRurDHS.size(); i++) {
+    nuggetLogLik += dnorm(nuggetRurDHS(i), Type(0), sigmaEps, true); // N(mean, sd);
   }
   jnll -= nuggetLogLik;
   
@@ -362,42 +365,42 @@ Type objective_function<Type>::operator() ()
   // jnll contribution from each datapoint i
   
   // Calculate fixed effects at data points
-  vector<Type> fe_iUrbanMICS = X_betaUrbanMICS * beta;
-  vector<Type> fe_iRuralMICS = X_betaRuralMICS * beta;
+  vector<Type> fe_iUrbanDHS = X_betaUrbanDHS * beta;
+  vector<Type> fe_iRuralDHS = X_betaRuralDHS * beta;
   
-  vector<Type> latentFieldUrbMICS(num_iUrbanMICS * n_integrationPointsUrbanMICS);
-  vector<Type> latentFieldRurMICS(num_iRuralMICS * n_integrationPointsRuralMICS);
+  vector<Type> latentFieldUrbDHS(num_iUrbanDHS * n_integrationPointsUrbanDHS);
+  vector<Type> latentFieldRurDHS(num_iRuralDHS * n_integrationPointsRuralDHS);
   int thisIndex;
   // Type thisLatentField;
   Type thisWeight;
   Type thislik;
-  array<Type> liksUrbMICS(num_iUrbanMICS, n_integrationPointsUrbanMICS);
-  array<Type> liksRurMICS(num_iRuralMICS, n_integrationPointsRuralMICS);
+  array<Type> liksUrbDHS(num_iUrbanDHS, n_integrationPointsUrbanDHS);
+  array<Type> liksRurDHS(num_iRuralDHS, n_integrationPointsRuralDHS);
   // Type EpsInd = 0;
   
-  for (int obsI = 0; obsI < num_iUrbanMICS; obsI++) {
+  for (int obsI = 0; obsI < num_iUrbanDHS; obsI++) {
     thislik = 0.0;
     
-    for (int intI = 0; intI < n_integrationPointsUrbanMICS; intI++) {
-      thisIndex = num_iUrbanMICS * intI + obsI;
+    for (int intI = 0; intI < n_integrationPointsUrbanDHS; intI++) {
+      thisIndex = num_iUrbanDHS * intI + obsI;
       
       // latent field estimate at each obs
-      // thisLatentField = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
-      latentFieldUrbMICS(thisIndex) = alpha + fe_iUrbanMICS(thisIndex) + w_bym2(areaidxlocUrbanMICS(thisIndex)) + nuggetUrbMICS(obsI);
-      // latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
+      // thisLatentField = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
+      latentFieldUrbDHS(thisIndex) = alpha + fe_iUrbanDHS(thisIndex) + w_bym2(areaidxlocUrban(obsI)) + nuggetUrbDHS(obsI);
+      // latentFieldUrbDHS(thisIndex) = fe_iUrbanDHS(thisIndex) + projepsilon_iUrbanDHS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
-      thisWeight = wUrbanMICS(obsI,intI);
+      thisWeight = wUrbanDHS(obsI,intI);
       
       // Uses the dbinom_robust function, which takes the logit probability
       if(thisWeight > 0.0) {
-        // thislik += thisWeight*dbinom_robust( y_iUrbanMICS(obsI), n_iUrbanMICS(obsI), thisLatentField, false);
-        liksUrbMICS(obsI, intI) = dbinom_robust( y_iUrbanMICS(obsI), n_iUrbanMICS(obsI), latentFieldUrbMICS(thisIndex), false);
-        thislik += thisWeight*liksUrbMICS(obsI, intI);
+        // thislik += thisWeight*dbinom_robust( y_iUrbanDHS(obsI), n_iUrbanDHS(obsI), thisLatentField, false);
+        liksUrbDHS(obsI, intI) = dbinom_robust( y_iUrbanDHS(obsI), n_iUrbanDHS(obsI), latentFieldUrbDHS(thisIndex), false);
+        thislik += thisWeight*liksUrbDHS(obsI, intI);
       }
       else {
-        liksUrbMICS(obsI, intI) = thisWeight;
+        liksUrbDHS(obsI, intI) = thisWeight;
       }
       
     } // for( intI )
@@ -407,29 +410,29 @@ Type objective_function<Type>::operator() ()
     }
   } // for( obsI )
   
-  for (int obsI = 0; obsI < num_iRuralMICS; obsI++) {
+  for (int obsI = 0; obsI < num_iRuralDHS; obsI++) {
     thislik = 0.0;
     
-    for (int intI = 0; intI < n_integrationPointsRuralMICS; intI++) {
-      thisIndex = num_iRuralMICS * intI + obsI;
+    for (int intI = 0; intI < n_integrationPointsRuralDHS; intI++) {
+      thisIndex = num_iRuralDHS * intI + obsI;
       
       // latent field estimate at each obs
-      // thisLatentField = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
-      latentFieldRurMICS(thisIndex) = alpha + fe_iRuralMICS(thisIndex) + w_bym2(areaidxlocRuralMICS(thisIndex)) + nuggetRurMICS(obsI);
-      // latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
+      // thisLatentField = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
+      latentFieldRurDHS(thisIndex) = alpha + fe_iRuralDHS(thisIndex) + w_bym2(areaidxlocRural(obsI)) + nuggetRurDHS(obsI);
+      // latentFieldRurDHS(thisIndex) = fe_iRuralDHS(thisIndex) + projepsilon_iRuralDHS(obsI);
       
       // and add data contribution to jnll
       // get integration weight
-      thisWeight = wRuralMICS(obsI,intI);
+      thisWeight = wRuralDHS(obsI,intI);
       
       // Uses the dbinom_robust function, which takes the logit probability
       if(thisWeight > 0.0) {
-        // thislik += thisWeight*dbinom_robust( y_iRuralMICS(obsI), n_iRuralMICS(obsI), thisLatentField, false);
-        liksRurMICS(obsI, intI) = dbinom_robust( y_iRuralMICS(obsI), n_iRuralMICS(obsI), latentFieldRurMICS(thisIndex), false);
-        thislik += thisWeight*liksRurMICS(obsI, intI);
+        // thislik += thisWeight*dbinom_robust( y_iRuralDHS(obsI), n_iRuralDHS(obsI), thisLatentField, false);
+        liksRurDHS(obsI, intI) = dbinom_robust( y_iRuralDHS(obsI), n_iRuralDHS(obsI), latentFieldRurDHS(thisIndex), false);
+        thislik += thisWeight*liksRurDHS(obsI, intI);
       }
       else {
-        liksRurMICS(obsI, intI) = thisWeight;
+        liksRurDHS(obsI, intI) = thisWeight;
       }
       
     } // for( intI )
@@ -438,6 +441,8 @@ Type objective_function<Type>::operator() ()
       jnll -= log(thislik);
     }
   } // for( obsI )
+  
+  
   
   // ~~~~~~~~~~~
   // ADREPORT: used to return estimates and cov for transforms?
@@ -471,13 +476,13 @@ Type objective_function<Type>::operator() ()
   REPORT(ljacobian);
   REPORT(d);
   REPORT(logPriPhi);
-  REPORT(liksUrbMICS);
-  REPORT(liksRurMICS);
+  REPORT(liksUrbDHS);
+  REPORT(liksRurDHS);
   // REPORT(transformedEpsilon);
-  REPORT(latentFieldUrbMICS);
-  REPORT(latentFieldRurMICS);
-  REPORT(fe_iUrbanMICS);
-  REPORT(fe_iRuralMICS);
+  REPORT(latentFieldUrbDHS);
+  REPORT(latentFieldRurDHS);
+  REPORT(fe_iUrbanDHS);
+  REPORT(fe_iRuralDHS);
   
   
   return jnll;

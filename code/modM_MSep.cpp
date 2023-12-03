@@ -81,8 +81,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR( y_iRuralMICS );
   DATA_VECTOR( n_iUrbanMICS );   // Trials per cluster
   DATA_VECTOR( n_iRuralMICS );
-  DATA_IVECTOR(areaidxlocUrbanMICS); // vector of length n_iUrbanMICS * KMICS of areal indices
-  DATA_IVECTOR(areaidxlocRuralMICS); // vector of length n_iRuralMICS * KMICS of areal indices
+  DATA_IVECTOR(areaidxlocUrbanMICS); // vector of length n_iUrbanMICS of areal indices
+  DATA_IVECTOR(areaidxlocRuralMICS); // vector of length n_iRuralMICS of areal indices
   DATA_MATRIX( X_betaUrbanMICS );  // (nObsUrban * nIntegrationPointsUrban) x nPar design matrix. Indexed mod numObsUrban
   DATA_MATRIX( X_betaRuralMICS );  // first nObsRural rows correspond to first int pt
   DATA_ARRAY( wUrbanMICS ); // nObsUrban x nIntegrationPointsUrban weight matrix
@@ -383,7 +383,7 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
-      latentFieldUrbMICS(thisIndex) = alpha + fe_iUrbanMICS(thisIndex) + w_bym2(areaidxlocUrbanMICS(thisIndex)) + nuggetUrbMICS(obsI);
+      latentFieldUrbMICS(thisIndex) = alpha + fe_iUrbanMICS(thisIndex) + w_bym2(areaidxlocUrbanMICS(obsI)) + nuggetUrbMICS(obsI);
       // latentFieldUrbMICS(thisIndex) = fe_iUrbanMICS(thisIndex) + projepsilon_iUrbanMICS(obsI);
       
       // and add data contribution to jnll
@@ -415,7 +415,7 @@ Type objective_function<Type>::operator() ()
       
       // latent field estimate at each obs
       // thisLatentField = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
-      latentFieldRurMICS(thisIndex) = alpha + fe_iRuralMICS(thisIndex) + w_bym2(areaidxlocRuralMICS(thisIndex)) + nuggetRurMICS(obsI);
+      latentFieldRurMICS(thisIndex) = alpha + fe_iRuralMICS(thisIndex) + w_bym2(areaidxlocRuralMICS(obsI)) + nuggetRurMICS(obsI);
       // latentFieldRurMICS(thisIndex) = fe_iRuralMICS(thisIndex) + projepsilon_iRuralMICS(obsI);
       
       // and add data contribution to jnll

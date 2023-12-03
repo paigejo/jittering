@@ -278,9 +278,7 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS))
 )
 
 # make TMB fun and grad ----
