@@ -3402,14 +3402,16 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   predCols = makeBlueGreenYellowSequentialColors(64)
   quantCols = makePurpleYellowSequentialColors(64)
   arealText = ifelse(areal, "areal", "")
-  pdf(paste0("figures/validation/", arealText, "MSEdiff.pdf"), width=6, height=6)
-  theseCols = makeRedBlueDivergingColors(64, valRange=range(scoresTabsFull[[4]]$MSE-scoresTabsFull[[2]]$MSE), 
-                                         center=0, rev=TRUE)
-  plotMapDat(adm1, scoresTabsFull[[4]]$MSE-scoresTabsFull[[2]]$MSE, 
-             varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, cols=theseCols, 
-             main="MSE M_DM2 - MSE M_D2")
-  dev.off()
-  
+  admLevelText = admLevel
+  if(areal) {
+    pdf(paste0("figures/validation/", admLevelText, arealText, "MSEdiff.pdf"), width=6, height=6)
+    theseCols = makeRedBlueDivergingColors(64, valRange=range(scoresTabsFull[[4]]$MSE-scoresTabsFull[[2]]$MSE), 
+                                           center=0, rev=TRUE)
+    plotMapDat(adm1, scoresTabsFull[[4]]$MSE-scoresTabsFull[[2]]$MSE, 
+               varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, cols=theseCols, 
+               main="MSE M_DM2 - MSE M_D2")
+    dev.off()
+  }
   
   # save/print out tables ----
   
