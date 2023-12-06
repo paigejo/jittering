@@ -1616,17 +1616,17 @@ getAllValidationData = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
 
 # This function generates and saves all the validation datasets and input 
 # parameters for all models
-getAllValidationDataAreal = function(folds=1:20, res=100, adm2AsCovariate=TRUE) {
+getAllValidationDataAreal = function(folds=1:37, res=100, adm2AsCovariate=TRUE) {
   
   # first generate M_d data
   print("generating data for M_d...")
-  time1 = system.time(datMdareal <- lapply(folds, getValidationDataM_d, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  time1 = system.time(datMdareal <- lapply(folds, getValidationDataM_d, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate, areal=TRUE))[3]
   print(paste0("Took ", time1, " seconds. Now generating data for M_D..."))
-  time2 = system.time(datMDareal <- lapply(folds, getValidationDataM_D, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  time2 = system.time(datMDareal <- lapply(folds, getValidationDataM_D, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate, areal=TRUE))[3]
   print(paste0("Took ", time2, " seconds. Now generating data for M_dm..."))
-  time3 = system.time(datMdmareal <- lapply(folds, getValidationDataM_dm, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  time3 = system.time(datMdmareal <- lapply(folds, getValidationDataM_dm, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate, areal=TRUE))[3]
   print(paste0("Took ", time3, " seconds. Now generating data for M_DM..."))
-  time4 = system.time(datMDMareal <- lapply(folds, getValidationDataM_DM, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate))[3]
+  time4 = system.time(datMDMareal <- lapply(folds, getValidationDataM_DM, admLevel="admFinal", res=res, adm2AsCovariate=adm2AsCovariate, areal=TRUE))[3]
   print(paste0("Took ", time4, " seconds. Now saving results..."))
   
   save(datMdareal, file="savedOutput/validation/datMdareal.RData")
@@ -3087,9 +3087,17 @@ scoreValidationPreds = function(fold,
 
 
 # function for collecting validation results for each model
-validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE) {
-  # models=c("Md", "MD", "Mdm", "MDM")
-  models=c("Md2", "MD2", "Mdm2", "MDM2")
+validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE, 
+                           admLevel=c("adm2", "admFinal", "all")) {
+  admLevel = match.arg(admLevel)
+  
+  if(admLevel == "adm2") {
+    models=c("Md2", "MD2", "Mdm2", "MDM2")
+  } else if(admLevel == "admFinal") {
+    models=c("Md", "MD", "Mdm", "MDM")
+  } else if(admLevel == "all") {
+    models=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2")
+  }
   
   if(!areal) {
     folds = 1:20
