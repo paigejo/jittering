@@ -3290,6 +3290,15 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     scoresTabsAvgMICS = do.call("rbind", lapply(scoresTabsMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsMICS[!is.na(x[,1])]/sum(weightsMICS[!is.na(x[,1])]), "*"))}))
     scoresTabsUrbAvgMICS = do.call("rbind", lapply(scoresTabsUrbMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsUrbMICS[!is.na(x[,1])]/sum(weightsUrbMICS[!is.na(x[,1])]), "*"))}))
     scoresTabsRurAvgMICS = do.call("rbind", lapply(scoresTabsRurMICS, function(x) {colSums(sweep(x[!is.na(x[,1]),], 1, weightsRurMICS[!is.na(x[,1])]/sum(weightsRurMICS[!is.na(x[,1])]), "*"))}))
+    
+    colMeds = function(x) {apply(x, 2, median, na.rm=TRUE)}
+    scoresTabsMedDHS = do.call("rbind", lapply(scoresTabsDHS, colMeds))
+    scoresTabsMedMICS = do.call("rbind", lapply(scoresTabsMICS, colMeds))
+    scoresTabsMedFull = do.call("rbind", lapply(scoresTabsFull, colMeds))
+    scoresTabsUrbMedDHS = do.call("rbind", lapply(scoresTabsUrbDHS, colMeds))
+    scoresTabsRurMedDHS = do.call("rbind", lapply(scoresTabsRurDHS, colMeds))
+    scoresTabsUrbMedMICS = do.call("rbind", lapply(scoresTabsUrbMICS, colMeds))
+    scoresTabsRurMedMICS = do.call("rbind", lapply(scoresTabsRurMICS, colMeds))
   } else {
     # no need for weighted averaging in this case
     scoresTabsAvgDHS = do.call("rbind", lapply(scoresTabsDHS, colMeans, na.rm=TRUE))
@@ -3383,8 +3392,12 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     
     finalTabDHSAvg = scoresTabsAvgDHS
     finalTabMICSAvg = scoresTabsAvgMICS
-    finalTabDHSMed = NULL
-    finalTabMICSMed = NULL
+    finalTabDHSMed = scoresTabsMedDHS
+    finalTabMICSMed = scoresTabsMedMICS
+    finalTabUrbDHSMed = scoresTabsUrbMedDHS
+    finalTabRurDHSMed = scoresTabsRurMedDHS
+    finalTabUrbMICSMed = scoresTabsUrbMedMICS
+    finalTabRurMICSMed = scoresTabsRurMedMICS
   } else {
     finalTabAvg = scoresTabsAvgFull
     finalTabDHSAvg = scoresTabsAvgDHS
@@ -3438,24 +3451,24 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   # [4,]  0.6212378  0.7842337  0.8822892 0.3775339 0.6754577 0.8055434 0.8871717 2.95259512
   
   # scoresTabsAvgDHS
-  # Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
+  #              Bias        Var        MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
   # [1,] -0.010947783 0.09962442 0.10035338 0.3165307 0.1792139       0.7960109       1.0360634       1.1507908       1.2423856  0.3457359
   # [2,]  0.015759156 0.07685016 0.07760338 0.2783876 0.1575662       0.7033438       0.8709920       0.9333493       0.9734245  0.3400876
   # [3,] -0.001068097 0.10353460 0.10405081 0.3223983 0.1824954       0.8136387       1.0223140       1.0884226       1.1213663  0.3582090
   # [4,]  0.031055866 0.08425341 0.08576563 0.2925230 0.1664032       0.7415413       0.9233491       0.9609172       1.0130063  0.3475848
-  # Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95       Time
+  #      Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95       Time
   # [1,]  0.6383757  0.7765516  0.8688758 0.3307033 0.5951478 0.7165991 0.8049035 0.09359287
   # [2,]  0.6199160  0.7745838  0.8749643 0.3436871 0.6169147 0.7476554 0.8363716 0.86390443
   # [3,]  0.6494250  0.7872871  0.8881316 0.3627088 0.6400537 0.7670350 0.8499071 0.20021130
   # [4,]  0.6179197  0.7768636  0.8741421 0.3727287 0.6630486 0.7923907 0.8760249 3.00214026
   
   # scoresTabsAvgMICS
-  # Bias       Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
+  #              Bias       Var       MSE      RMSE      CRPS IntervalScore50 IntervalScore80 IntervalScore90 IntervalScore95 Coverage50
   # [1,] -0.094478535 0.1061337 0.1155131 0.3395178 0.1915348       0.8211469       1.0134220        1.098075       1.1227702  0.2937365
   # [2,] -0.112187791 0.1049818 0.1180110 0.3431368 0.1935200       0.8285482       1.0565461        1.155582       1.1992213  0.2994740
   # [3,]  0.020057637 0.1459785 0.1467809 0.3828551 0.2223721       0.9599925       1.2049921        1.277454       1.3091258  0.3208282
   # [4,] -0.001088348 0.1056846 0.1062371 0.3257226 0.1837417       0.7887214       0.8935493        0.960254       0.9691641  0.3175942
-  # Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95      Time
+  #      Coverage80 Coverage90 Coverage95   Width50   Width80   Width90   Width95      Time
   # [1,]  0.6070766  0.7619071  0.8624555 0.3301406 0.6081430 0.7369298 0.8279200 0.1071306
   # [2,]  0.6012190  0.7519349  0.8509102 0.3147137 0.5827772 0.7118537 0.8020455 0.8165929
   # [3,]  0.6022712  0.7415239  0.8474497 0.3706861 0.6671788 0.7907756 0.8661370 0.1976879
