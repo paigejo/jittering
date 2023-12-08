@@ -3294,7 +3294,6 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     colMeds = function(x) {apply(x, 2, median, na.rm=TRUE)}
     scoresTabsMedDHS = do.call("rbind", lapply(scoresTabsDHS, colMeds))
     scoresTabsMedMICS = do.call("rbind", lapply(scoresTabsMICS, colMeds))
-    scoresTabsMedFull = do.call("rbind", lapply(scoresTabsFull, colMeds))
     scoresTabsUrbMedDHS = do.call("rbind", lapply(scoresTabsUrbDHS, colMeds))
     scoresTabsRurMedDHS = do.call("rbind", lapply(scoresTabsRurDHS, colMeds))
     scoresTabsUrbMedMICS = do.call("rbind", lapply(scoresTabsUrbMICS, colMeds))
