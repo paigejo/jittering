@@ -797,15 +797,17 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
   plotMapDat(admFinal, new=FALSE)
   dev.off()
   
-  print(paste0("mean predicted urban prob: ", mean(preds[popMat$urban], na.rm=TRUE)))
-  print(paste0("mean predicted rural prob: ", mean(preds[!popMat$urban], na.rm=TRUE)))
+  print(paste0("mean predicted urban prob: ", weighted.mean(preds[popMat$urban], w=popMat$pop[popMat$urban])))
+  print(paste0("mean predicted rural prob: ", weighted.mean(preds[!popMat$urban], w=popMat$pop[!popMat$urban])))
   
   if(!is.null(tmbObj)) {
-    temp = tryCatch({
-      repOut = tmbObj$env$report(c(SD0$par.fixed, SD0$par.random))
-      print(paste0("mean data urban prob: ", mean(expit(c(repOut$latentFieldUrbMICS, repOut$latentFieldUrbDHS)), na.rm=TRUE)))
-      print(paste0("mean data rural prob: ", mean(expit(c(repOut$latentFieldRurMICS, repOut$latentFieldRurDHS)), na.rm=TRUE)))
-    }, error=function(e) {print(e)})
+    # temp = tryCatch({
+    #   repOut = tmbObj$env$report(c(SD0$par.fixed, SD0$par.random))
+    #   print(paste0("mean data urban prob: ", mean(expit(c(repOut$latentFieldUrbMICS, repOut$latentFieldUrbDHS)), na.rm=TRUE)))
+    #   print(paste0("mean data rural prob: ", mean(expit(c(repOut$latentFieldRurMICS, repOut$latentFieldRurDHS)), na.rm=TRUE)))
+    # }, error=function(e) {print(e)})
+    print(paste0("mean data urban prob: ", (sum(tmbObj$env$data$y_iUrbanDHS)+sum(tmbObj$env$data$y_iUrbanMICS))/(sum(tmbObj$env$data$n_iUrbanDHS)+sum(tmbObj$env$data$n_iUrbanMICS))))
+    print(paste0("mean data rural prob: ", (sum(tmbObj$env$data$y_iRuralDHS)+sum(tmbObj$env$data$y_iRuralMICS))/(sum(tmbObj$env$data$n_iRuralDHS)+sum(tmbObj$env$data$n_iRuralMICS))))
   }
   
   if(!is.null(arealPreds)) {
@@ -985,7 +987,8 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
     parnames = names(SD0$par.fixed)
-    hasNugget = "log_tauEps" %in% parnames
+    hasNugget = ("log_tauEps" %in% parnames) || ("log_tauEpsUrb" %in% parnames)
+    URclust = "log_tauEpsUrb" %in% parnames
   } else {
     allPar = obj$env$last.par
     alpha = allPar[grepl("alpha", names(allPar))]
@@ -1046,6 +1049,8 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   }
   
   sigmaEpsSq_tmb_draws = NULL
+  sigmaEpsSqUrb_tmb_draws = NULL
+  sigmaEpsSqRur_tmb_draws = NULL
   if(SD0$pdHess) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
     mu = summary(SD0)[,1]
@@ -1113,10 +1118,20 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
     
     if(hasNugget) {
-      sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
-      fixedMat = rbind(fixedMat, 
-                       sigmaEpsSq_tmb_draws)
-      row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+      if(!URclust) {
+        sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSq_tmb_draws)
+        row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+      } else {
+        sigmaEpsSqUrb_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUrb',]), nrow = 1)
+        sigmaEpsSqRur_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRur',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSqUrb_tmb_draws, 
+                         sigmaEpsSqRur_tmb_draws)
+        row.names(fixedMat)[(nrow(fixedMat)-1):nrow(fixedMat)] = c("sigmaEpsSqUrb", "sigmaEpsSqRur")
+      }
+      
     }
     
     # Make parameter summary tables
@@ -1156,9 +1171,24 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       probDraws = expit(gridDraws_tmb)
     }
     else {
-      probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
-                                              gridDraws_tmb), logisticApprox=FALSE, 
-                                        splineApprox=splineApprox)
+      if(!URclust) {
+        probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
+                                                gridDraws_tmb), logisticApprox=FALSE, 
+                                          splineApprox=splineApprox)
+      } else {
+        gridDraws_tmbUrb = gridDraws_tmb[popMat$urban,]
+        gridDraws_tmbRur = gridDraws_tmb[!popMat$urban,]
+        probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUrb_tmb_draws), 
+                                                gridDraws_tmbUrb), logisticApprox=FALSE, 
+                                          splineApprox=splineApprox)
+        probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRur_tmb_draws), 
+                                                gridDraws_tmbRur), logisticApprox=FALSE, 
+                                          splineApprox=splineApprox)
+        probDraws = gridDraws_tmb
+        probDraws[popMat$urban,] = probDrawsUrb
+        probDraws[!popMat$urban,] = probDrawsRur
+      }
+      
       # logitNormMeanGrouped is muuuuuuch faster than:
       # system.time(probDraws <- matrix(logitNormMean(cbind(c(gridDraws_tmb[,1:500]), rep(sqrt(sigmaEpsSq_tmb_draws[1:500]), each=nrow(gridDraws_tmb))), logisticApprox=FALSE, splineApprox=splineApprox), nrow=nrow(gridDraws_tmb)))
       
@@ -1191,6 +1221,8 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
   }
   else {
+    # Prec not PD
+    stop("Precision matrix should be PD")
     Eps = SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
     alpha = SD0$par.fixed[grepl("alpha", names(SD0$par.fixed))]
     beta = SD0$par.fixed[grepl("beta", names(SD0$par.fixed))]
@@ -1246,6 +1278,8 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
        phiDraws=phi_tmb_draws, 
        logitGridDrawsNoNug=gridDraws_tmb, 
        sigmaEpsSqDraws=sigmaEpsSq_tmb_draws, 
+       sigmaEpsSqUrbDraws=sigmaEpsSqUrb_tmb_draws, 
+       sigmaEpsSqRurDraws=sigmaEpsSqRur_tmb_draws, 
        quants=quants, 
        pdHess=SD0$pdHess)
 }

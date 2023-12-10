@@ -252,7 +252,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edM_DMInputs.RData")
+out = load("savedOutput/global/edMdInputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)

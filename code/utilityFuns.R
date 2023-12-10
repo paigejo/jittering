@@ -1946,3 +1946,7 @@ wtdSD = function(x, weights=NULL, na.rm=FALSE,
   
   sqrt(varEst)
 }
+
+getDynlibs = function() {
+  getLoadedDLLs()
+}

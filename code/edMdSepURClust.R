@@ -44,8 +44,8 @@ if(FALSE) {
   out = load("savedOutput/global/intPtsDHS.RData")
   out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+  ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   
   # AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
   # ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -157,8 +157,8 @@ if(FALSE) {
   # dyn.unload( dynlib("code/modMdSepsparse"))
   # compile( "code/modMdSepsparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modM_DSep"))
-  compile( "code/modM_DSep.cpp", 
+  dyn.unload( dynlib("code/modM_DSepURClust"))
+  compile( "code/modM_DSepURClust.cpp", 
            framework="TMBad", safebounds=FALSE)
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modMdSep  -DTMB_LIB_INIT=R_init_modMdSep  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modMdSep.cpp -o code/modMdSep.o
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modMdSep.so code/modMdSep.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
@@ -268,6 +268,7 @@ myDim = function(x) {
 
 if(FALSE) {
   # for testing purposes
+  any(sapply(data_full, anyna))
   sapply(data_full, anyna)
   sapply(data_full, myDim)
   hist(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS, breaks=50)
@@ -291,14 +292,15 @@ if(FALSE) {
 }
 
 # initial parameters
-initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
+initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
 initAlpha = logit(initRurP)
 initBeta1 = logit(initUrbP) - initAlpha
 
 tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUrb = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsRur = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    alpha = initAlpha, # intercept
                    beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                    w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
@@ -309,13 +311,13 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
 
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modMdSepsparse"))
-dyn.load( dynlib("code/modM_DSep"))
+dyn.load( dynlib("code/modM_DSepURClust"))
 TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modM_DSep')
+                 DLL='modM_DSepURClust')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,
@@ -705,17 +707,18 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitMdSep.RData")
-out = load("savedOutput/ed/fitMdSep.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitMdSepURClust.RData")
+out = load("savedOutput/ed/fitMdSepURClust.RData")
 
 # gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel="adm2", 
 #                      predAtArea=foldArea,
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 
+# Model with one cluster variance:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
@@ -734,18 +737,40 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2",
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsMdSep.RData")
-out = load("savedOutput/ed/gridPredsMdSep.RData")
+
+# Model with U/R cluster variances:
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.81 & -2.02 & -1.95 & -1.67 & -1.61 \\ 
+# urb & 0.32 & 0.09 & 0.16 & 0.47 & 0.54 \\ 
+# access & -0.21 & -0.30 & -0.27 & -0.14 & -0.10 \\ 
+# elev & 0.12 & -0.01 & 0.04 & 0.20 & 0.25 \\ 
+# distRiversLakes & 0.09 & -0.03 & 0.01 & 0.17 & 0.20 \\ 
+# popValsNorm & 0.83 & 0.63 & 0.70 & 0.97 & 1.03 \\ 
+# sigmaSq & 0.58 & 0.34 & 0.41 & 0.77 & 0.93 \\ 
+# phi & 0.84 & 0.47 & 0.66 & 0.97 & 0.98 \\ 
+# sigmaEpsSqUrb & 1.01 & 0.81 & 0.86 & 1.16 & 1.27 \\ 
+# sigmaEpsSqRur & 1.75 & 1.45 & 1.54 & 1.97 & 2.10 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+
+save(gridPreds, file="savedOutput/ed/gridPredsMdSepURClust.RData")
+out = load("savedOutput/ed/gridPredsMdSepURClust.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsMdSep.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsMdSep.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsMdSep.RData")
-out = load("savedOutput/ed/stratPredsMdSep.RData")
-out = load("savedOutput/ed/admin1PredsMdSep.RData")
-out = load("savedOutput/ed/admin2PredsMdSep.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsMdSepURClust.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsMdSepURClust.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsMdSepURClust.RData")
+out = load("savedOutput/ed/stratPredsMdSepURClust.RData")
+out = load("savedOutput/ed/admin1PredsMdSepURClust.RData")
+out = load("savedOutput/ed/admin2PredsMdSepURClust.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -755,34 +780,34 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # & Est & Q0.025 & Q0.975 \\ 
 # \hline
-# (Int) & -1.77 & -1.98 & -1.90 & -1.63 & -1.56 \\ 
-# urb & 0.32 & 0.10 & 0.16 & 0.47 & 0.54 \\ 
-# access & -0.20 & -0.31 & -0.26 & -0.13 & -0.10 \\ 
-# elev & 0.14 & 0.02 & 0.06 & 0.22 & 0.27 \\ 
-# distRiversLakes & 0.09 & -0.02 & 0.02 & 0.17 & 0.21 \\ 
-# popValsNorm & 0.82 & 0.62 & 0.69 & 0.95 & 1.03 \\ 
-# sigmaSq & 0.63 & 0.35 & 0.43 & 0.87 & 1.03 \\ 
-# phi & 0.85 & 0.47 & 0.66 & 0.97 & 0.99 \\ 
-# sigmaEpsSq & 1.42 & 1.22 & 1.28 & 1.56 & 1.63 \\ 
+# X.Int. & -1.77 & -1.96 & -1.57 \\ 
+# beta & 0.30 & 0.07 & 0.53 \\ 
+# beta.1 & -0.19 & -0.29 & -0.09 \\ 
+# beta.2 & 0.17 & 0.02 & 0.33 \\ 
+# beta.3 & 0.04 & -0.11 & 0.21 \\ 
+# beta.4 & 0.81 & 0.60 & 1.02 \\ 
+# sigmaSq & 1.00 & 0.75 & 1.33 \\ 
+# phi & 0.93 & 0.75 & 0.99 \\ 
+# sigmaEpsSq & 0.93 & 0.77 & 1.10 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edMdSep")
+          plotNameRoot="edMdSepURClust")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Strat")
+          plotNameRoot="edMdSepURClust", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Admin1")
+          plotNameRoot="edMdSepURClust", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Admin2")
-# [1] "mean predicted urban prob: 0.655407377170824"
-# [1] "mean predicted rural prob: 0.309092229359486"
-# [1] "mean data urban prob: 0.64808362369338"
-# [1] "mean data rural prob: 0.278878855400493"
+          plotNameRoot="edMdSepURClust", plotNameRootAreal="Admin2")
+# [1] "mean predicted urban prob: 0.491354331084251"
+# [1] "mean predicted rural prob: 0.187891264984869"
+# [1] "mean data urban prob: 0.673366425230284"
+# [1] "mean data rural prob: 0.323292564427433"
 
 if(FALSE) {
   logTau = obj$env$last.par[names(obj$env$last.par) == "log_tau"]
