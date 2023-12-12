@@ -2780,8 +2780,8 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       Krur = nrow(Xrur) / nrow(Arur)
       # bigAurb = matrix(rep(Aurb, times=Kurb), ncol=ncol(Aurb))
       # bigArur = matrix(rep(Arur, times=Krur), ncol=ncol(Arur))
-      bigAurb = sapply(1:ncol(Aurb), function(x) {rep(Aurb[,i], times=Kurb)})
-      bigArur = sapply(1:ncol(Arur), function(x) {rep(Arur[,i], times=Krur)})
+      bigAurb = sapply(1:ncol(Aurb), function(x) {rep(Aurb[,x], times=Kurb)})
+      bigArur = sapply(1:ncol(Arur), function(x) {rep(Arur[,x], times=Krur)})
     } else {
       bigAurb = Aurb
       bigArur = Arur
