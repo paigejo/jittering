@@ -591,42 +591,49 @@ out = load("savedOutput/ed/fitM_DMSep.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+# separate cluster level variances:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.80 & -1.96 & -1.91 & -1.68 & -1.61 \\ 
-# urb & 0.94 & 0.77 & 0.83 & 1.05 & 1.11 \\ 
-# access & -0.04 & -0.13 & -0.10 & 0.01 & 0.05 \\ 
-# elev & 0.16 & 0.01 & 0.06 & 0.26 & 0.31 \\ 
-# distRiversLakes & -0.01 & -0.17 & -0.11 & 0.10 & 0.16 \\ 
-# popValsNorm & 0.83 & 0.63 & 0.71 & 0.96 & 1.03 \\ 
-# sigmaSq & 1.36 & 1.00 & 1.10 & 1.63 & 1.81 \\ 
-# phi & 0.90 & 0.69 & 0.80 & 0.98 & 0.99 \\ 
-# sigmaEpsSq & 0.50 & 0.42 & 0.45 & 0.56 & 0.59 \\ 
+# (Int) & -1.32 & -1.48 & -1.42 & -1.21 & -1.16 \\ 
+# urb & 1.00 & 0.83 & 0.90 & 1.10 & 1.15 \\ 
+# access & -0.05 & -0.12 & -0.09 & -0.01 & 0.01 \\ 
+# elev & 0.05 & -0.03 & -0.00 & 0.10 & 0.12 \\ 
+# distRiversLakes & 0.02 & -0.06 & -0.03 & 0.07 & 0.10 \\ 
+# popValsNorm & 0.45 & 0.31 & 0.36 & 0.55 & 0.60 \\ 
+# sigmaSq & 0.47 & 0.28 & 0.34 & 0.63 & 0.75 \\ 
+# phi & 0.82 & 0.46 & 0.60 & 0.96 & 0.98 \\ 
+# sigmaEpsSqUMICS & 1.50 & 1.14 & 1.24 & 1.78 & 1.95 \\ 
+# sigmaEpsSqRMICS & 1.70 & 1.37 & 1.49 & 1.91 & 2.07 \\ 
+# sigmaEpsSqUDHS & 1.07 & 0.83 & 0.90 & 1.24 & 1.35 \\ 
+# sigmaEpsSqRDHS & 1.53 & 1.27 & 1.35 & 1.73 & 1.84 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
+# 
+# single cluster level variance:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.75 & -1.92 & -1.87 & -1.63 & -1.57 \\ 
-# urb & 0.37 & 0.21 & 0.26 & 0.48 & 0.53 \\ 
-# access & -0.12 & -0.20 & -0.18 & -0.06 & -0.04 \\ 
-# elev & 0.20 & 0.05 & 0.10 & 0.30 & 0.34 \\ 
-# distRiversLakes & 0.01 & -0.14 & -0.09 & 0.12 & 0.17 \\ 
-# popValsNorm & 0.86 & 0.68 & 0.74 & 0.99 & 1.05 \\ 
-# sigmaSq & 1.34 & 1.04 & 1.13 & 1.57 & 1.69 \\ 
-# phi & 0.83 & 0.60 & 0.69 & 0.93 & 0.96 \\ 
-# sigmaEpsSq & 0.42 & 0.33 & 0.36 & 0.48 & 0.51 \\ 
+# (Int) & -1.29 & -1.46 & -1.40 & -1.18 & -1.12 \\
+# urb & 1.02 & 0.84 & 0.91 & 1.14 & 1.19 \\
+# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.02 \\
+# elev & 0.05 & -0.03 & 0.00 & 0.11 & 0.13 \\
+# distRiversLakes & 0.02 & -0.05 & -0.03 & 0.07 & 0.10 \\
+# popValsNorm & 0.44 & 0.29 & 0.34 & 0.54 & 0.59 \\
+# sigmaSq & 0.48 & 0.28 & 0.34 & 0.63 & 0.75 \\
+# phi & 0.82 & 0.44 & 0.61 & 0.96 & 0.98 \\
+# sigmaEpsSq & 1.48 & 1.30 & 1.36 & 1.60 & 1.68 \\
 # \hline
 # \end{tabular}
 # \end{table}
+
 save(gridPreds, file="savedOutput/ed/gridPredsM_DMSep.RData")
 out = load("savedOutput/ed/gridPredsM_DMSep.RData")
 

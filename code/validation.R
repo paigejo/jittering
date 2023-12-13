@@ -1688,7 +1688,8 @@ getAllValidationData2Areal = function(folds=1:37, res=300) {
 getValidationFit = function(fold, 
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                             regenModFit=FALSE, regenPreds=TRUE, randomBeta=FALSE, randomAlpha=FALSE, 
-                            fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE, forceRegenIfMissing=TRUE) {
+                            fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE, forceRegenIfMissing=TRUE, 
+                            varClust=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -1766,6 +1767,20 @@ getValidationFit = function(fold,
       dat$MakeADFunInputs$random = c("alpha", dat$MakeADFunInputs$random)
     }
     
+    if(varClust) {
+      # we have separate cluster level variances. Adjust parameters accordingly
+      if(model %in% c("Md", "MD")) {
+        tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
+      } else if(model %in% c("Mdm", "MDM")) {
+        tauEpsPar = list(log_tauEpsUMICS=0, log_tauEpsRMICS=0, 
+                         log_tauEpsUDHS=0, log_tauEpsRDHS=0)
+      }
+      whichI = which(names(dat$MakeADFunInputs$parameters) == "log_tauEps")
+      newPar = c(dat$MakeADFunInputs$parameters[1:(whichI-1)], 
+                 tauEpsPar, 
+                 dat$MakeADFunInputs$parameters[whichI:length(dat$MakeADFunInputs$parameters)])
+      dat$MakeADFunInputs$parameters = newPar
+    }
   }
   
   # if the file doesn't exist, recreate it.
@@ -1852,6 +1867,16 @@ getValidationFit = function(fold,
         options=0 # 1 for adreport of log tau and logit phi
       )
     }
+    
+    if(varClust) {
+      # we have separate cluster level variances. Adjust parameters accordingly
+      tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
+      whichI = which(names(tmb_params) == "log_tauEps")
+      newPar = c(tmb_params[1:(whichI-1)], 
+                 tauEpsPar, 
+                 tmb_params[whichI:length(tmb_params)])
+      tmb_params = newPar
+    }
   } else if((model %in% c("MD", "Mdm", "MDM", "MD2", "Mdm2", "MDM2")) && regenModFit && !fromOptPar) {
     print("Initializing optimization via the unadjusted DHS model")
     initUrbP = sum(c(edInSample$y[edInSample$urban]))/sum(c(edInSample$n[edInSample$urban]))
@@ -1880,6 +1905,16 @@ getValidationFit = function(fold,
                               nuggetUrbDHS = rep(0, sum(edInSample$urban)), 
                               nuggetRurDHS = rep(0, sum(!edInSample$urban))
       )
+    }
+    
+    if(varClust) {
+      # we have separate cluster level variances. Adjust parameters accordingly
+      tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
+      whichI = which(names(tmb_paramsStart) == "log_tauEps")
+      newPar = c(tmb_paramsStart[1:(whichI-1)], 
+                 tauEpsPar, 
+                 tmb_paramsStart[whichI:length(tmb_paramsStart)])
+      tmb_paramsStart = newPar
     }
     
     # collect input data, setting only first weights as nonzero (to 1)
@@ -1984,13 +2019,24 @@ getValidationFit = function(fold,
                               hessian=TRUE,
                               DLL='modM_D2Sep')
       } else {
-        dyn.load( dynlib("code/modM_DSep"))
-        TMB::config(tmbad.sparse_hessian_compress = 1)
-        objStart <- MakeADFun(data=data_start,
-                              parameters=tmb_paramsStart,
-                              random=rand_effsStart,
-                              hessian=TRUE,
-                              DLL='modM_DSep')
+        if(!varClust) {
+          dyn.load(dynlib("code/modM_DSep"))
+          TMB::config(tmbad.sparse_hessian_compress = 1)
+          objStart <- MakeADFun(data=data_start,
+                                parameters=tmb_paramsStart,
+                                random=rand_effsStart,
+                                hessian=TRUE,
+                                DLL='modM_DSep')
+        } else {
+          dyn.load(dynlib("code/modM_DSepURClust"))
+          TMB::config(tmbad.sparse_hessian_compress = 1)
+          objStart <- MakeADFun(data=data_start,
+                                parameters=tmb_paramsStart,
+                                random=rand_effsStart,
+                                hessian=TRUE,
+                                DLL='modM_DSepURClust')
+        }
+        
       }
     }
     
@@ -2106,6 +2152,21 @@ getValidationFit = function(fold,
         )
       }
       
+      if(varClust) {
+        # we have separate cluster level variances. Adjust parameters accordingly
+        if(model %in% c("Md", "MD")) {
+          tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
+        } else if(model %in% c("Mdm", "MDM")) {
+          tauEpsPar = list(log_tauEpsUMICS=0, log_tauEpsRMICS=0, 
+                           log_tauEpsUDHS=0, log_tauEpsRDHS=0)
+        }
+        whichI = which(names(tmb_params) == "log_tauEps")
+        newPar = c(tmb_params[1:(whichI-1)], 
+                   tauEpsPar, 
+                   tmb_params[whichI:length(tmb_params)])
+        tmb_params = newPar
+      }
+      
     }
     
     if(admLevel == 2) {
@@ -2118,7 +2179,11 @@ getValidationFit = function(fold,
       if(!sep) {
         stop("adm1 level and !sep not supported")
       } else {
-        dyn.unload( dynlib("code/modM_DSep"))
+        if(!varClust) {
+          dyn.unload( dynlib("code/modM_DSep"))
+        } else {
+          dyn.unload( dynlib("code/modM_DSepURClust"))
+        }
       }
     }
     
@@ -2154,10 +2219,18 @@ getValidationFit = function(fold,
         MakeADFunInputs$DLL = "modM_D2Sep"
       }
     } else {
-      if(model %in% c("Mdm", "MDM")) {
-        MakeADFunInputs$DLL = "modM_DMSep"
+      if(!varClust) {
+        if(model %in% c("Mdm", "MDM")) {
+          MakeADFunInputs$DLL = "modM_DMSep"
+        } else {
+          MakeADFunInputs$DLL = "modM_DSep"
+        }
       } else {
-        MakeADFunInputs$DLL = "modM_DSep"
+        if(model %in% c("Mdm", "MDM")) {
+          MakeADFunInputs$DLL = "modM_DMSepVarClust"
+        } else {
+          MakeADFunInputs$DLL = "modM_DSepURClust"
+        }
       }
     }
     

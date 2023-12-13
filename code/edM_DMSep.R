@@ -606,24 +606,6 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS
 # \hline
 # \end{tabular}
 # \end{table}
-# \begin{table}[ht]
-# \centering
-# \begin{tabular}{rrrrrr}
-# \hline
-# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
-# \hline
-# (Int) & -1.75 & -1.92 & -1.87 & -1.63 & -1.57 \\ 
-# urb & 0.37 & 0.21 & 0.26 & 0.48 & 0.53 \\ 
-# access & -0.12 & -0.20 & -0.18 & -0.06 & -0.04 \\ 
-# elev & 0.20 & 0.05 & 0.10 & 0.30 & 0.34 \\ 
-# distRiversLakes & 0.01 & -0.14 & -0.09 & 0.12 & 0.17 \\ 
-# popValsNorm & 0.86 & 0.68 & 0.74 & 0.99 & 1.05 \\ 
-# sigmaSq & 1.34 & 1.04 & 1.13 & 1.57 & 1.69 \\ 
-# phi & 0.83 & 0.60 & 0.69 & 0.93 & 0.96 \\ 
-# sigmaEpsSq & 0.42 & 0.33 & 0.36 & 0.48 & 0.51 \\ 
-# \hline
-# \end{tabular}
-# \end{table}
 save(gridPreds, file="savedOutput/ed/gridPredsM_DMSep.RData")
 out = load("savedOutput/ed/gridPredsM_DMSep.RData")
 
