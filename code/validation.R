@@ -1716,6 +1716,10 @@ getValidationFit = function(fold,
   }
   # fnameRoot = paste0(fnameRoot, "_", res, collapse="")
   
+  if(varClust) {
+    fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
+  }
+  
   fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
   out = load(fname)
   
