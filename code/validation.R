@@ -2099,11 +2099,7 @@ getValidationFit = function(fold,
     if(!varClust) {
       parI = match(c("log_tau", "logit_phi", "log_tauEps"), names(testObj$env$last.par))
     } else {
-      if(model %in% c("Md", "MD")) {
-        parI = match(c("log_tau", "logit_phi", "log_tauEpsUrb", "log_tauEpsRur"), names(testObj$env$last.par))
-      } else {
-        parI = match(c("log_tau", "logit_phi", "log_tauEpsUMICS", "log_tauEpsRMICS", "log_tauEpsUDHS", "log_tauEpsRDHS"), names(testObj$env$last.par))
-      }
+      parI = match(c("log_tau", "logit_phi", "log_tauEpsUrb", "log_tauEpsRur"), names(testObj$env$last.par))
     }
     
     if(!all(testObj$env$last.par[parI] == optParStart)) {
