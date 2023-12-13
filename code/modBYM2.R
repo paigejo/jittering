@@ -987,8 +987,9 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
     parnames = names(SD0$par.fixed)
-    hasNugget = ("log_tauEps" %in% parnames) || ("log_tauEpsUrb" %in% parnames)
+    hasNugget = ("log_tauEps" %in% parnames) || ("log_tauEpsUrb" %in% parnames) || ("log_tauEpsUDHS" %in% parnames)
     URclust = "log_tauEpsUrb" %in% parnames
+    varClust = "log_tauEpsUDHS" %in% parnames
   } else {
     allPar = obj$env$last.par
     alpha = allPar[grepl("alpha", names(allPar))]
@@ -1051,6 +1052,10 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   sigmaEpsSq_tmb_draws = NULL
   sigmaEpsSqUrb_tmb_draws = NULL
   sigmaEpsSqRur_tmb_draws = NULL
+  sigmaEpsSqUMICS_tmb_draws = NULL
+  sigmaEpsSqRMICS_tmb_draws = NULL
+  sigmaEpsSqUDHS_tmb_draws = NULL
+  sigmaEpsSqRDHS_tmb_draws = NULL
   if(SD0$pdHess) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
     mu = summary(SD0)[,1]
@@ -1118,18 +1123,30 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
     
     if(hasNugget) {
-      if(!URclust) {
+      if((!URclust) && (!varClust)) {
         sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
         fixedMat = rbind(fixedMat, 
                          sigmaEpsSq_tmb_draws)
         row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
-      } else {
+      } else if(URclust) {
         sigmaEpsSqUrb_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUrb',]), nrow = 1)
         sigmaEpsSqRur_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRur',]), nrow = 1)
         fixedMat = rbind(fixedMat, 
                          sigmaEpsSqUrb_tmb_draws, 
                          sigmaEpsSqRur_tmb_draws)
         row.names(fixedMat)[(nrow(fixedMat)-1):nrow(fixedMat)] = c("sigmaEpsSqUrb", "sigmaEpsSqRur")
+      } else if(varClust) {
+        sigmaEpsSqUDHS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUDHS',]), nrow = 1)
+        sigmaEpsSqRDHS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRDHS',]), nrow = 1)
+        sigmaEpsSqUMICS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUMICS',]), nrow = 1)
+        sigmaEpsSqRMICS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRMICS',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSqUMICS_tmb_draws, 
+                         sigmaEpsSqRMICS_tmb_draws, 
+                         sigmaEpsSqUDHS_tmb_draws, 
+                         sigmaEpsSqRDHS_tmb_draws)
+        row.names(fixedMat)[(nrow(fixedMat)-1):nrow(fixedMat)] = c("sigmaEpsSqUMICS", "sigmaEpsSqRMICS", 
+                                                                   "sigmaEpsSqUDHS", "sigmaEpsSqRDHS")
       }
       
     }
@@ -1171,19 +1188,29 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       probDraws = expit(gridDraws_tmb)
     }
     else {
-      if(!URclust) {
+      if((!URclust) && (!varClust)) {
         probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws), 
                                                 gridDraws_tmb), logisticApprox=FALSE, 
                                           splineApprox=splineApprox)
       } else {
         gridDraws_tmbUrb = gridDraws_tmb[popMat$urban,]
         gridDraws_tmbRur = gridDraws_tmb[!popMat$urban,]
-        probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUrb_tmb_draws), 
-                                                gridDraws_tmbUrb), logisticApprox=FALSE, 
-                                          splineApprox=splineApprox)
-        probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRur_tmb_draws), 
-                                                gridDraws_tmbRur), logisticApprox=FALSE, 
-                                          splineApprox=splineApprox)
+        if(URclust) {
+          probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUrb_tmb_draws), 
+                                                     gridDraws_tmbUrb), logisticApprox=FALSE, 
+                                               splineApprox=splineApprox)
+          probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRur_tmb_draws), 
+                                                     gridDraws_tmbRur), logisticApprox=FALSE, 
+                                               splineApprox=splineApprox)
+        } else if(varClust) {
+          probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUDHS_tmb_draws), 
+                                                     gridDraws_tmbUrb), logisticApprox=FALSE, 
+                                               splineApprox=splineApprox)
+          probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRDHS_tmb_draws), 
+                                                     gridDraws_tmbRur), logisticApprox=FALSE, 
+                                               splineApprox=splineApprox)
+        }
+        
         probDraws = gridDraws_tmb
         probDraws[popMat$urban,] = probDrawsUrb
         probDraws[!popMat$urban,] = probDrawsRur
@@ -1280,6 +1307,10 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
        sigmaEpsSqDraws=sigmaEpsSq_tmb_draws, 
        sigmaEpsSqUrbDraws=sigmaEpsSqUrb_tmb_draws, 
        sigmaEpsSqRurDraws=sigmaEpsSqRur_tmb_draws, 
+       sigmaEpsSqUMICSDraws = sigmaEpsSqUMICS_tmb_draws, 
+       sigmaEpsSqRMICSDraws = sigmaEpsSqRMICS_tmb_draws, 
+       sigmaEpsSqUDHSDraws = sigmaEpsSqUDHS_tmb_draws, 
+       sigmaEpsSqRDHSDraws = sigmaEpsSqRDHS_tmb_draws, 
        quants=quants, 
        pdHess=SD0$pdHess)
 }
