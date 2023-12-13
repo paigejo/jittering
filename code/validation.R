@@ -1716,12 +1716,12 @@ getValidationFit = function(fold,
   }
   # fnameRoot = paste0(fnameRoot, "_", res, collapse="")
   
+  fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
+  out = load(fname)
+  
   if(varClust) {
     fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
   }
-  
-  fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
-  out = load(fname)
   
   # get the data from the appropriate variable. The data is in the following format:
   # list(edInSample=edInSample, edOutOfSample=edOutOfSample, 
