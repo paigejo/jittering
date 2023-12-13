@@ -2586,7 +2586,7 @@ getValidationFit = function(fold,
     if(hessPD) {
       if(!areal) {
         preds = predClusters(nsim=nsim, fold, SD0, obj, 
-                             model=model, sep=sep, 
+                             model=model, sep=sep, varClust=varClust, 
                              quantiles=c(0.025, 0.1, 0.9, 0.975))
       } else {
         gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel=admLevelString, 
