@@ -2610,7 +2610,7 @@ getValidationFit = function(fold,
   }
   
   
-  allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal)
+  allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal, varClust=varClust)
   
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
