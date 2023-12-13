@@ -1991,8 +1991,8 @@ getValidationFit = function(fold,
         areaidxlocRural = areaidxlocRural, 
         X_betaUrbanDHS=dat$MakeADFunInputs$data$X_betaUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
         X_betaRuralDHS=dat$MakeADFunInputs$data$X_betaRuralDHS, # 
-        wUrbanDHS=dat$MakeADFunInputs$data$wUrbanDHS, # nObsUrban x nIntegrationPointsUrban weight matrix
-        wRuralDHS=dat$MakeADFunInputs$data$wRuralDHS, # 
+        wUrbanDHS=wUrbanDHStemp, # nObsUrban x nIntegrationPointsUrban weight matrix
+        wRuralDHS=wRuralDHStemp, # 
         
         # V_bym2=dat$MakeADFunInputs$data$V_bym2, # eigenvectors of Q (i.e. Q = V Lambda V^T)
         Q_bym2=dat$MakeADFunInputs$data$Q_bym2, # BYM2 unit scaled structure matrix
@@ -2162,22 +2162,21 @@ getValidationFit = function(fold,
                            nuggetRurDHS = testObj$env$last.par[grepl("nuggetRurDHS", names(testObj$env$last.par))]
         )
       }
-      
-      if(varClust) {
-        # we have separate cluster level variances. Adjust parameters accordingly
-        if(model %in% c("Md", "MD")) {
-          tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
-        } else if(model %in% c("Mdm", "MDM")) {
-          tauEpsPar = list(log_tauEpsUMICS=0, log_tauEpsRMICS=0, 
-                           log_tauEpsUDHS=0, log_tauEpsRDHS=0)
-        }
-        whichI = which(names(tmb_params) == "log_tauEps")
-        newPar = c(tmb_params[1:(whichI-1)], 
-                   tauEpsPar, 
-                   tmb_params[whichI:length(tmb_params)])
-        tmb_params = newPar
+    }
+    
+    if(varClust) {
+      # we have separate cluster level variances. Adjust parameters accordingly
+      if(model %in% c("Md", "MD")) {
+        tauEpsPar = list(log_tauEpsUrb=0, log_tauEpsRur=0)
+      } else if(model %in% c("Mdm", "MDM")) {
+        tauEpsPar = list(log_tauEpsUMICS=0, log_tauEpsRMICS=0, 
+                         log_tauEpsUDHS=0, log_tauEpsRDHS=0)
       }
-      
+      whichI = which(names(tmb_params) == "log_tauEps")
+      newPar = c(tmb_params[1:(whichI-1)], 
+                 tauEpsPar, 
+                 tmb_params[whichI:length(tmb_params)])
+      tmb_params = newPar
     }
     
     if(admLevel == 2) {
@@ -2250,6 +2249,7 @@ getValidationFit = function(fold,
     stop("!sep Deprecated")
   }
   
+  # regen model fit ----
   if(regenModFit || !file.exists(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", fold, ".RData"))) {
     # now fit the model. First we load DLLs and build the functions then we optimize
     dyn.load(dynlib(paste0("code/", MakeADFunInputs$DLL)))
