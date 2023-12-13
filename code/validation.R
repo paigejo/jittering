@@ -3263,7 +3263,7 @@ scoreValidationPreds = function(fold,
 
 # function for collecting validation results for each model
 validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE, 
-                           admLevel=c("adm2", "admFinal", "all")) {
+                           admLevel=c("adm2", "admFinal", "all"), varClust=FALSE) {
   admLevel = match.arg(admLevel)
   
   if(admLevel == "adm2") {
