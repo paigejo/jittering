@@ -2622,7 +2622,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
                         addBinVar=TRUE, maxIterChunk=1000, 
-                        sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE) {
+                        sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE, varClust=FALSE) {
   
   # clean input arguments
   model = match.arg(model)
@@ -2683,6 +2683,10 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   varname = paste0("dat", model)
   dat = get(varname)[[fold]]
   
+  if(varClust) {
+    fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
+  }
+  
   foldMod = ifelse((fold > 11) && (model %in% c("Md", "MD", "Md2", "MD2")), 11, fold)
   out = load(paste0("savedOutput/validation/folds/fit", fnameRoot, "_fold", foldMod, ".RData"))
   
@@ -2716,7 +2720,8 @@ predClusters = function(nsim=1000, fold, SD0, obj,
                          model=model, 
                          quantiles=quantiles, 
                          addBinVar=addBinVar, maxIterChunk=maxIterChunk, 
-                         sep=sep, QinvSumsNorm=QinvSumsNorm, verbose=FALSE)
+                         sep=sep, QinvSumsNorm=QinvSumsNorm, verbose=FALSE,
+                         varClust=varClust)
       
       # concatenate results
       if(startI == 1) {
@@ -2823,10 +2828,32 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     
     hasNugget = "log_tauEps" %in% row.names(summary(SD0))
     if(hasNugget) {
-      sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
-      fixedMat = rbind(fixedMat, 
-                       sigmaEpsSq_tmb_draws)
-      row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+      URclust = "log_tauEpsUrb" %in% parnames
+      if(!varClust) {
+        sigmaEpsSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEps',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSq_tmb_draws)
+        row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+      } else if(URclust) {
+        sigmaEpsSqUrb_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUrb',]), nrow = 1)
+        sigmaEpsSqRur_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRur',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSqUrb_tmb_draws, 
+                         sigmaEpsSqRur_tmb_draws)
+        row.names(fixedMat)[(nrow(fixedMat)-1):nrow(fixedMat)] = c("sigmaEpsSqUrb", "sigmaEpsSqRur")
+      } else {
+        sigmaEpsSqUDHS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUDHS',]), nrow = 1)
+        sigmaEpsSqRDHS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRDHS',]), nrow = 1)
+        sigmaEpsSqUMICS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsUMICS',]), nrow = 1)
+        sigmaEpsSqRMICS_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tauEpsRMICS',]), nrow = 1)
+        fixedMat = rbind(fixedMat, 
+                         sigmaEpsSqUMICS_tmb_draws, 
+                         sigmaEpsSqRMICS_tmb_draws, 
+                         sigmaEpsSqUDHS_tmb_draws, 
+                         sigmaEpsSqRDHS_tmb_draws)
+        row.names(fixedMat)[(nrow(fixedMat)-3):nrow(fixedMat)] = c("sigmaEpsSqUMICS", "sigmaEpsSqRMICS", 
+                                                                   "sigmaEpsSqUDHS", "sigmaEpsSqRDHS")
+      }
     }
     
     # Make parameter summary tables
@@ -2915,19 +2942,62 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       clustIDRur = rep(1:nClustRur, Krur)
       # probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
       # probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
-      logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
-        thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
-        nugsUrb = rnorm(nClustUrb, sd=thisNuggetSD)
-        clustIntDrawsUrb[,colI] + rep(nugsUrb, times=Kurb)
-      })
-      probIntDrawsUrb = expit(logitIntDrawsUrb)
+      if(!varClust) {
+        logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
+          nugsUrb = rnorm(nClustUrb, sd=thisNuggetSD)
+          clustIntDrawsUrb[,colI] + rep(nugsUrb, times=Kurb)
+        })
+        probIntDrawsUrb = expit(logitIntDrawsUrb)
+        
+        logitIntDrawsRur = sapply(1:ncol(clustIntDrawsRur), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
+          nugsRur = rnorm(nClustRur, sd=thisNuggetSD)
+          clustIntDrawsRur[,colI] + rep(nugsRur, times=Krur)
+        })
+        probIntDrawsRur = expit(logitIntDrawsRur)
+      } else if(URclust) {
+        logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSqUrb_tmb_draws[colI])
+          nugsUrb = rnorm(nClustUrb, sd=thisNuggetSD)
+          clustIntDrawsUrb[,colI] + rep(nugsUrb, times=Kurb)
+        })
+        probIntDrawsUrb = expit(logitIntDrawsUrb)
+        
+        logitIntDrawsRur = sapply(1:ncol(clustIntDrawsRur), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSqRur_tmb_draws[colI])
+          nugsRur = rnorm(nClustRur, sd=thisNuggetSD)
+          clustIntDrawsRur[,colI] + rep(nugsRur, times=Krur)
+        })
+        probIntDrawsRur = expit(logitIntDrawsRur)
+      } else {
+        # set U/R cluster effect variances depending of if predicting DHS or 
+        # MICS clusters
+        if(fold <= 10) {
+          # DHS fold
+          sigmaEpsSqUrb_tmb_draws = sigmaEpsSqUDHS_tmb_draws
+          sigmaEpsSqRur_tmb_draws = sigmaEpsSqRDHS_tmb_draws
+        } else {
+          # MICS fold
+          sigmaEpsSqUrb_tmb_draws = sigmaEpsSqUMICS_tmb_draws
+          sigmaEpsSqRur_tmb_draws = sigmaEpsSqRMICS_tmb_draws
+        }
+        
+        logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSqUrb_tmb_draws[colI])
+          nugsUrb = rnorm(nClustUrb, sd=thisNuggetSD)
+          clustIntDrawsUrb[,colI] + rep(nugsUrb, times=Kurb)
+        })
+        probIntDrawsUrb = expit(logitIntDrawsUrb)
+        
+        logitIntDrawsRur = sapply(1:ncol(clustIntDrawsRur), function(colI) {
+          thisNuggetSD = sqrt(sigmaEpsSqRur_tmb_draws[colI])
+          nugsRur = rnorm(nClustRur, sd=thisNuggetSD)
+          clustIntDrawsRur[,colI] + rep(nugsRur, times=Krur)
+        })
+        probIntDrawsRur = expit(logitIntDrawsRur)
+      }
       
-      logitIntDrawsRur = sapply(1:ncol(clustIntDrawsRur), function(colI) {
-        thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
-        nugsRur = rnorm(nClustRur, sd=thisNuggetSD)
-        clustIntDrawsRur[,colI] + rep(nugsRur, times=Krur)
-      })
-      probIntDrawsRur = expit(logitIntDrawsRur)
     }
     
     # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)
@@ -3084,7 +3154,7 @@ predStratum = function(nsim=1000, fold, SD0, obj,
 
 scoreValidationPreds = function(fold, 
                                 model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                                regenScores=FALSE, areal=FALSE) {
+                                regenScores=FALSE, areal=FALSE, varClust=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -3103,6 +3173,10 @@ scoreValidationPreds = function(fold,
   
   if(areal) {
     fnameRoot = paste0(fnameRoot, "areal", collapse="")
+  }
+  
+  if(varClust) {
+    fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
   }
   
   # load predictions
@@ -3253,6 +3327,10 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     
     if(areal) {
       fnameRoot = paste0(fnameRoot, "areal", collapse="")
+    }
+    
+    if(varClust) {
+      fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
     }
     
     # collect the results over all folds
