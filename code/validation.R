@@ -2736,6 +2736,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
         probDrawsRur[,startI:endI] = out$probDrawsRur
         predsUrb = out$predsUrb
         predsRur = out$predsRur
+        fixedMatNames = row.names(out$fixedMat)
         fixedMat = matrix(nrow=nrow(out$fixedMat), ncol=nsim)
         fixedMat[,startI:endI] = out$fixedMat
       } else {
@@ -2755,6 +2756,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # do final postprocessing/get summary statistics
     
     # Make parameter summary tables
+    row.names(fixedMat) = fixedMatNames
     parMeans = rowMeans(fixedMat)
     parQuants = t(apply(fixedMat, 1, quantile, probs=quantiles))
     parSummary = cbind(parMeans, parQuants)
