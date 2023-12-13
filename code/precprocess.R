@@ -185,6 +185,7 @@ save(adm0, adm1, adm2, adm0Full, adm1Full, adm2Full,
 library(dplyr)
 library(haven)
 dat = read_sav("data/NigeriaMICS5/NigeriaMICS2016-17SPSS/wm.sav")
+dat2 = read_sav("data/NigeriaMICS6/Nigeria MICS6 SPSS Datasets/wm.sav")
 dim(dat)
 # 36176 women elligible for interview, and 34,376 responded (~95% response rate)
 # WM7: 1 if they were fully interviewed, 4 if partly interviewed
@@ -205,6 +206,26 @@ dim(dat)
 # stratum: 10, 20, ..., 180, 191, 192, 193, 200, 210, 220, 230, 241, 242, 243, 250, 260, ..., 370
 #          each represent a state, or, in the case of Lagos and Kano, their 3 
 #          senatorial districts. It's in alphabetical order by state except FCT is at end.
+dim(dat2)
+# 40326 women elligible for interview, 
+# WM17: 1 if they were fully interviewed, 4 if partly interviewed
+# WM1, HH1: Cluster number
+# WM2: Household number
+# WB4: age in years
+# WB5: have you ever attended school or preschool (1 is yes, no -> WB14)
+# WB6: Highest grade achieved at that level ("00" means first grade at this level not completed)
+# WB6: attended secondary school
+# WB14: literacy (1: cannot read. 2: read part of sentence. 3: read whole sentence. 4: wrong language. 5: blind)
+# NOTE on Nigerian education system: 1 year pre-primary, 6 years primary, 3 years 
+#      junior secondary, 3 years senior secondary and 4 years tertiary education. 
+#      Hence, new interpretation of WB5: first number is WB4 and second is number 
+#      of years in that part of school. This implies 26 or higher means completed 
+#      secondary education as evidenced by 4-9, 17-19 and 27-29 not existing. More 
+#      info is available at end of MICS report in questionnaires Sec.
+# stratum: 10, 20, ..., 180, 191, 192, 193, 200, 210, 220, 230, 241, 242, 243, 250, 260, ..., 370
+#          each represent a state, or, in the case of Lagos and Kano, their 3 
+#          senatorial districts. It's in alphabetical order by state except FCT is at end.
+
 clustID = dat$WM1
 houseID = dat$WM2
 ageMICS = dat$WB2
@@ -222,6 +243,41 @@ wb5 = as.numeric(as.character(dat$WB5))
 # wb6 = as.numeric(as.character(dat$WB6))
 literacyMICS = as.numeric(as.character(dat$WB7))
 fullyInterviewed = dat$WM7
+
+clustID2 = dat2$WM1
+houseID2 = dat2$WM2
+ageMICS2 = dat2$WB4
+wb3orig2 = dat2$WB5
+wb4orig2 = dat2$WB6A
+wb5orig2 = dat2$WB6B
+# wb6orig = dat2$WB6
+literacyOrig2 = dat2$WB14
+wt2 = as.numeric(dat2$wmweight) # women's weight at admin1 level
+# wtKano = as.numeric(dat2$wmweightkano) # women's weight
+# wtLagos = as.numeric(dat2$wmweightlagos) # women's weight
+wb32 = as.numeric(as.character(dat2$WB5))
+wb42 = as.numeric(as.character(dat2$WB6A))
+wb52 = as.numeric(as.character(dat2$WB6B))
+# wb6 = as.numeric(as.character(dat2$WB6))
+literacyMICS2 = as.numeric(as.character(dat2$WB14))
+fullyInterviewed2 = dat2$WM17
+
+# convert MICS2021 to the same format as MICS2015/16
+wb4[is.na(wb4)] = 9
+temp = wb4
+temp[temp == 4] = 0
+wb42[is.na(wb42)] = 99
+wb52[is.na(wb52)] = 99
+wb42[wb42 == 11] = 1
+wb42[wb42 %in% c(21, 22, 31, 32)] = 2
+wb42[wb42 == 41] = 3
+wb42[!(wb42 %in% 0:3)] = 9
+hist(wb42[wb42<9], freq=F, breaks=c(-.5, .5, 1.5, 2.5, 3.5))
+hist(temp[temp<9], freq=F, breaks=c(-.5, .5, 1.5, 2.5, 3.5))
+# > mean((wb42 == 2)[wb42 < 9])
+# [1] 0.6203621
+# > mean((temp == 2)[temp < 9])
+# [1] 0.4959811
 
 wtLagosNZero = wtLagos[wtLagos > 0]
 length(wtLagosNZero) # 1745
@@ -243,6 +299,12 @@ mean(literacyMICS[wb4 == 1] == 4, na.rm=TRUE) # about 3% of primary school stude
 mean(literacyMICS[wb4 == 1] == 5, na.rm=TRUE) # about .2% of primary school students are visually impaired
 mean(literacyMICS[wb4 == 1] == 9, na.rm=TRUE) # about .2% of primary school students data is missing but not NA
 
+mean(literacyMICS2[wb42 == 11] == 1, na.rm=TRUE) # about 64% (55%) of primary school students can't read at all
+mean(literacyMICS2[wb42 == 11] == 2, na.rm=TRUE) # about 28% (32%) of primary school students can only read part of sentence
+mean(literacyMICS2[wb42 == 11] == 3, na.rm=TRUE) # about 7% (9%) of primary school students can read whole sentence
+mean(literacyMICS2[wb42 == 11] == 4, na.rm=TRUE) # about .1% (3%) of primary school students spoke a different language or no braille
+mean(literacyMICS2[wb42 == 11] == 9, na.rm=TRUE) # about .1% (.2%) of primary school students data is missing but not NA
+
 # determine if the women completed their secondary education. Use other information 
 # than just wb5 to help in this determination. If education is informal, they 
 # have not completed a formal secondary education (and, based on literacy rates, 
@@ -254,6 +316,20 @@ edMICS[wb3 == 2] = FALSE
 edMICS[(wb4 < 2) | (wb4 == 4)] = FALSE
 edMICS[(wb4 > 2) & (wb4 < 4)] = TRUE
 mean(is.na(edMICS)) # Nice! We match the missing data rate of 5%
+
+max(wb52[(wb52 != 99) & (wb42 == 21)], na.rm=TRUE)
+max(wb52[(wb52 != 99) & (wb42 == 22)], na.rm=TRUE)
+max(wb52[(wb52 != 99) & (wb42 == 31)], na.rm=TRUE)
+max(wb52[(wb52 != 99) & (wb42 == 32)], na.rm=TRUE)
+
+
+edMICS2 = ((wb42 >= 21) wb52 >= 26
+wb32[is.na(wb32)] = 99
+wb42[is.na(wb42)] = 99
+edMICS2[wb32 == 2] = FALSE
+edMICS2[(wb42 < 2) | (wb42 == 4)] = FALSE
+edMICS2[(wb42 > 2) & (wb42 < 4)] = TRUE
+mean(is.na(edMICS2)) # Nice! We match the missing data rate of 5%
 
 # fill in literacy NAs in a similar way
 literacyMICS[!is.na(literacyMICS)] = FALSE

@@ -176,8 +176,8 @@ if(FALSE) {
   # dyn.unload( dynlib("code/modM_DMSepsparse"))
   # compile( "code/modM_DMSepsparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modM_DMSep"))
-  compile( "code/modM_DMSep.cpp", 
+  dyn.unload( dynlib("code/modM_DMSepVarClust"))
+  compile( "code/modM_DMSepVarClust.cpp", 
            framework="TMBad", safebounds=FALSE)
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modM_DMSep  -DTMB_LIB_INIT=R_init_modM_DMSep  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modM_DMSep.cpp -o code/modM_DMSep.o
   # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modM_DMSep.so code/modM_DMSep.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
@@ -303,7 +303,10 @@ initBeta1 = logit(initUrbP) - initAlpha
 
 tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUMICS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsRMICS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUDHS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsRDHS = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    alpha = initAlpha, # intercept
                    beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                    w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
@@ -316,13 +319,13 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
 
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modM_DMSepsparse"))
-dyn.load( dynlib("code/modM_DMSep"))
+dyn.load( dynlib("code/modM_DMSepVarClust"))
 TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modM_DMSep')
+                 DLL='modM_DMSepVarClust')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,

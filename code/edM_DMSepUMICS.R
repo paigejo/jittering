@@ -41,11 +41,11 @@ if(FALSE) {
   load("savedOutput/global/intPtsDHS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   
-  AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
+  # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+  # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
   
-  # AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
-  # ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
+  AUrbDHS = makeApointToArea(rep(adm2ToStratumMICS(ed$subarea[ed$urban]), times=KDHSurb), admFinal$NAME_FINAL) # 775 x 6259 nArea x nObsUrb
+  ARurDHS = makeApointToArea(rep(adm2ToStratumMICS(ed$subarea[!ed$urban]), times=KDHSrur), admFinal$NAME_FINAL) # 775 x 12960
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
@@ -55,7 +55,7 @@ if(FALSE) {
   
   # first extract only the relevant covariates
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
-  AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
+  # AUrbMICS = makeApointToArea(edMICS$Stratum[edMICS$urban], admFinal$NAME_FINAL)
   # TODO: EXTEND AMICS TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
   
   # numPerStratUrb = table(edMICS$Stratum[edMICS$urban])
@@ -69,23 +69,6 @@ if(FALSE) {
   # }
   # actualIndexUrb = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratUrb))
   # XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
-  
-  # 41 strata, so rows 1:41 are first int pt, 42:82 second, etc.
-  # > head(intPtsMICS$XUrb)
-  #        east     north       lon      lat        pop urban      area       subarea     strat
-  # 1  547.0015 118.20927  7.351590 5.063059 27186.7228     1      Abia     Aba South      Abia
-  # 2 1063.9174 494.24425 12.045797 8.397973  4943.1894     1   Adamawa         Ganye   Adamawa
-  # 3  591.5783  93.82219  7.752028 4.840914   158.1402     1 Akwa Ibom     Oruk Anam Akwa Ibom
-  # 4  494.2189 197.59492  6.878789 5.782479 12464.0931     1   Anambra        Ihiala   Anambra
-  # 5  786.9519 637.69014  9.563900 9.730510  4567.1614     1    Bauchi Tafawa-Balewa    Bauchi
-  # 6  395.3649  34.94804  5.983221 4.314700  5334.2306     1   Bayelsa         Brass   Bayelsa
-  #   popMatIs int     access       elev distRiversLakes urbanicity  normPop
-  # 1      922   1 -2.8759693 -0.5412159       0.5633840  2.6536520 2.559150
-  # 2    12438   1 -0.4855544  1.4601349       1.1318496  0.0000000 1.286019
-  # 3      574   1 -1.6545579 -0.8598766       1.3266178  0.0000000 1.513281
-  # 4     2179   1 -2.5005279 -1.0000544      -0.7473778  0.2977891 1.856981
-  # 5    18645   1 -2.3125340  0.7973164      -0.9779331  0.0000000 1.427486
-  # 6        1   1  0.9488462  0.0000000      -1.0094755  0.0000000 1.197035
   startStratInds = which(XUrb$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
   nAreas = nrow(XUrb)/KMICS
   areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrb[x])})) # length nUrb, range = 1:41. gives area index for each obs
@@ -95,14 +78,11 @@ if(FALSE) {
   transformIUrb = allAreaIs + (allIntIs-1)*nAreas
   XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   
-  # cbind(numPerStratUrb, table(test)) # (matches up exactly)
-  # cbind(numPerStratUrb, table(transformI)) # (matches up exactly)
-  
-  # AUrbMICS = makeApointToArea(XUrb$subarea, adm2$NAME_2)
+  AUrbMICS = makeApointToArea(adm2ToStratumMICS(XUrb$subarea), admFinal$NAME_FINAL)
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
-  ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
+  # ARurMICS = makeApointToArea(edMICS$Stratum[!edMICS$urban], admFinal$NAME_FINAL)
   # numPerStratRur = table(edMICS$Stratum[!edMICS$urban])
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
@@ -110,7 +90,6 @@ if(FALSE) {
   # actualIndexRur = unlist(mapply(rep, 1:nrow(XRur), each=rep(numPerStratRur, times=KMICS)))
   # actualIndexRur = c(sapply(1:KMICS, getInds, numPerStrat=numPerStratRur))
   # XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
-  # ARurMICS = makeApointToArea(XRur$subarea, adm2$NAME_2)
   startStratInds = which(XRur$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
   nAreas = nrow(XRur)/KMICS
   areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRur[x])})) # length nRur, range = 1:41. gives area index for each obs
@@ -120,6 +99,7 @@ if(FALSE) {
   transformIRur = allAreaIs + (allIntIs-1)*nAreas
   XRur = XRur[transformIRur,]
   
+  ARurMICS = makeApointToArea(adm2ToStratumMICS(XRur$subarea), admFinal$NAME_FINAL)
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   # w matrices are nStrata x K. They should be nObs x K
@@ -193,66 +173,22 @@ if(FALSE) {
        file="savedOutput/global/edM_DMInputs.RData")
   
   # compile model ----
-  # dyn.unload( dynlib("code/modM_MSepsparse"))
-  # compile( "code/modM_MSepsparse.cpp", framework="TMBad", safebounds=FALSE)
+  # dyn.unload( dynlib("code/modM_DMSepsparse"))
+  # compile( "code/modM_DMSepsparse.cpp", framework="TMBad", safebounds=FALSE)
   
-  dyn.unload( dynlib("code/modM_DSep"))
-  compile( "code/modM_DSep.cpp", 
+  dyn.unload( dynlib("code/modM_DMSepUMICS"))
+  compile( "code/modM_DMSepUMICS.cpp", 
            framework="TMBad", safebounds=FALSE)
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modM_DSep  -DTMB_LIB_INIT=R_init_modM_DSep  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modM_DSep.cpp -o code/modM_DSep.o
-  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modM_DSep.so code/modM_DSep.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
+  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/TMB/include" -I"/Library/Frameworks/R.framework/Versions/4.2/Resources/library/RcppEigen/include"  -DTMB_SAFEBOUNDS -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modM_DMSep  -DTMB_LIB_INIT=R_init_modM_DMSep  -DTMBAD_FRAMEWORK  -I/usr/local/include   -fPIC  -Wall -g -O2  -c code/modM_DMSep.cpp -o code/modM_DMSep.o
+  # clang++ -mmacosx-version-min=10.13 -std=gnu++14 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Library/Frameworks/R.framework/Resources/lib -L/usr/local/lib -o code/modM_DMSep.so code/modM_DMSep.o -F/Library/Frameworks/R.framework/.. -framework R -Wl,-framework -Wl,CoreFoundation
   
   # on Idun:
-  # g++ -std=gnu++14 -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/include" -DNDEBUG -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/TMB/include" -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/RcppEigen/include"   -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modM_DSep  -DTMB_LIB_INIT=R_init_modM_DSep  -DTMBAD_FRAMEWORK  -I/cluster/apps/eb/software/OpenSSL/1.1/include -I/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/include -I/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/include -I/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/include -I/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/include -I/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/include -I/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Java/11.0.2/include -I/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/include -I/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/include -I/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include/flexiblas   -fpic  -O2 -ftree-vectorize -march=native -fno-math-errno  -c code/modM_DSep.cpp -o code/modM_DSep.o
-  # g++ -std=gnu++14 -shared -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -L/cluster/apps/eb/software/OpenSSL/1.1/lib64 -L/cluster/apps/eb/software/OpenSSL/1.1/lib -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib64 -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib64 -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Java/11.0.2/lib64 -L/cluster/apps/eb/software/Java/11.0.2/lib -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib64 -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib -L/cluster/apps/eb/software/GCCcore/11.3.0/lib64 -L/cluster/apps/eb/software/GCCcore/11.3.0/lib -o code/modM_DSep.so code/modM_DSep.o -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -lR
-}
-
-if(FALSE) {
-  # test MICS integration points
-  image(cbind(c(data_full$wUrbanMICS)[1:734]*100-2, 4*match(edMICS$Stratum[edMICS$urban], sort(unique(edMICS$Stratum)))/41-2, data_full$X_betaUrbanMICS[1:734,-1]), col = hcl.colors(200, "YlOrRd", rev = TRUE))
-  image(cbind(4*match(edMICS$Stratum[!edMICS$urban], sort(unique(edMICS$Stratum)))/41-2, data_full$X_betaRuralMICS[1:1449,-1]), col = hcl.colors(200, "YlOrRd", rev = TRUE))
-  
-  out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
-  tempXUrb = intPtsMICS$XRur[transformIUrb,]
-  tempXRur = intPtsMICS$XRur[transformIRur,]
-  head(data_full$X_betaRuralMICS)
-  plotWithColor(tempXRur$lon, tempXRur$lat, data_full$X_betaRuralMICS[,2], pch=19, cex=.3)
-  plotMapDat(admFinal, new=FALSE)
-  plotWithColor(tempXRur$lon, tempXRur$lat, data_full$X_betaRuralMICS[,3], pch=19, cex=.3)
-  plotMapDat(admFinal, new=FALSE)
-  plotWithColor(tempXRur$lon, tempXRur$lat, data_full$X_betaRuralMICS[,4], pch=19, cex=.3)
-  plotMapDat(admFinal, new=FALSE)
-  plotWithColor(tempXRur$lon, tempXRur$lat, data_full$X_betaRuralMICS[,5], pch=19, cex=.3)
-  plotMapDat(admFinal, new=FALSE)
-  plotWithColor(tempXRur$lon, tempXRur$lat, log(c(data_full$wRuralMICS)), pch=19, cex=.3)
-  plotMapDat(admFinal, new=FALSE)
-  plot(log(c(data_full$wRuralMICS)), data_full$X_betaRuralMICS[,5])
-  cor(log(c(data_full$wRuralMICS)), data_full$X_betaRuralMICS[,5])
-  
-  allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
-  numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
-  numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
-  numPerStratRur[is.na(numPerStratRur)] = 0
-  names(numPerStratUrb) = allNumPerStrat[1:41,1]
-  names(numPerStratRur) = allNumPerStrat[1:41,1]
-  
-  # get average covariate value for each stratum
-  
-  # check weights
-  image(data_full$wUrbanMICS)
-  image(data_full$wRuralMICS)
-  
-  out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
-  nUrb = nrow(XUrb)/KMICS
-  nRur = nrow(XRur)/KMICS
-  head(XUrb)
-  head(intPtsMICS$XUrb)
-  XUrb[1:20,]
-  
+  # g++ -std=gnu++14 -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/include" -DNDEBUG -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/TMB/include" -I"/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/library/RcppEigen/include"   -DTMB_EIGEN_DISABLE_WARNINGS -DLIB_UNLOAD=R_unload_modM_DMSep  -DTMB_LIB_INIT=R_init_modM_DMSep  -DTMBAD_FRAMEWORK  -I/cluster/apps/eb/software/OpenSSL/1.1/include -I/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/include -I/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/include -I/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/include -I/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/include -I/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/include -I/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Java/11.0.2/include -I/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/include -I/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/include -I/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/include -I/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/include -I/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/include -I/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/include -I/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/include -I/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/include -I/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include -I/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/include/flexiblas   -fpic  -O2 -ftree-vectorize -march=native -fno-math-errno  -c code/modM_DMSep.cpp -o code/modM_DMSep.o
+  # g++ -std=gnu++14 -shared -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -L/cluster/apps/eb/software/OpenSSL/1.1/lib64 -L/cluster/apps/eb/software/OpenSSL/1.1/lib -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libgit2/1.4.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/MPFR/4.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib64 -L/cluster/apps/eb/software/GDAL/3.5.0-foss-2022a/lib -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/nodejs/16.15.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GLPK/5.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ImageMagick/7.1.0-37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/GSL/2.7-GCC-11.3.0/lib -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/UDUNITS/2.2.28-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib64 -L/cluster/apps/eb/software/HDF5/1.12.2-gompi-2022a/lib -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ICU/71.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libsndfile/1.1.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FFTW/3.3.10-GCC-11.3.0/lib -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/NLopt/2.7.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/GMP/6.2.1-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libxml2/2.9.13-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cURL/7.83.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Tk/8.6.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Java/11.0.2/lib64 -L/cluster/apps/eb/software/Java/11.0.2/lib -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/LibTIFF/4.3.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libjpeg-turbo/2.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libpng/1.6.37-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/PCRE2/10.40-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/SQLite/3.38.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/zlib/1.2.12-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/XZ/5.2.5-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/bzip2/1.0.8-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/ncurses/6.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libreadline/8.1.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/cairo/1.17.4-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/libGLU/9.0.2-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Mesa/22.0.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/X11/20220504-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/Xvfb/21.1.3-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib64 -L/cluster/apps/eb/software/pkgconf/1.8.0-GCCcore-11.3.0/lib -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib64 -L/cluster/apps/eb/software/ScaLAPACK/2.2.0-gompi-2022a-fb/lib -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib64 -L/cluster/apps/eb/software/FlexiBLAS/3.2.0-GCC-11.3.0/lib -L/cluster/apps/eb/software/GCCcore/11.3.0/lib64 -L/cluster/apps/eb/software/GCCcore/11.3.0/lib -o code/modM_DMSep.so code/modM_DMSep.o -L/cluster/apps/eb/software/R/4.2.1-foss-2022a/lib64/R/lib -lR
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edMdInputs.RData")
+out = load("savedOutput/global/edM_DMInputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -275,29 +211,36 @@ lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget p
 Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
 QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
 
-# set weights of everything but the first points to be 0
-intPtsDHS$wUrban[,1] = 1
-intPtsDHS$wRural[,1] = 1
-intPtsDHS$wUrban[,-1] = 0
-intPtsDHS$wRural[,-1] = 0
-
 # Specify inputs for TMB ----
 
 ## specify random effects
 rand_effs <- c('alpha', 'beta', 'w_bym2Star', 'u_bym2Star', 
-               'nuggetUrbDHS', 'nuggetRurDHS')
+               'nuggetUrbMICS', 'nuggetRurMICS', 'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data
 
 data_full = list(
-  y_iUrbanDHS=ysUrbDHS, # observed binomial experiment at point i (clust)
+  y_iUrbanMICS=ysUrbMICS, # observed binomial experiment at point i (clust)
+  y_iRuralMICS=ysRurMICS, # 
+  n_iUrbanMICS=nsUrbMICS, # number binomial trials
+  n_iRuralMICS=nsRurMICS, # 
+  # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  # AprojRuralMICS=ARurMICS, # 
+  areaidxlocUrbanMICS=areaidxlocUrbanMICS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
+  areaidxlocRuralMICS=areaidxlocRuralMICS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
+  X_betaUrbanMICS=intPtsMICS$XUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+  X_betaRuralMICS=intPtsMICS$XRur, # 
+  wUrbanMICS=intPtsMICS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
+  wRuralMICS=intPtsMICS$wRural, # 
+  
+  y_iUrbanDHS=ysUrbDHS, # same as above but for DHS survey
   y_iRuralDHS=ysRurDHS, # 
   n_iUrbanDHS=nsUrbDHS, # number binomial trials
   n_iRuralDHS=nsRurDHS, # 
-  # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-  # AprojRuralMICS=ARurMICS, # 
-  areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
-  areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
+  # AprojUrbanDHS=AUrbDHS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+  # AprojRuralDHS=ARurDHS, # 
+  areaidxlocUrbanDHS=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
+  areaidxlocRuralDHS=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
   X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
   X_betaRuralDHS=intPtsDHS$covsRur, # 
   wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -332,7 +275,6 @@ if(FALSE) {
   any(sapply(data_full, anyna))
   sapply(data_full, anyna)
   sapply(data_full, myDim)
-  sapply(data_full, class)
   hist(data_full$y_iUrbanDHS/data_full$n_iUrbanDHS, breaks=50)
   hist(data_full$y_iRuralDHS/data_full$n_iRuralDHS, breaks=50)
   hist(data_full$n_iUrbanDHS-data_full$y_iUrbanDHS, breaks=seq(-0.5, 17.5, by=1))
@@ -354,35 +296,38 @@ if(FALSE) {
 }
 
 # initial parameters
-initUrbP = sum(c(data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanDHS))
-initRurP = sum(c(data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralDHS))
+initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
 initAlpha = logit(initRurP)
 initBeta1 = logit(initUrbP) - initAlpha
 
 tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
                    log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUMICS = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    alpha = initAlpha, # intercept
-                   beta = c(initBeta1, rep(0, ncol(data_full$X_betaUrbanDHS)-1)), 
+                   beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
                    w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
                    nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
 # make TMB fun and grad ----
-# dyn.load( dynlib("code/modM_DSepsparse"))
-dyn.load( dynlib("code/modM_DSep"))
+# dyn.load( dynlib("code/modM_DMSepsparse"))
+dyn.load( dynlib("code/modM_DMSepUMICS"))
 TMB::config(tmbad.sparse_hessian_compress = 1)
 obj <- MakeADFun(data=data_full,
                  parameters=tmb_params,
                  random=rand_effs,
                  hessian=TRUE,
-                 DLL='modM_DSep')
+                 DLL='modM_DMSepUMICS')
 # objFull <- MakeADFun(data=data_full,
 #                      parameters=tmb_params,
 #                      hessian=TRUE,
-#                      DLL='modM_DSep')
+#                      DLL='modM_DMSep')
 
 lower = rep(-10, length(obj[['par']]))
 upper = rep( 10, length(obj[['par']]))
@@ -519,7 +464,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 0.159633333333234 minutes (for intern=FALSE)
+  # optimization took 1123.26701666667 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -533,6 +478,79 @@ if(FALSE) {
   range(tempEig$values)
 }
 
+if(!SD0$pdHess) {
+  thisTMBpar = tmb_params
+  thisTMBpar$log_tauEps = optPar[names(optPar) == "log_tauEps"]
+  
+  map = as.list(factor(c(alpha=1, beta=2:6, log_tau=7, logit_phi=8, log_tauEps=NA)))
+  temp = unlist(map[grepl("beta", names(map))])
+  map[grepl("beta", names(map))] = NULL
+  map$beta = temp
+  map=list(factor(c(log_tauEps=NA)))
+  names(map) = "log_tauEps"
+  objFixed <- MakeADFun(data=data_full,
+                        parameters=tmb_params,
+                        random=rand_effs,
+                        map=map, 
+                        hessian=TRUE,
+                        DLL='modBYM2JitterFusionNugget')
+  testObj = objFixed
+  thisOptPar = optPar[-which(names(optPar) == "log_tauEps")]
+  lower = lower[-which(names(optPar) == "log_tauEps")]
+  upper = upper[-which(names(optPar) == "log_tauEps")]
+  
+  newStartTime = proc.time()[3]
+  for(thisTol in tolSeq) {
+    testObj = objFixed
+    testObj$env$inner.control = list(maxit=1000, tol10=thisTol)
+    testObj$env$tracepar = TRUE
+    print(paste0("optimizing for tol = ", thisTol, "."))
+    opt1 <- optim(par=thisOptPar, fn=funWrapper, gr=grWrapper,
+                  method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+    # opt1 <- optim(par=optPar, fn=funWrapper, 
+    #               hessian = FALSE, control=list(reltol=thisTol))
+    thisOptPar = opt1$par
+    if(!is.null(opt1$message)) {
+      print(paste0("error for tol = ", thisTol, ". Message:"))
+      print(opt1$message)
+      next
+    }
+    else {
+      print(paste0("completed optimization for tol = ", thisTol, ""))
+      
+      ## Get standard errors
+      print("getting standard errors...")
+      sdTime = system.time(
+        SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                             bias.correct = TRUE,
+                             bias.correct.control = list(sd = TRUE))
+      )[3]
+      # SD0
+      print(sdTime/60)
+      # ~97? minutes minutes for intern=FALSE
+      
+      if(SD0$pdHess) {
+        print("Optimization and PD hess calculation done!")
+        break
+      }
+      else {
+        print("Hessan not PD. Rerunning optimization with stricter tol...")
+        
+      }
+    }
+    
+    
+    
+  }
+  thisEndTime = proc.time()[3]
+  sdTime/60
+  thisTotalTime = thisEndTime - newStartTime
+  totalTime = thisEndTime - startTime
+  print(paste0("second optimization took ", thisTotalTime/60, " minutes"))
+  print(paste0("all optimization took ", totalTime/60, " minutes"))
+  # 102.33995 minutes
+}
+
 # opt0 <- nlminb(start       =    obj[['par']],
 #                objective   =    obj[['fn']],
 #                gradient    =    obj[['gr']],
@@ -543,43 +561,22 @@ if(FALSE) {
 # * TMB Posterior Sampling ----
 
 if(FALSE) {
-  funWrapper(optPar)
-  testRep = obj$report(obj$env$last.par)
-  testPar = obj$env$last.par
-  testPar[6:9]= 1
-  testRep = obj$report(testPar)
-  feUrb = testRep$fe_iUrbanMICS
-  feRur = testRep$fe_iRuralMICS
-  latentUrb = testRep$latentFieldUrbMICS
-  latentRur = testRep$latentFieldRurMICS
+  hessTime = system.time(testHess <- hessian(testObj$fn, optPar))[3]
+  hessTime/60
+  # 10.28792 minutes for intern=FALSE
+  eig = eigen(testHess)
+  eig
   
-  out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
-  tempXUrb = intPtsMICS$XUrb[transformIUrb,]
-  tempXRur = intPtsMICS$XRur[transformIRur,]
+  for(i in 1:length(eig$values)) {
+    thisVal = eig$values[i]
+    thisVec = eig$vectors[,i]
+    barplot(eig$vectors[,i], names.arg=names(SD0$par.fixed), 
+            main=paste0("Eigenvector ", i, " with value ", thisVal))
+  }
   
-  pdf("figures/test/edM_dlatent.pdf", width=6, height=6)
-  zlim = range(c(latentUrb, latentRur))
-  plotWithColor(tempXRur$lon, tempXRur$lat, latentRur, pch=19, cex=.3, zlim = zlim)
-  plotWithColor(tempXUrb$lon, tempXUrb$lat, latentUrb, pch=19, cex=.3, add=TRUE)
-  plotMapDat(admFinal, new=FALSE)
-  dev.off()
-  
-  pdf("figures/test/edM_dpredUrban.pdf", width=6, height=6)
-  plotWithColor(tempXRur$lon, tempXRur$lat, tempXRur$urban, pch=19, cex=.3, zlim=c(0,1))
-  plotWithColor(tempXUrb$lon, tempXUrb$lat, tempXUrb$urban, pch=19, cex=.3, add=TRUE, zlim=c(0,1))
-  plotMapDat(admFinal, new=FALSE)
-  dev.off()
-  
-  pdf("figures/test/edM_dempiricalProp.pdf", width=6, height=6)
-  plotWithColor(jitter(tempXRur$lon, amount=.08), jitter(tempXRur$lat, amount=.08), rep(data_full$y_iRuralMICS/data_full$n_iRuralMICS, KMICS), pch=19, cex=c(data_full$wRuralMICS), zlim=c(0,1))
-  plotWithColor(jitter(tempXUrb$lon, amount=.08), jitter(tempXUrb$lat, amount=.08), rep(data_full$y_iUrbanMICS/data_full$n_iUrbanMICS, KMICS), pch=19, cex=c(data_full$wUrbanMICS), add=TRUE, zlim=c(0,1))
-  plotMapDat(admFinal, new=FALSE)
-  dev.off()
-  
-  pdf("figures/test/edM_dtrueUrban.pdf", width=6, height=6)
-  quilt.plot(popMatNGAThresh$lon, popMatNGAThresh$lat, popMatNGAThresh$urban, nx=259, ny=212)
-  plotMapDat(admFinal, new=FALSE)
-  dev.off()
+  testObj$fn(SD0$par.fixed)
+  testObj$fn(SD0$par.fixed + eig$vectors[,9]*.05)
+  testObj$fn(SD0$par.fixed - eig$vectors[,9]*.05)
 }
 
 
@@ -587,10 +584,10 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_dSep.RData")
-out = load("savedOutput/ed/fitM_dSep.RData")
+save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DMSep.RData")
+out = load("savedOutput/ed/fitM_DMSep.RData")
 
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 # \begin{table}[ht]
 # \centering
@@ -598,30 +595,48 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.76 & -1.97 & -1.90 & -1.63 & -1.56 \\ 
-# urb & 0.32 & 0.08 & 0.17 & 0.48 & 0.56 \\ 
-# access & -0.19 & -0.30 & -0.26 & -0.12 & -0.09 \\ 
-# elev & 0.14 & 0.01 & 0.06 & 0.23 & 0.27 \\ 
-# distRiversLakes & 0.09 & -0.04 & 0.01 & 0.17 & 0.21 \\ 
-# popValsNorm & 0.82 & 0.62 & 0.69 & 0.95 & 1.02 \\ 
-# sigmaSq & 0.63 & 0.37 & 0.44 & 0.84 & 1.00 \\ 
-# phi & 0.85 & 0.48 & 0.65 & 0.97 & 0.99 \\ 
-# sigmaEpsSq & 1.42 & 1.23 & 1.29 & 1.56 & 1.62 \\  
+# (Int) & -1.80 & -1.96 & -1.91 & -1.68 & -1.61 \\ 
+# urb & 0.94 & 0.77 & 0.83 & 1.05 & 1.11 \\ 
+# access & -0.04 & -0.13 & -0.10 & 0.01 & 0.05 \\ 
+# elev & 0.16 & 0.01 & 0.06 & 0.26 & 0.31 \\ 
+# distRiversLakes & -0.01 & -0.17 & -0.11 & 0.10 & 0.16 \\ 
+# popValsNorm & 0.83 & 0.63 & 0.71 & 0.96 & 1.03 \\ 
+# sigmaSq & 1.36 & 1.00 & 1.10 & 1.63 & 1.81 \\ 
+# phi & 0.90 & 0.69 & 0.80 & 0.98 & 0.99 \\ 
+# sigmaEpsSq & 0.50 & 0.42 & 0.45 & 0.56 & 0.59 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsM_dSep.RData")
-out = load("savedOutput/ed/gridPredsM_dSep.RData")
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.75 & -1.92 & -1.87 & -1.63 & -1.57 \\ 
+# urb & 0.37 & 0.21 & 0.26 & 0.48 & 0.53 \\ 
+# access & -0.12 & -0.20 & -0.18 & -0.06 & -0.04 \\ 
+# elev & 0.20 & 0.05 & 0.10 & 0.30 & 0.34 \\ 
+# distRiversLakes & 0.01 & -0.14 & -0.09 & 0.12 & 0.17 \\ 
+# popValsNorm & 0.86 & 0.68 & 0.74 & 0.99 & 1.05 \\ 
+# sigmaSq & 1.34 & 1.04 & 1.13 & 1.57 & 1.69 \\ 
+# phi & 0.83 & 0.60 & 0.69 & 0.93 & 0.96 \\ 
+# sigmaEpsSq & 0.42 & 0.33 & 0.36 & 0.48 & 0.51 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+save(gridPreds, file="savedOutput/ed/gridPredsM_DMSep.RData")
+out = load("savedOutput/ed/gridPredsM_DMSep.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_dSep.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_dSep.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_dSep.RData")
-out = load("savedOutput/ed/stratPredsM_dSep.RData")
-out = load("savedOutput/ed/admin1PredsM_dSep.RData")
-out = load("savedOutput/ed/admin2PredsM_dSep.RData")
+save(stratPreds, file="savedOutput/ed/stratPredsM_DMSep.RData")
+save(admin1Preds, file="savedOutput/ed/admin1PredsM_DMSep.RData")
+save(admin2Preds, file="savedOutput/ed/admin2PredsM_DMSep.RData")
+out = load("savedOutput/ed/stratPredsM_DMSep.RData")
+out = load("savedOutput/ed/admin1PredsM_DMSep.RData")
+out = load("savedOutput/ed/admin2PredsM_DMSep.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -645,15 +660,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_dSep")
+          plotNameRoot="edFusionM_DMSep")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_dSep", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_dSep", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_dSep", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin2")
 
 
