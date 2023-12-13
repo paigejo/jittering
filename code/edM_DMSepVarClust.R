@@ -466,7 +466,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 1123.26701666667 minutes (for intern=FALSE)
+  # optimization took 52.6902833333333 minutes (for intern=FALSE)
 }
 
 if(FALSE) {

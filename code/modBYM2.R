@@ -1145,7 +1145,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
                          sigmaEpsSqRMICS_tmb_draws, 
                          sigmaEpsSqUDHS_tmb_draws, 
                          sigmaEpsSqRDHS_tmb_draws)
-        row.names(fixedMat)[(nrow(fixedMat)-1):nrow(fixedMat)] = c("sigmaEpsSqUMICS", "sigmaEpsSqRMICS", 
+        row.names(fixedMat)[(nrow(fixedMat)-3):nrow(fixedMat)] = c("sigmaEpsSqUMICS", "sigmaEpsSqRMICS", 
                                                                    "sigmaEpsSqUDHS", "sigmaEpsSqRDHS")
       }
       

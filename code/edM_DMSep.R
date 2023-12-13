@@ -463,7 +463,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 1123.26701666667 minutes (for intern=FALSE)
+  # optimization took 29.2850000000001 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -594,15 +594,15 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.80 & -1.96 & -1.91 & -1.68 & -1.61 \\ 
-# urb & 0.94 & 0.77 & 0.83 & 1.05 & 1.11 \\ 
-# access & -0.04 & -0.13 & -0.10 & 0.01 & 0.05 \\ 
-# elev & 0.16 & 0.01 & 0.06 & 0.26 & 0.31 \\ 
-# distRiversLakes & -0.01 & -0.17 & -0.11 & 0.10 & 0.16 \\ 
-# popValsNorm & 0.83 & 0.63 & 0.71 & 0.96 & 1.03 \\ 
-# sigmaSq & 1.36 & 1.00 & 1.10 & 1.63 & 1.81 \\ 
-# phi & 0.90 & 0.69 & 0.80 & 0.98 & 0.99 \\ 
-# sigmaEpsSq & 0.50 & 0.42 & 0.45 & 0.56 & 0.59 \\ 
+# (Int) & -1.29 & -1.46 & -1.40 & -1.18 & -1.12 \\
+# urb & 1.02 & 0.84 & 0.91 & 1.14 & 1.19 \\
+# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.02 \\
+# elev & 0.05 & -0.03 & 0.00 & 0.11 & 0.13 \\
+# distRiversLakes & 0.02 & -0.05 & -0.03 & 0.07 & 0.10 \\
+# popValsNorm & 0.44 & 0.29 & 0.34 & 0.54 & 0.59 \\
+# sigmaSq & 0.48 & 0.28 & 0.34 & 0.63 & 0.75 \\
+# phi & 0.82 & 0.44 & 0.61 & 0.96 & 0.98 \\
+# sigmaEpsSq & 1.48 & 1.30 & 1.36 & 1.60 & 1.68 \\
 # \hline
 # \end{tabular}
 # \end{table}
