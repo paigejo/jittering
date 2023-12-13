@@ -1794,7 +1794,14 @@ getValidationFit = function(fold,
   }
   
   # initialize with simple/unadjusted model ----
-  optParStart = c(0, 0, 0)
+  if(!varClust) {
+    optParStart = c(0, 0, 0)
+  } else if(model %in% c("Md", "MD")) {
+    optParStart = c(0, 0, 0, 0)
+  } else if(model %in% c("Mdm", "MDM")) {
+    optParStart = c(0, 0, 0, 0)
+  }
+  
   if(((model == "Md2") || (model == "Md")) && regenModFit) {
     # now set the initial parameters
     print("Initializing optimization for the unadjusted DHS model")
@@ -2434,7 +2441,15 @@ getValidationFit = function(fold,
       # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
       tolSeq = 1e-06
       testObj = obj
-      optPar = optParStart
+      if(!varClust) {
+        optPar = optParStart
+      } else if(model %in% c("Md", "MD")) {
+        optPar = optParStart
+      } else if(model %in% c("Mdm", "MDM")) {
+        # initialize MICS cluster variance at DHS cluster variance
+        optPar = c(optParStart[1:2], optParStart[3:4], optParStart[3:4])
+      }
+      
       if(fromOptPar) {
         if(file.exists(paste0("savedOutput/validation/folds/optPar", fnameRoot, "_fold", fold, ".RData"))) {
           # load optPar (replacing the default value) from file if requested
