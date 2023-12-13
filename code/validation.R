@@ -1782,7 +1782,7 @@ getValidationFit = function(fold,
       whichI = which(names(dat$MakeADFunInputs$parameters) == "log_tauEps")
       newPar = c(dat$MakeADFunInputs$parameters[1:(whichI-1)], 
                  tauEpsPar, 
-                 dat$MakeADFunInputs$parameters[whichI:length(dat$MakeADFunInputs$parameters)])
+                 dat$MakeADFunInputs$parameters[(whichI+1):length(dat$MakeADFunInputs$parameters)])
       dat$MakeADFunInputs$parameters = newPar
     }
   }
@@ -1885,7 +1885,7 @@ getValidationFit = function(fold,
       whichI = which(names(tmb_params) == "log_tauEps")
       newPar = c(tmb_params[1:(whichI-1)], 
                  tauEpsPar, 
-                 tmb_params[whichI:length(tmb_params)])
+                 tmb_params[(whichI+1):length(tmb_params)])
       tmb_params = newPar
     }
   } else if((model %in% c("MD", "Mdm", "MDM", "MD2", "Mdm2", "MDM2")) && regenModFit && !fromOptPar) {
@@ -1924,7 +1924,7 @@ getValidationFit = function(fold,
       whichI = which(names(tmb_paramsStart) == "log_tauEps")
       newPar = c(tmb_paramsStart[1:(whichI-1)], 
                  tauEpsPar, 
-                 tmb_paramsStart[whichI:length(tmb_paramsStart)])
+                 tmb_paramsStart[(whichI+1):length(tmb_paramsStart)])
       tmb_paramsStart = newPar
     }
     
@@ -2175,7 +2175,7 @@ getValidationFit = function(fold,
       whichI = which(names(tmb_params) == "log_tauEps")
       newPar = c(tmb_params[1:(whichI-1)], 
                  tauEpsPar, 
-                 tmb_params[whichI:length(tmb_params)])
+                 tmb_params[(whichI+1):length(tmb_params)])
       tmb_params = newPar
     }
     
