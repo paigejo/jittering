@@ -2826,7 +2826,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       epsilon_tmb_draws = wStar - reduceU
     }
     
-    hasNugget = "log_tauEps" %in% row.names(summary(SD0))
+    hasNugget = grepl("log_tauEps", row.names(summary(SD0)))
     if(hasNugget) {
       URclust = "log_tauEpsUrb" %in% parnames
       if(!varClust) {
