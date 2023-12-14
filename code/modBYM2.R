@@ -985,11 +985,11 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   if(!is.null(SD0)) {
     alpha = SD0$par.fixed[1]
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
-    beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
     parnames = names(SD0$par.fixed)
     hasNugget = ("log_tauEps" %in% parnames) || ("log_tauEpsUrb" %in% parnames) || ("log_tauEpsUDHS" %in% parnames)
     URclust = "log_tauEpsUrb" %in% parnames
     varClust = "log_tauEpsUDHS" %in% parnames
+    hasUrbDiffMICS = "diffUrbMICS" %in% names(SD0$par.random)
   } else {
     allPar = obj$env$last.par
     alpha = allPar[grepl("alpha", names(allPar))]
@@ -1070,6 +1070,10 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
     phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
     
+    if(hasUrbDiffMICS) {
+      urbDiffDraws = t.draws[parnames == 'diffUrbMICS',]
+    }
+    
     # get the spatial effect
     if(!sep) {
       epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
@@ -1104,15 +1108,31 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     includeBeta = any(parnames == "beta")
     
     if(includeBeta) {
-      fixedMat = rbind(alpha_tmb_draws, 
-                       beta_tmb_draws, 
-                       sigmaSq_tmb_draws, 
-                       phi_tmb_draws)
-      betaNames = colnames(Xmat)
-      row.names(fixedMat) = c("(Int)", 
-                              betaNames, 
-                              "sigmaSq", 
-                              "phi")
+      if(!hasUrbDiffMICS) {
+        fixedMat = rbind(alpha_tmb_draws, 
+                         beta_tmb_draws, 
+                         sigmaSq_tmb_draws, 
+                         phi_tmb_draws)
+        betaNames = colnames(Xmat)
+        row.names(fixedMat) = c("(Int)", 
+                                betaNames, 
+                                "sigmaSq", 
+                                "phi")
+      } else {
+        fixedMat = rbind(alpha_tmb_draws, 
+                         beta_tmb_draws[1:2,], 
+                         urbDiffDraws, 
+                         beta_tmb_draws[3:nrow(beta_tmb_draws),], 
+                         sigmaSq_tmb_draws, 
+                         phi_tmb_draws)
+        betaNames = colnames(Xmat)
+        row.names(fixedMat) = c("(Int)", 
+                                betaNames, 
+                                "urbDiffMICS", 
+                                "sigmaSq", 
+                                "phi")
+      }
+      
     } else {
       fixedMat = rbind(alpha_tmb_draws, 
                        sigmaSq_tmb_draws, 

@@ -179,6 +179,7 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   load("savedOutput/global/intPtsDHS.RData")
   # load("savedOutput/global/intPtsMICS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -359,6 +360,7 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   load("savedOutput/global/intPtsDHS.RData")
   # load("savedOutput/global/intPtsMICS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -527,6 +529,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   load("savedOutput/global/intPtsDHS.RData")
   # load("savedOutput/global/intPtsMICS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -1094,6 +1097,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   load("savedOutput/global/intPtsDHS.RData")
   # load("savedOutput/global/intPtsMICS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
@@ -2923,7 +2927,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     #   startIs = seq(1, ncol(X2), by=nColMax)
     #   do.call("cbind", lapply(startIs, matMultChunkHelper))
     # }
-    
+    browser()
     clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
     # clustIntDrawsUrb <- as.matrix(matMultChunk(bigAurb, epsilon_tmb_draws))
     rm(bigAurb)
@@ -2937,7 +2941,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
     
     # convert predictions to probability scale
-    # browser()
+    browser()
     if(!hasNugget) {
       probIntDrawsUrb = expit(clustIntDrawsUrb)
       probIntDrawsRur = expit(clustIntDrawsRur)
@@ -2949,6 +2953,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       clustIDRur = rep(1:nClustRur, Krur)
       # probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
       # probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
+      browser()
       if(!varClust) {
         logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
           thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
@@ -3004,7 +3009,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
         })
         probIntDrawsRur = expit(logitIntDrawsRur)
       }
-      
+      browser()
     }
     
     # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)
@@ -3020,7 +3025,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     zeroCols = seq(nrow(Wurb)+1, ncol(Wurb), by=nrow(Wurb)+1)
     Wurb = Wurb[,-zeroCols]
     probDrawsUrb = Wurb %*% probIntDrawsUrb
-    
+    browser()
     # buildRowRur = c(rep(1, Krur), rep(0, nrow(Xrur)))
     # Wrur = matrix(c(rep(buildRowRur, times=length(yRur)-1), rep(1, Krur)), byrow=TRUE, ncol=nrow(Xrur))
     # Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
@@ -3042,7 +3047,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # calculate central prediction before binomial variation is added in
     predsUrb = rowMeans(probDrawsUrb)
     predsRur = rowMeans(probDrawsRur)
-    
+    browser()
     # add in binomial variation
     probDrawsUrb = addBinomialVar(probDrawsUrb, nUrb)
     probDrawsRur = addBinomialVar(probDrawsRur, nRur)
@@ -3518,8 +3523,8 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     names(parTabsAvgMICS) = models
     
     parTabsAvg = lapply(1:length(models), function (i) {
-      rNames = row.names(parTabsAvgDHS[[1]])
-      cNames = colnames(parTabsAvgDHS[[1]])
+      rNames = row.names(parTabsAvgDHS[[i]])
+      cNames = colnames(parTabsAvgDHS[[i]])
       thisParTab = abind(parTabsAvgDHS[[i]], parTabsAvgMICS[[i]], along=3)
       thisParTab = apply(thisParTab, 1:2, mean)
       

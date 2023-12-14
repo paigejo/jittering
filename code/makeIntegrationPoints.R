@@ -2611,6 +2611,44 @@ getBestResMICS = function(startRes=25, tolMean=.01, tolMax=.05) {
        allAbsMaxPctErrorSD=allAbsMaxPctErrorSD)
 }
 
-
+straightenMICS = function(intPtsMICS) {
+  admLevel = ifelse(nrow(intPtsMICS$wUrban) == 41, "admFinal", "adm2")
+  
+  if(admLevel == "adm2") {
+    areaNameVar = "NAME_2"
+    admMap = adm2
+    # nothing to do here
+    return(intPtsMICS)
+  } else {
+    areaNameVar = "NAME_FINAL"
+    admMap = admFinal
+  }
+  
+  res = ncol(intPtsMICS$wUrban)
+  nAreas = nrow(intPtsMICS$wUrban)
+  
+  trueOrder = admMap[[areaNameVar]]
+  thisOrder = intPtsMICS$strataMICS
+  sortI = match(thisOrder, trueOrder)
+  thisIntI = rep(1:res, each=nAreas)
+  thisAreaI = rep(order(sortI), times=res)
+  trueIntI = thisIntI
+  trueAreaI = rep(1:nAreas, times=res)
+  thisTabI = data.frame(intI=thisIntI, areaI=thisAreaI)
+  trueTabI = data.frame(intI=trueIntI, areaI=trueAreaI)
+  sortIlong = matchTableRows(thisTabI, trueTabI)
+  all.equal(unlist(thisTabI[sortIlong,]), unlist(trueTabI))
+  
+  intPtsMICS$XUrb = intPtsMICS$XUrb[sortIlong,]
+  intPtsMICS$XRur = intPtsMICS$XRur[sortIlong,]
+  intPtsMICS$wUrban = intPtsMICS$wUrban[sortI,]
+  intPtsMICS$wRural = intPtsMICS$wRural[sortI,]
+  
+  # just so I know that the main parts are straightened despite strata being 
+  # listed as being in the wrong order
+  intPtsMICS$straightened = TRUE
+  
+  intPtsMICS
+}
 
 

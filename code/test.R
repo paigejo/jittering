@@ -1,5 +1,6 @@
 # some tests
-
+out = load("savedOutput/validation/edVal.RData")
+out = load("savedOutput/validation/edMICSval.RData")
 
 nUrban = length(ysUrban)
 is = 1:nUrban
@@ -132,3 +133,174 @@ out = out[match(out$Group.1, adm1$NAME_1),]
 pdf("figures/test/nMICSadm1.pdf", width=6, height=6)
 plotMapDat(adm1, out$x, varAreas=adm1$NAME_1, regionNames=adm1$NAME_1, asp=1, cols=predCols)
 dev.off()
+
+
+
+# check out of sample Xurb for MICS dataset, fold 1
+out = load("~/git/jittering/savedOutput/validation/datM_DM.RData")
+out
+dat = datMDM[[11]]
+thisEdMICS = dat$edMICSOutOfSample
+thisEdMICSUrb = thisEdMICS[thisEdMICS$urban,]
+Xurb = dat$dataOutOfSample$X_betaUrbanMICS
+nUrb = nrow(thisEdMICSUrb)
+ys = dat$edMICSOutOfSample$ys[dat$edMICSOutOfSample$urban]
+ns = dat$edMICSOutOfSample$ns[dat$edMICSOutOfSample$urban]
+
+head(Xurb)
+res=100
+out=load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+head(intPtsMICS$XUrb)
+head(intPtsMICS$XUrb[1:41,c(3,4,7,9,10,12:14,16)])
+trueXurb = intPtsMICS$XUrb[,c(3,4,7,9,10,12:14,16)]
+
+allNumPerStrat = aggregate(thisEdMICS$Stratum, by=list(strat=thisEdMICS$Stratum, urb=thisEdMICS$urban), FUN=length, drop=FALSE)
+numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
+numPerStratUrb[is.na(numPerStratUrb)] = 0
+numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
+numPerStratRur[is.na(numPerStratRur)] = 0
+
+thisI = unlist(sapply(1:41, function(i) {rep(i, each=numPerStratUrb[i])}))
+head(trueXurb[thisI,], 10)
+head(Xurb, 10)
+
+head(trueXurb[thisI+41,], 10)
+Xurb[(nUrb+1):(nUrb+10),]
+
+
+# Now check weights
+wUrbTrue = intPtsMICS$wUrban
+wUrb = dat$dataOutOfSample$wUrbanMICS
+
+wUrb[1:5,1:5]
+wUrbTrue[thisI,][1:5,1:5]
+all.equal(wUrb, wUrbTrue[thisI,])
+
+Aurb = dat$dataOutOfSample$AprojUrbanMICS
+stratumI = apply(Aurb, 1, function(x) {which(x == 1)})
+stratum = admFinal$NAME_FINAL[stratumI]
+
+stratumTrue = trueXurb[thisI,]$strat
+all.equal(stratum, stratumTrue)
+
+# check ys, ns
+sum(edMICSval$ys[(edMICSval$fold == 1) & (edMICSval$urban)])/sum(edMICSval$ns[(edMICSval$fold == 1) & (edMICSval$urban)])
+sum(ys)/sum(ns)
+
+# Now check in sample covariates
+
+thisEdMICS = dat$edMICSInSample
+thisEdMICSUrb = thisEdMICS[thisEdMICS$urban,]
+Xurb = dat$MakeADFunInputs$data$X_betaUrbanMICS
+nUrb = nrow(thisEdMICSUrb)
+ys = thisEdMICS$ys[thisEdMICS$urban]
+ns = thisEdMICS$ns[thisEdMICS$urban]
+
+head(Xurb)
+res=100
+out=load(paste0("savedOutput/global/intPtsMICS_", res, "_adm2Cov.RData"))
+head(intPtsMICS$XUrb)
+head(intPtsMICS$XUrb[1:41,c(3,4,7,9,10,12:14,16)])
+trueXurb = intPtsMICS$XUrb[,c(3,4,7,9,10,12:14,16)]
+
+allNumPerStrat = aggregate(thisEdMICS$Stratum, by=list(strat=thisEdMICS$Stratum, urb=thisEdMICS$urban), FUN=length, drop=FALSE)
+numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
+numPerStratUrb[is.na(numPerStratUrb)] = 0
+numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
+numPerStratRur[is.na(numPerStratRur)] = 0
+
+thisI = unlist(sapply(1:41, function(i) {rep(i, each=numPerStratUrb[i])}))
+head(trueXurb[thisI,], 10)
+head(Xurb, 10)
+
+head(trueXurb[thisI+41,], 10)
+Xurb[(nUrb+1):(nUrb+10),]
+
+all.equal(as.matrix(Xurb[1:nUrb,2:5]), as.matrix(trueXurb[thisI,c(6:9)]))
+all.equal(as.matrix(Xurb[1:nUrb + nUrb,2:5]), as.matrix(trueXurb[thisI+41,c(6:9)]))
+all.equal(as.matrix(Xurb[1:nUrb + nUrb*(res-1),2:5]), as.matrix(trueXurb[thisI+41*(res-1),c(6:9)]))
+
+# check weights
+
+wUrb = dat$MakeADFunInputs$data$wUrbanMICS
+
+wUrb[1:5,1:5]
+wUrbTrue[thisI,][1:5,1:5]
+all.equal(wUrb, wUrbTrue[thisI,])
+
+Aurb = dat$MakeADFunInputs$data$AprojUrbanMICS
+stratumI = apply(Aurb, 1, function(x) {which(x == 1)})
+stratum = admFinal$NAME_FINAL[stratumI]
+
+stratumTrue = trueXurb[thisI,]$strat
+all.equal(stratum, stratumTrue)
+
+# check ys, ns
+sum(edMICSval$ys[edMICSval$fold == 1])/sum(edMICSval$ns[edMICSval$fold == 1])
+
+# check all covariates
+
+trueXurb = intPtsMICS$XUrb[,c(3,4,7,9,10,12:14,16)]
+head(trueXurb)
+predScale = makeBlueGreenYellowSequentialColors(64)
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$access, pch=19, cex=.3, colScale=predScale)
+plotMapDat(admFinal, new=FALSE)
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$access, pch=19, cex=.3, colScale=predScale, add=TRUE)
+
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$elev, pch=19, cex=.3, colScale=predScale)
+plotMapDat(admFinal, new=FALSE)
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$elev, pch=19, cex=.3, colScale=predScale, add=TRUE)
+
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$normPop, pch=19, cex=.3, colScale=predScale)
+plotMapDat(admFinal, new=FALSE)
+plotWithColor(trueXurb$lon, trueXurb$lat, trueXurb$normPop, pch=19, cex=.3, colScale=predScale, add=TRUE)
+
+edPixelI = numeric(nrow(edVal))
+for(i in 1:nrow(edVal)) {
+  print(paste0("observation ", i, "/", nrow(edVal)))
+  thisAdm2 = edVal[i,]$subarea
+  popMatSubset = which(popMatNGAThresh$subarea == thisAdm2)
+  thisPopMat = popMatNGAThresh[popMatSubset,]
+  dists = rdist(cbind(edVal[i,]$east, edVal[i,]$north), cbind(thisPopMat$east, thisPopMat$north))
+  edPixelI[i] = popMatSubset[which.min(dists)]
+}
+pixelUrb = popMatNGAThresh[edPixelI,]$urban
+equalClassification = pixelUrb == edVal$urban
+mean(equalClassification) # 0.8462654
+mean(equalClassification[edVal$urban]) # 0.8260105
+mean(equalClassification[!edVal$urban]) # 0.8604938
+mean(equalClassification[pixelUrb]) # 0.806175
+mean(equalClassification[!pixelUrb]) # 0.8756281
+
+
+plotWithColor(edVal$lon, edVal$lat, equalClassification, colScale=c("red", "green"), pch=19, cex=.4, 
+              xlab="longitude", ylab="latitude")
+plotMapDat(admFinal, new=FALSE)
+plotWithColor(edVal$lon, edVal$lat, equalClassification, colScale=c("red", "green"), pch=19, cex=.4, add=TRUE)
+
+plotWithColor(edVal$lon[edVal$urban], edVal$lat[edVal$urban], equalClassification[edVal$urban], colScale=c("red", "green"), pch=19, cex=.4, 
+              xlab="longitude", ylab="latitude")
+plotMapDat(admFinal, new=FALSE)
+plotWithColor(edVal$lon[edVal$urban], edVal$lat[edVal$urban], equalClassification[edVal$urban], colScale=c("red", "green"), pch=19, cex=.4, add=TRUE)
+
+# load covariates at prediction locations
+LLcoords = cbind(popMatNGAThresh[edPixelI,]$lon, popMatNGAThresh[edPixelI,]$lat)
+Xmat = getDesignMat(LLcoords, normalized = TRUE)
+
+out = load("savedOutput/global/popMeanSDCal.RData")
+popMean = popMeanCalThresh
+popSD = popSDCalThresh
+popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+
+plot(popValsNorm, equalClassification)
+plot(popValsNorm, edVal$urban)
+plot(Xmat[,4], equalClassification)
+plot(Xmat[,4], edVal$urban)
+plot(Xmat[,5], equalClassification)
+plot(Xmat[,5], edVal$urban)
+plot(Xmat[,6], equalClassification)
+plot(Xmat[,6], edVal$urban)
+tempTab = data.frame(pop=popValsNorm, access=Xmat[,4], elev=Xmat[,5], distRiversLakes=Xmat[,6], 
+                     equalClass=equalClassification, pixelUrb=pixelUrb)
+pairs(tempTab, pch=19, cex=.6, col=rgb(0,0,0,.1))
+glm(edVal$urban ~ popValsNorm, family=binomial)
