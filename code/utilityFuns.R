@@ -1952,12 +1952,10 @@ getDynlibs = function() {
 }
 
 # if tab2 is just tab1 with rows scrambled, then:
-# tab1[matchTableRows(tab1, tab2),] == tab2
+# tab2[matchTableRows(tab1, tab2),] == tab1
 matchTableRows = function(tab1, tab2) {
   require(prodlim)
-  # For some reason the ordering of row.match is opposite of the ordering of 
-  # the argument of the match function
-  apply(as.matrix(tab2), 1, function(x) {row.match(x,tab1)})
-  
+  # apply(tab2, 1, function(x) {row.match(x,tab1)})
+  row.match(tab1, tab2)
 }
 

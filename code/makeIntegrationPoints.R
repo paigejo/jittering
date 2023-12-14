@@ -2629,24 +2629,35 @@ straightenMICS = function(intPtsMICS) {
   
   trueOrder = admMap[[areaNameVar]]
   thisOrder = intPtsMICS$strataMICS
-  sortI = match(thisOrder, trueOrder)
+  # sortI = match(thisOrder, trueOrder)
+  sortI = match(trueOrder, thisOrder)
+  
+  wUrban = intPtsMICS$wUrban[sortI,]
+  wRural = intPtsMICS$wRural[sortI,]
+  # which(rowSums(intPtsMICS$wRural) == 0)
+  # which(rowSums(wRural) == 0)
+  # all.equal(thisOrder[sortI], trueOrder)
+  
   thisIntI = rep(1:res, each=nAreas)
-  thisAreaI = rep(order(sortI), times=res)
+  thisAreaI = rep(thisOrder, times=res)
   trueIntI = thisIntI
-  trueAreaI = rep(1:nAreas, times=res)
+  trueAreaI = rep(trueOrder, times=res)
   thisTabI = data.frame(intI=thisIntI, areaI=thisAreaI)
   trueTabI = data.frame(intI=trueIntI, areaI=trueAreaI)
-  sortIlong = matchTableRows(thisTabI, trueTabI)
-  all.equal(unlist(thisTabI[sortIlong,]), unlist(trueTabI))
+  sortIlong = matchTableRows(trueTabI, thisTabI)
+  # all.equal(unlist(thisTabI[sortIlong,]), unlist(trueTabI))
   
-  intPtsMICS$XUrb = intPtsMICS$XUrb[sortIlong,]
-  intPtsMICS$XRur = intPtsMICS$XRur[sortIlong,]
-  intPtsMICS$wUrban = intPtsMICS$wUrban[sortI,]
-  intPtsMICS$wRural = intPtsMICS$wRural[sortI,]
+  XUrb = intPtsMICS$XUrb[sortIlong,]
+  XRur = intPtsMICS$XRur[sortIlong,]
   
   # just so I know that the main parts are straightened despite strata being 
   # listed as being in the wrong order
   intPtsMICS$straightened = TRUE
+  
+  intPtsMICS$wUrban = wUrban
+  intPtsMICS$wRural = wRural
+  intPtsMICS$XUrb = XUrb
+  intPtsMICS$XRur = XRur
   
   intPtsMICS
 }
