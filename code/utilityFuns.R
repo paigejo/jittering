@@ -1947,6 +1947,7 @@ wtdSD = function(x, weights=NULL, na.rm=FALSE,
   sqrt(varEst)
 }
 
+# dyn.unload(dynlib("code/"))
 getDynlibs = function() {
   getLoadedDLLs()
 }
@@ -1958,4 +1959,24 @@ matchTableRows = function(tab1, tab2) {
   # apply(tab2, 1, function(x) {row.match(x,tab1)})
   row.match(tab1, tab2)
 }
+
+sortByCol = function(tab, colName, uniqueOrder, returnIndices=FALSE) {
+  
+  thisOrder = tab[[colName]]
+  inds = c()
+  for(i in 1:length(uniqueOrder)) {
+    thisVal = uniqueOrder[i]
+    inds = c(inds, which(thisOrder == thisVal))
+  }
+  newTab = tab[inds,]
+  
+  if(returnIndices) {
+    list(tab=newTab, inds=inds)
+  } else {
+    newTab
+  }
+}
+
+
+
 

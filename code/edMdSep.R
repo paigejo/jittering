@@ -43,9 +43,10 @@ if(FALSE) {
   
   out = load("savedOutput/global/intPtsDHS.RData")
   out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
-  AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
+  AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
+  ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
   
   # AUrbDHS = makeApointToArea(rep(ed$subarea[ed$urban], times=KDHSurb), adm2$NAME_2) # 775 x 6259 nArea x nObsUrb
   # ARurDHS = makeApointToArea(rep(ed$subarea[!ed$urban], times=KDHSrur), adm2$NAME_2) # 775 x 12960
@@ -55,9 +56,22 @@ if(FALSE) {
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
+  
+  # reorder allNumPerStrat based on area ordering in admFinal
+  trueTab = data.frame(strat=rep(admFinal$NAME_FINAL, times=2), urb=allNumPerStrat$urb)
+  sortI = matchTableRows(trueTab, allNumPerStrat[,-3])
+  # all.equal(unlist(trueTab), unlist(allNumPerStrat[sortI,-3]))
+  allNumPerStrat = allNumPerStrat[sortI,]
   numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
   numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
   numPerStratRur[is.na(numPerStratRur)] = 0
+  
+  # reorder dataset to have correct area ordering
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
+  edMICSval = sortByRow(edMICSval, "Stratum", admFinal$NAME_FINAL)
   
   # first extract only the relevant covariates
   # XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
@@ -307,6 +321,14 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
+usePixelUrb = FALSE
+if(usePixelUrb) {
+  # in this case, use the same jittering distribution, but adjust the covariate 
+  # to be pixel urbanicity
+  data_full$X_betaUrbanMICS[!pixelUrb[edVal$urb],1] = 0
+  data_full$X_betaRuralMICS[pixelUrb[!edVal$urb],1] = 1
+}
+
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modMdSepsparse"))
 dyn.load( dynlib("code/modM_DSep"))
@@ -520,7 +542,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 16.8962833333334 minutes (for intern=FALSE)
+  # optimization took 0.228033333333345 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -713,7 +735,7 @@ out = load("savedOutput/ed/fitMdSep.RData")
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 
 # \begin{table}[ht]
@@ -722,15 +744,15 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2",
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.77 & -1.96 & -1.89 & -1.64 & -1.57 \\ 
-# urb & 0.30 & 0.07 & 0.15 & 0.45 & 0.53 \\ 
-# access & -0.19 & -0.29 & -0.26 & -0.12 & -0.09 \\ 
-# elev & 0.17 & 0.02 & 0.07 & 0.28 & 0.33 \\ 
-# distRiversLakes & 0.04 & -0.11 & -0.06 & 0.14 & 0.21 \\ 
-# popValsNorm & 0.81 & 0.60 & 0.67 & 0.96 & 1.02 \\ 
-# sigmaSq & 1.00 & 0.75 & 0.82 & 1.19 & 1.33 \\ 
-# phi & 0.93 & 0.75 & 0.85 & 0.99 & 0.99 \\ 
-# sigmaEpsSq & 0.93 & 0.77 & 0.82 & 1.04 & 1.10 \\ 
+# (Int) & -1.76 & -1.97 & -1.91 & -1.62 & -1.53 \\ 
+# urb & 0.32 & 0.09 & 0.17 & 0.48 & 0.57 \\ 
+# access & -0.19 & -0.30 & -0.26 & -0.13 & -0.09 \\ 
+# elev & 0.14 & 0.01 & 0.06 & 0.23 & 0.27 \\ 
+# distRiversLakes & 0.09 & -0.03 & 0.01 & 0.17 & 0.21 \\ 
+# popValsNorm & 0.82 & 0.59 & 0.68 & 0.95 & 1.03 \\ 
+# sigmaSq & 0.62 & 0.38 & 0.44 & 0.83 & 0.97 \\ 
+# phi & 0.85 & 0.51 & 0.66 & 0.97 & 0.99 \\ 
+# sigmaEpsSq & 1.42 & 1.23 & 1.30 & 1.56 & 1.64 \\ 
 # \hline
 # \end{tabular}
 # \end{table}

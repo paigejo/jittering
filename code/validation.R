@@ -186,6 +186,12 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   out = load("savedOutput/validation/edVal.RData")
   out = load("savedOutput/validation/edMICSval.RData")
   
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
+  
   areas = sort(unique(edVal$area))
   foldArea = areas[fold]
   
@@ -366,6 +372,12 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
   
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
+  
   strata = sort(unique(edVal$Stratum))
   foldArea = strata[fold]
   
@@ -534,6 +546,12 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
+  
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
   
   areas = sort(unique(edVal$area))
   foldArea = areas[fold]
@@ -1102,6 +1120,12 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # load the DHS data
   out = load("savedOutput/global/ed.RData")
   out = load("savedOutput/validation/edVal.RData")
+  
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
   
   areas = sort(unique(edVal$area))
   foldArea = areas[fold]
@@ -2927,7 +2951,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     #   startIs = seq(1, ncol(X2), by=nColMax)
     #   do.call("cbind", lapply(startIs, matMultChunkHelper))
     # }
-    browser()
+    # browser()
     clustIntDrawsUrb <- as.matrix(bigAurb %*% epsilon_tmb_draws)
     # clustIntDrawsUrb <- as.matrix(matMultChunk(bigAurb, epsilon_tmb_draws))
     rm(bigAurb)
@@ -2941,7 +2965,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     clustIntDrawsRur <- clustIntDrawsRur + (Xrur %*% beta_tmb_draws)
     
     # convert predictions to probability scale
-    browser()
+    # browser()
     if(!hasNugget) {
       probIntDrawsUrb = expit(clustIntDrawsUrb)
       probIntDrawsRur = expit(clustIntDrawsRur)
@@ -2953,7 +2977,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
       clustIDRur = rep(1:nClustRur, Krur)
       # probIntDrawsUrb = matrix(logitNormMean(cbind(c(clustIntDrawsUrb), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsUrb))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsUrb))
       # probIntDrawsRur = matrix(logitNormMean(cbind(c(clustIntDrawsRur), rep(sqrt(sigmaEpsSq_tmb_draws), each=nrow(clustIntDrawsRur))), logisticApprox=FALSE, splineApprox=TRUE), nrow=nrow(clustIntDrawsRur))
-      browser()
+      # browser()
       if(!varClust) {
         logitIntDrawsUrb = sapply(1:ncol(clustIntDrawsUrb), function(colI) {
           thisNuggetSD = sqrt(sigmaEpsSq_tmb_draws[colI])
@@ -3009,7 +3033,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
         })
         probIntDrawsRur = expit(logitIntDrawsRur)
       }
-      browser()
+      # browser()
     }
     
     # take weighted average of predictions at integration points (i.e. evaluate integral of predictions for each cluster numerically)

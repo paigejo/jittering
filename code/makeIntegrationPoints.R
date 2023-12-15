@@ -2662,4 +2662,73 @@ straightenMICS = function(intPtsMICS) {
   intPtsMICS
 }
 
+straightenDHS = function(intPtsDHS) {
+  stop("this function isn't necessary and isn't finished")
+  nAreas = length(unique(c(intPtsDHS$areasUrban, intPtsDHS$areasRural)))
+  admLevel = ifelse(nAreas == 41, "admFinal", "adm2")
+  
+  if(admLevel == "adm2") {
+    areaNameVar = "NAME_2"
+    admMap = adm2
+    # nothing to do here
+    return(intPtsMICS)
+  } else {
+    areaNameVar = "NAME_FINAL"
+    admMap = admFinal
+  }
+  
+  resUrb = ncol(intPtsDHS$wUrban)
+  resRur = ncol(intPtsDHS$wRural)
+  
+  trueOrder = admMap[[areaNameVar]]
+  thisOrderUrb = data.frame(area=adm2ToStratumMICS(intPtsDHS$areasUrban))
+  # sortI = match(thisOrder, trueOrder)
+  
+  sortIUrb = sortByCol(thisOrderUrb, "area", trueOrder, returnIndices = TRUE)$inds
+  # all.equal(admMap[[areaNameVar]], unique(thisOrderUrb$area[sortIUrb]))
+  intPtsDHS$xUrban = intPtsDHS$xUrban[sortIUrb,]
+  intPtsDHS$yUrban = intPtsDHS$yUrban[sortIUrb,]
+  intPtsDHS$wUrban = intPtsDHS$wUrban[sortIUrb,]
+  
+  thisIntIUrb = rep(1:resUrb, each=nAreas)
+  thisAreaIUrb = rep(intPtsDHS$areasUrban, times=resUrb)
+  trueIntIUrb = thisIntIUrb
+  trueAreaIUrb = rep(trueOrder, times=resUrb)
+  thisTabIUrb = data.frame(intI=thisIntIUrb, areaI=thisAreaIUrb)
+  trueTabIUrb = data.frame(intI=trueIntIUrb, areaI=trueAreaIUrb)
+  sortIlong = matchTableRows(trueTabI, thisTabI)
+  
+  
+  intPtsDHS$covsUrb = intPtsDHS$yUrban[sortIUrb,]
+  
+  wUrban = intPtsMICS$wUrban[sortI,]
+  wRural = intPtsMICS$wRural[sortI,]
+  # which(rowSums(intPtsMICS$wRural) == 0)
+  # which(rowSums(wRural) == 0)
+  # all.equal(thisOrder[sortI], trueOrder)
+  
+  thisIntI = rep(1:res, each=nAreas)
+  thisAreaI = rep(thisOrder, times=res)
+  trueIntI = thisIntI
+  trueAreaI = rep(trueOrder, times=res)
+  thisTabI = data.frame(intI=thisIntI, areaI=thisAreaI)
+  trueTabI = data.frame(intI=trueIntI, areaI=trueAreaI)
+  sortIlong = matchTableRows(trueTabI, thisTabI)
+  # all.equal(unlist(thisTabI[sortIlong,]), unlist(trueTabI))
+  
+  XUrb = intPtsMICS$XUrb[sortIlong,]
+  XRur = intPtsMICS$XRur[sortIlong,]
+  
+  # just so I know that the main parts are straightened despite strata being 
+  # listed as being in the wrong order
+  intPtsMICS$straightened = TRUE
+  
+  intPtsMICS$wUrban = wUrban
+  intPtsMICS$wRural = wRural
+  intPtsMICS$XUrb = XUrb
+  intPtsMICS$XRur = XRur
+  
+  intPtsMICS
+}
+
 
