@@ -304,3 +304,38 @@ tempTab = data.frame(pop=popValsNorm, access=Xmat[,4], elev=Xmat[,5], distRivers
                      equalClass=equalClassification, pixelUrb=pixelUrb)
 pairs(tempTab, pch=19, cex=.6, col=rgb(0,0,0,.1))
 glm(edVal$urban ~ popValsNorm, family=binomial)
+
+out = load("savedOutput/global/intPtsMICS_100_adm2Cov.RData")
+test = straightenMICS(intPtsMICS)
+test$strataMICS
+intPtsMICS$strataMICS
+rowSums(intPtsMICS$wRural)
+rowSums(test$wRural)
+
+# check urban/rural data averages both weighted and unweighted
+# [1] "mean predicted urban prob: 0.654948768863194"
+# [1] "mean predicted rural prob: 0.308878898550139"
+sum(ed$y[ed$urban]/ed$n[ed$urban] * ed$samplingWeight[ed$urban]) / sum(ed$samplingWeight[ed$urban])
+# 0.6872929
+sum(ed$y[!ed$urban]/ed$n[!ed$urban] * ed$samplingWeight[!ed$urban]) / sum(ed$samplingWeight[!ed$urban])
+# 0.3051247
+sum(edMICS$ys[edMICS$urban]/edMICS$ns[edMICS$urban] * edMICS$samplingWeight[edMICS$urban]) / sum(edMICS$samplingWeight[edMICS$urban])
+# 0.659839
+sum(edMICS$ys[!edMICS$urban]/edMICS$ns[!edMICS$urban] * edMICS$samplingWeight[!edMICS$urban]) / sum(edMICS$samplingWeight[!edMICS$urban])
+# 0.2446335
+
+sum(ed$y[ed$urban])/sum(ed$n[ed$urban])
+# 0.6480836
+sum(ed$y[!ed$urban])/sum(ed$n[!ed$urban])
+# 0.2788789
+sum(edMICS$ys[edMICS$urban])/sum(edMICS$ns[edMICS$urban])
+# 0.700167
+sum(edMICS$ys[!edMICS$urban])/sum(edMICS$ns[!edMICS$urban])
+# 0.285413
+
+tempUrb = 0.5*(0.6480836 - 0.2788789 + 0.700167 - 0.285413)
+# 0.3919794
+tempInt = mean(c(0.6480836, 0.2788789, 0.700167, 0.285413)) - 0.5*tempUrb
+# 0.2821459
+urbVal = tempInt + tempUrb
+# 0.6741253

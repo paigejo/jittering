@@ -1717,7 +1717,7 @@ getValidationFit = function(fold,
                             model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                             regenModFit=FALSE, regenPreds=TRUE, randomBeta=FALSE, randomAlpha=FALSE, 
                             fromOptPar=FALSE, areal=FALSE, nsim=10000, sep=TRUE, forceRegenIfMissing=TRUE, 
-                            varClust=FALSE) {
+                            varClust=FALSE, useSampleWt=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -2638,7 +2638,8 @@ getValidationFit = function(fold,
   }
   
   
-  allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, areal=areal, varClust=varClust)
+  allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, 
+                                   areal=areal, varClust=varClust, useSampleWt=useSampleWt)
   
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
@@ -3190,7 +3191,7 @@ predStratum = function(nsim=1000, fold, SD0, obj,
 
 scoreValidationPreds = function(fold, 
                                 model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                                regenScores=FALSE, areal=FALSE, varClust=FALSE) {
+                                regenScores=FALSE, areal=FALSE, varClust=FALSE, useSampleWt=FALSE) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -3233,6 +3234,14 @@ scoreValidationPreds = function(fold,
       nRur = preds$nRur
       ys = c(yUrb, yRur)
       ns = c(nUrb, nRur)
+      
+      if(!useSampleWt) {
+        wtUrb = nUrb
+        wtRur = nRur
+        wt = c(nUrb, nRur)
+      } else {
+        browser()
+      }
       
       # combine predictions from urban and rural areas
       probDraws = rbind(probDrawsUrb, probDrawsRur)

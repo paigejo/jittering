@@ -8,7 +8,7 @@ index = as.numeric(commandArgs(trailingOnly = TRUE)) # test with index == someth
 # index=41
 # i: 1-4 corresponding to M_d, M_D, M_dm, and M_DM
 # j: 1-11 for M_d and M_D and 1-20 for M_dm and M_DM
-jobInds = getJobIndices(index, maxJ=37, rev=TRUE)
+jobInds = getJobIndices(index, maxJ=20, rev=TRUE)
 i = jobInds[1]
 j = jobInds[2]
 
@@ -33,7 +33,7 @@ fold = j
 #                                     randomBeta=randomBeta, randomAlpha=randomAlpha, 
 #                                     fromOptPar=FALSE, areal=TRUE))
 allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, 
-                                 areal=TRUE, varClust=TRUE, useSampleWt=TRUE)
+                                 areal=FALSE, varClust=TRUE, useSampleWt=TRUE)
 allScores
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
