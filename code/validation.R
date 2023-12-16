@@ -3238,23 +3238,27 @@ scoreValidationPreds = function(fold,
       if(!useSampleWt) {
         wtUrb = nUrb
         wtRur = nRur
-        wt = c(nUrb, nRur)
       } else {
-        browser()
+        # Load in out of sample data. Exactly which model is loaded doesn't matter
+        out = load("savedOutput/validation/datM_D.RData")
+        edOutOfSample = datMD[[fold]]$edOutOfSample
+        wtUrb = edOutOfSample$samplingWeight[edOutOfSample$urban]
+        wtRur = edOutOfSample$samplingWeight[!edOutOfSample$urban]
       }
+      wt = c(nUrb, nRur)
       
       # combine predictions from urban and rural areas
       probDraws = rbind(probDrawsUrb, probDrawsRur)
       preds = c(predsUrb, predsRur)
       
       # calculate score
-      scoresUrb = getScores(truth=yUrb/nUrb, estMat=probDrawsUrb, weights=nUrb, 
+      scoresUrb = getScores(truth=yUrb/nUrb, estMat=probDrawsUrb, weights=wtUrb, 
                             significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
                             getAverage=TRUE, na.rm=TRUE, ns=nUrb)
-      scoresRur = getScores(truth=yRur/nRur, estMat=probDrawsRur, weights=nRur, 
+      scoresRur = getScores(truth=yRur/nRur, estMat=probDrawsRur, weights=wtRur, 
                             significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
                             getAverage=TRUE, na.rm=TRUE, ns=nRur)
-      scores = getScores(truth=ys/ns, estMat=probDraws, weights=ns, 
+      scores = getScores(truth=ys/ns, estMat=probDraws, weights=wt, 
                          significance=c(.5, .8, .9, .95), doFuzzyReject=TRUE, 
                          getAverage=TRUE, na.rm=TRUE, ns=ns)
       
