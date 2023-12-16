@@ -3221,6 +3221,8 @@ scoreValidationPreds = function(fold,
   # list(probDrawsUrb, probDrawsRur, predsUrb, predsRur, 
   #      quantsUrb, quantsRur, yUrb, yRur, nUrb, nRur)
   
+  
+  
   if(!is.null(preds)) {
     
     if(!areal) {
@@ -3240,12 +3242,21 @@ scoreValidationPreds = function(fold,
         wtRur = nRur
       } else {
         # Load in out of sample data. Exactly which model is loaded doesn't matter
-        out = load("savedOutput/validation/datM_D.RData")
-        edOutOfSample = datMD[[fold]]$edOutOfSample
+        if(fold <= 10) {
+          out = load("savedOutput/validation/datM_D.RData")
+          edOutOfSample = datMD[[thisFold]]$edOutOfSample
+        } else {
+          out = load("savedOutput/validation/edMICSval.RData")
+          edFold = edMICSval[edMICSval$fold == (fold-10),]
+          # all.equal(edFold$ys[edFold$urban], yUrb)
+          # all.equal(edFold$ys[!edFold$urban], yRur)
+          edOutOfSample = edFold
+        }
+        
         wtUrb = edOutOfSample$samplingWeight[edOutOfSample$urban]
         wtRur = edOutOfSample$samplingWeight[!edOutOfSample$urban]
       }
-      wt = c(nUrb, nRur)
+      wt = c(wtUrb, wtRur)
       
       # combine predictions from urban and rural areas
       probDraws = rbind(probDrawsUrb, probDrawsRur)
