@@ -3,6 +3,7 @@
 # load datasets ----
 out = load("savedOutput/global/ed.RData")
 out = load("savedOutput/global/edMICS.RData")
+edMICS = sortByCol(edMICS, "Stratum", admFinal$NAME_FINAL)
 
 # set parameters ----
 # Umut settings: 
@@ -40,6 +41,7 @@ if(FALSE) {
   
   load("savedOutput/global/intPtsDHS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   ARurDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL) # 41 x 810
@@ -252,7 +254,7 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
-out = load("savedOutput/global/edMdInputs.RData")
+out = load("savedOutput/global/edM_DMInputs.RData")
 
 # set priors ----
 alpha_pri = c(0, 100^2)
@@ -274,12 +276,6 @@ lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget p
 # Hence, we need Q_{+:}^+ / sum(Q^+):
 Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
 QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
-
-# set weights of everything but the first points to be 0
-intPtsDHS$wUrban[,1] = 1
-intPtsDHS$wRural[,1] = 1
-intPtsDHS$wUrban[,-1] = 0
-intPtsDHS$wRural[,-1] = 0
 
 # Specify inputs for TMB ----
 
@@ -519,7 +515,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 0.159633333333234 minutes (for intern=FALSE)
+  # optimization took 2.36478333333313 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -554,6 +550,7 @@ if(FALSE) {
   latentRur = testRep$latentFieldRurMICS
   
   out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   tempXUrb = intPtsMICS$XUrb[transformIUrb,]
   tempXRur = intPtsMICS$XRur[transformIRur,]
   
@@ -592,6 +589,27 @@ out = load("savedOutput/ed/fitM_DSep.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+# new results:
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.74 & -1.95 & -1.88 & -1.60 & -1.54 \\ 
+# urb & 0.48 & 0.26 & 0.34 & 0.64 & 0.71 \\ 
+# access & -0.14 & -0.24 & -0.20 & -0.08 & -0.05 \\ 
+# elev & 0.15 & 0.02 & 0.06 & 0.23 & 0.28 \\ 
+# distRiversLakes & 0.09 & -0.03 & 0.01 & 0.17 & 0.21 \\ 
+# popValsNorm & 0.81 & 0.60 & 0.68 & 0.95 & 1.01 \\ 
+# sigmaSq & 0.61 & 0.36 & 0.43 & 0.81 & 0.99 \\ 
+# phi & 0.84 & 0.45 & 0.66 & 0.97 & 0.99 \\ 
+# sigmaEpsSq & 1.34 & 1.15 & 1.21 & 1.47 & 1.54 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+
+# old results:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}

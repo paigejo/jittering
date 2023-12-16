@@ -713,7 +713,7 @@ runBYM2simple = function(dat=ed, covMat=NULL, graph="savedOutput/global/adm2Grap
 plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NULL, 
                      arealPreds=NULL, normalized=TRUE, extractMethod="bilinear", 
                      nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                     plotNameRoot="edFusion", plotNameRootAreal="Strat") {
+                     plotNameRoot="edFusion", plotNameRootAreal="Strat", CIwidthLims=NULL) {
   
   # get grid level predictions if need be
   if(is.null(gridPreds)) {
@@ -895,7 +895,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
     pdf(paste0("figures/ed/", plotNameRoot, "CI", thisWidthLevel*100, "Grid.pdf"), width=5, height=3.8)
     par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
     myQuiltPlot(popMat$lon, popMat$lat, thisWidth, colScale=quantCols, nx=259, 
-                xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
+                xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", zlim=CIwidthLims, 
                 ylab="Latitude", main=paste0(100*thisWidthLevel, "% CI width"), 
                 legend.mar=4.7)
     plotMapDat(admFinal, new=FALSE)
@@ -908,7 +908,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
       par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
       plotMapDat(adm, thisArealWidth, varAreas=orderedAreas, regionNames=orderedAreas, 
                  cols=quantCols, crosshatchNADensity=30, lwd=lwd, border=border, 
-                 xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
+                 xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", zlim=CIwidthLims, 
                  ylab="Latitude", main=paste0(round(thisWidthLevel*100), "% CI Width"), legend.mar=4.7)
       if(length(arealMean) > 41) {
         plotMapDat(admFinal, new=FALSE)

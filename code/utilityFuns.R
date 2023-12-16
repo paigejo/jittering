@@ -1960,9 +1960,14 @@ matchTableRows = function(tab1, tab2) {
   row.match(tab1, tab2)
 }
 
-sortByCol = function(tab, colName, uniqueOrder, returnIndices=FALSE) {
+sortByCol = function(tab, colName, uniqueOrder, returnIndices=FALSE, colInd=NULL) {
   
-  thisOrder = tab[[colName]]
+  if(is.null(colInd)) {
+    thisOrder = tab[[colName]]
+  } else {
+    thisOrder = tab[,colInd]
+  }
+  
   inds = c()
   for(i in 1:length(uniqueOrder)) {
     thisVal = uniqueOrder[i]
@@ -1977,6 +1982,14 @@ sortByCol = function(tab, colName, uniqueOrder, returnIndices=FALSE) {
   }
 }
 
-
+# for a table with columns: (area, urb/rur, nPerStrat), sorts each urb/rur part 
+# to have area order corresponding to trueAreaOrder
+straightenNumPerStrat = function(numPerStratTab, trueAreaOrder) {
+  nAreas = length(trueAreaOrder)
+  thisOrder = numPerStratTab[1:nAreas,1]
+  firstPt = sortByCol(numPerStratTab[1:nAreas,], uniqueOrder=trueAreaOrder, colInd=1)
+  secondPt = sortByCol(numPerStratTab[(nAreas+1):(2*nAreas),], uniqueOrder=trueAreaOrder, colInd=1)
+  rbind(firstPt, secondPt)
+}
 
 

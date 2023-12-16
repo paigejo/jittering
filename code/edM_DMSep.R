@@ -3,6 +3,7 @@
 # load datasets ----
 out = load("savedOutput/global/ed.RData")
 out = load("savedOutput/global/edMICS.RData")
+edMICS = sortByCol(edMICS, "Stratum", admFinal$NAME_FINAL)
 
 # set parameters ----
 # Umut settings: 
@@ -40,6 +41,7 @@ if(FALSE) {
   
   load("savedOutput/global/intPtsDHS.RData")
   load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
   # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL) # 41 x 810
@@ -49,6 +51,7 @@ if(FALSE) {
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICS$Stratum, by=list(strat=edMICS$Stratum, urb=edMICS$urban), FUN=length, drop=FALSE)
+  allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
   numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
   numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
   numPerStratRur[is.na(numPerStratRur)] = 0
@@ -463,7 +466,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 29.2850000000001 minutes (for intern=FALSE)
+  # optimization took 20.2321333333336 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -588,6 +591,27 @@ out = load("savedOutput/ed/fitM_DMSep.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+# new results:
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.28 & -1.43 & -1.39 & -1.18 & -1.14 \\ 
+# urb & 1.03 & 0.85 & 0.92 & 1.14 & 1.21 \\ 
+# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.02 \\ 
+# elev & 0.05 & -0.02 & 0.00 & 0.10 & 0.13 \\ 
+# distRiversLakes & 0.02 & -0.06 & -0.03 & 0.07 & 0.10 \\ 
+# popValsNorm & 0.44 & 0.29 & 0.34 & 0.53 & 0.57 \\ 
+# sigmaSq & 0.55 & 0.34 & 0.39 & 0.72 & 0.86 \\ 
+# phi & 0.87 & 0.53 & 0.71 & 0.98 & 0.99 \\ 
+# sigmaEpsSq & 1.47 & 1.31 & 1.36 & 1.60 & 1.66 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+
+# old results
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
@@ -639,17 +663,48 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # \end{tabular}
 # \end{table}
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-          gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DMSep")
+
+zlimsGrid = NULL
+zlimsStrat = NULL
+zlimsAdmin1 = NULL
+zlimsAdmin2 = NULL
+if(FALSE) {
+  out = load("savedOutput/ed/gridPredsMdSep.RData")
+  out = load("savedOutput/ed/stratPredsMdSep.RData")
+  out = load("savedOutput/ed/admin1PredsMdSep.RData")
+  out = load("savedOutput/ed/admin2PredsMdSep.RData")
+  width95 = function(x) {
+    if(all(is.na(x))) {
+      return(NA)
+    } else {
+      diff(quantile(x, prob=c(.025, .975)), na.rm=TRUE)
+    }
+  }
+  zlimsGrid = range(apply(gridPreds$gridDraws, 1, width95))
+  zlimsStrat = range(apply(stratPreds$aggregationResults$p, 1, width95))
+  zlimsAdmin1 = range(apply(admin1Preds$aggregationResults$p, 1, width95))
+  zlimsAdmin2 = range(apply(admin2Preds$aggregationResults$p, 1, width95), na.rm=TRUE)
+  
+  out = load("savedOutput/ed/gridPredsM_DMSep.RData")
+  out = load("savedOutput/ed/stratPredsM_DMSep.RData")
+  out = load("savedOutput/ed/admin1PredsM_DMSep.RData")
+  out = load("savedOutput/ed/admin2PredsM_DMSep.RData")
+  zlimsGrid = range(c(zlimsGrid, apply(gridPreds$gridDraws, 1, width95)))
+  zlimsStrat = range(c(zlimsStrat, apply(stratPreds$aggregationResults$p, 1, width95)))
+  zlimsAdmin1 = range(c(zlimsAdmin1, apply(admin1Preds$aggregationResults$p, 1, width95)))
+  zlimsAdmin2 = range(c(zlimsAdmin2, apply(admin2Preds$aggregationResults$p, 1, width95)), na.rm=TRUE)
+}
+
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin2")
-
+          plotNameRoot="edFusionM_DMSep", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=NULL, 
+          plotNameRoot="edFusionM_DMSep", CIwidthLims=zlimsGrid)
 

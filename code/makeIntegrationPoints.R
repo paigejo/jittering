@@ -2611,6 +2611,8 @@ getBestResMICS = function(startRes=25, tolMean=.01, tolMax=.05) {
        allAbsMaxPctErrorSD=allAbsMaxPctErrorSD)
 }
 
+# reorders MICS integration point data to correspond to the order of the areas 
+# in the shapefile of the corresponding admin level of interest
 straightenMICS = function(intPtsMICS) {
   admLevel = ifelse(nrow(intPtsMICS$wUrban) == 41, "admFinal", "adm2")
   

@@ -186,6 +186,8 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
   out = load("savedOutput/validation/edVal.RData")
   out = load("savedOutput/validation/edMICSval.RData")
   
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
+  
   # order edVal so it matches with ordering of ed
   sortI = match(ed$clusterID, edVal$clusterID)
   temp = edVal[sortI,]
@@ -590,6 +592,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   } else {
     edMICSval = simEdMICS[[1]]
   }
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
   
   if(!areal) {
     inSampleLIndsMICS = edMICSval$fold != foldMICS
@@ -629,7 +632,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   out = load("savedOutput/global/intPtsDHS.RData")
   # out = load("savedOutput/global/intPtsMICS.RData")
   out = load(paste0("savedOutput/global/intPtsMICS", "_", res, ifelse(adm2AsCovariate, "_adm2Cov", ""), ".RData"))
-  
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   if(admLevel == "admFinal") {
     AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
@@ -679,6 +682,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICSInSample$Stratum, by=list(strat=edMICSInSample$Stratum, urb=edMICSInSample$urban), FUN=length, drop=FALSE)
+  allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
+  
   if(areal && (nrow(allNumPerStrat) != 82)) {
     stop("check this...")
   }
@@ -755,6 +760,7 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
     allNumPerStrat = aggregate(edMICSOutOfSample$Stratum, by=list(strat=edMICSOutOfSample$Stratum, urb=edMICSOutOfSample$urban), FUN=length, drop=FALSE)
+    allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
     numPerStratUrbOutOfSample = allNumPerStrat[allNumPerStrat[,2], 3]
     numPerStratUrbOutOfSample[is.na(numPerStratUrbOutOfSample)] = 0
     numPerStratRurOutOfSample = allNumPerStrat[!allNumPerStrat[,2], 3]
@@ -1158,6 +1164,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   # now load MICS data
   out = load("savedOutput/validation/edMICSval.RData")
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
   
   if(!areal) {
     inSampleLIndsMICS = edMICSval$fold != foldMICS
@@ -1184,7 +1191,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   nPtsUrbMICS = sum(inSampleLIndsUrbMICS)
   nPtsRurMICS = sum(inSampleLIndsRurMICS)
-  KMICS = nrow(intPtsMICS$XUrb)/41
+  KMICS = res
   # KMICS=25
   
   # do some precomputation ----
@@ -1196,7 +1203,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   out = load("savedOutput/global/intPtsDHS.RData")
   out = load(paste0("savedOutput/global/intPtsMICS", "_", res, ifelse(adm2AsCovariate, "_adm2Cov", ""), ".RData"))
-  
+  intPtsMICS = straightenMICS(intPtsMICS)
   
   if(admLevel == "admFinal") {
     AUrbDHS = makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
@@ -1246,6 +1253,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(edMICSInSample$Stratum, by=list(strat=edMICSInSample$Stratum, urb=edMICSInSample$urban), FUN=length, drop=FALSE)
+  allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
   if(areal && (nrow(allNumPerStrat) != 82)) {
     stop("check this...")
   }
@@ -1322,6 +1330,7 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
   # now do the same for the out of sample data if need be
   if((fold > 10) && !areal) {
     allNumPerStrat = aggregate(edMICSOutOfSample$Stratum, by=list(strat=edMICSOutOfSample$Stratum, urb=edMICSOutOfSample$urban), FUN=length, drop=FALSE)
+    allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
     if(nrow(allNumPerStrat) != 82) {
       stop("bad number of rows in out of sample nPerStrat")
     }
@@ -2250,6 +2259,7 @@ getValidationFit = function(fold,
   # make sure we set the out of sample data correctly for 'DHS data only' models
   if(is.null(edMICSOutOfSample)) {
     out = load("savedOutput/validation/edMICSval.RData")
+    edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
     edMICSOutOfSample = edMICSval
   }
   
@@ -2713,6 +2723,13 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   out = load(paste0("savedOutput/validation/dat", fnameRoot, ".RData", collapse=""))
   load("~/git/jittering/savedOutput/validation/edMICSval.RData")
   load("~/git/jittering/savedOutput/validation/edVal.RData")
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
+  
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
   
   varname = paste0("dat", model)
   dat = get(varname)[[fold]]
@@ -3175,6 +3192,7 @@ predStratum = function(nsim=1000, fold, SD0, obj,
   
   # get what stratum we're predicting at
   out = load("savedOutput/validation/edMICSval.RData")
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
   strata = sort(unique(edVal$Stratum))
   foldArea = strata[fold]
   
@@ -3247,6 +3265,7 @@ scoreValidationPreds = function(fold,
           edOutOfSample = datMD[[thisFold]]$edOutOfSample
         } else {
           out = load("savedOutput/validation/edMICSval.RData")
+          edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
           edFold = edMICSval[edMICSval$fold == (fold-10),]
           # all.equal(edFold$ys[edFold$urban], yUrb)
           # all.equal(edFold$ys[!edFold$urban], yRur)
@@ -3342,6 +3361,14 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   # the cluster ns so we just have to weight by the fold total ns here
   out = load("savedOutput/validation/edVal.RData")
   out = load("savedOutput/validation/edMICSval.RData")
+  edMICSval = sortByCol(edMICSval, "Stratum", admFinal$NAME_FINAL)
+  
+  # order edVal so it matches with ordering of ed
+  sortI = match(ed$clusterID, edVal$clusterID)
+  temp = edVal[sortI,]
+  # all.equal(temp$subarea, ed$subarea)
+  edVal = edVal[sortI,]
+  
   if(!areal) {
     weightsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
     weightsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
