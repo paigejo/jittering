@@ -1057,7 +1057,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   sigmaEpsSqRMICS_tmb_draws = NULL
   sigmaEpsSqUDHS_tmb_draws = NULL
   sigmaEpsSqRDHS_tmb_draws = NULL
-  predMICS = quantsMICS = NULL
+  predsMICS = quantsMICS = NULL
   if(SD0$pdHess) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
     mu = summary(SD0)[,1]
