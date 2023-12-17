@@ -1057,6 +1057,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   sigmaEpsSqRMICS_tmb_draws = NULL
   sigmaEpsSqUDHS_tmb_draws = NULL
   sigmaEpsSqRDHS_tmb_draws = NULL
+  predMICS = quantsMICS = NULL
   if(SD0$pdHess) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
     mu = summary(SD0)[,1]
@@ -1332,7 +1333,6 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     
     preds = rowMeans(probDraws)
     quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
-    predMICS = quantsMICS = NULL
     if(!is.null(probDrawsMICS)) {
       predsMICS = rowMeans(probDrawsMICS)
       quantsMICS = apply(probDrawsMICS, 1, quantile, probs=quantiles, na.rm=TRUE)
