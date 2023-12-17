@@ -217,7 +217,7 @@ QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
 # Specify inputs for TMB ----
 
 ## specify random effects
-rand_effs <- c('alpha', 'beta', 'w_bym2Star', 'u_bym2Star', 
+rand_effs <- c('alpha', 'beta', 'diffUrbMICS', 'diffRurMICS', 'w_bym2Star', 'u_bym2Star', 
                'nuggetUrbMICS', 'nuggetRurMICS', 'nuggetUrbDHS', 'nuggetRurDHS')
 
 # collect input data
@@ -306,9 +306,14 @@ initBeta1 = logit(initUrbP) - initAlpha
 
 tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    logit_phi = 0, # SPDE parameter related to the range
-                   log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUMICS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsRMICS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsUDHS = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                   log_tauEpsRDHS = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    alpha = initAlpha, # intercept
                    beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                   diffUrbMICS=0, 
+                   diffRurMICS=0, 
                    w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                    nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
