@@ -789,18 +789,19 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # \end{tabular}
 # \end{table}
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
-          gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edMdSep")
+
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Strat")
+          plotNameRoot="edMdSep", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Admin1")
+          plotNameRoot="edMdSep", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edMdSep", plotNameRootAreal="Admin2")
+          plotNameRoot="edMdSep", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=NULL, 
+          plotNameRoot="edMdSep", CIwidthLims=zlimsGrid)
 # [1] "mean predicted urban prob: 0.655407377170824"
 # [1] "mean predicted rural prob: 0.309092229359486"
 # [1] "mean data urban prob: 0.64808362369338"

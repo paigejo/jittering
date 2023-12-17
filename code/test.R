@@ -339,3 +339,25 @@ tempInt = mean(c(0.6480836, 0.2788789, 0.700167, 0.285413)) - 0.5*tempUrb
 # 0.2821459
 urbVal = tempInt + tempUrb
 # 0.6741253
+
+
+# check validation predictive distribution ----
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
+                     quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+
+stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=stratPreds, 
+          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin1Preds, 
+          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin2Preds, 
+          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=NULL, 
+          plotNameRoot="edFusionM_DMSepValTest", CIwidthLims=zlimsGrid)

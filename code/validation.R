@@ -3067,7 +3067,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     zeroCols = seq(nrow(Wurb)+1, ncol(Wurb), by=nrow(Wurb)+1)
     Wurb = Wurb[,-zeroCols]
     probDrawsUrb = Wurb %*% probIntDrawsUrb
-    browser()
+    # browser()
     # buildRowRur = c(rep(1, Krur), rep(0, nrow(Xrur)))
     # Wrur = matrix(c(rep(buildRowRur, times=length(yRur)-1), rep(1, Krur)), byrow=TRUE, ncol=nrow(Xrur))
     # Wrur = sweep(Wrur, 2, c(t(wRur)), FUN="*")
@@ -3089,7 +3089,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     # calculate central prediction before binomial variation is added in
     predsUrb = rowMeans(probDrawsUrb)
     predsRur = rowMeans(probDrawsRur)
-    browser()
+    # browser()
     # add in binomial variation
     probDrawsUrb = addBinomialVar(probDrawsUrb, nUrb)
     probDrawsRur = addBinomialVar(probDrawsRur, nRur)
