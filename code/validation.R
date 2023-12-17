@@ -2627,6 +2627,7 @@ getValidationFit = function(fold,
   admLevelString = ifelse(admLevel == 1, "stratMICS", "adm2")
   if(regenPreds) {
     if(hessPD) {
+      browser()
       if(!areal) {
         preds = predClusters(nsim=nsim, fold, SD0, obj, 
                              model=model, sep=sep, varClust=varClust, 
