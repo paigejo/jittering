@@ -865,7 +865,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
       dev.off()
     }
   }
-  
+  browser()
   # CI widths
   lowsOrig = quantiles[quantiles < 0.5]
   lows = rev(lowsOrig)
@@ -1123,7 +1123,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
                                 betaNames, 
                                 "sigmaSq", 
                                 "phi")
-      } else if(hasUrbDiffMICS) {
+      } else if(hasUrbDiffMICS && !hasRurDiffMICS) {
         fixedMat = rbind(alpha_tmb_draws, 
                          beta_tmb_draws[1:2,], 
                          urbDiffDraws, 
