@@ -1882,7 +1882,7 @@ getValidationFit = function(fold,
       # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
       # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
       # Hence, we need Q_{+:}^+ / sum(Q^+):
-      Qinv = dat$MakeADFunInputs$data$V %*% dat$MakeADFunInputs$data$Q %*% t(dat$MakeADFunInputs$data$V)
+      Qinv = dat$MakeADFunInputs$data$V %*% diag(dat$MakeADFunInputs$data$gammaTildesm1+1) %*% t(dat$MakeADFunInputs$data$V)
       QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
       
       # make sure prior agrees with INLA
@@ -2011,7 +2011,7 @@ getValidationFit = function(fold,
       # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
       # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
       # Hence, we need Q_{+:}^+ / sum(Q^+):
-      Qinv = dat$MakeADFunInputs$data$V %*% dat$MakeADFunInputs$data$Q %*% t(dat$MakeADFunInputs$data$V)
+      Qinv = dat$MakeADFunInputs$data$V %*% diag(dat$MakeADFunInputs$data$gammaTildesm1+1) %*% t(dat$MakeADFunInputs$data$V)
       QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
       
       # make sure prior agrees with INLA
@@ -2328,7 +2328,7 @@ getValidationFit = function(fold,
       # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
       # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
       # Hence, we need Q_{+:}^+ / sum(Q^+):
-      Qinv = dat$MakeADFunInputs$data$V %*% dat$MakeADFunInputs$data$Q %*% t(dat$MakeADFunInputs$data$V)
+      Qinv = dat$MakeADFunInputs$data$V %*% diag(dat$MakeADFunInputs$data$gammaTildesm1+1) %*% t(dat$MakeADFunInputs$data$V)
       QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
       
       # make sure prior agrees with INLA
@@ -2754,7 +2754,7 @@ predClusters = function(nsim=1000, fold, SD0, obj,
     
     bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
                                              constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-    Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+    Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
     QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
   }
   

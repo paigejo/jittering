@@ -342,6 +342,10 @@ urbVal = tempInt + tempUrb
 
 
 # check validation predictive distribution ----
+zlimsStrat = NULL
+zlimsAdmin1 = NULL
+zlimsAdmin2 = NULL
+zlimsGrid = NULL
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 
@@ -351,13 +355,13 @@ admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$
 
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
+          plotNameRoot="edFusionM_DMSepValTest2", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
+          plotNameRoot="edFusionM_DMSepValTest2", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DMSepValTest", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
+          plotNameRoot="edFusionM_DMSepValTest2", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DMSepValTest", CIwidthLims=zlimsGrid)
+          plotNameRoot="edFusionM_DMSepValTest2", CIwidthLims=zlimsGrid)

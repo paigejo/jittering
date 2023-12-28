@@ -211,7 +211,7 @@ lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget p
 # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
 # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
 # Hence, we need Q_{+:}^+ / sum(Q^+):
-Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
 QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
 
 # Specify inputs for TMB ----
@@ -708,3 +708,7 @@ plotPreds(SD0, obj, popMat=popMatNGAThresh,
           gridPreds=gridPreds, arealPreds=NULL, 
           plotNameRoot="edFusionM_DMSep", CIwidthLims=zlimsGrid)
 
+# index=71 => fold=11
+# preds = predClusters(nsim=1000, 11, SD0, obj,
+#                      model="M_DM", sep=TRUE, varClust=FALSE,
+#                      quantiles=c(0.025, 0.1, 0.9, 0.975))

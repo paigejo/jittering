@@ -34,7 +34,7 @@ fold = j
 #                                     fromOptPar=FALSE, areal=TRUE))
 allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, 
                                  areal=FALSE, varClust=TRUE, useSampleWt=TRUE)
-allScores
+invisible(allScores)
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
 

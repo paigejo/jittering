@@ -471,7 +471,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 20.2321333333336 minutes (for intern=FALSE)
+  # optimization took 58.7689 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -596,45 +596,31 @@ out = load("savedOutput/ed/fitM_DMSepVarClustUR.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
-# new results:
+
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.28 & -1.43 & -1.39 & -1.18 & -1.14 \\ 
-# urb & 1.03 & 0.85 & 0.92 & 1.14 & 1.21 \\ 
-# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.02 \\ 
-# elev & 0.05 & -0.02 & 0.00 & 0.10 & 0.13 \\ 
-# distRiversLakes & 0.02 & -0.06 & -0.03 & 0.07 & 0.10 \\ 
-# popValsNorm & 0.44 & 0.29 & 0.34 & 0.53 & 0.57 \\ 
-# sigmaSq & 0.55 & 0.34 & 0.39 & 0.72 & 0.86 \\ 
-# phi & 0.87 & 0.53 & 0.71 & 0.98 & 0.99 \\ 
-# sigmaEpsSq & 1.47 & 1.31 & 1.36 & 1.60 & 1.66 \\ 
+# (Int) & -1.35 & -1.52 & -1.47 & -1.24 & -1.16 \\ 
+# urb & 0.90 & 0.70 & 0.78 & 1.02 & 1.09 \\ 
+# access & -0.06 & -0.12 & -0.10 & -0.02 & -0.00 \\ 
+# elev & 0.29 & 0.12 & 0.18 & 0.40 & 0.46 \\ 
+# distRiversLakes & 0.05 & -0.10 & -0.05 & 0.15 & 0.21 \\ 
+# popValsNorm & 0.05 & -0.03 & 0.00 & 0.11 & 0.13 \\ 
+# urbDiffMICS & 0.02 & -0.06 & -0.03 & 0.07 & 0.10 \\ 
+# rurDiffMICS & 0.45 & 0.31 & 0.35 & 0.54 & 0.59 \\ 
+# sigmaSq & 0.47 & 0.28 & 0.33 & 0.63 & 0.75 \\ 
+# phi & 0.81 & 0.41 & 0.59 & 0.96 & 0.98 \\ 
+# sigmaEpsSqUMICS & 1.56 & 1.17 & 1.29 & 1.84 & 2.00 \\ 
+# sigmaEpsSqRMICS & 1.68 & 1.38 & 1.47 & 1.91 & 2.04 \\ 
+# sigmaEpsSqUDHS & 1.01 & 0.79 & 0.86 & 1.17 & 1.26 \\ 
+# sigmaEpsSqRDHS & 1.55 & 1.28 & 1.38 & 1.75 & 1.84 \\ 
 # \hline
 # \end{tabular}
 # \end{table}
 
-# old results
-# \begin{table}[ht]
-# \centering
-# \begin{tabular}{rrrrrr}
-# \hline
-# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
-# \hline
-# (Int) & -1.29 & -1.46 & -1.40 & -1.18 & -1.12 \\
-# urb & 1.02 & 0.84 & 0.91 & 1.14 & 1.19 \\
-# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.02 \\
-# elev & 0.05 & -0.03 & 0.00 & 0.11 & 0.13 \\
-# distRiversLakes & 0.02 & -0.05 & -0.03 & 0.07 & 0.10 \\
-# popValsNorm & 0.44 & 0.29 & 0.34 & 0.54 & 0.59 \\
-# sigmaSq & 0.48 & 0.28 & 0.34 & 0.63 & 0.75 \\
-# phi & 0.82 & 0.44 & 0.61 & 0.96 & 0.98 \\
-# sigmaEpsSq & 1.48 & 1.30 & 1.36 & 1.60 & 1.68 \\
-# \hline
-# \end{tabular}
-# \end{table}
 save(gridPreds, file="savedOutput/ed/gridPredsM_DMSepVarClustUR.RData")
 out = load("savedOutput/ed/gridPredsM_DMSepVarClustUR.RData")
 
