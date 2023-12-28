@@ -865,7 +865,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
       dev.off()
     }
   }
-  browser()
+  # browser()
   # CI widths
   lowsOrig = quantiles[quantiles < 0.5]
   lows = rev(lowsOrig)
@@ -1097,7 +1097,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         
         bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
                                                  constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-        Qinv = bym2ArgsTMB$V %*% bym2ArgsTMB$Q %*% t(bym2ArgsTMB$V)
+        Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
         QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
       }
       

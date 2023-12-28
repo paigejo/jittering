@@ -466,7 +466,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 20.2321333333336 minutes (for intern=FALSE)
+  # optimization took 22.9861833333334 minutes (for intern=FALSE)
 }
 
 if(FALSE) {
@@ -591,7 +591,27 @@ out = load("savedOutput/ed/fitM_DMSep.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
-# new results:
+# new results (after fixing QinvRowSums error)
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.29 & -1.44 & -1.39 & -1.18 & -1.13 \\ 
+# urb & 1.02 & 0.86 & 0.91 & 1.13 & 1.19 \\ 
+# access & -0.05 & -0.11 & -0.09 & -0.01 & 0.01 \\ 
+# elev & 0.05 & -0.03 & -0.00 & 0.11 & 0.13 \\ 
+# distRiversLakes & 0.02 & -0.05 & -0.03 & 0.08 & 0.11 \\ 
+# popValsNorm & 0.44 & 0.28 & 0.35 & 0.53 & 0.59 \\ 
+# sigmaSq & 0.56 & 0.33 & 0.39 & 0.74 & 0.87 \\ 
+# phi & 0.88 & 0.57 & 0.73 & 0.98 & 0.99 \\ 
+# sigmaEpsSq & 1.48 & 1.30 & 1.35 & 1.60 & 1.68 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+
+# old new results:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
