@@ -463,7 +463,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 11.4057500000034 minutes (for intern=FALSE)
+  # optimization took 11.4057500000034 minutes (17.15435 on cluster)
 }
 
 if(FALSE) {
@@ -734,16 +734,16 @@ if(FALSE) {
 
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DMSepRepar", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Strat", CIwidthLims=zlimsStrat)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DMSepRepar", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Admin1", CIwidthLims=zlimsAdmin1)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DMSepRepar", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Admin2", CIwidthLims=zlimsAdmin2)
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DMSepRepar", CIwidthLims=zlimsGrid)
+          plotNameRoot="edFusionM_DMSepReparTest", CIwidthLims=zlimsGrid)
 
 # index=71 => fold=11
 # preds = predClusters(nsim=1000, 11, SD0, obj,
