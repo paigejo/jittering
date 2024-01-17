@@ -982,6 +982,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   admLevel = match.arg(admLevel)
   
   # get parameters
+  finalRepar = !("alpha" %in% names(obj$env$last.par))
   if(!is.null(SD0)) {
     alpha = SD0$par.fixed[1]
     beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
@@ -1000,8 +1001,6 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     log_tau = allPar[-log_tauEpsI][grepl("log_tauEps", names(allPar))]
     parnames = names(SD0$par.fixed)
   }
-  
-  
   
   if(!is.null(predAtArea)) {
     # if(admLevel == "stratMICS") {
@@ -1067,7 +1066,9 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     # parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
     parnames <- colnames(SD0$jointPrecision)
     
-    alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
+    if(!finalRepar) {
+      alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
+    }
     beta_tmb_draws    <- t.draws[parnames == 'beta',]
     sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
     phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
@@ -1086,28 +1087,44 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       wStar  <- t.draws[parnames == 'w_bym2Star',]
       uStar  <- t.draws[parnames == 'u_bym2Star',] # uStar is unit var scaled
       
-      if(is.null(QinvSumsNorm)) {
-        if(admLevel == "adm2") {
-          out = load("savedOutput/global/adm2Mat.RData")
-          admMat = adm2Mat
-        } else if(admLevel == "stratMICS") {
-          out = load("savedOutput/global/admFinalMat.RData")
-          admMat = admFinalMat
+      if(!finalRepar) {
+        if(is.null(QinvSumsNorm)) {
+          if(admLevel == "adm2") {
+            out = load("savedOutput/global/adm2Mat.RData")
+            admMat = adm2Mat
+          } else if(admLevel == "stratMICS") {
+            out = load("savedOutput/global/admFinalMat.RData")
+            admMat = admFinalMat
+          }
+          
+          bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
+                                                   constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+          Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
+          gammas = (bym2ArgsTMB$gammaTildesm1+1)^(-1)
+          gammas[(bym2ArgsTMB$gammaTildesm1+1) == 0] = 0
+          Qinv = bym2ArgsTMB$V %*% diag(gammas) %*% t(bym2ArgsTMB$V)
+          QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
         }
         
-        bym2ArgsTMB = prepareBYM2argumentsForTMB(admMat, u=0.5, alpha=2/3, 
-                                                 constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-        Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
-        QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+        # get how much u reduced by sum to zero constraint to u, then scale
+        uSums = colSums(uStar)
+        uFacs = uSums * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
+        reduceU = outer(QinvSumsNorm, c(uFacs))
+        
+        # adjust Epsilon = w for the constraint on u
+        epsilon_tmb_draws = wStar - reduceU
+      } else {
+        # get how much u reduced by sum to zero constraint to u, then scale
+        uMeans = colMeans(uStar)
+        uMeansScaled = uMeans * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
+        
+        # adjust Epsilon = w for the constraint on u
+        epsilon_tmb_draws = sweep(wStar, 2, uMeansScaled)
+        
+        # under this reparameterization, the intercept is the mean of u (scaled)
+        alpha_tmb_draws = uMeansScaled
       }
       
-      # get how much u reduced by sum to zero constraint to u, then scale
-      uSums = colSums(uStar)
-      uFacs = uSums * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
-      reduceU = outer(QinvSumsNorm, c(uFacs))
-      
-      # adjust Epsilon = w for the constraint on u
-      epsilon_tmb_draws = wStar - reduceU
     }
     
     includeBeta = any(parnames == "beta")
