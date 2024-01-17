@@ -3106,11 +3106,11 @@ predClusters = function(nsim=1000, fold, SD0, obj,
         epsilon_tmb_draws = wStar - reduceU
       } else {
         # get how much u reduced by sum to zero constraint to u, then scale
-        uMeans = colMean(uStar)
+        uMeans = colMeans(uStar)
         uMeansScaled = uMeans * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
         
         # adjust Epsilon = w for the constraint on u
-        epsilon_tmb_draws = sweep(wStarm, 2, uMeansScaled)
+        epsilon_tmb_draws = sweep(wStar, 2, uMeansScaled)
         
         # under this reparameterization, the intercept is the mean of u (scaled)
         alpha_tmb_draws = uMeansScaled

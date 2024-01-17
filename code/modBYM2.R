@@ -1072,7 +1072,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     beta_tmb_draws    <- t.draws[parnames == 'beta',]
     sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
     phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
-    browser()
+    
     if(hasUrbDiffMICS) {
       urbDiffDraws = t.draws[parnames == 'diffUrbMICS',]
     }
