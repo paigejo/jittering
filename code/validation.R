@@ -2177,7 +2177,7 @@ getValidationFit = function(fold,
                               parameters=tmb_paramsStart,
                               random=rand_effsStart,
                               hessian=TRUE,
-                              DLL='modM_D2Sep')
+                              DLL='modM_D2SepRepar')
       } else {
         if(!varClust) {
           dyn.load(dynlib("code/modM_DSepRepar"))
@@ -2186,15 +2186,15 @@ getValidationFit = function(fold,
                                 parameters=tmb_paramsStart,
                                 random=rand_effsStart,
                                 hessian=TRUE,
-                                DLL='modM_DSep')
+                                DLL='modM_DSepRepar')
         } else {
-          dyn.load(dynlib("code/modM_DSepReparURClust"))
+          dyn.load(dynlib("code/modM_DSepReparURClustRepar"))
           TMB::config(tmbad.sparse_hessian_compress = 1)
           objStart <- MakeADFun(data=data_start,
                                 parameters=tmb_paramsStart,
                                 random=rand_effsStart,
                                 hessian=TRUE,
-                                DLL='modM_DSepURClust')
+                                DLL='modM_DSepURClustRepar')
         }
         
       }
