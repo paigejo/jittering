@@ -1756,6 +1756,12 @@ getValidationFit = function(fold,
   fname = paste0("savedOutput/validation/dat", fnameRoot, ".RData")
   out = load(fname)
   
+  if(sep) {
+    fnameRoot = paste0(fnameRoot, "Sep", collapse="")
+  }
+  if(sepRepar) {
+    fnameRoot = paste0(fnameRoot, "Repar", collapse="")
+  }
   if(varClust) {
     fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
   }
@@ -2188,13 +2194,13 @@ getValidationFit = function(fold,
                                 hessian=TRUE,
                                 DLL='modM_DSepRepar')
         } else {
-          dyn.load(dynlib("code/modM_DSepReparURClustRepar"))
+          dyn.load(dynlib("code/modM_DSepReparVarClust"))
           TMB::config(tmbad.sparse_hessian_compress = 1)
           objStart <- MakeADFun(data=data_start,
                                 parameters=tmb_paramsStart,
                                 random=rand_effsStart,
                                 hessian=TRUE,
-                                DLL='modM_DSepURClustRepar')
+                                DLL='modM_DSepReparVarClust')
         }
         
       }
@@ -2378,7 +2384,7 @@ getValidationFit = function(fold,
         if(!varClust) {
           dyn.unload( dynlib("code/modM_DSepRepar"))
         } else {
-          dyn.unload( dynlib("code/modM_DSepReparURClust"))
+          dyn.unload( dynlib("code/modM_DSepReparVarClust"))
         }
       }
     }
@@ -2450,7 +2456,7 @@ getValidationFit = function(fold,
         if(model %in% c("Mdm", "MDM")) {
           MakeADFunInputs$DLL = "modM_DMSepReparVarClust"
         } else {
-          MakeADFunInputs$DLL = "modM_DSepReparURClust"
+          MakeADFunInputs$DLL = "modM_DSepReparVarClust"
         }
       }
     }
@@ -2868,7 +2874,7 @@ getValidationFit = function(fold,
       if(!areal) {
         preds = predClusters(nsim=nsim, fold, SD0, obj, 
                              model=model, sep=sep, varClust=varClust, 
-                             quantiles=c(0.025, 0.1, 0.9, 0.975))
+                             quantiles=c(0.025, 0.1, 0.9, 0.975), sepRepar=sepRepar)
       } else {
         gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=nsim, admLevel=admLevelString, 
                              predAtArea=foldArea,
@@ -2887,7 +2893,8 @@ getValidationFit = function(fold,
   
   
   allScores = scoreValidationPreds(fold, model=model, regenScores=TRUE, 
-                                   areal=areal, varClust=varClust, useSampleWt=useSampleWt)
+                                   areal=areal, varClust=varClust, useSampleWt=useSampleWt, 
+                                   sep=sep, sepRepar=sepRepar)
   
   dyn.unload( dynlib(paste0("code/", dat$MakeADFunInputs$DLL)))
   
@@ -2904,7 +2911,8 @@ predClusters = function(nsim=1000, fold, SD0, obj,
                         model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
                         quantiles=c(0.025, 0.1, 0.9, 0.975), 
                         addBinVar=TRUE, maxIterChunk=1000, 
-                        sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE, varClust=FALSE) {
+                        sep=TRUE, QinvSumsNorm=NULL, verbose=TRUE, varClust=FALSE, 
+                        sepRepar=sep) {
   
   # clean input arguments
   model = match.arg(model)
@@ -2973,6 +2981,12 @@ predClusters = function(nsim=1000, fold, SD0, obj,
   varname = paste0("dat", model)
   dat = get(varname)[[fold]]
   
+  if(sep) {
+    fnameRoot = paste0(fnameRoot, "Sep", collapse="")
+  }
+  if(sepRepar) {
+    fnameRoot = paste0(fnameRoot, "Repar", collapse="")
+  }
   if(varClust) {
     fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
   }
@@ -3463,7 +3477,8 @@ predStratum = function(nsim=1000, fold, SD0, obj,
 
 scoreValidationPreds = function(fold, 
                                 model=c("Md", "MD", "Mdm", "MDM", "Md2", "MD2", "Mdm2", "MDM2"), 
-                                regenScores=FALSE, areal=FALSE, varClust=FALSE, useSampleWt=FALSE) {
+                                regenScores=FALSE, areal=FALSE, varClust=FALSE, useSampleWt=FALSE, 
+                                sep=TRUE, sepRepar=sep) {
   # clean input arguments
   model = match.arg(model)
   foldMICS = fold - 10
@@ -3483,7 +3498,12 @@ scoreValidationPreds = function(fold,
   if(areal) {
     fnameRoot = paste0(fnameRoot, "areal", collapse="")
   }
-  
+  if(sep) {
+    fnameRoot = paste0(fnameRoot, "Sep", collapse="")
+  }
+  if(sepRepar) {
+    fnameRoot = paste0(fnameRoot, "Repar", collapse="")
+  }
   if(varClust) {
     fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
   }
@@ -3589,7 +3609,8 @@ scoreValidationPreds = function(fold,
 
 # function for collecting validation results for each model
 validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE, 
-                           admLevel=c("adm2", "admFinal", "all"), varClust=FALSE) {
+                           admLevel=c("adm2", "admFinal", "all"), varClust=FALSE, 
+                           sep=TRUE, sepRepar=sep) {
   admLevel = match.arg(admLevel)
   
   if(admLevel == "adm2") {
@@ -3669,7 +3690,12 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     if(areal) {
       fnameRoot = paste0(fnameRoot, "areal", collapse="")
     }
-    
+    if(sep) {
+      fnameRoot = paste0(fnameRoot, "Sep", collapse="")
+    }
+    if(sepRepar) {
+      fnameRoot = paste0(fnameRoot, "Repar", collapse="")
+    }
     if(varClust) {
       fnameRoot = paste0(fnameRoot, "VarClust", collapse="")
     }

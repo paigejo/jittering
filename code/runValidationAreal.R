@@ -31,7 +31,7 @@ randomAlpha = TRUE
 system.time(out <- getValidationFit(fold, model, regenModFit=TRUE, 
                                     randomBeta=randomBeta, randomAlpha=randomAlpha, 
                                     fromOptPar=FALSE, regenPreds=TRUE, areal=TRUE, 
-                                    sep=TRUE, varClust=FALSE))
+                                    sep=TRUE, varClust=TRUE))
 # })
 # save(p, file="savedOutput/simStudyResults/tempFiles/profFile.RData")
 

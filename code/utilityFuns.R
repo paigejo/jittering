@@ -1948,8 +1948,9 @@ wtdSD = function(x, weights=NULL, na.rm=FALSE,
 }
 
 # dyn.unload(dynlib("code/"))
-getDynlibs = function() {
-  getLoadedDLLs()
+getDynlibs = function(tailN=6) {
+  print("dyn.unload(dynlib('code/'))")
+  tail(getLoadedDLLs(), tailN)
 }
 
 # if tab2 is just tab1 with rows scrambled, then:
