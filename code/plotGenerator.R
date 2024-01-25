@@ -774,6 +774,56 @@ plotDatasets = function(kmres=5) {
   dev.off()
 }
 
+# Application section ----
+
+# Plots:
+#  1)-3) For Md, M_D, Mdm, and M_DM models, plot posterior mean prevalence and 95% 
+#        CI width at pixel, Admin2, and Admin1 levels
+#  4)-6) For M_D, M_M, and M_DM models, plot posterior mean prevalence and 95% CI 
+#        width at pixel, Admin2, and Admin1 levels
+#  7)-9) Plot posterior mean prevalence and 95% CI width for M_DM model, and 
+#        percent diff in mean and CI widths to Md and Mdm models at pixel, 
+#        Admin2, and Admin1 levels
+# 10-12) Same as 7)-9) but plot percent diffs on vert axis versus M_DM values on 
+#        horiz axis
+plotAppPreds = function(adm2Model=FALSE) {
+  sep = TRUE
+  sepRepar = TRUE
+  adm2Text = ifelse(adm2Model, "2", "")
+  
+  # load gridPreds
+  out = load("savedOutput/ed/gridPredsM_DMSepRepar.RData")
+  gridPredsM_DM = gridPreds
+  out = load("savedOutput/ed/gridPredsMdmSepRepar.RData")
+  gridPredsMdm = gridPreds
+  out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
+  gridPredsM_D = gridPreds
+  out = load("savedOutput/ed/gridPredsM_MSepRepar.RData")
+  gridPredsM_M = gridPreds
+  out = load("savedOutput/ed/gridPredsMdSepRepar.RData")
+  gridPredsMd = gridPreds
+  
+  # 1) Md, M_D, Mdm models preds and CI widths at pixel level
+  pdf("figures/ed/mainPredsPixel.pdf", width=5, height=3.8)
+  par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], X[,6], nx=256, colScale=covColScale, 
+              xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
+              ylab="Latitude", main="Distance to rivers and lakes", legend.mar=4.7,
+              addColorBar=TRUE)
+  # plotMapDat(mapDat=adm2, lwd=.5, new=FALSE, 
+  #            border=do.call("rgb", c(as.list(rep(0, 3)), list(1))))
+  # plotMapDat(mapDat=adm1, new=FALSE, lwd=1.5)
+  plotMapDat(mapDat=sen, lwd=.5, new=FALSE,
+             border=do.call("rgb", c(as.list(rep(0, 3)), list(1))))
+  plotMapDat(mapDat=adm1, new=FALSE, lwd=1.5)
+  # plot(pop, add=TRUE)
+  dev.off()
+}
+
+
+
+
+
 
 
 
