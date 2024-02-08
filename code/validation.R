@@ -3645,18 +3645,20 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   edVal = edVal[sortI,]
   
   if(!areal) {
-    weightsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
-    weightsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
+    nsDHS = aggregate(edVal$n, by=list(fold=edVal$fold), FUN=sum)$x
+    nsMICS = aggregate(edMICSval$ns, by=list(fold=edMICSval$fold), FUN=sum)$x
     weightsUrbDHS = aggregate(edVal$n[edVal$urban], by=list(fold=edVal$fold[edVal$urban]), FUN=sum)$x
     weightsUrbMICS = aggregate(edMICSval$ns[edMICSval$urban], by=list(fold=edMICSval$fold[edMICSval$urban]), FUN=sum)$x
     weightsRurDHS = aggregate(edVal$n[!edVal$urban], by=list(fold=edVal$fold[!edVal$urban]), FUN=sum)$x
     weightsRurMICS = aggregate(edMICSval$ns[!edMICSval$urban], by=list(fold=edMICSval$fold[!edMICSval$urban]), FUN=sum)$x
-    weightsDHS = weightsDHS/sum(weightsDHS)
+    weightsDHS = nsDHS/sum(nsDHS)
     weightsUrbDHS = weightsUrbDHS/sum(weightsUrbDHS)
     weightsRurDHS = weightsRurDHS/sum(weightsRurDHS)
-    weightsMICS = weightsMICS/sum(weightsMICS)
+    weightsMICS = nsMICS/sum(nsMICS)
     weightsUrbMICS = weightsUrbMICS/sum(weightsUrbMICS)
     weightsRurMICS = weightsRurMICS/sum(weightsRurMICS)
+    
+    weightsDHStoMICS = nsDHS / (nsDHS + nsMICS)
   }
   
   # aggregate the results of all folds for each model
@@ -3949,7 +3951,7 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
     finalTabRurAvg = NULL
   }
   
-  # plot scores spatially ----
+  # plot scores spatially
   predCols = makeBlueGreenYellowSequentialColors(64)
   quantCols = makePurpleYellowSequentialColors(64)
   arealText = ifelse(areal, "areal", "")
@@ -3968,6 +3970,135 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   
   browser()
   
+  savedColI = c(1, 4, 5, 9, 13, 17, 18)
+  savedColI = c(1, 5, 9, 18)
+  digits = c(rep(3, 3), 2)
+  
+  print(xtable(roundCols(finalTabAvg[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(finalTabDHSAvg[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(finalTabMICSAvg[,savedColI], digits=digits), digits=c(0, digits)))
+  
+  # boxplots/stripcharts of scores ----
+  thisScoresTabAll = list(weightsDHStoMICS * scoresTabsDHS[[1]] + (1-weightsDHStoMICS) * scoresTabsDHS[[1]], 
+                          weightsDHStoMICS * scoresTabsDHS[[2]] + (1-weightsDHStoMICS) * scoresTabsDHS[[2]], 
+                          weightsDHStoMICS * scoresTabsDHS[[3]] + (1-weightsDHStoMICS) * scoresTabsDHS[[3]], 
+                          weightsDHStoMICS * scoresTabsDHS[[4]] + (1-weightsDHStoMICS) * scoresTabsDHS[[4]])
+  
+  if(admLevel == "adm2") {
+    models = c(expression(M[d]^2), expression(M[D]^2), expression(M[dm]^2), expression(M[DM]^2))
+    modelText = c("Md2", "M_D2", "Mdm2", "M_DM2")
+    admText = "2"
+  } else if(admLevel == "admFinal") {
+    models = c(expression(M[d]^1), expression(M[D]^1), expression(M[dm]^1), expression(M[DM]^1))
+    modelText = c("Md1", "M_D1", "Mdm1", "M_DM1")
+    admText = "1"
+  }
+  if(areal) {
+    arealText = "Areal"
+  } else {
+    arealText = "Cluster"
+  }
+  datType = c("DHS+MICS", "DHS", "MICS")
+  
+  nObs = nrow(thisScoresTabAll[[1]])
+  
+  crps = c(thisScoresTabAll[[1]][,5], thisScoresTabAll[[2]][,5], thisScoresTabAll[[3]][,5], thisScoresTabAll[[4]][,5], 
+           scoresTabsDHS[[1]][,5], scoresTabsDHS[[2]][,5], scoresTabsDHS[[3]][,5], scoresTabsDHS[[4]][,5], 
+           scoresTabsMICS[[1]][,5], scoresTabsMICS[[2]][,5], scoresTabsMICS[[3]][,5], scoresTabsMICS[[4]][,5])
+  IS = c(thisScoresTabAll[[1]][,9], thisScoresTabAll[[2]][,9], thisScoresTabAll[[3]][,9], thisScoresTabAll[[4]][,9], 
+         scoresTabsDHS[[1]][,9], scoresTabsDHS[[2]][,9], scoresTabsDHS[[3]][,9], scoresTabsDHS[[4]][,9], 
+         scoresTabsMICS[[1]][,9], scoresTabsMICS[[2]][,9], scoresTabsMICS[[3]][,9], scoresTabsMICS[[4]][,9])
+  runtime = c(thisScoresTabAll[[1]][,18], thisScoresTabAll[[2]][,18], thisScoresTabAll[[3]][,18], thisScoresTabAll[[4]][,18], 
+              scoresTabsDHS[[1]][,18], scoresTabsDHS[[2]][,18], scoresTabsDHS[[3]][,18], scoresTabsDHS[[4]][,18], 
+              scoresTabsMICS[[1]][,18], scoresTabsMICS[[2]][,18], scoresTabsMICS[[3]][,18], scoresTabsMICS[[4]][,18])
+  thisModels = rep(rep(modelText, each=nObs), 3) # once for all, DHS, and MICS
+  thisModels = factor(thisModels, levels=modelText)
+  levels(thisModels) = models
+  thisDatType = rep(datType, each=4*nObs)
+  thisDatType = factor(thisDatType, levels=datType)
+  
+  # Function to produce summary statistics (mean and +/- 1.96 se)
+  data_summary <- function(x) {
+    m <- mean(x)
+    ymin <- m-qnorm(.975) * sd(x)/sqrt(nObs)
+    ymax <- m+qnorm(.975) * sd(x)/sqrt(nObs)
+    return(c(y=m,ymin=ymin,ymax=ymax))
+  }
+  
+  # CRPS
+  tab = data.frame(Data=thisDatType, Model=thisModels, CRPS=crps)
+  pdf(paste0("figures/validation/CRPS", arealText, admText, ".pdf"), width=5, height=5)
+  ggplot(tab, aes(Model, CRPS, col=Model, pch=Model)) + 
+    # geom_boxplot() + 
+    geom_jitter(position=position_jitter(0.3)) + 
+    scale_x_discrete(labels=models) + 
+    xlab("") + 
+    scale_y_continuous(trans="log10") +
+    facet_wrap(~Data,  strip.position = "bottom") + 
+    theme_classic() + 
+    scale_colour_hue(name = "Model", labels = models) + 
+    scale_shape_discrete(name = "Model", labels = models) + 
+    stat_summary(fun.data=data_summary, 
+                 geom="pointrange", color="black", show.legend=FALSE) + 
+    theme(strip.background=element_blank(), strip.placement="outside", 
+          plot.margin=unit(c(0,0,0,0), "cm"), axis.title.x=element_blank())
+  # ggplot(tab, aes(Data, CRPS, fill=Model)) + 
+  #   geom_boxplot(position="dodge2") + scale_y_continuous(trans="log10") +
+  #   labs(x="", y="CRPS", fill="Model") + 
+  #   theme_classic() + theme(legend.position = "top", axis.title=element_text(size=12), 
+  #                           axis.text=element_text(size=12), plot.margin=unit(c(0,0,0.45,0), "cm"), 
+  #                           legend.title=element_text(size=12), legend.text=element_text(size=12))
+  dev.off()
+  
+  # IS
+  tab = data.frame(Data=thisDatType, Model=thisModels, IS=IS)
+  pdf(paste0("figures/validation/IS", arealText, admText, ".pdf"), width=5, height=5)
+  ggplot(tab, aes(Model, IS, col=Model, pch=Model)) + 
+    # geom_boxplot() + 
+    geom_jitter(position=position_jitter(0.3)) + 
+    scale_x_discrete(labels=models) + 
+    xlab("") + 
+    scale_y_continuous(trans="log10") +
+    facet_wrap(~Data,  strip.position = "bottom") + 
+    theme_classic() + 
+    scale_colour_hue(name = "Model", labels = models) + 
+    scale_shape_discrete(name = "Model", labels = models) + 
+    stat_summary(fun.data=data_summary, 
+                 geom="pointrange", color="black", show.legend=FALSE) + 
+    theme(strip.background=element_blank(), strip.placement="outside", 
+          plot.margin=unit(c(0,0,0,0), "cm"), axis.title.x=element_blank())
+  # ggplot(tab, aes(Data, CRPS, fill=Model)) + 
+  #   geom_boxplot(position="dodge2") + scale_y_continuous(trans="log10") +
+  #   labs(x="", y="CRPS", fill="Model") + 
+  #   theme_classic() + theme(legend.position = "top", axis.title=element_text(size=12), 
+  #                           axis.text=element_text(size=12), plot.margin=unit(c(0,0,0.45,0), "cm"), 
+  #                           legend.title=element_text(size=12), legend.text=element_text(size=12))
+  dev.off()
+  
+  # Runtime
+  tab = data.frame(Data=thisDatType, Model=thisModels, Time=runtime)
+  pdf(paste0("figures/validation/time", arealText, admText, ".pdf"), width=5, height=5)
+  ggplot(tab, aes(Model, Time, col=Model, pch=Model)) + 
+    # geom_boxplot() + 
+    geom_jitter(position=position_jitter(0.3)) + 
+    scale_x_discrete(labels=models) + 
+    xlab("") + ylab("Runtime (minutes)") + 
+    scale_y_continuous(trans="log10") +
+    facet_wrap(~Data,  strip.position = "bottom") + 
+    theme_classic() + 
+    scale_colour_hue(name = "Model", labels = models) + 
+    scale_shape_discrete(name = "Model", labels = models) + 
+    stat_summary(fun.data=data_summary, 
+                 geom="pointrange", color="black", show.legend=FALSE) + 
+    theme(strip.background=element_blank(), strip.placement="outside", 
+          plot.margin=unit(c(0,0,0,0), "cm"), axis.title.x=element_blank())
+  # ggplot(tab, aes(Data, CRPS, fill=Model)) + 
+  #   geom_boxplot(position="dodge2") + scale_y_continuous(trans="log10") +
+  #   labs(x="", y="CRPS", fill="Model") + 
+  #   theme_classic() + theme(legend.position = "top", axis.title=element_text(size=12), 
+  #                           axis.text=element_text(size=12), plot.margin=unit(c(0,0,0.45,0), "cm"), 
+  #                           legend.title=element_text(size=12), legend.text=element_text(size=12))
+  dev.off()
   
   # old results: ----
   

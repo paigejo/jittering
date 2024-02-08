@@ -720,7 +720,7 @@ out = load("savedOutput/ed/fitMdSepRepar.RData")
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 # New results sep finalRepar
 # \begin{table}[ht]

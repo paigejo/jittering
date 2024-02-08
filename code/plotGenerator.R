@@ -789,34 +789,343 @@ plotDatasets = function(kmres=5) {
 plotAppPreds = function(adm2Model=FALSE) {
   sep = TRUE
   sepRepar = TRUE
-  adm2Text = ifelse(adm2Model, "2", "")
+  adm2Text = ifelse(adm2Model, "2", "1")
   
-  # load gridPreds
-  out = load("savedOutput/ed/gridPredsM_DMSepRepar.RData")
-  gridPredsM_DM = gridPreds
-  out = load("savedOutput/ed/gridPredsMdmSepRepar.RData")
-  gridPredsMdm = gridPreds
-  out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
-  gridPredsM_D = gridPreds
-  out = load("savedOutput/ed/gridPredsM_MSepRepar.RData")
-  gridPredsM_M = gridPreds
-  out = load("savedOutput/ed/gridPredsMdSepRepar.RData")
-  gridPredsMd = gridPreds
+  # load predictions
+  if(!adm2Model) {
+    # grid preds
+    out = load("savedOutput/ed/gridPredsM_DMSepRepar.RData")
+    gridPredsM_DM = gridPreds
+    # out = load("savedOutput/ed/gridPredsMdmSepRepar.RData")
+    # gridPredsMdm = gridPreds
+    out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
+    gridPredsM_D = gridPreds
+    # out = load("savedOutput/ed/gridPredsM_MSepRepar.RData")
+    # gridPredsM_M = gridPreds
+    out = load("savedOutput/ed/gridPredsMdSepRepar.RData")
+    gridPredsMd = gridPreds
+    
+    # admin2 preds
+    out = load("savedOutput/ed/admin2PredsM_DMSepRepar.RData")
+    admin2PredsM_DM = admin2Preds
+    # out = load("savedOutput/ed/admin2PredsMdmSepRepar.RData")
+    # admin2PredsMdm = admin2Preds
+    out = load("savedOutput/ed/admin2PredsM_DSepRepar.RData")
+    admin2PredsM_D = admin2Preds
+    # out = load("savedOutput/ed/admin2PredsM_MSepRepar.RData")
+    # admin2PredsM_M = admin2Preds
+    out = load("savedOutput/ed/admin2PredsMdSepRepar.RData")
+    admin2PredsMd = admin2Preds
+    
+    # admin1 preds
+    out = load("savedOutput/ed/admin1PredsM_DMSepRepar.RData")
+    admin1PredsM_DM = admin1Preds
+    # out = load("savedOutput/ed/admin1PredsMdmSepRepar.RData")
+    # admin1PredsMdm = admin1Preds
+    out = load("savedOutput/ed/admin1PredsM_DSepRepar.RData")
+    admin1PredsM_D = admin1Preds
+    # out = load("savedOutput/ed/admin1PredsM_MSepRepar.RData")
+    # admin1PredsM_M = admin1Preds
+    out = load("savedOutput/ed/admin1PredsMdSepRepar.RData")
+    admin1PredsMd = admin1Preds
+  } else {
+    # grid preds
+    out = load("savedOutput/ed/gridPredsM_DM2SepRepar.RData")
+    gridPredsM_DM = gridPreds
+    # out = load("savedOutput/ed/gridPredsMdm2SepRepar.RData")
+    # gridPredsMdm = gridPreds
+    out = load("savedOutput/ed/gridPredsM_D2SepRepar.RData")
+    gridPredsM_D = gridPreds
+    # out = load("savedOutput/ed/gridPredsM_M2SepRepar.RData")
+    # gridPredsM_M = gridPreds
+    out = load("savedOutput/ed/gridPredsMd2SepRepar.RData")
+    gridPredsMd = gridPreds
+    
+    # admin2 preds
+    out = load("savedOutput/ed/admin2PredsM_DM2SepRepar.RData")
+    admin2PredsM_DM = admin2Preds
+    # out = load("savedOutput/ed/admin2PredsMdm2SepRepar.RData")
+    # admin2PredsMdm = admin2Preds
+    out = load("savedOutput/ed/admin2PredsM_D2SepRepar.RData")
+    admin2PredsM_D = admin2Preds
+    # out = load("savedOutput/ed/admin2PredsM_M2SepRepar.RData")
+    # admin2PredsM_M = admin2Preds
+    out = load("savedOutput/ed/admin2PredsMd2SepRepar.RData")
+    admin2PredsMd = admin2Preds
+    
+    # admin1 preds
+    out = load("savedOutput/ed/admin1PredsM_DM2SepRepar.RData")
+    admin1PredsM_DM = admin1Preds
+    # out = load("savedOutput/ed/admin1PredsMdm2SepRepar.RData")
+    # admin1PredsMdm = admin1Preds
+    out = load("savedOutput/ed/admin1PredsM_D2SepRepar.RData")
+    admin1PredsM_D = admin1Preds
+    # out = load("savedOutput/ed/admin1PredsM_M2SepRepar.RData")
+    # admin1PredsM_M = admin1Preds
+    out = load("savedOutput/ed/admin1PredsMd2SepRepar.RData")
+    admin1PredsMd = admin1Preds
+  }
   
-  # 1) Md, M_D, Mdm models preds and CI widths at pixel level
-  pdf("figures/ed/mainPredsPixel.pdf", width=5, height=3.8)
-  par(mar=c(3, 3, 2, 5), mgp=c(1.7, .5, 0))
-  myQuiltPlot(LLCoords[,1], LLCoords[,2], X[,6], nx=256, colScale=covColScale, 
-              xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="Longitude", 
-              ylab="Latitude", main="Distance to rivers and lakes", legend.mar=4.7,
-              addColorBar=TRUE)
-  # plotMapDat(mapDat=adm2, lwd=.5, new=FALSE, 
-  #            border=do.call("rgb", c(as.list(rep(0, 3)), list(1))))
-  # plotMapDat(mapDat=adm1, new=FALSE, lwd=1.5)
-  plotMapDat(mapDat=sen, lwd=.5, new=FALSE,
-             border=do.call("rgb", c(as.list(rep(0, 3)), list(1))))
-  plotMapDat(mapDat=adm1, new=FALSE, lwd=1.5)
-  # plot(pop, add=TRUE)
+  LLCoords = cbind(popMatNGAThresh$lon, popMatNGAThresh$lat)
+  
+  CIwidth = function(x, signif=.95) {
+    alpha = 1-signif
+    diff(quantile(prob=c(alpha/2, 1-alpha/2), x, na.rm=TRUE))
+  }
+  
+  predCols = makeBlueGreenYellowSequentialColors(64)
+  widthCols = makePurpleYellowSequentialColors(64)
+  
+  if(adm2Model) {
+    models = c(expression(M[d]^2), expression(M[D]^2), expression(M[DM]^2))
+  } else {
+    models = c(expression(M[d]^1), expression(M[D]^1), expression(M[DM]^1))
+  }
+  
+  # lwd = ifelse(doAdm2, .6, 1)
+  # border = ifelse(doAdm2, rgb(.6, .6, .6), "black")
+  
+  lwd = .6
+  border = rgb(.6, .6, .6)
+  
+  # 1) Md, M_D, M_DM models preds and CI widths at pixel level
+  predsM_DM = rowMeans(gridPredsM_DM$gridDraws)
+  predsM_D = rowMeans(gridPredsM_D$gridDraws)
+  predsMd = rowMeans(gridPredsMd$gridDraws)
+  widthM_DM = apply(gridPredsM_DM$gridDraws, 1, CIwidth)
+  widthM_D = apply(gridPredsM_D$gridDraws, 1, CIwidth)
+  widthMd = apply(gridPredsMd$gridDraws, 1, CIwidth)
+  predsLim = range(c(predsM_DM, predsM_D, predsMd))
+  widthLim = range(c(widthM_DM, widthM_D, widthMd))
+  
+  pdf(paste0("figures/ed/main", adm2Text, "PredsPixel.pdf"), width=8, height=4.5)
+  par(mar=c(1, 1, 1, 2), mgp=c(1.7, .5, 0), mfrow=c(2,3), oma=c(2.1,5,2,3))
+  
+  # preds
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], predsMd, nx=256, colScale=predCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=predsLim, asp=1, xlab="", 
+              ylab="", main="", legend.mar=0,
+              addColorBar=FALSE, leaveRoomForLegend=FALSE)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("Estimates", side=2, line=4)
+  mtext(models[1], side=3, line=.7)
+  
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], predsM_D, nx=256, colScale=predCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=predsLim, asp=1, xlab="", 
+              ylab="", main="", legend.mar=0,
+              addColorBar=FALSE, leaveRoomForLegend=FALSE)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext(models[2], side=3, line=1)
+  
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], predsM_DM, nx=256, colScale=predCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=predsLim, asp=1, xlab="", 
+              ylab="", main="", addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+              legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                              legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+              legend.width=3, legend.mar=0)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext(models[3], side=3, line=1)
+  
+  # widths
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], widthMd, nx=256, colScale=widthCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=widthLim, asp=1, xlab="", 
+              ylab="", main="", legend.mar=0,
+              addColorBar=FALSE, leaveRoomForLegend=FALSE)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("95% CI Width", side=2, line=4)
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], widthM_D, nx=256, colScale=widthCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=widthLim, asp=1, xlab="", 
+              ylab="", main="", legend.mar=0,
+              addColorBar=FALSE, leaveRoomForLegend=FALSE)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  myQuiltPlot(LLCoords[,1], LLCoords[,2], widthM_DM, nx=256, colScale=widthCols, 
+              xlim=lonLimNGA, ylim=latLimNGA, zlim=widthLim, asp=1, xlab="", 
+              ylab="", main="", addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+              legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                              legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+              legend.width=3, legend.mar=0)
+  plotMapDat(mapDat=adm2, new=FALSE, lwd=lwd, border=border)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  dev.off()
+  
+  
+  
+  
+  
+  # 2) Md, M_D, M_DM models preds and CI widths at Admin2 level
+  predsM_DM = rowMeans(admin2PredsM_DM$aggregationResults$p, na.rm=TRUE)
+  predsM_D = rowMeans(admin2PredsM_D$aggregationResults$p, na.rm=TRUE)
+  predsMd = rowMeans(admin2PredsMd$aggregationResults$p, na.rm=TRUE)
+  widthM_DM = apply(admin2PredsM_DM$aggregationResults$p, 1, CIwidth)
+  widthM_D = apply(admin2PredsM_D$aggregationResults$p, 1, CIwidth)
+  widthMd = apply(admin2PredsMd$aggregationResults$p, 1, CIwidth)
+  predsLim = range(c(predsM_DM, predsM_D, predsMd), na.rm=TRUE)
+  widthLim = range(c(widthM_DM, widthM_D, widthMd), na.rm=TRUE)
+  
+  pdf(paste0("figures/ed/main", adm2Text, "PredsAdmin2.pdf"), width=8, height=4.5)
+  par(mar=c(1, 1, 1, 2), mgp=c(1.7, .5, 0), mfrow=c(2,3), oma=c(2.1,5,2,3))
+  
+  # preds
+  plotMapDat(adm2, predsMd, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=predCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=predsLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("Estimates", side=2, line=4)
+  mtext(models[1], side=3, line=.7)
+  
+  plotMapDat(adm2, predsM_D, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=predCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=predsLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext(models[2], side=3, line=1)
+  
+  plotMapDat(adm2, predsM_DM, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=predCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, zlim=predsLim, asp=1, xlab="", 
+             addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+             legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                             legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+             legend.width=3, legend.mar=0)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext(models[3], side=3, line=1)
+  
+  # widths
+  plotMapDat(adm2, widthMd, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=widthCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=widthLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  plotMapDat(admFinal, new=FALSE)
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("95% CI Width", side=2, line=4)
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  
+  plotMapDat(adm2, widthM_D, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=widthCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=widthLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  plotMapDat(adm2, widthM_DM, varAreas=adm2@data$NAME_2, regionNames=adm2@data$NAME_2, 
+             cols=widthCols, crosshatchNADensity=30, lwd=lwd, border=border, 
+             xlim=lonLimNGA, ylim=latLimNGA, zlim=widthLim, asp=1, xlab="", 
+             addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+             legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                             legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+             legend.width=3, legend.mar=0)
+  plotMapDat(admFinal, new=FALSE)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  dev.off()
+  
+  
+  
+  
+  
+  # 3) Md, M_D, M_DM models preds and CI widths at Admin1 level
+  predsM_DM = rowMeans(admin1PredsM_DM$aggregationResults$p, na.rm=TRUE)
+  predsM_D = rowMeans(admin1PredsM_D$aggregationResults$p, na.rm=TRUE)
+  predsMd = rowMeans(admin1PredsMd$aggregationResults$p, na.rm=TRUE)
+  widthM_DM = apply(admin1PredsM_DM$aggregationResults$p, 1, CIwidth)
+  widthM_D = apply(admin1PredsM_D$aggregationResults$p, 1, CIwidth)
+  widthMd = apply(admin1PredsMd$aggregationResults$p, 1, CIwidth)
+  predsLim = range(c(predsM_DM, predsM_D, predsMd), na.rm=TRUE)
+  widthLim = range(c(widthM_DM, widthM_D, widthMd), na.rm=TRUE)
+  
+  pdf(paste0("figures/ed/main", adm2Text, "PredsAdmin1.pdf"), width=8, height=4.5)
+  par(mar=c(1, 1, 1, 2), mgp=c(1.7, .5, 0), mfrow=c(2,3), oma=c(2.1,5,2,3))
+  
+  # preds
+  plotMapDat(adm1, predsMd, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=predCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=predsLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("Estimates", side=2, line=4)
+  mtext(models[1], side=3, line=.7)
+  
+  plotMapDat(adm1, predsM_D, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=predCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=predsLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  
+  mtext(models[2], side=3, line=1)
+  
+  plotMapDat(adm1, predsM_DM, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=predCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, zlim=predsLim, asp=1, xlab="", 
+             addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+             legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                             legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+             legend.width=3, legend.mar=0)
+  
+  mtext(models[3], side=3, line=1)
+  
+  # widths
+  plotMapDat(adm1, widthMd, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=widthCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=widthLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  
+  mtext("Latitude", side=2, line=2, cex=.8)
+  mtext("95% CI Width", side=2, line=4)
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  
+  plotMapDat(adm1, widthM_D, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=widthCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, asp=1, xlab="", 
+             ylab="", main="", legend.mar=0, zlim=widthLim, addColorBar=FALSE, 
+             leaveRoomForLegend=FALSE)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
+  plotMapDat(adm1, widthM_DM, varAreas=adm1@data$NAME_1, regionNames=adm1@data$NAME_1, 
+             cols=widthCols, crosshatchNADensity=30, 
+             xlim=lonLimNGA, ylim=latLimNGA, zlim=widthLim, asp=1, xlab="", 
+             addColorBar=TRUE, leaveRoomForLegend=TRUE, 
+             legendArgs=list(axis.args=list(cex.axis=1, tck=-.7, hadj=0), 
+                             legend.cex=1, smallplot= c(.96,1,.1,.9)), 
+             legend.width=3, legend.mar=0)
+  
+  mtext("Longitude", side=1, line=2, cex=.8)
+  
   dev.off()
 }
 

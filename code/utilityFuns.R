@@ -1993,4 +1993,9 @@ straightenNumPerStrat = function(numPerStratTab, trueAreaOrder) {
   rbind(firstPt, secondPt)
 }
 
-
+roundCols = function(mat, digits=rep(0, ncol(mat))) {
+  out = do.call("cbind", lapply(1:ncol(mat), function(i) {round(mat[,i], digits=digits[i])}))
+  colnames(out) = colnames(mat)
+  row.names(out) = row.names(mat)
+  out
+}

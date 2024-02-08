@@ -257,7 +257,6 @@ if(FALSE) {
 out = load("savedOutput/global/edM_DMInputs.RData")
 
 # set priors ----
-alpha_pri = c(0, 100^2)
 beta_pri = c(0, sqrt(1000))
 
 out = load("savedOutput/global/admFinalMat.RData")
@@ -573,7 +572,7 @@ if(FALSE) {
 save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DSepRepar.RData")
 out = load("savedOutput/ed/fitM_DSepRepar.RData")
 
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 # newest results with final repar:
 # \begin{table}[ht]

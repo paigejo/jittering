@@ -283,6 +283,28 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.71 & -1.92 & -1.84 & -1.58 & -1.48 \\ 
+# urb & 0.43 & 0.23 & 0.30 & 0.57 & 0.64 \\ 
+# access & -0.14 & -0.24 & -0.20 & -0.08 & -0.05 \\ 
+# elev & 0.18 & 0.03 & 0.08 & 0.28 & 0.33 \\ 
+# distRiversLakes & 0.02 & -0.13 & -0.08 & 0.13 & 0.17 \\ 
+# popValsNorm & 0.79 & 0.59 & 0.66 & 0.93 & 1.01 \\ 
+# sigmaSq & 0.97 & 0.73 & 0.81 & 1.15 & 1.27 \\ 
+# phi & 0.94 & 0.77 & 0.87 & 0.99 & 1.00 \\ 
+# sigmaEpsSq & 0.86 & 0.70 & 0.75 & 0.97 & 1.04 \\ 
+
+tmb_params <- list(log_tau = log(1/0.97), # Log tau (i.e. log spatial precision, Epsilon)
+                   logit_phi = logit(0.94), # SPDE parameter related to the range
+                   log_tauEps = log(1/0.86), # Log tau (i.e. log spatial precision, Epsilon)
+                   beta = c(0.43, -0.14, 0.18, 0.02, 0.79), 
+                   w_bym2Star = rep(-1.71, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+)
+
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modM_D2SepReparsparse"))
 dyn.load( dynlib("code/modM_D2SepRepar"))
@@ -496,7 +518,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 0.239633333333768 minutes (for intern=FALSE)
+  # optimization took 0.218283333333329 minutes (for Md2 initialization)
 }
 
 if(FALSE) {
@@ -689,24 +711,24 @@ out = load("savedOutput/ed/fitM_D2SepRepar.RData")
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="adm2", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
-# New sep finalRepar:
+# New sep finalRepar (with Md2 initialization):
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}
 # \hline
 # & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
 # \hline
-# (Int) & -1.72 & -1.93 & -1.85 & -1.58 & -1.50 \\ 
-# urb & 0.44 & 0.23 & 0.30 & 0.59 & 0.66 \\ 
-# access & -0.14 & -0.24 & -0.20 & -0.08 & -0.05 \\ 
-# elev & 0.18 & 0.02 & 0.08 & 0.28 & 0.33 \\ 
-# distRiversLakes & 0.03 & -0.12 & -0.07 & 0.13 & 0.19 \\ 
-# popValsNorm & 0.80 & 0.60 & 0.66 & 0.94 & 1.00 \\ 
-# sigmaSq & 0.97 & 0.71 & 0.80 & 1.17 & 1.30 \\ 
-# phi & 0.94 & 0.76 & 0.85 & 0.99 & 1.00 \\ 
-# sigmaEpsSq & 0.86 & 0.71 & 0.75 & 0.97 & 1.03 \\ 
+# (Int) & -1.71 & -1.92 & -1.85 & -1.57 & -1.50 \\ 
+# urb & 0.44 & 0.23 & 0.30 & 0.58 & 0.66 \\ 
+# access & -0.14 & -0.23 & -0.20 & -0.08 & -0.05 \\ 
+# elev & 0.18 & 0.03 & 0.08 & 0.28 & 0.34 \\ 
+# distRiversLakes & 0.03 & -0.12 & -0.07 & 0.13 & 0.18 \\ 
+# popValsNorm & 0.79 & 0.59 & 0.66 & 0.93 & 1.00 \\ 
+# sigmaSq & 0.97 & 0.72 & 0.79 & 1.15 & 1.28 \\ 
+# phi & 0.93 & 0.74 & 0.86 & 0.99 & 0.99 \\ 
+# sigmaEpsSq & 0.86 & 0.70 & 0.75 & 0.97 & 1.04 \\ 
 # \hline
 # \end{tabular}
 # \end{table}

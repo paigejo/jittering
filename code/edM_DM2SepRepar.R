@@ -299,6 +299,19 @@ tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
                    nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
 )
 
+# startup based on Md2 sep repar
+tmb_params <- list(log_tau = log(1/0.97), # Log tau (i.e. log spatial precision, Epsilon)
+                   logit_phi = logit(0.94), # SPDE parameter related to the range
+                   log_tauEps = log(1/0.86), # Log tau (i.e. log spatial precision, Epsilon)
+                   beta = c(0.43, -0.14, 0.18, 0.02, 0.79), 
+                   w_bym2Star = rep(-1.71, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                   nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                   nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                   nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                   nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+)
+
 # make TMB fun and grad ----
 # dyn.load( dynlib("code/modM_DM2SepReparsparse"))
 dyn.load( dynlib("code/modM_DM2SepRepar"))
@@ -448,7 +461,7 @@ if(FALSE) {
   sdTime/60
   totalTime = endTime - startTime
   print(paste0("optimization took ", totalTime/60, " minutes"))
-  # optimization took 1123.26701666667 minutes (for intern=FALSE)
+  # optimization took 312.799833333333 minutes (for Md2 initialization)
 }
 
 if(FALSE) {
@@ -571,8 +584,29 @@ if(FALSE) {
 save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DM2SepRepar.RData")
 out = load("savedOutput/ed/fitM_DM2SepRepar.RData")
 
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="adm2", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+# New, finalRepar results, Md2 initialization:
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -1.71 & -1.90 & -1.83 & -1.57 & -1.49 \\ 
+# urb & 0.38 & 0.21 & 0.27 & 0.49 & 0.55 \\ 
+# access & -0.12 & -0.21 & -0.18 & -0.06 & -0.04 \\ 
+# elev & 0.20 & 0.05 & 0.10 & 0.30 & 0.35 \\ 
+# distRiversLakes & 0.01 & -0.15 & -0.09 & 0.12 & 0.18 \\ 
+# popValsNorm & 0.86 & 0.66 & 0.73 & 0.99 & 1.05 \\ 
+# sigmaSq & 1.36 & 1.05 & 1.14 & 1.58 & 1.73 \\ 
+# phi & 0.85 & 0.60 & 0.71 & 0.95 & 0.97 \\ 
+# sigmaEpsSq & 0.42 & 0.34 & 0.36 & 0.49 & 0.52 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
+
+# OLD results:
 # \begin{table}[ht]
 # \centering
 # \begin{tabular}{rrrrrr}

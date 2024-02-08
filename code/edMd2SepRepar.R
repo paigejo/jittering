@@ -14,7 +14,7 @@ out = load("savedOutput/global/edMICS.RData")
 # KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
 # JInnerRural = 4
 # JOuterRural = 4
-KMICS=300
+KMICS=100
 KDHSurb = 11 # 3 rings of 5 each
 JInnerUrban = 3
 KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
@@ -694,7 +694,7 @@ out = load("savedOutput/ed/fitMd2SepRepar.RData")
 #                      quantiles=c(0.025, 0.1, 0.9, 0.975))
 # preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 # preds$fixedMat = gridPreds$fixedMat
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="adm2", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="adm2", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 
 # New results, sep finalRepar:

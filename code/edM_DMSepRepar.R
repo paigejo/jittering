@@ -194,7 +194,6 @@ if(FALSE) {
 out = load("savedOutput/global/edM_DMInputs.RData")
 
 # set priors ----
-alpha_pri = c(0, 100^2)
 beta_pri = c(0, sqrt(1000))
 
 out = load("savedOutput/global/admFinalMat.RData")
@@ -250,7 +249,6 @@ data_full = list(
   
   Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
   # V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
-  alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
   beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
   tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
   gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
@@ -586,7 +584,7 @@ if(FALSE) {
 save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DMSepRepar.RData")
 out = load("savedOutput/ed/fitM_DMSepRepar.RData")
 
-gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=1000, admLevel="stratMICS", 
+gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
 # newest results (after final repar):
 # \begin{table}[ht]
