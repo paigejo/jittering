@@ -66,7 +66,7 @@ library(abind)
 library(SUMMER)
 # library(Rcpp)
 library(ggplot2)
-library(rgeos)
+# library(rgeos) # no longer exists
 library(WeightedCluster)
 library(shapefiles)
 library(devtools)
@@ -82,10 +82,10 @@ globalDirectory <<- "~/git/jittering/savedOutput/global/"
 elkDirectory <<- "~/git/LK-INLA/"
 
 inf = sessionInfo()
-if(inf$platform == "x86_64-apple-darwin17.0 (64-bit)") {
+if(grepl("x86_64-apple", inf$platform)) {
   setwd("~/git/jittering/")
   options(error=recover)
-} else if(inf$platform != "x86_64-apple-darwin15.6.0 (64-bit)" && inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
+} else if(!grepl("x86_64-apple", inf$platform) && inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
   INLA:::inla.dynload.workaround()
   # avoid setting too many threads and thereby using too much memory
   inla.setOption(num.threads=1)
@@ -115,6 +115,7 @@ source("code/scores.R")
 source("code/getDirectEsts.R")
 source("code/ed2AtRes.R")
 source("code/testIntegrationPoints.R")
+source("code/modSPDE.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {

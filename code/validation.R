@@ -3978,11 +3978,15 @@ validationTable = function(quantiles=c(0.025, 0.1, 0.9, 0.975), areal=FALSE,
   print(xtable(roundCols(finalTabDHSAvg[,savedColI], digits=digits), digits=c(0, digits)))
   print(xtable(roundCols(finalTabMICSAvg[,savedColI], digits=digits), digits=c(0, digits)))
   
-  # boxplots/stripcharts of scores ----
-  thisScoresTabAll = list(weightsDHStoMICS * scoresTabsDHS[[1]] + (1-weightsDHStoMICS) * scoresTabsDHS[[1]], 
-                          weightsDHStoMICS * scoresTabsDHS[[2]] + (1-weightsDHStoMICS) * scoresTabsDHS[[2]], 
-                          weightsDHStoMICS * scoresTabsDHS[[3]] + (1-weightsDHStoMICS) * scoresTabsDHS[[3]], 
-                          weightsDHStoMICS * scoresTabsDHS[[4]] + (1-weightsDHStoMICS) * scoresTabsDHS[[4]])
+  # stripcharts of scores (like boxplots but shows all points) ----
+  if(!areal) {
+    thisScoresTabAll = list(weightsDHStoMICS * scoresTabsDHS[[1]] + (1-weightsDHStoMICS) * scoresTabsDHS[[1]], 
+                            weightsDHStoMICS * scoresTabsDHS[[2]] + (1-weightsDHStoMICS) * scoresTabsDHS[[2]], 
+                            weightsDHStoMICS * scoresTabsDHS[[3]] + (1-weightsDHStoMICS) * scoresTabsDHS[[3]], 
+                            weightsDHStoMICS * scoresTabsDHS[[4]] + (1-weightsDHStoMICS) * scoresTabsDHS[[4]])
+  } else {
+    thisScoresTabAll = scoresTabsFull
+  }
   
   if(admLevel == "adm2") {
     models = c(expression(M[d]^2), expression(M[D]^2), expression(M[dm]^2), expression(M[DM]^2))

@@ -1782,10 +1782,8 @@ projNigeria = function(lon, lat=NULL, inverse=FALSE) {
   }
   
   # determine version of PROJ
-  ver = rgdal::rgdal_extSoftVersion()
-  theseNames = names(ver)
-  thisI = which(grepl("PROJ", theseNames))
-  PROJ6 <- as.numeric(substr(ver[thisI], 1, 1)) >= 6
+  ver = terra::gdal(lib="proj")
+  PROJ6 <- as.numeric(substr(ver, 1, 1)) >= 6
   
   if(!inverse) {
     # from lon/lat coords to easting/northing
@@ -1827,10 +1825,8 @@ projNigeria = function(lon, lat=NULL, inverse=FALSE) {
 projNigeriaArea = function(area, inverse=FALSE) {
   
   # determine version of PROJ
-  ver = rgdal::rgdal_extSoftVersion()
-  theseNames = names(ver)
-  thisI = which(grepl("PROJ", theseNames))
-  PROJ6 <- as.numeric(substr(ver[thisI], 1, 1)) >= 6
+  ver = terra::gdal(lib="proj")
+  PROJ6 <- as.numeric(substr(ver, 1, 1)) >= 6
   
   if(!inverse) {
     # from lon/lat coords to easting/northing
