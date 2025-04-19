@@ -1995,3 +1995,22 @@ roundCols = function(mat, digits=rep(0, ncol(mat))) {
   row.names(out) = row.names(mat)
   out
 }
+
+# round all elements without changing their total
+roundRespectingTot = function(x) {
+  tot = round(sum(x))
+  
+  # find out number leftover after rounding
+  rounded = round(x)
+  left = tot - sum(rounded)
+  absLeft = abs(left)
+  
+  # distribute the leftovers evenly
+  addI = sample(1:length(x), absLeft, replace=F)
+  rounded[addI] = rounded[addI] + as.numeric(left > 0) - as.numeric(left < 0)
+  
+  rounded
+}
+
+
+

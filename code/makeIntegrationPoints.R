@@ -371,10 +371,11 @@ updateWeightsByAdminArea = function(coords,
       thisNotGoodAreas = !goodAreas[[x]]
       if(!all(thisNotGoodAreas)) {
         temp[thisNotGoodAreas] = 0
-      }
-      else {
-        warning(paste0("point ", i, " (", coords[i,1], ", ", coords[i,2], ") outside of assigned area with ",
-                       "no integration points in assigned area. No integration weights set to zero."))
+      } else if(all(!unlist(goodAreas))) {
+          warning(paste0("point ", i, " (", coords[i,1], ", ", coords[i,2], ") outside of assigned area with ",
+                         "no integration points in assigned area. No integration weights set to zero."))
+      } else {
+        temp = rep(0, length(temp))
       }
       temp
     })
@@ -757,7 +758,7 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals, areaNames=NULL,
                                        popPrior=TRUE, testMode=FALSE, proj=projNigeria, 
                                        outFile="savedOutput/global/intPtsDHS.RData", 
                                        getCovariates=TRUE, normalized=TRUE, useThreshPopMat=TRUE, 
-                                       extractMethod="bilinear", setMissingToAvg=TRUE) {
+                                       extractMethod="bilinear", setMissingToAvg=TRUE, saveOutput=TRUE) {
   
   # calculate integration points and weights relative to individual points
   outUrban = getIntegrationPointsDHS(urban=TRUE, numPointsUrban, 
@@ -979,7 +980,9 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals, areaNames=NULL,
   intPtsDHS$wUrban = wUrban
   intPtsDHS$wRural = wRural
   
-  save(intPtsDHS, file=outFile)
+  if(saveOutput) {
+    save(intPtsDHS, file=outFile)
+  }
   
   intPtsDHS
 }
@@ -1228,6 +1231,15 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     fineSDUrb = apply(XmatUrb, 2, wtdSD, weights=finePopWeights)
     intSDUrb = apply(XmatUrb[sort(unique(medoidIUrb)),], 2, wtdSD, weights=weightsUrb)
     
+    # calculate Wasserstein distances between fine scale and integration points
+    wDistsUrb = sapply(1:ncol(XmatUrb), FUN=function(j) {
+      wasserstein1d(a=XmatUrb[,j], b=XmatUrb[sort(unique(medoidIUrb)),j], 
+                    wa=finePopWeights, wb=weightsUrb)
+    })
+    wDistUrb = wasserstein(a=wpp(coordinates=XmatUrb, mass=finePopWeights), 
+                           b=wpp(coordinates=XmatUrb[sort(unique(medoidIUrb)),], mass=weightsUrb), 
+                           p=1)
+    
     # get weights of admin2 areas
     fineAdm2Wurb = colSums(sweep(adm2Wurb, 1, finePopWeights, "*"))
     intAdm2Wurb = colSums(sweep(adm2Wurb[sort(unique(medoidIUrb)),], 1, weightsUrb, "*"))
@@ -1245,6 +1257,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsUrb = NULL
     fineSDUrb = NULL
     intSDUrb = NULL
+    
+    wDistsUrb = NULL
+    wDistUrb = NULL
     
     fineAdm2Wrur = NULL
     intAdm2Wrur = NULL
@@ -1278,6 +1293,15 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     fineSDRur = apply(XmatRur, 2, wtdSD, weights=finePopWeights)
     intSDRur = apply(XmatRur[sort(unique(medoidIRur)),], 2, wtdSD, weights=weightsRur)
     
+    # calculate Wasserstein distances between fine scale and integration points
+    wDistsRur = sapply(1:ncol(XmatRur), FUN=function(j) {
+      wasserstein1d(a=XmatRur[,j], b=XmatRur[sort(unique(medoidIRur)),j], 
+                    wa=finePopWeights, wb=weightsRur)
+    })
+    wDistRur = wasserstein(a=wpp(coordinates=XmatRur, mass=finePopWeights), 
+                           b=wpp(coordinates=XmatRur[sort(unique(medoidIRur)),], mass=weightsRur), 
+                           p=1)
+    
     # get weights of admin2 areas
     fineAdm2Wrur = colSums(sweep(adm2Wrur, 1, finePopWeights, "*"))
     intAdm2Wrur = colSums(sweep(adm2Wrur[sort(unique(medoidIRur)),], 1, weightsRur, "*"))
@@ -1295,6 +1319,9 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
     intAvgsRur = NULL
     fineSDRur = NULL
     intSDRur = NULL
+    
+    wDistsRur = NULL
+    wDistRur = NULL
     
     fineAdm2Wrur = NULL
     intAdm2Wrur = NULL
@@ -1350,6 +1377,10 @@ getIntegrationPointsMICS = function(strat, kmresFineStart=2.5, numPtsUrb=25, num
        intAdm2Wurb = intAdm2Wurb, 
        fineAdm2Wrur = fineAdm2Wrur, 
        intAdm2Wrur = intAdm2Wrur, 
+       wDistsUrb = wDistsUrb, 
+       wDistsRur = wDistsRur, 
+       wDistUrb = wDistUrb, 
+       wDistRur = wDistRur, 
        stratAggs=stratAggs, adm2Aggs=adm2Aggs)
   
   if(returnFineGrid) {
@@ -1389,7 +1420,8 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         lambda=NULL, domainDiameter=NULL, 
                                         fileNameRoot="MICSintPts_", loadSavedIntPoints=TRUE, 
                                         extractMethod="bilinear", outFile=NULL, 
-                                        maxPointsFinal=13000, maxPointsInitial=18000) {
+                                        maxPointsFinal=13000, maxPointsInitial=18000, 
+                                        saveOutput=TRUE) {
   
   # normalize spatial coordinates based on prior median effective range
   if(is.null(lambda)) {
@@ -1576,9 +1608,13 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   absMeanPctErrorSDUrb = colMeans(absPctErrorSDUrb, na.rm=TRUE)
   absMeanPctErrorSDRur = colMeans(absPctErrorSDRur, na.rm=TRUE)
   absMeanPctErrorSD = colMeans(absPctErrorSD, na.rm=TRUE)
-  absMaxPctErrorSDUrb = apply(absPctErrorSDUrb, 2, max, na.rm=TRUE)
-  absMaxPctErrorSDRur = apply(absPctErrorSDRur, 2, max, na.rm=TRUE)
-  absMaxPctErrorSD = apply(absPctErrorSD, 2, max, na.rm=TRUE)
+  
+  # some subareas will have covariates that are constant
+  suppressWarnings({
+    absMaxPctErrorSDUrb = apply(absPctErrorSDUrb, 2, max, na.rm=TRUE)
+    absMaxPctErrorSDRur = apply(absPctErrorSDRur, 2, max, na.rm=TRUE)
+    absMaxPctErrorSD = apply(absPctErrorSD, 2, max, na.rm=TRUE)
+  })
   
   # make sure to fill in gaps where there is no urban or rural population
   hasUrbPop = sapply(allIntPts, function(x) {x$hasUrbPop})
@@ -1743,7 +1779,9 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
          maxPointsFinal=maxPointsFinal)
   }
   
-  save(intPtsMICS, file=outFile)
+  if(saveOutput) {
+    save(intPtsMICS, file=outFile)
+  }
   
   intPtsMICS
 }
@@ -1886,27 +1924,46 @@ getFineIntPointsInfoMICSold = function(stratumName, kmresStart=2.5, minPointsUrb
       
       # dists = rdist(matrix(pts, ncol=2, cbind(thisPopMat$east, thisPopMat$north))
       
-      # fullPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
+      # # fullPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
+      # closeE = (pts[1] > thisPopMat$east - 2.5) & (pts[1] <= thisPopMat$east + 2.5)
+      # closeN = (pts[2] > thisPopMat$north - 2.5) & (pts[2] <= thisPopMat$north + 2.5)
+      # closeI = closeE & closeN
+      # 
+      # # there should be exactly 1 point we're closest to within this subarea
+      # if(sum(closeI > 1)) {
+      #   stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      # } else if(sum(closeI) == 0) {
+      #   # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      #   
+      #   if(testMode) {
+      #     return(NA)
+      #   }
+      #   # this case should only happen at the edges, but just take closest point then
+      #   dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
+      #   # return(thisPopMatI[which.min(dists)])
+      #   which.min(dists)
+      # } else {
+      #   # return(thisPopMatI[which(closeI)])
+      #   which(closeI)
+      # }
+      # thisPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
       closeE = (pts[1] > thisPopMat$east - 2.5) & (pts[1] <= thisPopMat$east + 2.5)
       closeN = (pts[2] > thisPopMat$north - 2.5) & (pts[2] <= thisPopMat$north + 2.5)
       closeI = closeE & closeN
       
-      # there should be exactly 1 point we're closest to within this subarea
-      if(sum(closeI > 1)) {
-        stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-      } else if(sum(closeI) == 0) {
-        # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-        
-        if(testMode) {
-          return(NA)
-        }
-        # this case should only happen at the edges, but just take closest point then
-        dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
-        # return(thisPopMatI[which.min(dists)])
-        which.min(dists)
+      # there should be exactly 1 point we're closest to
+      if(sum(closeI) == 1) {
+        # stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+        return(which(closeI))
       } else {
-        # return(thisPopMatI[which(closeI)])
-        which(closeI)
+        # this case shouldn't happen, but just take closest point then
+        dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
+        # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+        minI = which.min(dists)
+        if(dists[minI] > 10) {
+          warning(paste("nearest grid pt to: (", paste(pts, collapse=", "), ") is ", dists[minI], " km away.", collapse="", sep=""))
+        }
+        return(minI)
       }
     }
     
@@ -2211,27 +2268,47 @@ getFineIntPointsInfoMICShelper = function(stratumName, kmresStart=2.5, minPoints
       
       # dists = rdist(matrix(pts, ncol=2, cbind(thisPopMat$east, thisPopMat$north))
       
-      # fullPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
+      # # fullPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
+      # closeE = (pts[1] > thisPopMat$east - 2.5) & (pts[1] <= thisPopMat$east + 2.5)
+      # closeN = (pts[2] > thisPopMat$north - 2.5) & (pts[2] <= thisPopMat$north + 2.5)
+      # closeI = closeE & closeN
+      # 
+      # # there should be exactly 1 point we're closest to within this subarea
+      # if(sum(closeI > 1)) {
+      #   stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      # } else if(sum(closeI) == 0) {
+      #   # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      #   
+      #   if(testMode) {
+      #     return(NA)
+      #   }
+      #   # this case should only happen at the edges, but just take closest point then
+      #   dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
+      #   # return(thisPopMatI[which.min(dists)])
+      #   which.min(dists)
+      # } else {
+      #   # return(thisPopMatI[which(closeI)])
+      #   which(closeI)
+      # }
+      
+      # thisPopMat is 5km resolution, so must be within 2.5 km in easting and northing directions
       closeE = (pts[1] > thisPopMat$east - 2.5) & (pts[1] <= thisPopMat$east + 2.5)
       closeN = (pts[2] > thisPopMat$north - 2.5) & (pts[2] <= thisPopMat$north + 2.5)
       closeI = closeE & closeN
       
-      # there should be exactly 1 point we're closest to within this subarea
-      if(sum(closeI > 1)) {
-        stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-      } else if(sum(closeI) == 0) {
-        # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-        
-        if(testMode) {
-          return(NA)
-        }
-        # this case should only happen at the edges, but just take closest point then
-        dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
-        # return(thisPopMatI[which.min(dists)])
-        which.min(dists)
+      # there should be exactly 1 point we're closest to
+      if(sum(closeI) == 1) {
+        # stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+        return(which(closeI))
       } else {
-        # return(thisPopMatI[which(closeI)])
-        which(closeI)
+        # this case shouldn't happen, but just take closest point then
+        dists = rdist(rbind(pts), cbind(thisPopMat$east, thisPopMat$north))
+        # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+        minI = which.min(dists)
+        if(dists[minI] > 10) {
+          warning(paste("nearest grid pt to: (", paste(pts, collapse=", "), ") is ", dists[minI], " km away.", collapse="", sep=""))
+        }
+        return(minI)
       }
     }
     

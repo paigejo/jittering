@@ -32,12 +32,10 @@ getDesignMat = function(lonLatCoords, normalized=TRUE,
     closeI = closeE & closeN
     
     # there should be exactly 1 point we're closest to
-    if(sum(closeI > 1)) {
-      stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-    } else if(sum(closeI) == 0) {
-      if(testMode) {
-        return(NA)
-      }
+    if(sum(closeI) == 1) {
+      # stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      return(which(closeI))
+    } else {
       # this case shouldn't happen, but just take closest point then
       dists = rdist(rbind(pts), cbind(popMat$east, popMat$north))
       # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
@@ -46,8 +44,6 @@ getDesignMat = function(lonLatCoords, normalized=TRUE,
         warning(paste("nearest grid pt to: (", paste(pts, collapse=", "), ") is ", dists[minI], " km away.", collapse="", sep=""))
       }
       return(minI)
-    } else {
-      return(which(closeI))
     }
   })
   
@@ -147,13 +143,30 @@ getDesignMatPopNorm = function(lonLatCoords,
     closeN = (pts[2] > popMat$north - 2.5) & (pts[2] <= popMat$north + 2.5)
     closeI = closeE & closeN
     
+    # # there should be exactly 1 point we're closest to
+    # if(sum(closeI > 1)) {
+    #   stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+    # } else if(sum(closeI) == 0) {
+    #   if(testMode) {
+    #     return(NA)
+    #   }
+    #   # this case shouldn't happen, but just take closest point then
+    #   dists = rdist(rbind(pts), cbind(popMat$east, popMat$north))
+    #   # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+    #   minI = which.min(dists)
+    #   if(dists[minI] > 10) {
+    #     warning(paste("nearest grid pt to: (", paste(pts, collapse=", "), ") is ", dists[minI], " km away.", collapse="", sep=""))
+    #   }
+    #   return(minI)
+    # } else {
+    #   return(which(closeI))
+    # }
+    
     # there should be exactly 1 point we're closest to
-    if(sum(closeI > 1)) {
-      stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
-    } else if(sum(closeI) == 0) {
-      if(testMode) {
-        return(NA)
-      }
+    if(sum(closeI) == 1) {
+      # stop(paste("close to multiple grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
+      return(which(closeI))
+    } else {
       # this case shouldn't happen, but just take closest point then
       dists = rdist(rbind(pts), cbind(popMat$east, popMat$north))
       # warning(paste("no close grid pts: (", paste(pts, collapse=", "), ")", collapse="", sep=""))
@@ -162,8 +175,6 @@ getDesignMatPopNorm = function(lonLatCoords,
         warning(paste("nearest grid pt to: (", paste(pts, collapse=", "), ") is ", dists[minI], " km away.", collapse="", sep=""))
       }
       return(minI)
-    } else {
-      return(which(closeI))
     }
   })
   

@@ -323,7 +323,7 @@ max(wb52[(wb52 != 99) & (wb42 == 31)], na.rm=TRUE)
 max(wb52[(wb52 != 99) & (wb42 == 32)], na.rm=TRUE)
 
 
-edMICS2 = ((wb42 >= 21) wb52 >= 26
+edMICS2 = ((wb42 >= 21) & (wb52 >= 26))
 wb32[is.na(wb32)] = 99
 wb42[is.na(wb42)] = 99
 edMICS2[wb32 == 2] = FALSE
@@ -428,6 +428,9 @@ litMICS = litMICSagg
 # edMICS = edMICS[order(stratIDs),]
 edMICS = edMICS[order(edMICS$Stratum),]
 litMICS = litMICS[order(edMICS$Stratum),]
+
+edMICS[grepl("Lagos", edMICS$Stratum),]$urban = TRUE
+litMICS[grepl("Lagos", litMICS$Stratum),]$urban = TRUE
 
 save(edMICS, file="savedOutput/global/edMICS.RData")
 save(litMICS, file="savedOutput/global/litMICS.RData")
@@ -585,6 +588,14 @@ subareas = getSubareaRobust(cbind(ed$lon, ed$lat), actualAreas, subareaMapDat=ad
                             areaNameVar="NAME_1")
 ed$area = actualAreas
 ed$subarea = subareas$regionNames
+
+# Remove outlier point where GADM map mismatches with identified subarea by > 5km
+ed = ed[ed$clusterID != 1313,]
+ed$clusterID = 1:nrow(ed)
+
+# set urban level of all clusters in Lagos to TRUE
+ed$urban[ed$area == "Lagos"] = TRUE
+
 save(ed, file="savedOutput/global/ed.RData")
 
 # Cleaning urban proportions ----
@@ -1018,6 +1029,12 @@ if(FALSE) {
   access@file@name = "~/git/jittering/savedOutput/global/access.tif"
   elev@file@name = "~/git/jittering/savedOutput/global/elev.tif"
   minDistRiverLakes@file@name = "~/git/jittering/savedOutput/global/minDistRiverLakes.tif"
+  
+  pop@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/pop.tif"
+  urb@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/urb.tif"
+  access@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/access.tif"
+  elev@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/elev.tif"
+  minDistRiverLakes@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/minDistRiverLakes.tif"
 }
 
 save(pop, urb, access, elev, minDistRiverLakes, file="savedOutput/global/covariates.RData")
@@ -1401,4 +1418,215 @@ if(FALSE) {
   minDistRiverLakesNorm = rast("savedOutput/global/minDistRiverLakesNorm.tif")
   minDistRiverLakesNorm = raster(minDistRiverLakesNorm)
   save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
+  
+  # do the same on PC
+  out = load("savedOutput/global/covariatesNorm.RData")
+  popNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/popNorm.tif"
+  urbNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/urbNorm.tif"
+  accessNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/accessNorm.tif"
+  elevNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/elevNorm.tif"
+  minDistRiverLakesNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/minDistRiverLakesNorm.tif"
+  save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
 }
+
+# Make faux EAs per area table ----
+
+# source: 2018 DHS report
+easpaNGAtmp = read.csv2("data/easpaNGA.csv")
+names(easpaNGAtmp)[1] = "area"
+easpaNGAtmp = easpaNGAtmp[order(easpaNGAtmp$area),]
+cbind(easpaNGAtmp$area, poppaNGA$area)
+easpaNGAtmp$area = poppaNGA$area
+
+sum(easpaNGAtmp$EAUrb)
+sum(easpaNGAtmp$EARur)
+sum(easpaNGAtmp$EATotal)
+
+# 4-5 people per household, yielding ~50 households per EA (4.7 according to DHS report p. 17)
+HHperEA = 50
+easpaNGAtmp$HHUrb = easpaNGAtmp$EAUrb*HHperEA
+easpaNGAtmp$HHRur = easpaNGAtmp$EARur*HHperEA
+easpaNGAtmp$HHTotal = easpaNGAtmp$EATotal*HHperEA
+easpaNGAtmp$popUrb = poppaNGA$popUrb
+easpaNGAtmp$popRur = poppaNGA$popRur
+easpaNGAtmp$popTotal = poppaNGA$popTotal
+easpaNGA = easpaNGAtmp
+sum(easpaNGA$EATotal)*HHperEA
+sum(easpaNGA$HHTotal)
+sum(easpaNGA$popTotal)
+sum(poppaNGA$popTotal)
+
+save(easpaNGA, file="savedOutput/global/easpaNGA.RData")
+
+# now convert to easpa for women aged 20-29, and do same for popMat
+
+# Based on table 2.8 (p. 31) in 2018 NDHS final report
+nMale = 92670
+nFem = 95304
+propFem2024 = .075
+propFem2529 = .082
+
+nFem2024 = propFem2024 * nFem
+nFem2529 = propFem2529 * nFem
+nFem2029 = nFem2024 + nFem2529
+propFem2029 = nFem2029/(nFem + nMale)
+propFem2029 # 0.07959999
+easpaNGAed = easpaNGA
+easpaNGAed$popUrb = round(easpaNGAed$popUrb * propFem2029)
+easpaNGAed$popRur = round(easpaNGAed$popRur * propFem2029)
+easpaNGAed$popTotal = easpaNGAed$popUrb + easpaNGAed$popRur
+
+popMatNGAed = popMatNGA
+popMatNGAed$pop = popMatNGAed$pop * propFem2029
+
+popMatNGAedThresh = popMatNGAThresh
+popMatNGAedThresh$pop = popMatNGAedThresh$pop * propFem2029
+
+# easpa needs to be rounded, so numbers might differ slightly from popMat. Make 
+# sure everything aggregates correctly
+for(i in 1:nrow(easpaNGAed)) {
+  thisAreaUrbL = (popMatNGAed$area == easpaNGAed$area[i]) & popMatNGAed$urban
+  thisAreaRurL = (popMatNGAed$area == easpaNGAed$area[i]) & !popMatNGAed$urban
+  
+  popMatNGAed$pop[thisAreaUrbL] = popMatNGAed$pop[thisAreaUrbL] * (easpaNGAed$popUrb[i] / sum(popMatNGAed$pop[thisAreaUrbL]))
+  popMatNGAed$pop[thisAreaRurL] = popMatNGAed$pop[thisAreaRurL] * (easpaNGAed$popRur[i] / sum(popMatNGAed$pop[thisAreaRurL]))
+  
+  popMatNGAedThresh$pop[thisAreaUrbL] = popMatNGAedThresh$pop[thisAreaUrbL] * (easpaNGAed$popUrb[i] / sum(popMatNGAedThresh$pop[thisAreaUrbL]))
+  popMatNGAedThresh$pop[thisAreaRurL] = popMatNGAedThresh$pop[thisAreaRurL] * (easpaNGAed$popRur[i] / sum(popMatNGAedThresh$pop[thisAreaRurL]))
+}
+
+sum(popMatNGAed$pop)
+sum(popMatNGA$pop) * propFem2029
+sum(popMatNGAedThresh$pop)
+sum(popMatNGAThresh$pop) * propFem2029
+sum(easpaNGAed$popTotal)
+
+save(easpaNGAed, file="savedOutput/global/easpaNGAed.RData")
+save(popMatNGAed, file="savedOutput/global/popMatNGAed.RData")
+save(popMatNGAedThresh, file="savedOutput/global/popMatNGAedThresh.RData")
+
+
+# Make faux EAs per stratum table ----
+
+# first repeat the Kano row for each stratum in Kano
+newKanoRows = easpaNGA[easpaNGA$area == "Kano",]
+newKanoRows = rbind(newKanoRows, newKanoRows, newKanoRows)
+
+# get population information on strata in Kano, proportion of pop in each strat
+kanoStrat = poppStratMICS[grepl("Kano", poppStratMICS$strat),]
+newKanoRows$area = kanoStrat$strat
+kanoPropsUrb = kanoStrat$popUrb / sum(kanoStrat$popUrb)
+kanoPropsRur = kanoStrat$popRur / sum(kanoStrat$popRur)
+
+# distribute EAs, HHs, and pop based on proportions
+newKanoRows$EAUrb = roundRespectingTot(newKanoRows$EAUrb * kanoPropsUrb)
+newKanoRows$EARur = roundRespectingTot(newKanoRows$EARur * kanoPropsRur)
+newKanoRows$EATotal = newKanoRows$EAUrb + newKanoRows$EARur
+newKanoRows$HHUrb = roundRespectingTot(newKanoRows$HHUrb * kanoPropsUrb)
+newKanoRows$HHRur = roundRespectingTot(newKanoRows$HHRur * kanoPropsRur)
+newKanoRows$HHTotal = newKanoRows$HHUrb + newKanoRows$HHRur
+newKanoRows$popUrb = roundRespectingTot(newKanoRows$popUrb * kanoPropsUrb)
+newKanoRows$popRur = roundRespectingTot(newKanoRows$popRur * kanoPropsRur)
+newKanoRows$popTotal = newKanoRows$popUrb + newKanoRows$popRur
+
+colSums(as.matrix(newKanoRows[,2:10]))
+easpaNGA[easpaNGA$area == "Kano",]
+
+# repeat for Lagos
+newLagosRows = easpaNGA[easpaNGA$area == "Lagos",]
+newLagosRows = rbind(newLagosRows, newLagosRows, newLagosRows)
+
+# get population information on strata in Lagos, proportion of pop in each strat
+lagosStrat = poppStratMICS[grepl("Lagos", poppStratMICS$strat),]
+newLagosRows$area = lagosStrat$strat
+lagosPropsUrb = lagosStrat$popUrb / sum(lagosStrat$popUrb)
+lagosPropsRur = lagosStrat$popRur / sum(lagosStrat$popRur)
+
+# distribute EAs, HHs, and pop based on proportions
+newLagosRows$EAUrb = roundRespectingTot(newLagosRows$EAUrb * lagosPropsUrb)
+newLagosRows$EARur = roundRespectingTot(newLagosRows$EARur * lagosPropsRur)
+newLagosRows$EATotal = newLagosRows$EAUrb + newLagosRows$EARur
+newLagosRows$HHUrb = roundRespectingTot(newLagosRows$HHUrb * lagosPropsUrb)
+newLagosRows$HHRur = roundRespectingTot(newLagosRows$HHRur * lagosPropsRur)
+newLagosRows$HHTotal = newLagosRows$HHUrb + newLagosRows$HHRur
+newLagosRows$popUrb = roundRespectingTot(newLagosRows$popUrb * lagosPropsUrb)
+newLagosRows$popRur = roundRespectingTot(newLagosRows$popRur * lagosPropsRur)
+newLagosRows$popTotal = newLagosRows$popUrb + newLagosRows$popRur
+
+colSums(as.matrix(newLagosRows[,2:10]))
+easpaNGA[easpaNGA$area == "Lagos",]
+
+# add the new rows in to a new table
+easpaNGAMICS = easpaNGA
+easpaNGAMICS = easpaNGAMICS[easpaNGAMICS$area != "Lagos",]
+easpaNGAMICS = easpaNGAMICS[easpaNGAMICS$area != "Kano",]
+easpaNGAMICS = rbind(easpaNGAMICS, 
+                       newKanoRows, 
+                       newLagosRows)
+easpaNGAMICS = easpaNGAMICS[order(easpaNGAMICS$area),]
+
+save(easpaNGAMICS, file="savedOutput/global/easpaNGAMICS.RData")
+
+# Now do the same for easpaNGAed
+# first repeat the Kano row for each stratum in Kano
+newKanoRows = easpaNGAed[easpaNGAed$area == "Kano",]
+newKanoRows = rbind(newKanoRows, newKanoRows, newKanoRows)
+
+# get population information on strata in Kano, proportion of pop in each strat
+kanoStrat = poppStratMICS[grepl("Kano", poppStratMICS$strat),]
+newKanoRows$area = kanoStrat$strat
+kanoPropsUrb = kanoStrat$popUrb / sum(kanoStrat$popUrb)
+kanoPropsRur = kanoStrat$popRur / sum(kanoStrat$popRur)
+
+# distribute EAs, HHs, and pop based on proportions
+newKanoRows$EAUrb = roundRespectingTot(newKanoRows$EAUrb * kanoPropsUrb)
+newKanoRows$EARur = roundRespectingTot(newKanoRows$EARur * kanoPropsRur)
+newKanoRows$EATotal = newKanoRows$EAUrb + newKanoRows$EARur
+newKanoRows$HHUrb = roundRespectingTot(newKanoRows$HHUrb * kanoPropsUrb)
+newKanoRows$HHRur = roundRespectingTot(newKanoRows$HHRur * kanoPropsRur)
+newKanoRows$HHTotal = newKanoRows$HHUrb + newKanoRows$HHRur
+newKanoRows$popUrb = roundRespectingTot(newKanoRows$popUrb * kanoPropsUrb)
+newKanoRows$popRur = roundRespectingTot(newKanoRows$popRur * kanoPropsRur)
+newKanoRows$popTotal = newKanoRows$popUrb + newKanoRows$popRur
+
+colSums(as.matrix(newKanoRows[,2:10]))
+easpaNGAed[easpaNGAed$area == "Kano",]
+
+# repeat for Lagos
+newLagosRows = easpaNGAed[easpaNGAed$area == "Lagos",]
+newLagosRows = rbind(newLagosRows, newLagosRows, newLagosRows)
+
+# get population information on strata in Lagos, proportion of pop in each strat
+lagosStrat = poppStratMICS[grepl("Lagos", poppStratMICS$strat),]
+newLagosRows$area = lagosStrat$strat
+lagosPropsUrb = lagosStrat$popUrb / sum(lagosStrat$popUrb)
+lagosPropsRur = lagosStrat$popRur / sum(lagosStrat$popRur)
+
+# distribute EAs, HHs, and pop based on proportions
+newLagosRows$EAUrb = roundRespectingTot(newLagosRows$EAUrb * lagosPropsUrb)
+newLagosRows$EARur = roundRespectingTot(newLagosRows$EARur * lagosPropsRur)
+newLagosRows$EATotal = newLagosRows$EAUrb + newLagosRows$EARur
+newLagosRows$HHUrb = roundRespectingTot(newLagosRows$HHUrb * lagosPropsUrb)
+newLagosRows$HHRur = roundRespectingTot(newLagosRows$HHRur * lagosPropsRur)
+newLagosRows$HHTotal = newLagosRows$HHUrb + newLagosRows$HHRur
+newLagosRows$popUrb = roundRespectingTot(newLagosRows$popUrb * lagosPropsUrb)
+newLagosRows$popRur = roundRespectingTot(newLagosRows$popRur * lagosPropsRur)
+newLagosRows$popTotal = newLagosRows$popUrb + newLagosRows$popRur
+
+colSums(as.matrix(newLagosRows[,2:10]))
+easpaNGAed[easpaNGAed$area == "Lagos",]
+
+# add the new rows in to a new table
+easpaNGAedMICS = easpaNGAed
+easpaNGAedMICS = easpaNGAedMICS[easpaNGAedMICS$area != "Lagos",]
+easpaNGAedMICS = easpaNGAedMICS[easpaNGAedMICS$area != "Kano",]
+easpaNGAedMICS = rbind(easpaNGAedMICS, 
+                       newKanoRows, 
+                       newLagosRows)
+easpaNGAedMICS = easpaNGAedMICS[order(easpaNGAedMICS$area),]
+
+save(easpaNGAedMICS, file="savedOutput/global/easpaNGAedMICS.RData")
+
+
+
+

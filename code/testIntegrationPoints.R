@@ -2,6 +2,120 @@
 # See "Sensitivity analysis in Bayesian generalized linear mixed models for binary data"
 # a 2011 paper by Roos and Held in 2011 for more info on using Hellinger distance
 
+# calculates Wasserstein distance for a multinoulli distribution
+WassersterinMultinoulli = function(prob1=NULL, prob2=NULL, 
+                                   pDiff=NULL, N=22, p=1, nsim=100000) {
+  if(is.null(prob1) && is.null(prob2)) {
+    if(is.null(pDiff)) {
+      stop("if neither prob1 or prrob2 specified, must specify pDiff")
+    }
+    
+    prob1=rep(1/N, N)
+    prob2 = c(1/N + pDiff, rep(1/N - pDiff/(N-1), N-1))
+    
+  } else if(is.null(prob1) || is.null(prob2)) {
+    stop("either neither or both of prob1 and prob2 must be specified")
+  }
+  
+  tmpSims = rmultinom(nsim, 1, prob=prob1)
+  sims1 = sapply(seq_len(ncol(tmpSims)), function(i) paste(tmpSims[,i], collapse=", "))
+  tmpSims = rmultinom(nsim, 1, prob=prob2)
+  sims2 = sapply(seq_len(ncol(tmpSims)), function(i) paste(tmpSims[,i], collapse=", "))
+  
+  tab = table(sims1)
+  head(tab)
+  x = t(sapply(names(tab), function(x) {as.numeric(unlist(strsplit(x, ", ")))}))
+  wx = unlist(tab)
+  
+  tab = table(sims2)
+  head(tab)
+  y = t(sapply(names(tab), function(x) {as.numeric(unlist(strsplit(x, ", ")))}))
+  wy = unlist(tab)
+  
+  x <- wpp(x, wx/sum(wx))
+  y <- wpp(y, wy/sum(wy))
+  transport::wasserstein(x,y,p=p)
+}
+
+# calculates Wasserstein distance for a set of multinoulli distributions
+WassersterinMultinoulliSeq = function(N=22, pDiffs=sort(unique(c(0, 
+                                                                 seq(-1/N, 1/N, l=20), 
+                                                                 seq(1/N, 1-1/N, l=30)))), 
+                                      p=1, nsim1=100, nsim2=nsim1, reSim1=TRUE, nRep=100, 
+                                      verbose=TRUE) {
+  
+  if(nRep != 1) {
+    # perform replicate calculations
+    for(i in 1:nRep) {
+      if(verbose) {
+        print(paste0("rep ", i, "/", nRep))
+      }
+      thisRep = WassersterinMultinoulliSeq(N=N, pDiffs=pDiffs, p=p, nsim1=nsim1, nsim2=nsim2, reSim1=reSim1, nRep=1, verbose=FALSE)
+      if(i == 1) {
+        pDiffs = thisRep$pDiffs
+        allDists = matrix(nrow=length(pDiffs), ncol=nRep)
+        allDists[,1] = thisRep$dists
+      } else {
+        allDists[,i] = thisRep$dists
+      }
+    }
+    
+    # get SDs
+    SEs = apply(allDists, 1, sd)/sqrt(nRep)
+    return(list(pDiffs=pDiffs, dists=rowMeans(allDists), SEs=SEs))
+  }
+  
+  # main case: only 1 replicate to calculate
+  prob1=rep(1/N, N)
+  
+  if(!reSim1) {
+    # precompute control case distribution if it helps
+    tmpSims = rmultinom(nsim1, 1, prob=prob1)
+    sims1 = sapply(seq_len(ncol(tmpSims)), function(i) paste(tmpSims[,i], collapse=", "))
+    tab = table(sims1)
+    head(tab)
+    x = t(sapply(names(tab), function(x) {as.numeric(unlist(strsplit(x, ", ")))}))
+    wx = unlist(tab)
+    x <- wpp(x, wx/sum(wx))
+  }
+  
+  # now for the others
+  dists = numeric(length(pDiffs))
+  for(i in 1:length(pDiffs)) {
+    if(verbose) {
+      print(paste0("Calculating distance in case ", i, "/", length(pDiffs)))
+    }
+    pDiff = pDiffs[i]
+    
+    if(reSim1) {
+      # precompute control case distribution if it helps
+      tmpSims = rmultinom(nsim1, 1, prob=prob1)
+      sims1 = sapply(seq_len(ncol(tmpSims)), function(i) paste(tmpSims[,i], collapse=", "))
+      tab = table(sims1)
+      head(tab)
+      x = t(sapply(names(tab), function(x) {as.numeric(unlist(strsplit(x, ", ")))}))
+      wx = unlist(tab)
+      x <- wpp(x, wx/sum(wx))
+    }
+    
+    prob2 = c(1/N + pDiff, rep(1/N - pDiff/(N-1), N-1))
+    tmpSims = rmultinom(nsim2, 1, prob=prob2)
+    sims2 = sapply(seq_len(ncol(tmpSims)), function(i) paste(tmpSims[,i], collapse=", "))
+    
+    tab = table(sims2)
+    head(tab)
+    y = t(sapply(names(tab), function(x) {as.numeric(unlist(strsplit(x, ", ")))}))
+    wy = unlist(tab)
+    
+    y <- wpp(y, wy/sum(wy))
+    
+    # calculate Wp distance
+    dists[i] = transport::wasserstein(x,y,p=p)
+  }
+  
+  return(list(pDiffs=pDiffs, dists=dists))
+}
+
 # Calculates H(Bern(.5), Bern(q)). Max is .541 at q=0 and 1, min is 0 at q=.5
 HellingerBern = function(q) {
   sqrt(1 - sqrt((1-q)/2) - sqrt(q/2))

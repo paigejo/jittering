@@ -73,6 +73,8 @@ library(devtools)
 library(colorspace)
 library(TMB)
 library(plyr)
+library(transport)
+library(stringr)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -82,16 +84,27 @@ globalDirectory <<- "~/git/jittering/savedOutput/global/"
 elkDirectory <<- "~/git/LK-INLA/"
 
 inf = sessionInfo()
-if(grepl("x86_64-apple", inf$platform)) {
+# if(grepl("x86_64-apple", inf$platform)) {
+#   setwd("~/git/jittering/")
+#   options(error=recover)
+# } else if(!grepl("x86_64-apple", inf$platform) && inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
+#   INLA:::inla.dynload.workaround()
+#   # avoid setting too many threads and thereby using too much memory
+#   inla.setOption(num.threads=1)
+#   options(error=traceback)
+#   setwd("~/git/jittering/")
+# } else if(inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
+#   setwd("~/git/jittering/")
+#   options(error=recover)
+# } else {
+#   setwd("~/git/jittering/")
+#   inla.setOption(num.threads=1) # consider raising
+#   options(error=recover)
+# }
+if(grepl("macOS", inf$running)) {
   setwd("~/git/jittering/")
   options(error=recover)
-} else if(!grepl("x86_64-apple", inf$platform) && inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
-  INLA:::inla.dynload.workaround()
-  # avoid setting too many threads and thereby using too much memory
-  inla.setOption(num.threads=1)
-  options(error=traceback)
-  setwd("~/git/jittering/")
-} else if(inf$platform != "x86_64-w64-mingw32/x64 (64-bit)" && inf$platform != "x86_64-pc-linux-gnu (64-bit)") {
+} else if(grepl("Windows", inf$running)) {
   setwd("~/git/jittering/")
   options(error=recover)
 } else {
@@ -116,6 +129,11 @@ source("code/getDirectEsts.R")
 source("code/ed2AtRes.R")
 source("code/testIntegrationPoints.R")
 source("code/modSPDE.R")
+source("code/simData.R")
+source("code/modM_DMSep.R")
+source("code/modM_DSep.R")
+source("code/modM_MSep.R")
+source("code/makeInputsTMB.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {
@@ -133,6 +151,15 @@ out=load("savedOutput/global/poppsubNGA.RData")
 out=load("savedOutput/global/poppsubNGAThresh.RData")
 out=load("savedOutput/global/popMatNGA.RData")
 out=load("savedOutput/global/popMatNGAThresh.RData")
+out=load("savedOutput/global/easpaNGA.RData")
+out=load("savedOutput/global/easpaNGAMICS.RData")
+out=load("savedOutput/global/easpaNGAed.RData")
+out=load("savedOutput/global/easpaNGAedMICS.RData")
+out=load("savedOutput/global/popMatNGAed.RData")
+out=load("savedOutput/global/popMatNGAedThresh.RData")
+out=load("savedOutput/global/poppStratMICS.RData")
+out=load("savedOutput/global/poppStratMICSThresh.RData")
+
 lonLimNGA = adm0@bbox[1,]
 latLimNGA = adm0@bbox[2,]
 adm0FullProjNGA = projNigeriaArea(adm0Full)
@@ -143,6 +170,6 @@ northLimNGA = adm0FullProjNGA@bbox[2,]
 ver = terra::gdal(lib="proj")
 PROJ6 <- as.numeric(substr(ver, 1, 1)) >= 6
 
-
-
+clustpaDHSed = getClustpaFromSurvey()
+clustpaMICSed = getClustpaFromSurvey(edMICS, easpaNGAedMICS$area, stratName="Stratum")
 
