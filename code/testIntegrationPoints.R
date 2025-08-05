@@ -646,7 +646,7 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   for(i in 1:length(allRes)) {
     res = allRes[i]
     
-    intPtFile = paste0("savedOutput/global/intPtsMICS_", res, ".RData")
+    intPtFile = paste0("savedOutput/testres/intPtsMICS_", res, ".RData")
     if(regenDat || !file.exists(intPtFile)) {
       # Umut settings: 
       #   5 urban rings of 15 each (61 points total)
