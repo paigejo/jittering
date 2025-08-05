@@ -54,6 +54,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   stratumPops = list()
   for(i in 1:nsim) {
     # simulate population at pixel, EA levels 
+    print(paste0("simulating population ", i, "/", nsim))
     
     simPop = 
       SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat, 
