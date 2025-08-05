@@ -664,8 +664,8 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
       JInnerRural = 3
       JOuterRural = 1
       
-      intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=TRUE,
-                                                numPtsRur=KMICS, numPtsUrb=KMICS, adm2AsCovariate = TRUE, lambda=1)
+      intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE,
+                                                numPtsRur=KMICS, numPtsUrb=KMICS)
       
       save(intPtsMICS, file=intPtFile)
     } else {
