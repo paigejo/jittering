@@ -29,11 +29,14 @@ if(FALSE) {
   install.packages("colorspace")
   install.packages("TMB")
   install.packages("plyr")
+  install.packages("shapefiles")
+  install.packages("transport")
   
   library(devtools)
   if(FALSE) {
     install_github("https://github.com/richardli/SUMMER/")
     install_github("https://github.com/paigejo/SUMMER/")
+    install_github("richardli/SUMMER@surveySim")
     install_local("~/git/SUMMER/")
     document("~/git/SUMMER/")
     load_all("~/git/SUMMER/")

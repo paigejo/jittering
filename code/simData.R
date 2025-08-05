@@ -52,6 +52,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   subareaPops = list()
   areaPops = list()
   stratumPops = list()
+  startT = proc.time()[3]
   for(i in 1:nsim) {
     # simulate population at pixel, EA levels 
     print(paste0("simulating population ", i, "/", nsim))
@@ -78,7 +79,6 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
       stratumPops = stratPop$aggregationResults$pFineScalePrevalence
     } else {
       # cbind the new pop info to the full set of populations
-      browser()
       subareaPops = cbind(subareaPops, 
                           simPop$subareaPop$aggregationResults$pFineScalePrevalence)
       areaPops = cbind(areaPops, 
@@ -89,7 +89,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     
     # generate surveys
     # get EA level population information for population i
-    thisEApop = simPop$eaPop$eaDatList[i]
+    thisEApop = simPop$eaPop$eaDatList[1]
     
     # get associated HH level population information
     thisHHpop = getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
@@ -108,6 +108,13 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     # concatenate results
     surveysDHS = c(surveysDHS, survDHS)
     surveysMICS = c(surveysMICS, survMICS)
+    
+    # estimate time left and print
+    thisT = proc.time()[3]
+    timePerIter = (thisT - startT)/i
+    timeLeft = timePerIter * (nsim - i)
+    
+    print(paste0("estimated time remaining: ", (timeLeft/60)/24, " hours"))
   }
   
   save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS, 

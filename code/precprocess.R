@@ -1102,6 +1102,22 @@ urbNorm = raster("savedOutput/global/urbNorm.tif")
 accessNorm = raster("savedOutput/global/accessNorm.tif")
 elevNorm = raster("savedOutput/global/elevNorm.tif")
 minDistRiverLakesNorm = raster("savedOutput/global/minDistRiverLakesNorm.tif")
+
+if(FALSE) {
+  # file paths are different on the cluster. Adjust for laptop accordingly:
+  popNorm@file@name = "~/git/jittering/savedOutput/global/popNorm.tif"
+  urbNorm@file@name = "~/git/jittering/savedOutput/global/urbNorm.tif"
+  accessNorm@file@name = "~/git/jittering/savedOutput/global/accessNorm.tif"
+  elevNorm@file@name = "~/git/jittering/savedOutput/global/elevNorm.tif"
+  minDistRiverLakesNorm@file@name = "~/git/jittering/savedOutput/global/minDistRiverLakesNorm.tif"
+  
+  popNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/popNorm.tif"
+  urbNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/urbNorm.tif"
+  accessNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/accessNorm.tif"
+  elevNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/elevNorm.tif"
+  minDistRiverLakesNorm@file@name = "C:/Users/jpaige/git/jittering/savedOutput/global/minDistRiverLakesNorm.tif"
+}
+
 save(popNorm, urbNorm, accessNorm, elevNorm, minDistRiverLakesNorm, file="savedOutput/global/covariatesNorm.RData")
 save(popMean, popSD, file="savedOutput/global/popMeanSD.RData")
 
