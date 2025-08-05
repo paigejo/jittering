@@ -1096,7 +1096,7 @@ makeJitterDataForTMB_BYM2 = function(intPtInfoDHS, ysDHS, urbanicityDHS, nsDHS,
        AUrban=AUrban, ARural=ARural)
 }
 
-##### Jittering for MICS ----
+##### Geomasking for MICS ----
 
 # constructs the points over which to integrate the likelihood 
 # with respect to the jittering distribution, and their weights, 

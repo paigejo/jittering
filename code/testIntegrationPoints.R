@@ -630,6 +630,149 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   
 }
 
+# For checking whether the MICS integration pts result in reasonable areal 
+# averages as a function of resolution
+# 
+# nSamples: if NULL, use presaved prediction samples. Otherwise, a number 
+#     specifying the number of samples to take
+testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
+                         regenDat=FALSE) {
+  
+  # first generate integration points
+  out = load("savedOutput/global/ed.RData")
+  out = load("savedOutput/global/edMICS.RData")
+  
+  allIntPts = list()
+  for(i in 1:length(allRes)) {
+    res = allRes[i]
+    
+    intPtFile = paste0("savedOutput/global/intPtsMICS_", res, ".RData")
+    if(regenDat || !file.exists(intPtFile)) {
+      # Umut settings: 
+      #   5 urban rings of 15 each (61 points total)
+      #   10 rural rings of 15 each (136 points total)
+      # KMICS=100
+      # KDHSurb = 31 # 4 rings of 10 each
+      # JInnerUrban = 4
+      # KDHSrur = 71 # 4 inner + 4 outer rings of 10 each
+      # JInnerRural = 4
+      # JOuterRural = 4
+      KMICS=res
+      KDHSurb = 11 # 3 rings of 5 each
+      JInnerUrban = 3
+      KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+      JInnerRural = 3
+      JOuterRural = 1
+      
+      intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=TRUE,
+                                                numPtsRur=KMICS, numPtsUrb=KMICS, adm2AsCovariate = TRUE, lambda=1)
+      
+      save(intPtsMICS, file=intPtFile)
+    } else {
+      out = load(intPtFile)
+    }
+    
+    allIntPts = c(allIntPts, list(intPtsMICS))
+    
+  }
+  
+  
+  # Adm1 averages ----
+  urbMADsAdm1 = c()
+  rurMADsAdm1 = c()
+  for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
+    resI = allRes[i]
+    intPtsMICS = allIntPts[[i]]
+    
+    covNames = colnames(intPtsMICS$XUrb)[c(12:14, 16)]
+    thisAbsErrorsUrbAdm1 = abs(intPtsMICS$errorUrb[,2:5])
+    thisAbsErrorsRurAdm1 = abs(intPtsMICS$errorRur[,2:5])
+    
+    urbMADsAdm1 = rbind(urbMADsAdm1, colMeans(thisAbsErrorsUrbAdm1, na.rm=TRUE))
+    rurMADsAdm1 = rbind(rurMADsAdm1, colMeans(thisAbsErrorsRurAdm1, na.rm=TRUE))
+  }
+  colnames(urbMADsAdm1) = covNames
+  colnames(rurMADsAdm1) = covNames
+  
+  cols = rainbow(2*4)
+  colsUrb = cols[1:4]
+  colsRur = cols[5:8]
+  pchUrb = c(17, 15, 18, 19) # filled in triangle, square, diamond, circle
+  pchRur = c(24, 22, 23, 21) # hollow triangle, square, diamond, circle
+  ltyUrb = ltyRur = 1:4
+  
+  # plot results
+  pdf(file=paste0("figures/integration/Adm1MAD_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(urbMADsAdm1, rurMADsAdm1))
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Admin1 mean absolute error", 
+       xlab="Resolution", ylab="Error", ylim=errRange)
+  for(i in 1:ncol(urbMADsAdm1)) {
+    lines(allRes, urbMADsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, urbMADsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, rurMADsAdm1[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, rurMADsAdm1[,i], col=colsRur[i], pch=pchRur[i])
+  }
+  legend("bottomleft", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
+  dev.off()
+  
+  # Adm2 averages ----
+  urbMADsAdm2 = c()
+  rurMADsAdm2 = c()
+  for(i in 1:length(allRes)) {
+    print(paste0("i: ", i, "/", length(allRes)))
+    
+    resI = allRes[i]
+    out = load(paste0("savedOutput/global/intPtsMICS_", resI, "_adm2Cov.RData"))
+    
+    if("adm2Aggs" %in% names(intPtsMICS)) {
+      allAdm2Aggs = intPtsMICS$adm2Aggs
+      urbAggsFine = as.matrix(allAdm2Aggs[allAdm2Aggs$urb & allAdm2Aggs$fine,5:10])
+      urbAggsInt = as.matrix(allAdm2Aggs[allAdm2Aggs$urb & !allAdm2Aggs$fine,5:10])
+      rurAggsFine = as.matrix(allAdm2Aggs[!allAdm2Aggs$urb & allAdm2Aggs$fine,5:10])
+      rurAggsInt = as.matrix(allAdm2Aggs[!allAdm2Aggs$urb & !allAdm2Aggs$fine,5:10])
+      
+      thisAbsErrorsUrbAdm2 = colMeans(abs(urbAggsInt - urbAggsFine), na.rm=TRUE)
+      thisAbsErrorsRurAdm2 = colMeans(abs(rurAggsInt - rurAggsFine), na.rm=TRUE)
+      
+      covNames = names(thisAbsErrorsUrbAdm2)
+      urbMADsAdm2 = rbind(urbMADsAdm2, thisAbsErrorsUrbAdm2)
+      rurMADsAdm2 = rbind(rurMADsAdm2, thisAbsErrorsRurAdm2)
+    } else {
+      urbMADsAdm2 = rbind(urbMADsAdm2, NA)
+      rurMADsAdm2 = rbind(rurMADsAdm2, NA)
+    }
+  }
+  colnames(urbMADsAdm2) = covNames
+  colnames(rurMADsAdm2) = covNames
+  
+  cols = rainbow(2*6)
+  colsUrb = cols[1:6]
+  colsRur = cols[7:12]
+  pchUrb = pchRur = 15:20
+  ltyUrb = ltyRur = 1:6
+  
+  # plot results
+  pdf(file=paste0("figures/integration/Adm2MAD_", min(allRes), "_", max(allRes), ".pdf"))
+  errRange = range(c(urbMADsAdm2, rurMADsAdm2), na.rm=TRUE)
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Admin2 mean absolute error", 
+       xlab="Resolution", ylab="Error", ylim=errRange)
+  for(i in 1:ncol(urbMADsAdm2)) {
+    lines(allRes, urbMADsAdm2[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, urbMADsAdm2[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, rurMADsAdm2[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, rurMADsAdm2[,i], col=colsRur[i], pch=pchRur[i])
+  }
+  # legend("left", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+  #        pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
+  legend(x=50, y=1e-5, c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
+  dev.off()
+  
+}
+
 fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
   optRes = max(allRes)
   
