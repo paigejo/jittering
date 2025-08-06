@@ -966,7 +966,7 @@ summaryTabBYM2 = function(SD0, popMat=popMatNGAThresh, gridPreds=NULL,
   colnames(parSummary)[2:ncol(parSummary)] = paste0("Q", quantiles)
   print(xtable(parSummary, digits=2))
   
-  invisible(NULL)
+  invisible(parSummary)
 }
 
 # normalized: whether covariates are normalized

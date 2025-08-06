@@ -1,6 +1,6 @@
 # script for collecting inputs for TMB for the M_DM model
 
-makeInputsMDM = function(datDHS, datMCIS, intPtsMICS=NULL, intPtsDHS=NULL, 
+makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=NULL, 
                          KMICS=100,
                          KDHSurb = 11, # 3 rings of 5 each
                          JInnerUrban = 3,
@@ -8,22 +8,37 @@ makeInputsMDM = function(datDHS, datMCIS, intPtsMICS=NULL, intPtsDHS=NULL,
                          JInnerRural = 3,
                          JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full) {
   
-  # make sure edMICS is sorted by Stratum column according to admMICS
-  edMICS = sortByCol(edMICS, "Stratum", admMICS$NAME_FINAL)
+  # make sure datMICS is sorted by Stratum column according to admMICS
+  datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # make integration points if necessary
   if(is.null(intPtsMICS)) {
-    intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                              numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=FALSE)
+    if(identical(admMICS, admFinal)) {
+      if(!file.exists(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))) {
+        intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
+                                                  numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=FALSE)
+      } else {
+        out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))
+      }
+    } else {
+      stop("unknown admin map data")
+    }
+    
+    
   }
   
   if(is.null(intPtsDHS)) {
     # make integration points if necessary
-    intPtsDHS = makeAllIntegrationPointsDHS(cbind(datDHS$east, datDHS$north), datDHS$urban, 
-                                            areaNames=datDHS$subarea, popPrior=TRUE, 
-                                            numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
-                                            JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                            JOuterRural=JOuterRural, adminMap=adm2DHS, saveOutput=FALSE)
+    
+    if(identical(adm2DHS, adm2Full) && (KDHSurb == 11) && (KDHSrur == 16) && identical(datDHS, ed)) {
+      out = load("savedOutput/global/intPtsDHS.RData")
+    } else {
+      intPtsDHS = makeAllIntegrationPointsDHS(cbind(datDHS$east, datDHS$north), datDHS$urban, 
+                                              areaNames=datDHS$subarea, popPrior=TRUE, 
+                                              numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
+                                              JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
+                                              JOuterRural=JOuterRural, adminMap=adm2DHS, saveOutput=FALSE)
+    }
   }
   
   intPtsMICS = straightenMICS(intPtsMICS)
@@ -153,11 +168,12 @@ makeInputsMDM = function(datDHS, datMCIS, intPtsMICS=NULL, intPtsDHS=NULL,
   areaidxlocUrbanDHS = as.integer(areaidxlocUrbanDHS)
   areaidxlocRuralDHS = as.integer(areaidxlocRuralDHS)
   
-  list(AUrbMICS, ARurMICS, AUrbDHS, ARurDHS, intPtsDHS, intPtsMICS, 
-       areaidxlocUrbanMICS, areaidxlocRuralMICS, 
-       areaidxlocUrbanDHS, areaidxlocRuralDHS, 
-       ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
-       ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS)
+  list(AUrbMICS=AUrbMICS, ARurMICS=ARurMICS, AUrbDHS=AUrbDHS, ARurDHS=ARurDHS, 
+       intPtsDHS=intPtsDHS, intPtsMICS=intPtsMICS, 
+       areaidxlocUrbanMICS=areaidxlocUrbanMICS, areaidxlocRuralMICS=areaidxlocRuralMICS, 
+       areaidxlocUrbanDHS=areaidxlocUrbanDHS, areaidxlocRuralDHS=areaidxlocRuralDHS, 
+       ysUrbMICS=ysUrbMICS, nsUrbMICS=nsUrbMICS, ysRurMICS=ysRurMICS, nsRurMICS=nsRurMICS, 
+       ysUrbDHS=ysUrbDHS, ysRurDHS=ysRurDHS, nsUrbDHS=nsUrbDHS, nsRurDHS=nsRurDHS)
 }
 
 makeInputsMdm = function(inputsMDM) {

@@ -1,5 +1,5 @@
 
-fitMD = function(datDHS, datMCIS=NULL, inputsMDM=NULL, 
+fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL, 
                  intPtsMICS=NULL, intPtsDHS=NULL, 
                  KMICS=100,
                  KDHSurb = 11, # 3 rings of 5 each
@@ -12,10 +12,12 @@ fitMD = function(datDHS, datMCIS=NULL, inputsMDM=NULL,
                  pc.bym2Phi=list(u=0.5, alpha=2/3), 
                  pc.bym2Prec=list(u=1, alpha=.1), 
                  pc.expPrec=list(u=1, alpha=.1), 
-                 maxit=1000) {
+                 maxit=1000, repar=TRUE) {
   
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
+    print("Making M_DM inputs...")
+    
     inputsMDM = makeInputsMDM(datDHS, datMCIS, 
                               intPtsMICS=NULL, intPtsDHS=NULL, 
                               KMICS=100,
@@ -24,8 +26,7 @@ fitMD = function(datDHS, datMCIS=NULL, inputsMDM=NULL,
                               KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
                               JInnerRural = 3,
                               JOuterRural = 1, 
-                              admMICS=admMICS, adm2DHS=adm2DHS, 
-                              tolSeq = 1e-06)
+                              admMICS=admMICS, adm2DHS=adm2DHS)
     
     thisEnv = environment()
     list2env(inputsMDM, envir=thisEnv)
@@ -40,53 +41,90 @@ fitMD = function(datDHS, datMCIS=NULL, inputsMDM=NULL,
   lambdaTau = getLambdaPCprec(u=pc.bym2Prec$u, alpha=pc.bym2Prec$alpha) # get PC prior lambda for bym2 precision
   lambdaTauEps = getLambdaPCprec(u=pc.expPrec$u, alpha=pc.expPrec$alpha) # get PC prior lambda for nugget precision
   
-  # conditioning by Kriging from Eq (2.30) in Rue Held:
-  # Ax = e (for A = (0^T 1^T), e = 0), x = (w^T u^T)^T
-  # x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x - e)
-  # x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x)
-  # x* = x - (Q_x^-1 A^T A x) / sum(Q^+)
-  # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
-  # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
-  # Hence, we need Q_{+:}^+ / sum(Q^+):
-  Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
-  QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+  if(!repar) {
+    # conditioning by Kriging from Eq (2.30) in Rue Held:
+    # Ax = e (for A = (0^T 1^T), e = 0), x = (w^T u^T)^T
+    # x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x - e)
+    # x* = x - Q_x^-1 A^T (A Q_x^-1 A^T)^-1 (A x)
+    # x* = x - (Q_x^-1 A^T A x) / sum(Q^+)
+    # x* = x - (sqrt(phi/tau) Q_{+:}^+ \\ Q_{+:}^+) * sum(u) / sum(Q^+)
+    # for Q_{+:}^+ = rowSums(Q^+), where * denotes the constrained version of the effect
+    # Hence, we need Q_{+:}^+ / sum(Q^+):
+    Qinv = bym2ArgsTMB$V %*% diag(bym2ArgsTMB$gammaTildesm1+1) %*% t(bym2ArgsTMB$V)
+    QinvSumsNorm = rowSums(Qinv)/sum(Qinv)
+  }
   
   # Specify inputs for TMB ----
   
   # Specify inputs for TMB ----
   
   ## specify random effects
-  rand_effs <- c('alpha', 'beta', 'w_bym2Star', 'u_bym2Star', 
-                 'nuggetUrbDHS', 'nuggetRurDHS')
+  if(!repar) {
+    rand_effs <- c('alpha', 'beta', 'w_bym2Star', 'u_bym2Star', 
+                   'nuggetUrbDHS', 'nuggetRurDHS')
+  } else {
+    rand_effs <- c('beta', 'w_bym2Star', 'u_bym2Star', 
+                   'nuggetUrbDHS', 'nuggetRurDHS')
+  }
+  
   
   # collect input data
   
-  data_full = list(
-    y_iUrbanDHS=ysUrbDHS, # observed binomial experiment at point i (clust)
-    y_iRuralDHS=ysRurDHS, # 
-    n_iUrbanDHS=nsUrbDHS, # number binomial trials
-    n_iRuralDHS=nsRurDHS, # 
-    # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
-    # AprojRuralMICS=ARurMICS, # 
-    areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
-    areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
-    X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
-    X_betaRuralDHS=intPtsDHS$covsRur, # 
-    wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
-    wRuralDHS=intPtsDHS$wRural, # 
-    
-    Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
-    # V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
-    alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
-    beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
-    tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
-    gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
-    QinvSumsNorm=QinvSumsNorm, 
-    lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
-    lambdaTau=lambdaTau, # determines PC prior for tau
-    lambdaTauEps=lambdaTauEps, 
-    options=0 # 1 for adreport of log tau and logit phi
-  )
+  if(!repar) {
+    data_full = list(
+      y_iUrbanDHS=ysUrbDHS, # observed binomial experiment at point i (clust)
+      y_iRuralDHS=ysRurDHS, # 
+      n_iUrbanDHS=nsUrbDHS, # number binomial trials
+      n_iRuralDHS=nsRurDHS, # 
+      # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+      # AprojRuralMICS=ARurMICS, # 
+      areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
+      areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
+      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+      X_betaRuralDHS=intPtsDHS$covsRur, # 
+      wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
+      wRuralDHS=intPtsDHS$wRural, # 
+      
+      Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
+      # V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+      alpha_pri=alpha_pri, # 2-vector with (Gaussian) prior mean and variance for intercept
+      beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
+      tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
+      gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
+      QinvSumsNorm=QinvSumsNorm, 
+      lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
+      lambdaTau=lambdaTau, # determines PC prior for tau
+      lambdaTauEps=lambdaTauEps, 
+      options=0 # 1 for adreport of log tau and logit phi
+    )
+  } else {
+    # include everything from sep case except QinvSumsNorm and alpha_pri
+    data_full = list(
+      y_iUrbanDHS=ysUrbDHS, # observed binomial experiment at point i (clust)
+      y_iRuralDHS=ysRurDHS, # 
+      n_iUrbanDHS=nsUrbDHS, # number binomial trials
+      n_iRuralDHS=nsRurDHS, # 
+      # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
+      # AprojRuralMICS=ARurMICS, # 
+      areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
+      areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
+      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+      X_betaRuralDHS=intPtsDHS$covsRur, # 
+      wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
+      wRuralDHS=intPtsDHS$wRural, # 
+      
+      Q_bym2=bym2ArgsTMB$Q, # BYM2 unit scaled structure matrix
+      # V_bym2=bym2ArgsTMB$V, # eigenvectors of Q (i.e. Q = V Lambda V^T)
+      beta_pri=beta_pri, # 2-vector with (Gaussian) prior mean and variance for covariates
+      tr=bym2ArgsTMB$tr, # precomputed for Q_bym2
+      gammaTildesm1=bym2ArgsTMB$gammaTildesm1, # precomputed for Q_bym2
+      lambdaPhi=bym2ArgsTMB$lambda, # precomputed for Q_bym2
+      lambdaTau=lambdaTau, # determines PC prior for tau
+      lambdaTauEps=lambdaTauEps, 
+      options=0 # 1 for adreport of log tau and logit phi
+    )
+  }
+  
   
   anyna = function(x) {any(is.na(x))}
   myDim = function(x) {
@@ -131,26 +169,78 @@ fitMD = function(datDHS, datMCIS=NULL, inputsMDM=NULL,
   initAlpha = logit(initRurP)
   initBeta1 = logit(initUrbP) - initAlpha
   
-  tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                     logit_phi = 0, # SPDE parameter related to the range
-                     log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                     alpha = initAlpha, # intercept
-                     beta = c(initBeta1, rep(0, ncol(data_full$X_betaUrbanDHS)-1)), 
-                     w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                     u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                     nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                     nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-  )
+  if(!repar) {
+    tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = 0, # SPDE parameter related to the range
+                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       alpha = initAlpha, # intercept
+                       beta = c(initBeta1, rep(0, ncol(data_full$X_betaUrbanDHS)-1)), 
+                       w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+    )
+  } else {
+    # don't include alpha, but incorporate it into w_bym2Star
+    tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = 0, # SPDE parameter related to the range
+                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                       beta = c(initBeta1, rep(0, ncol(data_full$X_betaUrbanDHS)-1)), 
+                       w_bym2Star = rep(initAlpha, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+    )
+  }
+  
   
   # make TMB fun and grad ----
   # dyn.load( dynlib("code/modM_DSepsparse"))
-  dyn.load( dynlib("code/modM_DSep"))
-  TMB::config(tmbad.sparse_hessian_compress = 1)
-  obj <- MakeADFun(data=data_full,
-                   parameters=tmb_params,
-                   random=rand_effs,
-                   hessian=TRUE,
-                   DLL='modM_DSep')
+  dynlibs = getDynlibs()
+  if(!repar) {
+    # first make sure the dynlib isn't loaded
+    if("modM_DSep" %in% names(dynlibs)) {
+      dyn.unload(dynlib("code/modM_DSep"))
+    }
+    
+    # compile dynlib if need be
+    if(!file.exists("code/modM_DSep.so")) {
+      print("compiling code/modM_DSep.cpp...")
+      compile( "code/modM_DSep.cpp", 
+               framework="TMBad", safebounds=FALSE)
+    }
+    
+    # load dynlib, make tmb obj
+    dyn.load( dynlib("code/modM_DSep"))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
+    obj <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     random=rand_effs,
+                     hessian=TRUE,
+                     DLL='modM_DSep')
+  } else {
+    # first make sure the dynlib isn't loaded
+    if("modM_DSepRepar" %in% names(dynlibs)) {
+      dyn.unload(dynlib("code/modM_DSepRepar"))
+    }
+    
+    # compile dynlib if need be
+    if(!file.exists("code/modM_DSepRepar.so")) {
+      print("compiling code/modM_DSepRepar.cpp...")
+      compile( "code/modM_DSepRepar.cpp", 
+               framework="TMBad", safebounds=FALSE)
+    }
+    
+    # load dynlib, make tmb obj
+    dyn.load( dynlib("code/modM_DSepRepar"))
+    TMB::config(tmbad.sparse_hessian_compress = 1)
+    obj <- MakeADFun(data=data_full,
+                     parameters=tmb_params,
+                     random=rand_effs,
+                     hessian=TRUE,
+                     DLL='modM_DSepRepar')
+  }
+  
   # objFull <- MakeADFun(data=data_full,
   #                      parameters=tmb_params,
   #                      hessian=TRUE,
