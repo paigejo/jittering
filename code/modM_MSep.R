@@ -21,7 +21,9 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   # make sure all the names in our datasets we expect to be there are (convert over variables as need be)
   nameTab = rbind(c("N", "ns"), 
-                  c("Z", "ys"))
+                  c("N", "n"), 
+                  c("Z", "ys"), 
+                  c("Z", "y"))
   for(i in 1:nrow(nameTab)) {
     theseNames = nameTab[i,]
     fromN = theseNames[1]
