@@ -26,7 +26,7 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     print("Making M_DM inputs...")
     
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
-                              intPtsMICS=NULL, intPtsDHS=NULL, 
+                              intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
                               KMICS=100,
                               KDHSurb = 11, # 3 rings of 5 each
                               JInnerUrban = 3,
@@ -167,8 +167,8 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   # initial parameters
-  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+  initUrbP = sum(c(data_full$y_iUrbanMICS))/sum(c(data_full$n_iUrbanMICS))
+  initRurP = sum(c(data_full$y_iRuralMICS))/sum(c(data_full$n_iRuralMICS))
   initAlpha = logit(initRurP)
   initBeta1 = logit(initUrbP) - initAlpha
   

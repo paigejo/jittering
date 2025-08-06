@@ -14,13 +14,32 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
   thisStratumPop = stratumPops[,i]
   thisAreaPop = areaPops[,i]
   
+  # check if we've computed the DHS integration points for this run
+  dhsIntFile = paste0("savedOutput/simStudy1/intPtsDHS_sim", i, ".RData")
+  if(file.exists(dhsIntFile)) {
+    out = load(dhsIntFile)
+  } else {
+    KDHSurb = 11 # 3 rings of 5 each
+    JInnerUrban = 3
+    KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
+    JInnerRural = 3
+    JOuterRural = 1
+    intPtsDHS = makeAllIntegrationPointsDHS(cbind(thisDHS$east, thisDHS$north), thisDHS$urban, 
+                                            areaNames=thisDHS$subarea, popPrior=TRUE, 
+                                            numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
+                                            JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
+                                            JOuterRural=JOuterRural, adminMap=adm2Full, saveOutput=FALSE)
+    
+    save(intPtsDHS, file=dhsIntFile)
+  }
+  
   predFile = paste0("savedOutput/simStudy1/allPreds", mod, "_SepRepar_", i, ".RData")
   if(regenData || !file.exists(predFile)) {
     # fit TMB model
     if(mod == "M_M") {
-      out = fitMM(datDHS=thisDHS, datMICS=thisMICS, repar=TRUE)
+      out = fitMM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
     } else if(mod == "M_DM") {
-      out = fitMDM(datDHS=thisDHS, datMICS=thisMICS, repar=TRUE)
+      out = fitMDM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
     }
     
     # generate prediction grid

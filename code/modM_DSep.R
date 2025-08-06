@@ -19,7 +19,7 @@ fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL,
     print("Making M_DM inputs...")
     
     inputsMDM = makeInputsMDM(datDHS, datMCIS, 
-                              intPtsMICS=NULL, intPtsDHS=NULL, 
+                              intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
                               KMICS=100,
                               KDHSurb = 11, # 3 rings of 5 each
                               JInnerUrban = 3,
