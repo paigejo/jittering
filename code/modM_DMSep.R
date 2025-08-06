@@ -14,6 +14,11 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.expPrec=list(u=1, alpha=.1), 
                   maxit=1000, repar=TRUE) {
   
+  # make sure Stratum variable exists in MICS data
+  if(!("Stratum" %in% names(datMICS))) {
+    datMICS$Stratum = adm2ToStratumMICS(datMICS$subarea)
+  }
+  
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # first generate all necessary inputs if need be

@@ -822,7 +822,9 @@ makeAllIntegrationPointsDHS = function(coords, urbanVals, areaNames=NULL,
     require(geosphere)
     naClosestIDs = sapply(which(nas), function(ind) {dist2Line(spCoordsLonLat[ind], adminMapPolygons)[4]})
     adminID = rep(1, nrow(temp))
-    adminID[nas] = naClosestIDs
+    if(any(nas)) {
+      adminID[nas] = naClosestIDs
+    }
     adminID[!nas] = match(temp[[areaNameVar]][!nas], adminMap[[areaNameVar]])
     
     # set names of what area each point is in if need be

@@ -13,13 +13,19 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.bym2Prec=list(u=1, alpha=.1), 
                   pc.expPrec=list(u=1, alpha=.1), 
                   maxit=1000, repar=TRUE) {
+  browser()
+  
+  # make sure Stratum variable exists in MICS data
+  if(!("Stratum" %in% names(datMICS))) {
+    datMICS$Stratum = adm2ToStratumMICS(datMICS$subarea)
+  }
   
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
-    
+    browser()
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=NULL, intPtsDHS=NULL, 
                               KMICS=100,

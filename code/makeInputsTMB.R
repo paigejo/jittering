@@ -10,7 +10,7 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   
   # make sure datMICS is sorted by Stratum column according to admMICS
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
-  
+  browser()
   # make integration points if necessary
   if(is.null(intPtsMICS)) {
     if(identical(admMICS, admFinal)) {
