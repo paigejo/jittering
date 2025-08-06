@@ -14,6 +14,21 @@ fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL,
                  pc.expPrec=list(u=1, alpha=.1), 
                  maxit=1000, repar=TRUE) {
   
+  # make sure all the names in our datasets we expect to be there are (convert over variables as need be)
+  nameTab = rbind(c("N", "ns"), 
+                  c("Z", "ys"))
+  for(i in 1:nrow(nameTab)) {
+    theseNames = nameTab[i,]
+    fromN = theseNames[1]
+    toN = theseNames[2]
+    if(!(toN %in% names(datMICS))) {
+      datMICS[[toN]] = datMICS[[fromN]]
+    }
+    if(!(toN %in% names(datDHS))) {
+      datDHS[[toN]] = datDHS[[fromN]]
+    }
+  }
+  
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")

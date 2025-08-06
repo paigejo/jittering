@@ -19,6 +19,21 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     datMICS$Stratum = adm2ToStratumMICS(datMICS$subarea)
   }
   
+  # make sure all the names in our datasets we expect to be there are (convert over variables as need be)
+  nameTab = rbind(c("N", "ns"), 
+                  c("Z", "ys"))
+  for(i in 1:nrow(nameTab)) {
+    theseNames = nameTab[i,]
+    fromN = theseNames[1]
+    toN = theseNames[2]
+    if(!(toN %in% names(datMICS))) {
+      datMICS[[toN]] = datMICS[[fromN]]
+    }
+    if(!(toN %in% names(datDHS))) {
+      datDHS[[toN]] = datDHS[[fromN]]
+    }
+  }
+  
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # first generate all necessary inputs if need be
