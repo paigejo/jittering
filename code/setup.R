@@ -15,7 +15,7 @@ if(FALSE) {
   install.packages("raster")
   install.packages("MCMCpack")
   install.packages("numDeriv")
-  install.packages("INLA")
+  # install.packages("INLA")
   install.packages("edfun") # for drawing from empirical distributions quickly
   install.packages("data.table")
   install.packages("sampling")
