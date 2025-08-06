@@ -137,6 +137,7 @@ source("code/modM_DMSep.R")
 source("code/modM_DSep.R")
 source("code/modM_MSep.R")
 source("code/makeInputsTMB.R")
+source("code/simStudy.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {
