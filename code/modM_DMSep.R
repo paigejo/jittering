@@ -374,6 +374,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+    tolSeq = 1e-06
     testObj = obj
     optPar = testObj$par
     startTime = proc.time()[3]
