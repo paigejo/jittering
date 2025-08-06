@@ -196,12 +196,11 @@ fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL,
   
   # make TMB fun and grad ----
   # dyn.load( dynlib("code/modM_DSepsparse"))
-  dynlibs = getDynlibs()
+  
+  # first make sure no TMB dynlib is loaded
+  unloadDynlibs()
+  
   if(!repar) {
-    # first make sure the dynlib isn't loaded
-    if("modM_DSep" %in% names(dynlibs)) {
-      dyn.unload(dynlib("code/modM_DSep"))
-    }
     
     # compile dynlib if need be
     if(!file.exists("code/modM_DSep.so")) {
@@ -219,10 +218,6 @@ fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL,
                      hessian=TRUE,
                      DLL='modM_DSep')
   } else {
-    # first make sure the dynlib isn't loaded
-    if("modM_DSepRepar" %in% names(dynlibs)) {
-      dyn.unload(dynlib("code/modM_DSepRepar"))
-    }
     
     # compile dynlib if need be
     if(!file.exists("code/modM_DSepRepar.so")) {

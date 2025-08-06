@@ -1949,6 +1949,21 @@ getDynlibs = function(tailN=6) {
   tail(getLoadedDLLs(), tailN)
 }
 
+unloadDynlibs = function(root="modM") {
+  
+  libs = names(getDynlibs())
+  checkL = grepl(root, libs)
+  while(any(checkL)) {
+    if(any(checkL)) {
+      unloadLib = libs[checkL][1]
+    }
+    dyn.unload(dynlib(paste0("code/", unloadLib)))
+    
+    libs = names(getDynlibs())
+    checkL = grepl(root, libs)
+  }
+}
+
 # if tab2 is just tab1 with rows scrambled, then:
 # tab2[matchTableRows(tab1, tab2),] == tab1
 matchTableRows = function(tab1, tab2) {

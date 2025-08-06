@@ -13,7 +13,6 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.bym2Prec=list(u=1, alpha=.1), 
                   pc.expPrec=list(u=1, alpha=.1), 
                   maxit=1000, repar=TRUE) {
-  browser()
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -25,7 +24,7 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
-    browser()
+    
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=NULL, intPtsDHS=NULL, 
                               KMICS=100,
@@ -219,12 +218,11 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   # make TMB fun and grad ----
   # dyn.load( dynlib("code/modM_MSepsparse"))
-  dynlibs = getDynlibs()
+  
+  # first make sure no TMB dynlib is loaded
+  unloadDynlibs()
+  
   if(!repar) {
-    # first make sure the dynlib isn't loaded
-    if("modM_MSep" %in% names(dynlibs)) {
-      dyn.unload(dynlib("code/modM_MSep"))
-    }
     
     # compile dynlib if need be
     if(!file.exists("code/modM_MSep.so")) {
@@ -242,10 +240,6 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                      hessian=TRUE,
                      DLL='modM_MSep')
   } else {
-    # first make sure the dynlib isn't loaded
-    if("modM_MSepRepar" %in% names(dynlibs)) {
-      dyn.unload(dynlib("code/modM_MSepRepar"))
-    }
     
     # compile dynlib if need be
     if(!file.exists("code/modM_MSepRepar.so")) {
