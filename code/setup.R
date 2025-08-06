@@ -31,6 +31,7 @@ if(FALSE) {
   install.packages("plyr")
   install.packages("shapefiles")
   install.packages("transport")
+  install.packages("prodlim")
   
   library(devtools)
   if(FALSE) {
@@ -78,6 +79,7 @@ library(TMB)
 library(plyr)
 library(transport)
 library(stringr)
+library(prodlim)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
