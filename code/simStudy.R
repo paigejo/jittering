@@ -79,7 +79,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
                            "sigmaSq", "sigmaEpsSq")
   
   scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
-  save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar)
+  save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
 }
 
 runSimStudy1IPar = function(i, mod=c("M_M", "M_DM"), regenData=FALSE) {
