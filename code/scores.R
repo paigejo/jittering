@@ -1252,7 +1252,7 @@ intervalScore = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL,
     weights = weights*(1/sum(weights, na.rm=TRUE))
     allResults = c(intScore=sum(theseScores*weights, na.rm=na.rm))
   } else {
-    allResults = c(intScore=theseScores)
+    allResults = cbind(intScore=theseScores)
   }
   
   if(returnCoverage) {
