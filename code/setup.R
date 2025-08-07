@@ -32,6 +32,7 @@ if(FALSE) {
   install.packages("shapefiles")
   install.packages("transport")
   install.packages("prodlim")
+  install.packages("parallel")
   
   library(devtools)
   if(FALSE) {
@@ -80,6 +81,7 @@ library(plyr)
 library(transport)
 library(stringr)
 library(prodlim)
+library(parallel)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
