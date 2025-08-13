@@ -92,7 +92,7 @@ runSimStudy1IPar = function(i, mod=c("M_M", "M_DM"), regenData=FALSE) {
   
   tryCatch(runSimStudy1I(i, mod=mod, regenData=regenData), 
            error = function(e) {
-             logfile <- paste0("savedOutput/simStudy1/simRun_", adaptScen, "_", i, "_err.txt")
+             logfile <- paste0("savedOutput/simStudy1/simRun_", mod, "_", i, "_err.txt")
              sink(logfile)
              cat("Error at i =", i, ":\n")
              cat(paste("Call stack:\n", paste(deparse(sys.calls()), collapse = "\n")), "\n")
