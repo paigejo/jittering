@@ -34,7 +34,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
   }
   
   scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
-  if(regenData || !file.exists(predFile)) {
+  if(regenData || !file.exists(scoreFile)) {
     # fit TMB model
     if(mod == "M_M") {
       out = fitMM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)

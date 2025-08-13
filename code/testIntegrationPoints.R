@@ -676,10 +676,12 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
     
   }
   
-  
+  browser()
   # Adm1 averages ----
   urbMADsAdm1 = c()
   rurMADsAdm1 = c()
+  urbMSEsAdm1 = c()
+  rurMSEsAdm1 = c()
   for(i in 1:length(allRes)) {
     print(paste0("i: ", i, "/", length(allRes)))
     
@@ -692,9 +694,14 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
     
     urbMADsAdm1 = rbind(urbMADsAdm1, colMeans(thisAbsErrorsUrbAdm1, na.rm=TRUE))
     rurMADsAdm1 = rbind(rurMADsAdm1, colMeans(thisAbsErrorsRurAdm1, na.rm=TRUE))
+    urbMSEsAdm1 = rbind(urbMSEsAdm1, colMeans(thisAbsErrorsUrbAdm1^2, na.rm=TRUE))
+    rurMSEsAdm1 = rbind(rurMSEsAdm1, colMeans(thisAbsErrorsRurAdm1^2, na.rm=TRUE))
   }
+  covNames[covNames == "normPop"] = "pop"
   colnames(urbMADsAdm1) = covNames
   colnames(rurMADsAdm1) = covNames
+  colnames(urbMSEsAdm1) = covNames
+  colnames(rurMSEsAdm1) = covNames
   
   cols = rainbow(2*4)
   colsUrb = cols[1:4]
@@ -704,10 +711,12 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
   ltyUrb = ltyRur = 1:4
   
   # plot results
-  pdf(file=paste0("figures/integration/Adm1MAD_", min(allRes), "_", max(allRes), ".pdf"))
+  pdf(file=paste0("figures/testres/Adm1MAD_", min(allRes), "_", max(allRes), ".pdf"), 
+      width=5, height=5)
+  par(mar=c(4.1, 4.1, 2.1, 1.1))
   errRange = range(c(urbMADsAdm1, rurMADsAdm1))
-  plot(allRes, rep(NA, length(allRes)), log="xy", main="Admin1 mean absolute error", 
-       xlab="Resolution", ylab="Error", ylim=errRange)
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Integration accuracy vs. K", 
+       xlab="K", ylab="Mean absolute deviation", ylim=errRange)
   for(i in 1:ncol(urbMADsAdm1)) {
     lines(allRes, urbMADsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
     points(allRes, urbMADsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
@@ -715,8 +724,26 @@ testResIntPts = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
     points(allRes, rurMADsAdm1[,i], col=colsRur[i], pch=pchRur[i])
   }
   legend("bottomleft", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
-         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur))
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur), cex=.85)
   dev.off()
+  
+  pdf(file=paste0("figures/testres/Adm1MSE_", min(allRes), "_", max(allRes), ".pdf"), 
+      width=5, height=5)
+  par(mar=c(4.1, 4.1, 2.1, 1.1))
+  errRange = range(c(urbMSEsAdm1, rurMSEsAdm1))
+  plot(allRes, rep(NA, length(allRes)), log="xy", main="Integration accuracy vs. K", 
+       xlab="K", ylab="Mean square error", ylim=errRange)
+  for(i in 1:ncol(urbMSEsAdm1)) {
+    lines(allRes, urbMSEsAdm1[,i], col=colsUrb[i], lty=ltyUrb[i])
+    points(allRes, urbMSEsAdm1[,i], col=colsUrb[i], pch=pchUrb[i])
+    lines(allRes, rurMSEsAdm1[,i], col=colsRur[i], lty=ltyRur[i])
+    points(allRes, rurMSEsAdm1[,i], col=colsRur[i], pch=pchRur[i])
+  }
+  legend("bottomleft", c(paste(covNames, "Urb", sep=""), paste(covNames, "Rur", sep="")), 
+         pch=c(pchUrb, pchRur), lty=c(ltyUrb, ltyRur), col=c(colsUrb, colsRur), cex=.85)
+  dev.off()
+  
+  browser()
   
   # Adm2 averages ----
   urbMADsAdm2 = c()
