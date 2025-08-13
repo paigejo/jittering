@@ -33,7 +33,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
     save(intPtsDHS, file=dhsIntFile)
   }
   
-  predFile = paste0("savedOutput/simStudy1/allPreds", mod, "_SepRepar_", i, ".RData")
+  scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
   if(regenData || !file.exists(predFile)) {
     # fit TMB model
     if(mod == "M_M") {
@@ -50,10 +50,19 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
     # get aggregated predictions and parameter summary table
     stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
     admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
-    # admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+    admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
     
     parTab = summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                             gridPreds=gridPreds)
+    
+    # save results
+    # save(stratPreds, admin1Preds, admin2Preds, parTab, parMat, file=predFile)
+    # save(stratPreds, admin1Preds, parTab, parMat, file=predFile)
+    
+    # calculate scores for predictions
+    scoresAdm2 = getScores(thisSubareaPop, estMat=admin2Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
+    scoresAdm1 = getScores(thisAreaPop, estMat=admin1Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
+    scoresStratum = getScores(thisStratumPop, estMat=stratPreds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
     
     # calculate scores for parameters
     parMat = rbind(gridPreds$alphaDraws, 
@@ -61,27 +70,16 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
                    gridPreds$sigmaSqDraws, 
                    gridPreds$sigmaEpsSqDraws)
     
-    # save results
-    # save(stratPreds, admin1Preds, admin2Preds, parTab, parMat, file=predFile)
-    save(stratPreds, admin1Preds, parTab, parMat, file=predFile)
+    truePar = c(-1.25, 1, 0, 0, 0, 0.5, 0.5, 1.5)
+    scoresPar = getScores(truePar, estMat=parMat, significance=signif, doFuzzyReject=FALSE, getAverage=FALSE)
+    row.names(scoresPar) = c("(Int)", "Urban", "Healthcare inaccessibility", 
+                             "Elevation", "Dist. rivers & lakes", "Population", 
+                             "sigmaSq", "sigmaEpsSq")
+    
+    save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
   } else {
-    load(predFile)
+    invisible(NULL)
   }
-  
-  # calculate scores
-  # scoresAdm2 = getScores(thisSubareaPop, estMat=admin2Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
-  scoresAdm1 = getScores(thisAreaPop, estMat=admin1Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
-  scoresStratum = getScores(thisStratumPop, estMat=stratPreds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
-  
-  truePar = c(-1.25, 1, 0, 0, 0, 0.5, 0.5, 1.5)
-  scoresPar = getScores(truePar, estMat=parMat, significance=signif, doFuzzyReject=FALSE, getAverage=FALSE)
-  row.names(scoresPar) = c("(Int)", "Urban", "Healthcare inaccessibility", 
-                           "Elevation", "Dist. rivers & lakes", "Population", 
-                           "sigmaSq", "sigmaEpsSq")
-  
-  scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
-  # save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
-  save(scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
 }
 
 runSimStudy1IPar = function(i, mod=c("M_M", "M_DM"), regenData=FALSE) {
