@@ -50,7 +50,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
     # get aggregated predictions and parameter summary table
     stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
     admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
-    admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+    # admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
     
     parTab = summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                             gridPreds=gridPreds)
@@ -62,13 +62,14 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
                    gridPreds$sigmaEpsSqDraws)
     
     # save results
-    save(stratPreds, admin1Preds, admin2Preds, parTab, parMat, file=predFile)
+    # save(stratPreds, admin1Preds, admin2Preds, parTab, parMat, file=predFile)
+    save(stratPreds, admin1Preds, parTab, parMat, file=predFile)
   } else {
     load(predFile)
   }
   
   # calculate scores
-  scoresAdm2 = getScores(thisSubareaPop, estMat=admin2Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
+  # scoresAdm2 = getScores(thisSubareaPop, estMat=admin2Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
   scoresAdm1 = getScores(thisAreaPop, estMat=admin1Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
   scoresStratum = getScores(thisStratumPop, estMat=stratPreds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
   
@@ -79,7 +80,8 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
                            "sigmaSq", "sigmaEpsSq")
   
   scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
-  save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
+  # save(scoresAdm2, scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
+  save(scoresAdm1, scoresStratum, parTab, scoresPar, file=scoreFile)
 }
 
 runSimStudy1IPar = function(i, mod=c("M_M", "M_DM"), regenData=FALSE) {
