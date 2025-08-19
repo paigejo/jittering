@@ -148,7 +148,7 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
     # concatenate
     allScores2 = rbind(allScores2, scoresAdm2)
     allScores1 = rbind(allScores1, scoresAdm1)
-    allScoresS = rbind(allScoresS, scoresAdmS)
+    allScoresS = rbind(allScoresS, scoresStratum)
     allScoresP = rbind(allScoresP, scoresPar)
     
     # allParEsts = cbind(allParEsts, parTab[,1])
