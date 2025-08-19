@@ -132,6 +132,7 @@ runSimStudy1All = function(doPar=FALSE, nCores=16, regenData=FALSE, mod=c("M_M",
 
 # aggregate/summarize scores and parameter estimates
 simStudyScores = function(mod=c("M_M", "M_DM")) {
+  require(abind)
   mod = match.arg(mod)
   
   allScores2 = c() # admin2
@@ -149,7 +150,7 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
     allScores2 = rbind(allScores2, scoresAdm2)
     allScores1 = rbind(allScores1, scoresAdm1)
     allScoresS = rbind(allScoresS, scoresStratum)
-    allScoresP = rbind(allScoresP, scoresPar)
+    allScoresP = abind(allScoresP, scoresPar, along=3)
     
     # allParEsts = cbind(allParEsts, parTab[,1])
     
@@ -161,24 +162,37 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
     }
   }
   
+  # average scores
+  meanScoresS = colMeans(allScoresS)
+  meanScores1 = colMeans(allScores1)
+  meanScores2 = colMeans(allScores2)
+  meanScoresP = apply(allScoresP, c(1,2), mean)
+  
   # calculate score
   
   # make tables
   browser()
   savedColI = c(1, 4, 5, 9, 13, 17, 18)
   savedColI = c(1, 5, 9, 18)
-  digits = c(rep(3, 3), 2)
+  savedColI = c(1:5, 7, 9, 11)
+  digits = c(rep(3, 6), 2, 3)
   digitsPar = rep(2, 9)
   
   # population prediction scores
-  allScores = rbind(allScoresS, 
-                    allScores1, 
-                    allScores2)
-  row.names(allScores) = c("MICS Stratum scores", "Admin1 scores", "Admin2 scores")
-  print(xtable(roundCols(allScores[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(allScores1[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(allScores2[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(allScoresS[,savedColI], digits=digits), digits=c(0, digits)))
+  scoreTab = rbind(allScoresS, 
+                   allScores1, 
+                   allScores2)
+  scoreTab = cbind("Areal level"=rep(c("MICS stratum", "Admin1", "Admin2"), each=100), scoreTab)
+  
+  allMeanScores = rbind(meanScoresS, 
+                        meanScores1, 
+                        meanScores2)
+  row.names(allMeanScores) = c("MICS Stratum scores", "Admin1 scores", "Admin2 scores")
+  
+  print(xtable(roundCols(allMeanScores[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(meanScores1[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(meanScores2[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(meanScoresS[,savedColI], digits=digits), digits=c(0, digits)))
   
   # parameter scores
   print(xtable(roundCols(meanParStats, digits=digits), digits=c(0, digits)))
@@ -188,6 +202,8 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   # make plots?
   browser()
   truePar = c(-1.25, 1, 0, 0, 0, 0.5, 0.5, NA, 1.5)
+  
+  
   
 }
 
