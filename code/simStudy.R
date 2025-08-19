@@ -62,7 +62,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM"), regenData=FALSE, signif=c(.8, 
     # calculate scores for predictions
     scoresAdm2 = getScores(thisSubareaPop, estMat=admin2Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
     scoresAdm1 = getScores(thisAreaPop, estMat=admin1Preds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
-    scoresStratum = getScores(thisStratumPop, estMat=stratPreds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
+    scoresStratum = getScores(thisStratumPop[match(row.names(stratPreds$aggregationResults$p), names(thisStratumPop))], estMat=stratPreds$aggregationResults$p, significance=signif, doFuzzyReject=FALSE)
     
     # calculate scores for parameters
     parMat = rbind(gridPreds$alphaDraws, 
@@ -177,7 +177,6 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   # calculate score
   
   # make tables
-  browser()
   savedColI = c(1, 4, 5, 9, 13, 17, 18)
   savedColI = c(1, 5, 9, 18)
   savedColI = c(1:5, 7, 9, 11)
@@ -209,7 +208,35 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   browser()
   truePar = c(-1.25, 1, 0, 0, 0, 0.5, 0.5, NA, 1.5)
   
-  
+  # M_M (full)
+  # Browse[1]> allMeanScores
+  #                           Bias          Var         MSE       RMSE       CRPS
+  # MICS Stratum scores 0.01873885 0.0070810369 0.007468301 0.08476590 0.05080257
+  # Admin1 scores       0.01866146 0.0009599265 0.001341765 0.03635591 0.02097000
+  # Admin2 scores       0.01713520 0.0160948908 0.016425490 0.12673605 0.08723693
+  #                     IntervalScore80 IntervalScore95 Coverage80 Coverage95
+  # MICS Stratum scores       0.4065014       1.0572593  0.4541463  0.6073171
+  # Admin1 scores             0.1337058       0.1863101  0.6710811  0.8600000
+  # Admin2 scores             0.7488141       2.2177870  0.2406727  0.3593920
+  #                        Width80   Width95
+  # MICS Stratum scores 0.07818489 0.1193567
+  # Admin1 scores       0.07626589 0.1164021
+  # Admin2 scores       0.07945773 0.1212731
+  # 
+  # M_DM (partial)
+  # Browse[1]> allMeanScores
+  #                           Bias          Var          MSE       RMSE       CRPS
+  # MICS Stratum scores 0.01835489 0.0063093591 0.0066695277 0.08026978 0.04836411
+  # Admin1 scores       0.01833716 0.0005664941 0.0009257887 0.03018491 0.01772875
+  # Admin2 scores       0.01699506 0.0155902382 0.0159050976 0.12472942 0.08841043
+  #                     IntervalScore80 IntervalScore95 Coverage80 Coverage95
+  # MICS Stratum scores       0.3999818       1.1159749  0.4039634  0.5556402
+  # Admin1 scores             0.1144049       0.1637545  0.6283784  0.8201014
+  # Admin2 scores             0.7848603       2.4929046  0.1915023  0.2880417
+  #                        Width80    Width95
+  # MICS Stratum scores 0.06149922 0.09385563
+  # Admin1 scores       0.05904221 0.09012877
+  # Admin2 scores       0.06180419 0.09435781
   
 }
 
