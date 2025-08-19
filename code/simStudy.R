@@ -201,7 +201,7 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   # print(xtable(roundCols(t(as.matrix(meanScoresS[savedColI])), digits=digits), digits=c(0, digits)))
   
   # parameter scores
-  print(xtable(roundCols(meanParStats[,savedColI], digits=digits), digits=c(0, digits)))
+  # print(xtable(roundCols(meanParStats, digits=digits), digits=c(0, digits)))
   
   print(xtable(roundCols(meanScoresP[,savedColI], digits=digits), digits=c(0, digits)))
   
