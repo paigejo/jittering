@@ -141,24 +141,30 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   allScoresP = c() # parameters
   # allParEsts = c()
   meanParStats = c()
+  totalFiles = 0
   for(i in 1:100) {
     # load scores
-    out = load(paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData"))
-    # scoresAdm2, scoresAdm1, scoresStratum, parTab
+    scoreFile = paste0("savedOutput/simStudy1/scores", mod, "_SepRepar_", i, ".RData")
     
-    # concatenate
-    allScores2 = rbind(allScores2, scoresAdm2)
-    allScores1 = rbind(allScores1, scoresAdm1)
-    allScoresS = rbind(allScoresS, scoresStratum)
-    allScoresP = abind(allScoresP, scoresPar, along=3)
-    
-    # allParEsts = cbind(allParEsts, parTab[,1])
-    
-    # calculate running average of parameter summary statistics
-    if(i == 1) {
-      meanParStats = parTab
-    } else {
-      meanParStats = ((i-1)/100) * meanParStats + (.01) * parTab
+    if(file.exists(scoreFile)) {
+      totalFiles = totalFiles + 1
+      out = load(scoreFile)
+      # scoresAdm2, scoresAdm1, scoresStratum, parTab
+      
+      # concatenate
+      allScores2 = rbind(allScores2, scoresAdm2)
+      allScores1 = rbind(allScores1, scoresAdm1)
+      allScoresS = rbind(allScoresS, scoresStratum)
+      allScoresP = abind(allScoresP, scoresPar, along=3)
+      
+      # allParEsts = cbind(allParEsts, parTab[,1])
+      
+      # calculate running average of parameter summary statistics
+      if(i == 1) {
+        meanParStats = parTab
+      } else {
+        meanParStats = ((totalFiles-1) * meanParStats + parTab) * (1/totalFiles)
+      }
     }
   }
   
@@ -182,7 +188,7 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   scoreTab = rbind(allScoresS, 
                    allScores1, 
                    allScores2)
-  scoreTab = cbind("Areal level"=rep(c("MICS stratum", "Admin1", "Admin2"), each=100), scoreTab)
+  scoreTab = cbind("Areal level"=rep(c("MICS stratum", "Admin1", "Admin2"), each=totalFiles), scoreTab)
   
   allMeanScores = rbind(meanScoresS, 
                         meanScores1, 
@@ -190,14 +196,14 @@ simStudyScores = function(mod=c("M_M", "M_DM")) {
   row.names(allMeanScores) = c("MICS Stratum scores", "Admin1 scores", "Admin2 scores")
   
   print(xtable(roundCols(allMeanScores[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(meanScores1[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(meanScores2[,savedColI], digits=digits), digits=c(0, digits)))
-  print(xtable(roundCols(meanScoresS[,savedColI], digits=digits), digits=c(0, digits)))
+  # print(xtable(roundCols(t(as.matrix(meanScores1[savedColI])), digits=digits), digits=c(0, digits)))
+  # print(xtable(roundCols(t(as.matrix(meanScores2[savedColI])), digits=digits), digits=c(0, digits)))
+  # print(xtable(roundCols(t(as.matrix(meanScoresS[savedColI])), digits=digits), digits=c(0, digits)))
   
   # parameter scores
-  print(xtable(roundCols(meanParStats, digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(meanParStats[,savedColI], digits=digits), digits=c(0, digits)))
   
-  print(xtable(roundCols(allScoresP[,savedColI], digits=digits), digits=c(0, digits)))
+  print(xtable(roundCols(meanScoresP[,savedColI], digits=digits), digits=c(0, digits)))
   
   # make plots?
   browser()
