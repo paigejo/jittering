@@ -140,6 +140,7 @@ source("code/simData.R")
 source("code/modM_DMSep.R")
 source("code/modM_DSep.R")
 source("code/modM_MSep.R")
+source("code/modMdSep.R")
 source("code/makeInputsTMB.R")
 source("code/simStudy.R")
 

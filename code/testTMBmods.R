@@ -2,23 +2,36 @@
 
 # test modM_DSepRepar case:
 
-out = fitMD()
+
+modI = 1
+mods = c("Md", "M_D", "M_M", "M_DM")
+modName = mods[modI]
+if(modName == "Md") {
+  out = fitMd()
+} else if(modName == "M_D") {
+  out = fitMD()
+} else if(modName == "M_M") {
+  out = fitMM()
+} else if(modName == "M_DM") {
+  out = fitMDM()
+}
+
 system.time(gridPreds <- predGrid(out$TMBsd, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE))[3]
 # 228.571  seconds
 
-save(gridPreds, file="savedOutput/ed/gridPredsM_DSepRepar.RData")
-out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
+# save(gridPreds, file=paste0("savedOutput/ed/gridPreds", modName, "SepRepar.RData"))
+# out = load(paste0("savedOutput/ed/gridPreds", modName, "SepRepar.RData"))
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DSepRepar.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DSepRepar.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DSepRepar.RData")
-out = load("savedOutput/ed/stratPredsM_DSepRepar.RData")
-out = load("savedOutput/ed/admin1PredsM_DSepRepar.RData")
-out = load("savedOutput/ed/admin2PredsM_DSepRepar.RData")
+# save(stratPreds, file=paste0("savedOutput/ed/stratPreds", modName, "SepRepar.RData"))
+# save(admin1Preds, file=paste0("savedOutput/ed/admin1Preds", modName, "SepRepar.RData"))
+# save(admin2Preds, file=paste0("savedOutput/ed/admin2Preds", modName, "SepRepar.RData"))
+# out = load(paste0("savedOutput/ed/stratPreds", modName, "SepRepar.RData"))
+# out = load(paste0("savedOutput/ed/admin1Preds", modName, "SepRepar.RData"))
+# out = load(paste0("savedOutput/ed/admin2Preds", modName, "SepRepar.RData"))
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -42,13 +55,13 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DSepRepar")
+          plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"))
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Strat")
+          plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Admin1")
+          plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Admin2")
+          plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Admin2")
