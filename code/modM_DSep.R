@@ -35,7 +35,7 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
     
-    inputsMDM = makeInputsMDM(datDHS, datMCIS, 
+    inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
                               KMICS=100,
                               KDHSurb = 11, # 3 rings of 5 each
