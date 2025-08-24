@@ -1,5 +1,5 @@
 
-fitMD = function(datDHS=ed, datMCIS=edMICS, inputsMDM=NULL, 
+fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
                  intPtsMICS=NULL, intPtsDHS=NULL, 
                  KMICS=100,
                  KDHSurb = 11, # 3 rings of 5 each
