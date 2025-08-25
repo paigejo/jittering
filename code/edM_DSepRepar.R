@@ -633,18 +633,18 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsM_DSepRepar.RData")
-out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
+# save(gridPreds, file="savedOutput/ed/gridPredsM_DSepRepar.RData")
+# out = load("savedOutput/ed/gridPredsM_DSepRepar.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DSepRepar.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DSepRepar.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DSepRepar.RData")
-out = load("savedOutput/ed/stratPredsM_DSepRepar.RData")
-out = load("savedOutput/ed/admin1PredsM_DSepRepar.RData")
-out = load("savedOutput/ed/admin2PredsM_DSepRepar.RData")
+# save(stratPreds, file="savedOutput/ed/stratPredsM_DSepRepar.RData")
+# save(admin1Preds, file="savedOutput/ed/admin1PredsM_DSepRepar.RData")
+# save(admin2Preds, file="savedOutput/ed/admin2PredsM_DSepRepar.RData")
+# out = load("savedOutput/ed/stratPredsM_DSepRepar.RData")
+# out = load("savedOutput/ed/admin1PredsM_DSepRepar.RData")
+# out = load("savedOutput/ed/admin2PredsM_DSepRepar.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -679,4 +679,7 @@ plotPreds(SD0, obj, popMat=popMatNGAThresh,
           gridPreds=gridPreds, arealPreds=admin2Preds, 
           plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Admin2")
 
+testDat = list(last.par.best=obj$env$last.par.best, last.par=obj$env$last.par, 
+               data=obj$env$.data, random=obj$env$random, par=obj$par)
+save(testDat, file="savedOutput/test/testDat.RData")
 

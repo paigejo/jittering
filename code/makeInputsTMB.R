@@ -168,6 +168,10 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   areaidxlocUrbanDHS = as.integer(areaidxlocUrbanDHS)
   areaidxlocRuralDHS = as.integer(areaidxlocRuralDHS)
   
+  # for Adm1 level spatial effects, don't need different areas for each integration point
+  areaidxlocUrbanDHS = areaidxlocUrbanDHS[1:length(ysUrbDHS)]
+  areaidxlocRuralDHS = areaidxlocRuralDHS[1:length(ysRurDHS)]
+  
   list(AUrbMICS=AUrbMICS, ARurMICS=ARurMICS, AUrbDHS=AUrbDHS, ARurDHS=ARurDHS, 
        intPtsDHS=intPtsDHS, intPtsMICS=intPtsMICS, 
        areaidxlocUrbanMICS=areaidxlocUrbanMICS, areaidxlocRuralMICS=areaidxlocRuralMICS, 

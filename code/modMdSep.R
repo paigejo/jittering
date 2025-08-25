@@ -106,9 +106,9 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       n_iRuralDHS=nsRurDHS, # 
       # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
       # AprojRuralMICS=ARurMICS, # 
-      areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
-      areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
-      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
+      areaidxlocUrban=areaidxlocUrbanDHS, # [nObsUrban] length vector of areal indices associated with each observation
+      areaidxlocRural=areaidxlocRuralDHS, # [nObsRural] length vector of areal indices associated with each observation
+      X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed observation minor, int pt major
       X_betaRuralDHS=intPtsDHS$covsRur, # 
       wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
       wRuralDHS=intPtsDHS$wRural, # 
@@ -134,8 +134,8 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       n_iRuralDHS=nsRurDHS, # 
       # AprojUrbanMICS=AUrbMICS, # [nIntegrationPointsUrban * nObsUrban] x nArea matrix with ij-th entry = 1 if cluster i associated with area j and 0 o.w.
       # AprojRuralMICS=ARurMICS, # 
-      areaidxlocUrban=areaidxlocUrbanDHS, # [nIntegrationPointsUrban * nObsUrban] length vector of areal indices associated with each observation
-      areaidxlocRural=areaidxlocRuralDHS, # [nIntegrationPointsRural * nObsRural] length vector of areal indices associated with each observation
+      areaidxlocUrban=areaidxlocUrbanDHS, # [nObsUrban] length vector of areal indices associated with each observation
+      areaidxlocRural=areaidxlocRuralDHS, # [nObsRural] length vector of areal indices associated with each observation
       X_betaUrbanDHS=intPtsDHS$covsUrb, # [nIntegrationPointsUrban * nObsUrban] x nPar design matrix. Indexed mod numObsUrban
       X_betaRuralDHS=intPtsDHS$covsRur, # 
       wUrbanDHS=intPtsDHS$wUrban, # nObsUrban x nIntegrationPointsUrban weight matrix
@@ -267,7 +267,7 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # objFull <- MakeADFun(data=data_full,
   #                      parameters=tmb_params,
   #                      hessian=TRUE,
-  #                      DLL='modM_DSep')
+  #                      DLL='modM_DSepRepar')
   
   lower = rep(-10, length(obj[['par']]))
   upper = rep( 10, length(obj[['par']]))
@@ -308,7 +308,7 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     initParFull = objFull$par
     initParFull[1:6] = initAlphaBeta
     objFull$fn(initParFull)
-    testRep = obj$report(initParFull)
+    testRep = objFull$report(initParFull)
     
     system.time(test <- obj$fn(obj$par))
     # 363.236  for non-sparse
@@ -353,7 +353,7 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # set start of optimization
   # obj$par = optParINLA
   # obj$par = optPar
-  
+  browser()
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
     tolSeq = 1e-06
@@ -467,8 +467,6 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     plotMapDat(admFinal, new=FALSE)
     dev.off()
   }
-  
-  
   
   list(TMBobj=obj, TMBsd=SD0, totalTime=totalTime, sdTime=sdTime)
 }

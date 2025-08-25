@@ -3,7 +3,7 @@
 # test modM_DSepRepar case:
 
 
-modI = 1
+modI = 2
 mods = c("Md", "M_D", "M_M", "M_DM")
 modName = mods[modI]
 if(modName == "Md") {
@@ -33,7 +33,7 @@ admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$
 # out = load(paste0("savedOutput/ed/admin1Preds", modName, "SepRepar.RData"))
 # out = load(paste0("savedOutput/ed/admin2Preds", modName, "SepRepar.RData"))
 
-summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
+summaryTabBYM2(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
 # \begin{table}[ht]
 # \centering
@@ -53,15 +53,15 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \hline
 # \end{tabular}
 # \end{table}
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
           plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"))
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
           plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Strat")
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
           plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Admin1")
-plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
           plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Admin2")
