@@ -366,7 +366,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     any(apply(data_full$wUrbanMICS, 1, function(x) {all(x == 0)}))
     any(apply(data_full$wRuralMICS, 1, function(x) {all(x == 0)}))
   }
-  browser()
+  
   # * Run TMB ----
   # set start of optimization
   # obj$par = optParINLA
