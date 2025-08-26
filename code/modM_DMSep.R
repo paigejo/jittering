@@ -263,10 +263,10 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                 maxit=maxit, repar=repar)
     
     # now set the initial parameters
-    tmb_params <- list(beta = out$TMBobj$env$last.par[grepl("beta", names(out$TMBobj$env$last.par))], 
-                       log_tau = out$TMBobj$env$last.par[names(out$TMBobj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+    tmb_params <- list(log_tau = out$TMBobj$env$last.par[names(out$TMBobj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
                        logit_phi = out$TMBobj$env$last.par[grepl("logit_phi", names(out$TMBobj$env$last.par))], # SPDE parameter related to the range
                        log_tauEps = out$TMBobj$env$last.par[grepl("log_tauEps", names(out$TMBobj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                       beta = out$TMBobj$env$last.par[grepl("beta", names(out$TMBobj$env$last.par))], 
                        w_bym2Star = out$TMBobj$env$last.par[grepl("w_bym2Star", names(out$TMBobj$env$last.par))], # RE on mesh vertices
                        u_bym2Star = out$TMBobj$env$last.par[grepl("u_bym2Star", names(out$TMBobj$env$last.par))], # RE on mesh vertices
                        nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
