@@ -12,7 +12,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.bym2Phi=list(u=0.5, alpha=2/3), 
                   pc.bym2Prec=list(u=1, alpha=.1), 
                   pc.expPrec=list(u=1, alpha=.1), 
-                  maxit=1000, repar=TRUE) {
+                  maxit=1000, repar=TRUE, MdInit = FALSE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -208,37 +208,72 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   # initial parameters
-  initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
-  initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
-  initAlpha = logit(initRurP)
-  initBeta1 = logit(initUrbP) - initAlpha
-  
-  if(!repar) {
-    tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = 0, # SPDE parameter related to the range
-                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       alpha = initAlpha, # intercept
-                       beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
-                       w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                       u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
-                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-    )
+  if(!MdInit) {
+    initUrbP = sum(c(data_full$y_iUrbanMICS, data_full$y_iUrbanDHS))/sum(c(data_full$n_iUrbanMICS, data_full$n_iUrbanDHS))
+    initRurP = sum(c(data_full$y_iRuralMICS, data_full$y_iRuralDHS))/sum(c(data_full$n_iRuralMICS, data_full$n_iRuralDHS))
+    initAlpha = logit(initRurP)
+    initBeta1 = logit(initUrbP) - initAlpha
+    
+    if(!repar) {
+      tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = 0, # SPDE parameter related to the range
+                         log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                         alpha = initAlpha, # intercept
+                         beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                         w_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                         u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                         nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                         nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                         nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                         nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+      )
+    } else {
+      tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                         logit_phi = 0, # SPDE parameter related to the range
+                         log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
+                         beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
+                         w_bym2Star = rep(initAlpha, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                         u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                         nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                         nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
+                         nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
+                         nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
+      )
+    }
   } else {
-    tmb_params <- list(log_tau = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       logit_phi = 0, # SPDE parameter related to the range
-                       log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
-                       beta = c(initBeta1, rep(0, ncol(intPtsDHS$covsUrb)-1)), 
-                       w_bym2Star = rep(initAlpha, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
-                       u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+    print("initializing parameters via Md model fit")
+    
+    if(!repar) {
+      stop("not yet implemented for !repar")
+    }
+    
+    out = fitMd(datDHS=datDHS, datMICS=datMICS, inputsMDM=inputsMDM, 
+                intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
+                KMICS=KMICS,
+                KDHSurb = KDHSurb, # 3 rings of 5 each
+                JInnerUrban = JInnerUrban,
+                KDHSrur = KDHSrur, # 3 inner + 1 outer rings of 5 each
+                JInnerRural = JInnerRural,
+                JOuterRural = JOuterRural, admMICS=admMICS, adm2DHS=adm2DHS, 
+                alpha_pri = alpha_pri, 
+                beta_pri = beta_pri, 
+                pc.bym2Phi=pc.bym2Phi, 
+                pc.bym2Prec=pc.bym2Prec, 
+                pc.expPrec=pc.expPrec, 
+                maxit=maxit, repar=repar)
+    
+    # now set the initial parameters
+    tmb_params <- list(beta = out$TMBobj$env$last.par[grepl("beta", names(out$TMBobj$env$last.par))], 
+                       log_tau = out$TMBobj$env$last.par[names(out$TMBobj$env$last.par) == "log_tau"], # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = out$TMBobj$env$last.par[grepl("logit_phi", names(out$TMBobj$env$last.par))], # SPDE parameter related to the range
+                       log_tauEps = out$TMBobj$env$last.par[grepl("log_tauEps", names(out$TMBobj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
+                       w_bym2Star = out$TMBobj$env$last.par[grepl("w_bym2Star", names(out$TMBobj$env$last.par))], # RE on mesh vertices
                        nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
                        nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
-                       nuggetUrbDHS = rep(0, length(data_full$y_iUrbanDHS)), 
-                       nuggetRurDHS = rep(0, length(data_full$y_iRuralDHS))
-    )
+                       nuggetUrbDHS = out$TMBobj$env$last.par[grepl("nuggetUrbDHS", names(out$TMBobj$env$last.par))], 
+                       nuggetRurDHS = out$TMBobj$env$last.par[grepl("nuggetRurDHS", names(out$TMBobj$env$last.par))])
   }
+  
   
   
   # make TMB fun and grad ----
@@ -285,7 +320,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # objFull <- MakeADFun(data=data_full,
   #                      parameters=tmb_params,
   #                      hessian=TRUE,
-  #                      DLL='modM_DMSep')
+  #                      DLL='modM_DMSepRepar')
   
   lower = rep(-10, length(obj[['par']]))
   upper = rep( 10, length(obj[['par']]))
@@ -321,12 +356,19 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   if(FALSE) {
+    objFull <- MakeADFun(data=data_full,
+                         parameters=tmb_params,
+                         hessian=TRUE,
+                         DLL='modM_DMSepRepar')
+    
     # testing before running optimization
-    initAlphaBeta = rep(1, 6)
+    initBeta = rep(1, 5)
     initParFull = objFull$par
-    initParFull[1:6] = initAlphaBeta
+    head(initParFull, 10)
+    initParFull[names(initParFull) == "beta"] = initBeta
+    head(initParFull, 10)
     objFull$fn(initParFull)
-    testRep = obj$report(initParFull)
+    testRepMDM = obj$report(initParFull)
     
     system.time(test <- obj$fn(obj$par))
     # 363.236  for non-sparse
@@ -336,27 +378,29 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     # 54.5 for non-sparse
     # 55.3 for sparse
     
-    testRep = obj$report()
+    # testRepMDM = obj$report()
     
-    range(testRep$latentFieldUrbMICS)
-    range(testRep$latentFieldRurMICS)
-    range(testRep$latentFieldUrbDHS)
-    range(testRep$latentFieldRurDHS)
+    save(testRepMDM, file="savedOutput/test/testRepMDM.RData")
     
-    range(testRep$fe_iUrbanMICS)
-    range(testRep$fe_iRuralMICS)
-    range(testRep$fe_iUrbanDHS)
-    range(testRep$fe_iRuralDHS)
+    range(testRep$latentFieldUrbMICS) # -5.117386  5.158740
+    range(testRep$latentFieldRurMICS) # -6.796740  6.122267
+    range(testRep$latentFieldUrbDHS) # -8.773871  4.038455
+    range(testRep$latentFieldRurDHS) # -7.010558  4.623489
+    
+    range(testRep$fe_iUrbanMICS) # -4.176776  6.099350
+    range(testRep$fe_iRuralMICS) # -5.856130  7.062877
+    range(testRep$fe_iUrbanDHS) # -7.833261  4.979065
+    range(testRep$fe_iRuralDHS) # -6.069948  5.564099
     
     range(testRep$projepsilon_iUrbanMICS)
     range(testRep$projepsilon_iRuralMICS)
     range(testRep$projepsilon_iUrbanDHS)
     range(testRep$projepsilon_iRuralDHS)
     
-    range(testRep$liksUrbMICS)
-    range(testRep$liksRurMICS)
-    range(testRep$liksUrbDHS)
-    range(testRep$liksRurDHS)
+    range(testRep$liksUrbMICS) # 1.544669e-20 9.940440e-01
+    range(testRep$liksRurMICS) # 5.628861e-35 9.978113e-01
+    range(testRep$liksUrbDHS) # 0.0000000 0.7824944
+    range(testRep$liksRurDHS) # 0.0000000 0.9792042
     
     range(testRep$logDet)
     sapply(testRep, range)

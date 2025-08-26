@@ -576,7 +576,11 @@ if(FALSE) {
   testObj$fn(SD0$par.fixed - eig$vectors[,9]*.05)
 }
 
-
+if(FALSE) {
+  out = fitMDM()
+  SD0 = out$TMBsd
+  obj = out$TMBobj
+}
 
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')

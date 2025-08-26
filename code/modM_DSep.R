@@ -260,7 +260,7 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # objFull <- MakeADFun(data=data_full,
   #                      parameters=tmb_params,
   #                      hessian=TRUE,
-  #                      DLL='modM_DSep')
+  #                      DLL='modM_DSepRepar')
   
   lower = rep(-10, length(obj[['par']]))
   upper = rep( 10, length(obj[['par']]))
@@ -297,11 +297,16 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   if(FALSE) {
     # testing before running optimization
-    initAlphaBeta = rep(1, 6)
+    objFull <- MakeADFun(data=data_full,
+                         parameters=tmb_params,
+                         hessian=TRUE,
+                         DLL='modM_DSepRepar')
+    
+    initBeta = rep(1, 5)
     initParFull = objFull$par
-    initParFull[1:6] = initAlphaBeta
+    initParFull[names(initParFull) == "beta"] = initBeta
     objFull$fn(initParFull)
-    testRep = obj$report(initParFull)
+    testRepMD = obj$report(initParFull)
     
     system.time(test <- obj$fn(obj$par))
     # 363.236  for non-sparse
@@ -310,6 +315,139 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     system.time(test <- obj$gr(obj$par))
     # 54.5 for non-sparse
     # 55.3 for sparse
+    
+    load("~/git/jittering/savedOutput/test/testRepMDM.RData")
+    # range(testRepMDM$latentFieldUrbMICS)
+    # range(testRepMD$latentFieldUrbMICS)
+    # range(testRepMDM$latentFieldRurMICS)
+    # range(testRepMD$latentFieldRurMICS)
+    range(testRepMDM$latentFieldUrbDHS)
+    range(testRepMD$latentFieldUrbDHS)
+    range(testRepMDM$latentFieldRurDHS)
+    range(testRepMD$latentFieldRurDHS)
+    # range(testRepMDM$fe_iUrbanMICS)
+    # range(testRepMD$fe_iUrbanMICS)
+    # range(testRepMDM$fe_iRuralMICS)
+    # range(testRepMD$fe_iRuralMICS)
+    range(testRepMDM$fe_iUrbanDHS)
+    range(testRepMD$fe_iUrbanDHS)
+    range(testRepMDM$fe_iRuralDHS)
+    range(testRepMD$fe_iRuralDHS)
+    # range(testRepMDM$projepsilon_iUrbanMICS)
+    # range(testRepMD$projepsilon_iUrbanMICS)
+    # range(testRepMDM$projepsilon_iRuralMICS)
+    # range(testRepMD$projepsilon_iRuralMICS)
+    range(testRepMDM$projepsilon_iUrbanDHS)
+    range(testRepMD$projepsilon_iUrbanDHS)
+    range(testRepMDM$projepsilon_iRuralDHS)
+    range(testRepMD$projepsilon_iRuralDHS)
+    # range(testRepMDM$liksUrbMICS)
+    # range(testRepMD$liksUrbMICS)
+    # range(testRepMDM$liksRurMICS)
+    # range(testRepMD$liksRurMICS)
+    range(testRepMDM$liksUrbDHS)
+    range(testRepMD$liksUrbDHS)
+    range(testRepMDM$liksRurDHS)
+    range(testRepMD$liksRurDHS)
+    
+    out=load("savedOutput/global/intPtsMICS_100.RData")
+    intPtsMICS = straightenMICS(intPtsMICS)
+    
+    
+    MICStoPtMat = function(matMICS, urb=TRUE) {
+      
+      # aggOut = aggregate(datMICS$Stratum, by=list(datMICS$Stratum), FUN=length)
+      # # all.equal(aggOut$Group.1, intPtsMICS$strataMICS)
+      # # TRUE
+      
+      # get number of integration points (urban and rural) per MICS stratum
+      allNumPerStrat = aggregate(datMICS$Stratum, by=list(strat=datMICS$Stratum, urb=datMICS$urban), FUN=length, drop=FALSE)
+      allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admFinal$NAME_FINAL)
+      numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
+      numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
+      numPerStratRur[is.na(numPerStratRur)] = 0
+      numPerStratUrb[is.na(numPerStratUrb)] = 0
+      
+      if(urb) {
+        thisNumPerStrat = numPerStratUrb
+      } else {
+        thisNumPerStrat = numPerStratRur
+      }
+      
+      startStratInds = which(matMICS$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
+      nAreas = nrow(matMICS)/KMICS
+      areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=thisNumPerStrat[x])})) # length nUrb, range = 1:41. gives area index for each obs
+      allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+      nObs = length(allAreaIs)/KMICS
+      allIntIs = rep(1:KMICS, each=nObs) # length nObs*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+      transformI = allAreaIs + (allIntIs-1)*nAreas
+      matMICS = matMICS[transformI,] # now XUrb is [K * nObs] x nVar
+      
+      matMICS
+    }
+    
+    covsUrb = MICStoPtMat(intPtsMICS$XUrb, TRUE)
+    covsRur = MICStoPtMat(intPtsMICS$XRur, FALSE)
+    plotWithColor(covsUrb$east, covsUrb$north, data_full$X_betaUrbanMICS[,5], pch=19, cex=.5)
+    plotWithColor(covsUrb$east, covsUrb$north, data_full$areaidxlocUrbanMICS, pch=19, cex=.5)
+    plotWithColor(covsUrb$east, covsUrb$north, data_full$areaidxlocUrbanMICS, pch=19, cex=.5, 
+                  zlim=c(0, 40))
+    plotWithColor(covsRur$east, covsRur$north, data_full$areaidxlocRuralMICS, pch=19, cex=.5, 
+                  zlim=c(0, 40), add=TRUE)
+    
+    plotWithColor(intPtsMICS$XUrb$east, intPtsMICS$XUrb$north, rep(1:41, KMICS), pch=19, cex=.5)
+    plotWithColor(intPtsMICS$XRur$east, intPtsMICS$XRur$north, rep(1:41, KMICS), pch=19, cex=.5)
+    
+    areaI = 1
+    areaSeq = seq(1, 4100, by=41) + areaI-1
+    plotWithColor(intPtsMICS$XRur$east[areaSeq], intPtsMICS$XRur$north[areaSeq], intPtsMICS$XRur$pop[areaSeq], 
+                  pch=19, cex=.5)
+    plotWithColor(intPtsMICS$XUrb$east[areaSeq], intPtsMICS$XUrb$north[areaSeq], intPtsMICS$XUrb$pop[areaSeq], 
+                  pch=19, cex=.5)
+    
+    plotWithColor(intPtsMICS$XRur$east[areaSeq], intPtsMICS$XRur$north[areaSeq], intPtsMICS$XRur$pop[areaSeq], 
+                  pch=19, cex=.5)
+    plotWithColor(intPtsMICS$XRur$east[areaSeq], intPtsMICS$XRur$north[areaSeq], intPtsMICS$wRural[areaI,], 
+                  pch=19, cex=.5)
+    plotWithColor(intPtsMICS$XUrb$east[areaSeq], intPtsMICS$XUrb$north[areaSeq], intPtsMICS$XUrb$pop[areaSeq], 
+                  pch=19, cex=.5)
+    plotWithColor(intPtsMICS$XUrb$east[areaSeq], intPtsMICS$XUrb$north[areaSeq], intPtsMICS$wUrban[areaI,], 
+                  pch=19, cex=.5)
+    
+    
+    plotWithColor(covsUrb$east, covsUrb$north, data_full$X_betaUrbanMICS %*% rep(1,5), pch=19, cex=.5)
+    plotWithColor(covsUrb$east, covsUrb$north, testRepMDM$fe_iUrbanMICS, pch=19, cex=.5)
+    plotWithColor(covsRur$east, covsRur$north, data_full$X_betaRuralMICS %*% rep(1,5), pch=19, cex=.5)
+    plotWithColor(covsRur$east, covsRur$north, testRepMDM$fe_iRuralMICS, pch=19, cex=.5)
+    
+    all.equal(as.numeric(data_full$X_betaUrbanMICS %*% rep(1,5)), as.numeric(testRepMDM$fe_iUrbanMICS))
+    all.equal(as.numeric(data_full$X_betaRuralMICS %*% rep(1,5)), as.numeric(testRepMDM$fe_iRuralMICS))
+    all.equal(as.numeric(data_full$X_betaUrbanDHS %*% rep(1,5)), as.numeric(testRepMDM$fe_iUrbanDHS))
+    all.equal(as.numeric(data_full$X_betaRuralDHS %*% rep(1,5)), as.numeric(testRepMDM$fe_iRuralDHS))
+    
+    plotWithColor(c(intPtsDHS$xUrban), c(intPtsDHS$yUrban), intPtsDHS$covsUrb %*% rep(1,5), pch=19, cex=.5)
+    plotWithColor(c(intPtsDHS$xUrban), c(intPtsDHS$yUrban), testRepMDM$fe_iUrbanDHS, pch=19, cex=.5)
+    plotWithColor(c(intPtsDHS$xRural), c(intPtsDHS$yRural), intPtsDHS$covsRur %*% rep(1,5), pch=19, cex=.5)
+    plotWithColor(c(intPtsDHS$xRural), c(intPtsDHS$yRural), testRepMDM$fe_iRuralDHS, pch=19, cex=.5)
+    plotWithColor(c(intPtsDHS$xUrban), c(intPtsDHS$yUrban), data_full$areaidxlocUrbanDHS, pch=19, cex=.5, 
+                  zlim=c(0, 40))
+    plotWithColor(c(intPtsDHS$xRural), c(intPtsDHS$yRural), data_full$areaidxlocRuralDHS, pch=19, cex=.5, 
+                  zlim=c(0, 40), add=TRUE)
+    
+    load("~/git/jittering/savedOutput/test/data_fullMDM.RData")
+    data_fullMD = data_full
+    compNames = names(data_fullMD)
+    for(i in 1:length(compNames)) {
+      print(compNames[i])
+      mdmName = compNames[i]
+      if(grepl("areaidxloc", mdmName)) {
+        mdmName = paste0(mdmName, "DHS")
+      }
+      print(all(c(as.matrix(data_fullMD[[compNames[i]]])) == c(as.matrix(data_fullMDM[[mdmName]]))))
+    }
+    
+    hist(intPtsMICS$XUrb$pop[seq(1, 4100, by=41)+39], breaks=30)
+    hist(covsUrb$pop[data_full$areaidxlocUrbanMICS == 39], breaks=30)
     
     testRep = obj$report()
     

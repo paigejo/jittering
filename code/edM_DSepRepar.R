@@ -569,8 +569,14 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DSepRepar.RData")
-out = load("savedOutput/ed/fitM_DSepRepar.RData")
+# save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DSepRepar.RData")
+# out = load("savedOutput/ed/fitM_DSepRepar.RData")
+
+if(FALSE) {
+  out = fitMD()
+  SD0 = out$TMBsd
+  obj = out$TMBobj
+}
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
@@ -668,16 +674,16 @@ summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh,
 # \end{table}
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
-          plotNameRoot="edFusionM_DSepRepar")
+          plotNameRoot="edFusionM_DSepReparTest")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=stratPreds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Strat")
+          plotNameRoot="edFusionM_DSepReparTest", plotNameRootAreal="Strat")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin1Preds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Admin1")
+          plotNameRoot="edFusionM_DSepReparTest", plotNameRootAreal="Admin1")
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
-          plotNameRoot="edFusionM_DSepRepar", plotNameRootAreal="Admin2")
+          plotNameRoot="edFusionM_DSepReparTest", plotNameRootAreal="Admin2")
 
 testDat = list(last.par.best=obj$env$last.par.best, last.par=obj$env$last.par, 
                data=obj$env$.data, random=obj$env$random, par=obj$par)

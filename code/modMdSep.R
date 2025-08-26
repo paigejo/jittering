@@ -12,7 +12,7 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                  pc.bym2Phi=list(u=0.5, alpha=2/3), 
                  pc.bym2Prec=list(u=1, alpha=.1), 
                  pc.expPrec=list(u=1, alpha=.1), 
-                 maxit=1000, repar=TRUE) {
+                 maxit=1000, repar=TRUE, verbose=FALSE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -38,7 +38,9 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
-    print("Making M_DM inputs...")
+    if(verbose) {
+      print("Making M_DM inputs...")
+    }
     
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
@@ -277,13 +279,17 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     if(any(par < lower) || any(par > upper)) {
       return(badParVal)
     }
-    print(par)
+    if(verbose) {
+      print(par)
+    }
     objVal = testObj[['fn']](par)
     parNames = names(par)
     parVals = par
     parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
     parStr = paste(parStrs, collapse=", ")
-    print(paste0("objective: ", objVal, " for parameters, ", parStr))
+    if(verbose) {
+      print(paste0("objective: ", objVal, " for parameters, ", parStr))
+    }
     objVal
   }
   
@@ -291,14 +297,18 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     if(any(par < lower) || any(par > upper)) {
       return(rep(badParVal, length(par)))
     }
-    print(par)
+    if(verbose) {
+      print(par)
+    }
     grVal = testObj[['gr']](par)
     parNames = names(par)
     parVals = par
     parStrs = sapply(1:length(par), function(ind) {paste(parNames[ind], ": ", parVals[ind], sep="")})
     parStr = paste(parStrs, collapse=", ")
     grStr = paste(grVal, collapse=", ")
-    print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+    if(verbose) {
+      print(paste0("gradient: ", grStr, " for parameters, ", parStr))
+    }
     grVal
   }
   
@@ -376,7 +386,9 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
         print(paste0("completed optimization for tol = ", thisTol, ""))
         
         ## Get standard errors
-        print("getting standard errors...")
+        if(verbose) {
+          print("getting standard errors...")
+        }
         sdTime = system.time(
           SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
                                bias.correct = TRUE,
@@ -387,7 +399,9 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
         # 3.9447 minutes for intern=FALSE
         
         if(SD0$pdHess) {
-          print("Optimization and PD hess calculation done!")
+          if(verbose) {
+            print("Optimization and PD hess calculation done!")
+          }
           break
         }
         else {
