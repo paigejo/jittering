@@ -12,7 +12,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.bym2Phi=list(u=0.5, alpha=2/3), 
                   pc.bym2Prec=list(u=1, alpha=.1), 
                   pc.expPrec=list(u=1, alpha=.1), 
-                  maxit=1000, repar=TRUE, MdInit = FALSE) {
+                  maxit=1000, repar=TRUE, MdInit = TRUE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -268,6 +268,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                        logit_phi = out$TMBobj$env$last.par[grepl("logit_phi", names(out$TMBobj$env$last.par))], # SPDE parameter related to the range
                        log_tauEps = out$TMBobj$env$last.par[grepl("log_tauEps", names(out$TMBobj$env$last.par))], # Log tau (i.e. log spatial precision, Epsilon)
                        w_bym2Star = out$TMBobj$env$last.par[grepl("w_bym2Star", names(out$TMBobj$env$last.par))], # RE on mesh vertices
+                       u_bym2Star = out$TMBobj$env$last.par[grepl("u_bym2Star", names(out$TMBobj$env$last.par))], # RE on mesh vertices
                        nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
                        nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS)), 
                        nuggetUrbDHS = out$TMBobj$env$last.par[grepl("nuggetUrbDHS", names(out$TMBobj$env$last.par))], 
