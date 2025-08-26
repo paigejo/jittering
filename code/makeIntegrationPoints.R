@@ -2713,6 +2713,8 @@ straightenMICS = function(intPtsMICS) {
   # sortI = match(thisOrder, trueOrder)
   sortI = match(trueOrder, thisOrder)
   
+  intPtsMICS$strataMICS = intPtsMICS$strataMICS[sortI]
+  
   wUrban = intPtsMICS$wUrban[sortI,]
   wRural = intPtsMICS$wRural[sortI,]
   # which(rowSums(intPtsMICS$wRural) == 0)

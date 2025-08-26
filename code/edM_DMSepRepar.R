@@ -40,7 +40,7 @@ if(FALSE) {
                                           JOuterRural=JOuterRural, adminMap=adm2Full)
   
   load("savedOutput/global/intPtsDHS.RData")
-  load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
+  load(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))
   intPtsMICS = straightenMICS(intPtsMICS)
   
   # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
@@ -581,8 +581,8 @@ if(FALSE) {
 ## summary(SD0, 'report')
 ## summary(SD0, 'fixed')
 
-save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DMSepRepar.RData")
-out = load("savedOutput/ed/fitM_DMSepRepar.RData")
+# save(SD0, obj, totalTime, sdTime, file="savedOutput/ed/fitM_DMSepRepar.RData")
+# out = load("savedOutput/ed/fitM_DMSepRepar.RData")
 
 gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                      quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
@@ -665,18 +665,18 @@ gridPreds = predGrid(SD0, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS
 # \hline
 # \end{tabular}
 # \end{table}
-save(gridPreds, file="savedOutput/ed/gridPredsM_DMSepRepar.RData")
-out = load("savedOutput/ed/gridPredsM_DMSepRepar.RData")
+# save(gridPreds, file="savedOutput/ed/gridPredsM_DMSepRepar.RData")
+# out = load("savedOutput/ed/gridPredsM_DMSepRepar.RData")
 
 stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
 admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
 admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-save(stratPreds, file="savedOutput/ed/stratPredsM_DMSepRepar.RData")
-save(admin1Preds, file="savedOutput/ed/admin1PredsM_DMSepRepar.RData")
-save(admin2Preds, file="savedOutput/ed/admin2PredsM_DMSepRepar.RData")
-out = load("savedOutput/ed/stratPredsM_DMSepRepar.RData")
-out = load("savedOutput/ed/admin1PredsM_DMSepRepar.RData")
-out = load("savedOutput/ed/admin2PredsM_DMSepRepar.RData")
+# save(stratPreds, file="savedOutput/ed/stratPredsM_DMSepRepar.RData")
+# save(admin1Preds, file="savedOutput/ed/admin1PredsM_DMSepRepar.RData")
+# save(admin2Preds, file="savedOutput/ed/admin2PredsM_DMSepRepar.RData")
+# out = load("savedOutput/ed/stratPredsM_DMSepRepar.RData")
+# out = load("savedOutput/ed/admin1PredsM_DMSepRepar.RData")
+# out = load("savedOutput/ed/admin2PredsM_DMSepRepar.RData")
 
 summaryTabBYM2(SD0, obj, popMat=popMatNGAThresh, 
                gridPreds=gridPreds)
@@ -742,6 +742,19 @@ plotPreds(SD0, obj, popMat=popMatNGAThresh,
 plotPreds(SD0, obj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=NULL, 
           plotNameRoot="edFusionM_DMSepReparTest", CIwidthLims=zlimsGrid)
+
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=stratPreds, 
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Strat")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin1Preds, 
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Admin1")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=admin2Preds, 
+          plotNameRoot="edFusionM_DMSepReparTest", plotNameRootAreal="Admin2")
+plotPreds(SD0, obj, popMat=popMatNGAThresh, 
+          gridPreds=gridPreds, arealPreds=NULL, 
+          plotNameRoot="edFusionM_DMSepReparTest")
 
 # index=71 => fold=11
 # preds = predClusters(nsim=1000, 11, SD0, obj,

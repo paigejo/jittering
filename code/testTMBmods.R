@@ -3,7 +3,7 @@
 # test modM_DSepRepar case:
 
 
-modI = 2
+modI = 1
 mods = c("Md", "M_D", "M_M", "M_DM")
 modName = mods[modI]
 if(modName == "Md") {
@@ -65,3 +65,21 @@ plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh,
 plotPreds(out$TMBsd, out$TMBobj, popMat=popMatNGAThresh, 
           gridPreds=gridPreds, arealPreds=admin2Preds, 
           plotNameRoot=paste0("TMBmodTest", modName, "SepRepar"), plotNameRootAreal="Admin2")
+
+
+testRep = out$TMBobj$report()
+
+if(modName %in% c("M_M", "M_DM")) {
+  range(testRep$latentFieldUrbMICS)
+  range(testRep$latentFieldRurMICS)
+  
+  range(testRep$fe_iUrbanMICS)
+  range(testRep$fe_iRuralMICS)
+}
+if(modName %in% c("Md", "M_D", "M_DM")) {
+  range(testRep$latentFieldUrbDHS)
+  range(testRep$latentFieldRurDHS)
+  
+  range(testRep$fe_iUrbanDHS)
+  range(testRep$fe_iRuralDHS)
+}

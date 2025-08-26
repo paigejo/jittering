@@ -8,9 +8,6 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
                          JInnerRural = 3,
                          JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full) {
   
-  # make sure datMICS is sorted by Stratum column according to admMICS
-  datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
-  
   # make integration points if necessary
   if(is.null(intPtsMICS)) {
     if(identical(admMICS, admFinal)) {
@@ -41,24 +38,28 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
     }
   }
   
+  # order MICS integration points by stratum ordering in admFinal
   intPtsMICS = straightenMICS(intPtsMICS)
   
-  # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, admMICS$NAME_FINAL) # 41 x 569 nStrat x nObsUrb
-  # ARurDHS = makeApointToArea(intPtsDHS$areasRural, admMICS$NAME_FINAL) # 41 x 810
+  # make sure datMICS is also sorted by Stratum column according to intPtsMICS$strataMICS (same ordering as admMICS)
+  datMICS = sortByCol(datMICS, "Stratum", intPtsMICS$strataMICS)
   
-  AUrbDHS = makeApointToArea(rep(adm2ToStratumMICS(datDHS$subarea[datDHS$urban]), times=KDHSurb), admMICS$NAME_FINAL) # 775 x 6259 nArea x nObsUrb
-  ARurDHS = makeApointToArea(rep(adm2ToStratumMICS(datDHS$subarea[!datDHS$urban]), times=KDHSrur), admMICS$NAME_FINAL) # 775 x 12960
+  # AUrbDHS = makeApointToArea(intPtsDHS$areasUrban, intPtsMICS$strataMICS) # 41 x 569 nStrat x nObsUrb
+  # ARurDHS = makeApointToArea(intPtsDHS$areasRural, intPtsMICS$strataMICS) # 41 x 810
+  
+  AUrbDHS = makeApointToArea(rep(adm2ToStratumMICS(datDHS$subarea[datDHS$urban]), times=KDHSurb), intPtsMICS$strataMICS) # 775 x 6259 nArea x nObsUrb
+  ARurDHS = makeApointToArea(rep(adm2ToStratumMICS(datDHS$subarea[!datDHS$urban]), times=KDHSrur), intPtsMICS$strataMICS) # 775 x 12960
   
   # modify the integration points to be in the correct format for TMB
   allNumPerStrat = aggregate(datMICS$Stratum, by=list(strat=datMICS$Stratum, urb=datMICS$urban), FUN=length, drop=FALSE)
-  allNumPerStrat = straightenNumPerStrat(allNumPerStrat, admMICS$NAME_FINAL)
+  allNumPerStrat = straightenNumPerStrat(allNumPerStrat, intPtsMICS$strataMICS)
   numPerStratUrb = allNumPerStrat[allNumPerStrat[,2], 3]
   numPerStratRur = allNumPerStrat[!allNumPerStrat[,2], 3]
   numPerStratRur[is.na(numPerStratRur)] = 0
   
   # first extract only the relevant covariates
   XUrb = intPtsMICS$XUrb # XUrb is 1025 x 16 [K x nStrat] x nVar
-  # AUrbMICS = makeApointToArea(datMICS$Stratum[datMICS$urban], admMICS$NAME_FINAL)
+  # AUrbMICS = makeApointToArea(datMICS$Stratum[datMICS$urban], intPtsMICS$strataMICS)
   # TODO: EXTEND AMICS TO BE LARGER, INCLUDE DIFFERENT ROW FOR EACH INTEGRATION POINT AND OBSERVATION
   
   # numPerStratUrb = table(datMICS$Stratum[datMICS$urban])
@@ -81,11 +82,11 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   transformIUrb = allAreaIs + (allIntIs-1)*nAreas
   XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   
-  AUrbMICS = makeApointToArea(adm2ToStratumMICS(XUrb$subarea), admMICS$NAME_FINAL)
+  AUrbMICS = makeApointToArea(adm2ToStratumMICS(XUrb$subarea), intPtsMICS$strataMICS)
   XUrb = XUrb[,names(XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   XRur = intPtsMICS$XRur # XRur is 1025 x 16 [nStrat * K] x nVar
-  # ARurMICS = makeApointToArea(datMICS$Stratum[!datMICS$urban], admMICS$NAME_FINAL)
+  # ARurMICS = makeApointToArea(datMICS$Stratum[!datMICS$urban], intPtsMICS$strataMICS)
   # numPerStratRur = table(datMICS$Stratum[!datMICS$urban])
   # stratIndexRur = unlist(mapply(rep, 1:nrow(ARurMICS), each=numPerStratRur * KMICS))
   # obsIndexRur = rep(1:sum(numPerStratRur), KMICS)
@@ -102,7 +103,7 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   transformIRur = allAreaIs + (allIntIs-1)*nAreas
   XRur = XRur[transformIRur,]
   
-  ARurMICS = makeApointToArea(adm2ToStratumMICS(XRur$subarea), admMICS$NAME_FINAL)
+  ARurMICS = makeApointToArea(adm2ToStratumMICS(XRur$subarea), intPtsMICS$strataMICS)
   XRur = XRur[,names(XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
   
   # w matrices are nStrata x K. They should be nObs x K
@@ -115,7 +116,7 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   wRural = wRural[stratIndexRurW,]
   
   # make sure the dataset aligns with this ordering, i.e. is sorted by stratum and urbanicity
-  # stratIDs = match(datMICS$Stratum, admMICS$NAME_FINAL)
+  # stratIDs = match(datMICS$Stratum, intPtsMICS$strataMICS)
   # datMICS = datMICS[order(stratIDs),]
   
   # extract cluster information (in the correct order)

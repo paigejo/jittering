@@ -55,7 +55,6 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   # set priors ----
-  browser()
   
   out = load("savedOutput/global/admFinalMat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=pc.bym2Phi$u, alpha=pc.bym2Phi$alpha, 
