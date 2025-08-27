@@ -12,7 +12,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   pc.bym2Phi=list(u=0.5, alpha=2/3), 
                   pc.bym2Prec=list(u=1, alpha=.1), 
                   pc.expPrec=list(u=1, alpha=.1), 
-                  maxit=1000, repar=TRUE, MdInit = TRUE) {
+                  maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -47,7 +47,8 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                               KDHSrur = KDHSrur, # 3 inner + 1 outer rings of 5 each
                               JInnerRural = JInnerRural,
                               JOuterRural = JOuterRural, 
-                              admMICS=admMICS, adm2DHS=adm2DHS)
+                              admMICS=admMICS, adm2DHS=adm2DHS, 
+                              adm2AsCovariate=adm2AsCovariate)
     
   }
   

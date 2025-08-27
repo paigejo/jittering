@@ -1425,8 +1425,17 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
                                         maxPointsFinal=13000, maxPointsInitial=18000, 
                                         saveOutput=TRUE) {
   
+  if(is.null(domainDiameter) && spatialAsCovariate) {
+    # from lon/lat coords to easting/northing
+    bbox = projNigeriaBBox(stratumMICSMapDat@bbox)
+    eastRange = sort(bbox[1,])
+    northRange = sort(bbox[2,])
+    domainDiameter = min(c(diff(eastRange), diff(northRange)))
+  }
+  
   # normalize spatial coordinates based on prior median effective range
-  if(is.null(lambda)) {
+  defaultLambda = is.null(lambda)
+  if(defaultLambda) {
     if(!adm2AsCovariate) {
       priorRange = (domainDiameter / 5) / 2
       lambda = 1 / priorRange
@@ -1436,7 +1445,7 @@ makeAllIntegrationPointsMICS = function(datStrata=NULL, datUrb=NULL, kmresFineSt
   }
   
   if(is.null(outFile)) {
-    lambdaText = ifelse(lambda == 1, "", paste0("_lam", round(lambda, 2)))
+    lambdaText = ifelse(!defaultLambda, "", paste0("_lam", round(lambda, 2)))
     adm2CovText = ""
     if(adm2AsCovariate) {
       adm2CovText = paste0("_adm2Cov", lambdaText)

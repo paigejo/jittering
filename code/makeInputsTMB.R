@@ -7,16 +7,25 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
                          KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
                          JInnerRural = 3,
                          JOuterRural = 1, 
-                         admMICS=admFinal, adm2DHS=adm2Full) {
+                         admMICS=admFinal, adm2DHS=adm2Full, adm2AsCovariate=FALSE) {
   
   # make integration points if necessary
   if(is.null(intPtsMICS)) {
     if(identical(admMICS, admFinal)) {
-      if(!file.exists(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))) {
+      
+      lambdaText = ""
+      adm2CovText = ""
+      if(adm2AsCovariate) {
+        adm2CovText = paste0("_adm2Cov", lambdaText)
+      }
+      outFile = paste0("savedOutput/global/intPtsMICS_", KMICS, adm2CovText, ".RData")
+      
+      if(!file.exists(outFile)) {
         intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                                  numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=FALSE)
+                                                  numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=TRUE, 
+                                                  adm2AsCovariate=adm2AsCovariate)
       } else {
-        out = load(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))
+        out = load(outFile)
       }
     } else {
       stop("unknown admin map data")
