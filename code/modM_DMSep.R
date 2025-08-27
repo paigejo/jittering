@@ -41,17 +41,18 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     print("Making M_DM inputs...")
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
-                              KMICS=100,
-                              KDHSurb = 11, # 3 rings of 5 each
-                              JInnerUrban = 3,
-                              KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
-                              JInnerRural = 3,
-                              JOuterRural = 1, 
+                              KMICS=KMICS,
+                              KDHSurb = KDHSurb, # 3 rings of 5 each
+                              JInnerUrban = JInnerUrban,
+                              KDHSrur = KDHSrur, # 3 inner + 1 outer rings of 5 each
+                              JInnerRural = JInnerRural,
+                              JOuterRural = JOuterRural, 
                               admMICS=admMICS, adm2DHS=adm2DHS)
     
-    thisEnv = environment()
-    list2env(inputsMDM, envir=thisEnv)
   }
+  
+  thisEnv = environment()
+  list2env(inputsMDM, envir=thisEnv)
   
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   

@@ -6,7 +6,8 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
                          JInnerUrban = 3,
                          KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
                          JInnerRural = 3,
-                         JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full) {
+                         JOuterRural = 1, 
+                         admMICS=admFinal, adm2DHS=adm2Full) {
   
   # make integration points if necessary
   if(is.null(intPtsMICS)) {

@@ -42,17 +42,18 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
-                              KMICS=100,
-                              KDHSurb = 11, # 3 rings of 5 each
-                              JInnerUrban = 3,
-                              KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
-                              JInnerRural = 3,
-                              JOuterRural = 1, 
+                              KMICS=KMICS,
+                              KDHSurb = KDHSurb, # 3 rings of 5 each
+                              JInnerUrban = JInnerUrban,
+                              KDHSrur = KDHSrur, # 3 inner + 1 outer rings of 5 each
+                              JInnerRural = JInnerRural,
+                              JOuterRural = JOuterRural, 
                               admMICS=admMICS, adm2DHS=adm2DHS)
     
-    thisEnv = environment()
-    list2env(inputsMDM, envir=thisEnv)
   }
+  
+  thisEnv = environment()
+  list2env(inputsMDM, envir=thisEnv)
   
   # set priors ----
   
@@ -446,6 +447,28 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       print(all(c(as.matrix(data_fullMD[[compNames[i]]])) == c(as.matrix(data_fullMDM[[mdmName]]))))
     }
     
+    compNames = names(testRepMD)
+    for(i in 1:length(compNames)) {
+      print(compNames[i])
+      mdmName = compNames[i]
+      # if(grepl("areaidxloc", mdmName)) {
+      #   mdmName = paste0(mdmName, "DHS")
+      # }
+      print(all(c(testRepMD[[compNames[i]]]) == c(testRepMDM[[mdmName]])))
+    }
+    testRepMD$bym2LogLik
+    testRepMDM$bym2LogLik
+    
+    head(testRepMD$fe_iRuralDHS)
+    head(testRepMDM$fe_iRuralDHS)
+    max(abs(testRepMD$fe_iRuralDHS - testRepMDM$fe_iRuralDHS))
+    max(abs(testRepMD$fe_iUrbanDHS - testRepMDM$fe_iUrbanDHS))
+    max(abs(testRepMD$latentFieldRurDHS - testRepMDM$latentFieldRurDHS))
+    max(abs(testRepMD$latentFieldUrbDHS - testRepMDM$latentFieldUrbDHS))
+    max(abs(testRepMD$w_bym2Star - testRepMDM$w_bym2Star))
+    max(abs(testRepMD$liksRurDHS - testRepMDM$liksRurDHS))
+    max(abs(testRepMD$liksUrbDHS - testRepMDM$liksUrbDHS))
+    
     hist(intPtsMICS$XUrb$pop[seq(1, 4100, by=41)+39], breaks=30)
     hist(covsUrb$pop[data_full$areaidxlocUrbanMICS == 39], breaks=30)
     
@@ -484,7 +507,7 @@ fitMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # set start of optimization
   # obj$par = optParINLA
   # obj$par = optPar
-  
+  browser()
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
     tolSeq = 1e-06

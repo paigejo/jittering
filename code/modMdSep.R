@@ -52,9 +52,10 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                               JOuterRural = JOuterRural, 
                               admMICS=admMICS, adm2DHS=adm2DHS)
     
-    thisEnv = environment()
-    list2env(inputsMDM, envir=thisEnv)
   }
+  
+  thisEnv = environment()
+  list2env(inputsMDM, envir=thisEnv)
   
   # modify inputs to force all integration weight on central point (observed/reported DHS location)
   intPtsDHS$wUrban[,1] = 1

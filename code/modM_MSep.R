@@ -50,10 +50,10 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                               JOuterRural = 1, 
                               admMICS=admMICS, adm2DHS=adm2DHS)
     
-    thisEnv = environment()
-    list2env(inputsMDM, envir=thisEnv)
   }
   
+  thisEnv = environment()
+  list2env(inputsMDM, envir=thisEnv)
   
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
