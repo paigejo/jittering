@@ -472,6 +472,8 @@ if(FALSE) {
   any(apply(data_full$wRuralMICS, 1, function(x) {all(x == 0)}))
 }
 
+# save(data_full, file="savedOutput/global/data_fullMdOld.RData")
+
 # * Run TMB ----
 # set start of optimization
 # obj$par = optParINLA
