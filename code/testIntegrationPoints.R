@@ -635,7 +635,7 @@ testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500
 # 
 # nSamples: if NULL, use presaved prediction samples. Otherwise, a number 
 #     specifying the number of samples to take
-testResIntPts = function(allRes=c(25, 50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
+testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
                          regenDat=FALSE) {
   
   # first generate integration points
@@ -664,7 +664,7 @@ testResIntPts = function(allRes=c(25, 50, 75, 100, 125, 150, 175, 200, 300, 400,
       JInnerRural = 3
       JOuterRural = 1
       
-      intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE,
+      intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=TRUE,
                                                 numPtsRur=KMICS, numPtsUrb=KMICS)
       
       save(intPtsMICS, file=intPtFile)

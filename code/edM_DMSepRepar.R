@@ -40,6 +40,7 @@ if(FALSE) {
                                           JOuterRural=JOuterRural, adminMap=adm2Full)
   
   load("savedOutput/global/intPtsDHS.RData")
+  load(paste0("savedOutput/global/intPtsMICS_", KMICS, "_adm2Cov.RData"))
   load(paste0("savedOutput/global/intPtsMICS_", KMICS, ".RData"))
   intPtsMICS = straightenMICS(intPtsMICS)
   
@@ -173,7 +174,7 @@ if(FALSE) {
        areaidxlocUrbanDHS, areaidxlocRuralDHS, 
        ysUrbMICS, nsUrbMICS, ysRurMICS, nsRurMICS, 
        ysUrbDHS, ysRurDHS, nsUrbDHS, nsRurDHS, 
-       file="savedOutput/global/edM_DMInputs.RData")
+       file="savedOutput/global/edM_DMInputsOld.RData")
   
   # compile model ----
   # dyn.unload( dynlib("code/modM_DMSepsparse"))
@@ -191,7 +192,47 @@ if(FALSE) {
 }
 
 # load in TMB function inputs
+out = load("savedOutput/global/edM_DMInputsOld.RData")
+inOld = list()
+for(i in 1:length(out)) {
+  inOld = c(inOld, list(get(out[i])))
+}
+names(inOld) = out
 out = load("savedOutput/global/edM_DMInputs.RData")
+inNew = list()
+for(i in 1:length(out)) {
+  inNew = c(inNew, list(get(out[i])))
+}
+names(inNew) = out
+
+dimsOld = unlist(sapply(inOld, dim))
+dimsNew = unlist(sapply(inNew, dim))
+cbind(dimsOld, dimsNew)
+
+lengthsOld = unlist(sapply(inOld, length))
+lengthsNew = unlist(sapply(inNew, length))
+cbind(lengthsOld, lengthsNew)
+
+cbind(out, unlist(sapply(1:length(inOld), function(i) {
+  if(!is.matrix(inOld[[i]])) {
+    if(length(inOld[[i]]) != length(inNew[[i]])) {
+      -1
+    } else if(!is.list(inOld[[i]])) {
+      all(inOld[[i]] == inNew[[i]])
+    } else {
+      NA
+    }
+  } else {
+    NA
+  }
+})))
+lengthsNew = unlist(sapply(inNew, length))
+
+all.equal(inOld$areaidxlocUrbanDHS[1:length(inNew$areaidxlocUrbanDHS)], inNew$areaidxlocUrbanDHS)
+all.equal(inOld$areaidxlocRuralDHS[1:length(inNew$areaidxlocRuralDHS)], inNew$areaidxlocRuralDHS)
+
+all.equal(inOld$areaidxlocUrbanMICS[1:length(inNew$areaidxlocUrbanMICS)], inNew$areaidxlocUrbanMICS)
+all.equal(inOld$areaidxlocRuralMICS[1:length(inNew$areaidxlocRuralMICS)], inNew$areaidxlocRuralMICS)
 
 # set priors ----
 beta_pri = c(0, sqrt(1000))
@@ -578,6 +619,8 @@ if(FALSE) {
 
 if(FALSE) {
   out = fitMDM()
+  out = fitMDM(KMICS=50)
+  out = fitMDM(KMICS=25)
   SD0 = out$TMBsd
   obj = out$TMBobj
 }

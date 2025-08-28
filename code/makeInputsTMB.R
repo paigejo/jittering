@@ -7,7 +7,8 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
                          KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
                          JInnerRural = 3,
                          JOuterRural = 1, 
-                         admMICS=admFinal, adm2DHS=adm2Full, adm2AsCovariate=FALSE) {
+                         admMICS=admFinal, adm2DHS=adm2Full, adm2AsCovariate=FALSE, 
+                         saveNewIntPts=FALSE) {
   
   # make integration points if necessary
   if(is.null(intPtsMICS)) {
@@ -22,7 +23,7 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
       
       if(!file.exists(outFile)) {
         intPtsMICS = makeAllIntegrationPointsMICS(kmresFineStart=2.5, loadSavedIntPoints=FALSE, 
-                                                  numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=TRUE, 
+                                                  numPtsRur=KMICS, numPtsUrb=KMICS, saveOutput=saveNewIntPts, 
                                                   adm2AsCovariate=adm2AsCovariate)
       } else {
         out = load(outFile)
@@ -44,7 +45,7 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
                                               areaNames=datDHS$subarea, popPrior=TRUE, 
                                               numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
                                               JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                              JOuterRural=JOuterRural, adminMap=adm2DHS, saveOutput=FALSE)
+                                              JOuterRural=JOuterRural, adminMap=adm2DHS, saveOutput=saveNewIntPts)
     }
   }
   
