@@ -800,7 +800,7 @@ testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 
   
 }
 
-fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
+fitResModels = function(allRes=c(10, 25, 50, 75, 100)) {
   optRes = max(allRes)
   
   for(i in 1:(length(allRes)-1)) {
@@ -814,10 +814,34 @@ fitResModels = function(allRes=c(100, 125, 150, 175, 200, 225, 300)) {
   invisible(NULL)
 }
 
+fitModelAtResolution = function(res) {
+  
+  outMod = fitMM(KMICS=res)
+  
+  gridPreds = predGrid(outMod$TMBsd, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
+                       quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+  
+  stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+  admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+  admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+  
+  parMat = rbind(gridPreds$alphaDraws, 
+                 gridPreds$betaDraws, 
+                 gridPreds$sigmaSqDraws, 
+                 gridPreds$sigmaEpsSqDraws)
+  
+  totTime = outMod$totalTime
+  
+  save(stratPreds, admin1Preds, admin2Preds, parMat, totTime, 
+       file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+  
+  invisible(NULL)
+}
+
 # allRes=c(100, 125, 150, 175, 200, 225, 300)
 # fitModelAtResolution(125, 300)
 # predGridOnly: if TRUE, loads the already fitted model to regenerate gridPreds
-fitModelAtResolution = function(res, optRes=NULL, predGridOnly=FALSE) {
+fitModelAtResolutionOld = function(res, optRes=NULL, predGridOnly=FALSE) {
   # script for women's secondary education in Nigeria application
   
   # load datasets ----
