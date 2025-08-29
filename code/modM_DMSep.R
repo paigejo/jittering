@@ -39,6 +39,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
+    browser()
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
                               KMICS=KMICS,
