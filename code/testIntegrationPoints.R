@@ -800,7 +800,7 @@ testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 
   
 }
 
-fitResModels = function(allRes=c(10, 25, 50, 75, 100)) {
+fitResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
   optRes = max(allRes)
   
   for(i in 1:(length(allRes)-1)) {
@@ -808,15 +808,22 @@ fitResModels = function(allRes=c(10, 25, 50, 75, 100)) {
     
     # fit the model at the current resolution using the optimum of the given 
     # resolution as the starting point
-    fitModelAtResolution(thisRes)
+    fitModelAtResolution(thisRes, ...)
   }
   
   invisible(NULL)
 }
 
-fitModelAtResolution = function(res) {
+# initMd M_M model:
+# Browse[1]> head(outMod$TMBobj$env$last.par, 10)
+# log_tau  logit_phi log_tauEps       beta       beta       beta       beta 
+# 0.2501972  2.0735902  2.3011023 -0.3831430 -0.7747200  0.3729011  0.3333434 
+# beta w_bym2Star w_bym2Star 
+# 1.1305858 -1.9033727 -2.5248645
+
+fitModelAtResolution = function(res, ...) {
   
-  outMod = fitMM(KMICS=res)
+  outMod = fitMM(KMICS=res, ...)
   
   gridPreds = predGrid(outMod$TMBsd, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
                        quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
