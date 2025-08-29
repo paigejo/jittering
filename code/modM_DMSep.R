@@ -35,7 +35,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       datDHS[[toN]] = datDHS[[fromN]]
     }
   }
-  
+  browser()
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
@@ -54,7 +54,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   thisEnv = environment()
   list2env(inputsMDM, envir=thisEnv)
-  
+  browser()
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # set priors ----
