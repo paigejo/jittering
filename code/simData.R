@@ -490,7 +490,7 @@ makeIntegrationPointsSim1 = function() {
   JInnerRural = 3
   JOuterRural = 1
   
-  out = load("savedOutput/simStudy1/simSurveys.RData")
+  out = load("savedOutput/simStudy1/simPopsSurveys.RData")
   
   for(i in 1:length(surveysDHS)) {
     thisEdDHS = surveysDHS[[i]]

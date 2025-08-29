@@ -206,7 +206,7 @@ HellingerUniveriate = function(samples1, samples2) {
 
 # nSamples: if NULL, use presaved prediction samples. Otherwise, a number 
 #     specifying the number of samples to take
-testResModels = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
+testResModelsOld = function(allRes=c(50, 75, 100, 125, 150, 175, 200, 300, 400, 500, 600, 700, 800, 900, 1000), 
                          nSamples=NULL, saveGridPreds=FALSE) {
   
   # parameter table -----
@@ -800,10 +800,57 @@ testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 
   
 }
 
+testResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
+  require(transport)
+  
+  # get optimal res
+  optRes = max(allRes)
+  out = load(file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+  stratPredsOpt = stratPreds
+  admin1PredsOpt = admin1Preds
+  admin2PredsOpt = admin2Preds
+  parMatOpt = parMat
+  totTimeOpt = totTime
+  
+  stratDists = numeric(length(allRes)-1)
+  admin1Dists = numeric(length(allRes)-1)
+  admin2Dists = numeric(length(allRes)-1)
+  parDists = matrix(nrow=nrow(parMatOpt), ncol=numeric(length(allRes)-1))
+  totTimes = numeric(length(allRes))
+  for(i in 1:(length(allRes)-1)) {
+    res = allRes[i]
+    
+    # save(stratPreds, admin1Preds, admin2Preds, parMat, totTime, 
+    #      file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+    out = load(file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+    
+    stratDists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
+      wasserstein1d(stratPreds[i,], stratPredsOpt[i,])
+    }))
+    admin1Dists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
+      wasserstein1d(admin1Preds[i,], admin1PredsOpt[i,])
+    }))
+    admin2Dists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
+      wasserstein1d(admin2Preds[i,], admin2PredsOpt[i,])
+    }))
+    parDists[,i] = sapply(1:nrow(stratPreds), function(i) {
+      wasserstein1d(parMat[i,], parMatOpt[i,])
+    })
+    totTimes[i] = totTime
+  }
+  totTimes[length(allRes)] = totTimeOpt
+  
+  browser()
+  
+  
+  
+  
+}
+
 fitResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
   optRes = max(allRes)
   
-  for(i in 1:(length(allRes)-1)) {
+  for(i in 1:(length(allRes))) {
     thisRes = allRes[i]
     
     # fit the model at the current resolution using the optimum of the given 
@@ -820,30 +867,60 @@ fitResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
 # 0.2501972  2.0735902  2.3011023 -0.3831430 -0.7747200  0.3729011  0.3333434 
 # beta w_bym2Star w_bym2Star 
 # 1.1305858 -1.9033727 -2.5248645
+# without Md initialization
+# Browse[1]> head(outMod$TMBobj$env$last.par, 10)
+# log_tau  logit_phi log_tauEps       beta       beta       beta       beta 
+# 0.2501972  2.0735902  2.3011023 -0.3831430 -0.7747200  0.3729011  0.3333434 
+# beta w_bym2Star w_bym2Star 
+# 1.1305858 -1.9033727 -2.5248645
 
-fitModelAtResolution = function(res, ...) {
+fitModelAtResolution = function(res, getSDs=TRUE, ...) {
   
-  outMod = fitMM(KMICS=res, ...)
+  outMod = fitMM(KMICS=res, getSDs=getSDs, ...)
   
-  gridPreds = predGrid(outMod$TMBsd, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
-                       quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
-  
-  stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
-  admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
-  admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
-  
-  parMat = rbind(gridPreds$alphaDraws, 
-                 gridPreds$betaDraws, 
-                 gridPreds$sigmaSqDraws, 
-                 gridPreds$sigmaEpsSqDraws)
-  
-  totTime = outMod$totalTime
-  
-  save(stratPreds, admin1Preds, admin2Preds, parMat, totTime, 
-       file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+  if(getSDs) {
+    gridPreds = predGrid(outMod$TMBsd, popMat=popMatNGAThresh, nsim=5000, admLevel="stratMICS", 
+                         quantiles=c(0.025, 0.1, 0.9, 0.975), sep=TRUE)
+    
+    stratPreds = predArea(gridPreds, areaVarName="stratumMICS", orderedAreas=admFinal@data$NAME_FINAL)
+    admin1Preds = predArea(gridPreds, areaVarName="area", orderedAreas=adm1@data$NAME_1)
+    admin2Preds = predArea(gridPreds, areaVarName="subarea", orderedAreas=adm2@data$NAME_2)
+    
+    parMat = rbind(gridPreds$alphaDraws, 
+                   gridPreds$betaDraws, 
+                   gridPreds$sigmaSqDraws, 
+                   gridPreds$sigmaEpsSqDraws)
+    
+    totTime = outMod$totalTime
+    
+    save(stratPreds, admin1Preds, admin2Preds, parMat, totTime, 
+         file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+  } else {
+    stop("not yet implemented")
+  }
   
   invisible(NULL)
 }
+
+# KMICS = 25:
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+# \hline
+# & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+# \hline
+# (Int) & -2.62 & -3.15 & -2.97 & -2.27 & -2.04 \\ 
+# urb & -0.33 & -0.69 & -0.57 & -0.10 & 0.04 \\ 
+# access & -0.70 & -0.93 & -0.85 & -0.55 & -0.46 \\ 
+# elev & 0.40 & 0.13 & 0.23 & 0.58 & 0.66 \\ 
+# distRiversLakes & 0.21 & -0.12 & -0.00 & 0.42 & 0.54 \\ 
+# popValsNorm & 1.34 & 0.76 & 0.96 & 1.72 & 1.92 \\ 
+# sigmaSq & 0.88 & 0.51 & 0.61 & 1.18 & 1.43 \\ 
+# phi & 0.82 & 0.43 & 0.61 & 0.96 & 0.98 \\ 
+# sigmaEpsSq & 0.09 & 0.01 & 0.02 & 0.18 & 0.31 \\ 
+# \hline
+# \end{tabular}
+# \end{table}
 
 # allRes=c(100, 125, 150, 175, 200, 225, 300)
 # fitModelAtResolution(125, 300)

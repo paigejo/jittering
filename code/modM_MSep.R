@@ -13,7 +13,7 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                  pc.bym2Prec=list(u=1, alpha=.1), 
                  pc.expPrec=list(u=1, alpha=.1), 
                  maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE, 
-                 tolSeq = c(1e-06, 1e-08, 1e-10)) {
+                 tolSeq = c(1e-06), getSDs=TRUE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -389,25 +389,33 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       else {
         print(paste0("completed optimization for tol = ", thisTol, ""))
         
-        ## Get standard errors
-        print("getting standard errors...")
-        sdTime = system.time(
-          SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
-                               bias.correct = TRUE,
-                               bias.correct.control = list(sd = TRUE))
-        )[3]
-        # SD0
-        print(sdTime/60)
-        # 3.9447 minutes for intern=FALSE
-        
-        if(SD0$pdHess) {
-          print("Optimization and PD hess calculation done!")
-          break
-        }
-        else {
-          print("Hessan not PD. Rerunning optimization with stricter tol...")
+        if(getSDs) {
+          ## Get standard errors
+          print("getting standard errors...")
+          sdTime = system.time(
+            SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                 bias.correct = TRUE,
+                                 bias.correct.control = list(sd = TRUE))
+          )[3]
           
+          # SD0
+          print(sdTime/60)
+          # 3.9447 minutes for intern=FALSE
+          
+          if(SD0$pdHess) {
+            print("Optimization and PD hess calculation done!")
+            break
+          }
+          else {
+            print("Hessan not PD. Rerunning optimization with stricter tol...")
+            
+          }
+        } else {
+          sdTime = 0
+          SD0 = NULL
         }
+        
+        
       }
       
       
