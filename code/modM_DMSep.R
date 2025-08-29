@@ -35,11 +35,11 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       datDHS[[toN]] = datDHS[[fromN]]
     }
   }
-  browser()
+  
   # first generate all necessary inputs if need be
   if(is.null(inputsMDM)) {
     print("Making M_DM inputs...")
-    browser()
+    
     inputsMDM = makeInputsMDM(datDHS, datMICS, 
                               intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS, 
                               KMICS=KMICS,
@@ -55,7 +55,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   thisEnv = environment()
   list2env(inputsMDM, envir=thisEnv)
-  browser()
+  
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
   # set priors ----
@@ -279,7 +279,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   
-  browser()
+  
   # make TMB fun and grad ----
   # dyn.load( dynlib("code/modM_DMSepsparse"))
   
@@ -419,7 +419,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # set start of optimization
   # obj$par = optParINLA
   # obj$par = optPar
-  browser()
+  
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
     tolSeq = 1e-06
