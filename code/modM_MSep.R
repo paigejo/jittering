@@ -1,18 +1,19 @@
 
 fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
-                  intPtsMICS=NULL, intPtsDHS=NULL, 
-                  KMICS=100,
-                  KDHSurb = 11, # 3 rings of 5 each
-                  JInnerUrban = 3,
-                  KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
-                  JInnerRural = 3,
-                  JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full, 
-                  alpha_pri = c(0, 100^2), 
-                  beta_pri = c(0, sqrt(1000)), 
-                  pc.bym2Phi=list(u=0.5, alpha=2/3), 
-                  pc.bym2Prec=list(u=1, alpha=.1), 
-                  pc.expPrec=list(u=1, alpha=.1), 
-                  maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE) {
+                 intPtsMICS=NULL, intPtsDHS=NULL, 
+                 KMICS=100,
+                 KDHSurb = 11, # 3 rings of 5 each
+                 JInnerUrban = 3,
+                 KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
+                 JInnerRural = 3,
+                 JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full, 
+                 alpha_pri = c(0, 100^2), 
+                 beta_pri = c(0, sqrt(1000)), 
+                 pc.bym2Phi=list(u=0.5, alpha=2/3), 
+                 pc.bym2Prec=list(u=1, alpha=.1), 
+                 pc.expPrec=list(u=1, alpha=.1), 
+                 maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE, 
+                 tolSeq = c(1e-06, 1e-08, 1e-10)) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -368,7 +369,7 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   {
     # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
-    tolSeq = 1e-06
+    # tolSeq = 1e-06
     testObj = obj
     optPar = testObj$par
     startTime = proc.time()[3]
