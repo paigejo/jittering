@@ -808,7 +808,7 @@ fitResModels = function(allRes=c(10, 25, 50, 75, 100)) {
     
     # fit the model at the current resolution using the optimum of the given 
     # resolution as the starting point
-    fitModelAtResolution(thisRes, optRes)
+    fitModelAtResolution(thisRes)
   }
   
   invisible(NULL)
