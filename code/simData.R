@@ -56,7 +56,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   for(i in 1:nsim) {
     # simulate population at pixel, EA levels 
     print(paste0("simulating population ", i, "/", nsim))
-    browser()
+    
     simPop = 
       SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat, 
                          poppsub=poppsub, spdeMesh=mesh, 
@@ -65,7 +65,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
                          stratifyByUrban=TRUE, subareaLevel=TRUE, offset=offset, 
                          doFineScaleRisk=FALSE, doSmoothRisk=FALSE, min1PerSubarea=TRUE
       )
-    browser()
+    
     # calculate stratum level population information
     stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop, 
                                      areasFrom=areasFrom, 
@@ -124,11 +124,15 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
       binMat = cbind(c(survDHS[[1]]$Z, survMICS[[1]]$Z), 
                      c(survDHS[[1]]$N, survMICS[[1]]$N) - c(survDHS[[1]]$Z, survMICS[[1]]$Z))
       summary(glm(binMat ~ urbs + pPops, family=binomial()))
+      
+      summary(lm(simPop$logitRiskDraws ~ popMat$urban + normPop))
     }
     
     # concatenate results
     surveysDHS = c(surveysDHS, survDHS)
     surveysMICS = c(surveysMICS, survMICS)
+    
+    browser()
     
     # estimate time left and print
     thisT = proc.time()[3]
