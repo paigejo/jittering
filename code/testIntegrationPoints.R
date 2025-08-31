@@ -819,6 +819,10 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   admin1Dists = numeric(length(allRes)-1)
   admin2Dists = numeric(length(allRes)-1)
   parDists = matrix(nrow=nrow(parMatOpt), ncol=length(allRes)-1)
+  stratEsts = matrix(nrow=nrow(stratPredsOpt), ncol=length(allRes))
+  admin1Ests = matrix(nrow=nrow(admin1PredsOpt), ncol=length(allRes))
+  admin2Ests = matrix(nrow=nrow(admin2PredsOpt), ncol=length(allRes))
+  parEsts = matrix(nrow=nrow(parMatOpt), ncol=length(allRes))
   totTimes = numeric(length(allRes))
   for(i in 1:(length(allRes)-1)) {
     res = allRes[i]
@@ -844,6 +848,11 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
     })
     totTimes[i] = totTime
   }
+  
+  stratEsts[,i] = rowMeans(stratPreds)
+  admin1Ests[,i] = rowMeans(admin1Preds)
+  admin2Ests[,i] = rowMeans(admin2Preds)
+  parEsts[,i] = rowMeans(parMat)
   totTimes[length(allRes)] = totTimeOpt
   
   browser()
@@ -871,11 +880,22 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
        main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
   dev.off()
   
-  parPchs = 4
+  pchs = c(1:8)
+  cols = rainbow(8)
+  ltys = c(1, 1, 2:6, 2)
   pdf(file=paste0("testParModRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
-  plot(allLowRes, parDists[1,], pch=19, type="o", col="blue", zlim=range(parDists), 
+  plot(allLowRes, parDists[1,], pch=pchs[1], lty=ltys[1], type="o", col=cols[1], ylim=range(parDists), 
        main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
+  for(i in 2:nrow(parDists)) {
+    lines(allLowRes, parDists[i,], lty=ltys[i], col=cols[i])
+    points(allLowRes, parDists[i,], pch=pchs[i], col=cols[i])
+  }
+  legend("bottomleft", parNames, col=cols, lty=ltys, pch=pchs)
+  dev.off()
   
+  pdf(file=paste0("testTimesRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
+  plot(allRes, totTimes, pch=19, type="o", col="blue", 
+       main="", xlab="Number integration points", ylab="Computation time (s)", log="xy")
   dev.off()
   
 }

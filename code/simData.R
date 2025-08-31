@@ -56,7 +56,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   for(i in 1:nsim) {
     # simulate population at pixel, EA levels 
     print(paste0("simulating population ", i, "/", nsim))
-    
+    browser()
     simPop = 
       SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat, 
                          poppsub=poppsub, spdeMesh=mesh, 
@@ -65,7 +65,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
                          stratifyByUrban=TRUE, subareaLevel=TRUE, offset=offset, 
                          doFineScaleRisk=FALSE, doSmoothRisk=FALSE, min1PerSubarea=TRUE
       )
-    
+    browser()
     # calculate stratum level population information
     stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop, 
                                      areasFrom=areasFrom, 
@@ -104,6 +104,27 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     thisHHpop[[1]]$area = adm2ToStratumMICS(thisHHpop[[1]]$subarea)
     
     survMICS = sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
+    
+    if(FALSE) {
+      pixelIs = c(survDHS[[1]]$pixelIs, survMICS[[1]]$pixelIs)
+      squilt(c(survDHS[[1]]$east, survMICS[[1]]$east), 
+             c(survDHS[[1]]$north, survMICS[[1]]$north), 
+             c(survDHS[[1]]$pFineScalePrevalence, survMICS[[1]]$pFineScalePrevalence), 
+             nx=70, ny=70)
+      
+      plot(normPop[pixelIs], 
+           c(survDHS[[1]]$pFineScalePrevalence, survMICS[[1]]$pFineScalePrevalence), 
+           pch=19, col="blue", cex=.3)
+      
+      ps = c(survDHS[[1]]$pFineScalePrevalence, survMICS[[1]]$pFineScalePrevalence)
+      pPops = normPop[pixelIs]
+      urbs = c(survDHS[[1]]$urban, survMICS[[1]]$urban)
+      summary(lm(ps ~ urbs + pPops))
+      
+      binMat = cbind(c(survDHS[[1]]$Z, survMICS[[1]]$Z), 
+                     c(survDHS[[1]]$N, survMICS[[1]]$N) - c(survDHS[[1]]$Z, survMICS[[1]]$Z))
+      summary(glm(binMat ~ urbs + pPops, family=binomial()))
+    }
     
     # concatenate results
     surveysDHS = c(surveysDHS, survDHS)

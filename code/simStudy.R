@@ -15,7 +15,8 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE, signif
   thisAreaPop = areaPops[,i]
   
   # check if we've computed the DHS integration points for this run
-  dhsIntFile = paste0("savedOutput/simStudy1/intPtsDHS_sim", i, ".RData")
+  # dhsIntFile = paste0("savedOutput/simStudy1/intPtsDHS_sim", i, ".RData")
+  dhsIntFile = paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData")
   if(file.exists(dhsIntFile)) {
     out = load(dhsIntFile)
   } else {
