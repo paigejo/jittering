@@ -806,9 +806,9 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   # get optimal res
   optRes = max(allRes)
   out = load(file=paste0("savedOutput/testres/M_Mout_", optRes, ".RData"))
-  stratPredsOpt = stratPreds
-  admin1PredsOpt = admin1Preds
-  admin2PredsOpt = admin2Preds
+  stratPredsOpt = stratPreds$aggregationResults$p
+  admin1PredsOpt = admin1Preds$aggregationResults$p
+  admin2PredsOpt = admin2Preds$aggregationResults$p
   parMatOpt = parMat
   totTimeOpt = totTime
   
@@ -825,15 +825,15 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
     out = load(file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
     
     stratDists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
-      wasserstein1d(stratPreds[i,], stratPredsOpt[i,])
+      wasserstein1d(stratPreds$aggregationResults$p[i,], stratPredsOpt[i,])
     }))
-    admin1Dists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
+    admin1Dists[i] = mean(sapply(1:nrow(admin1Preds), function(i) {
       wasserstein1d(admin1Preds[i,], admin1PredsOpt[i,])
     }))
-    admin2Dists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
+    admin2Dists[i] = mean(sapply(1:nrow(admin2Preds), function(i) {
       wasserstein1d(admin2Preds[i,], admin2PredsOpt[i,])
     }))
-    parDists[,i] = sapply(1:nrow(stratPreds), function(i) {
+    parDists[,i] = sapply(1:nrow(parMat), function(i) {
       wasserstein1d(parMat[i,], parMatOpt[i,])
     })
     totTimes[i] = totTime
