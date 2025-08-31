@@ -800,12 +800,12 @@ testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 
   
 }
 
-testResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
+testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   require(transport)
   
   # get optimal res
   optRes = max(allRes)
-  out = load(file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+  out = load(file=paste0("savedOutput/testres/M_Mout_", optRes, ".RData"))
   stratPredsOpt = stratPreds
   admin1PredsOpt = admin1Preds
   admin2PredsOpt = admin2Preds
@@ -842,8 +842,35 @@ testResModels = function(allRes=c(10, 25, 50, 75, 100), ...) {
   
   browser()
   
+  # make plots:
+  # stratDists
+  # admin1Dists
+  # admin2Dists
+  # parDists
+  # totTimes
+  allLowRes = allRes[-length(allRes)]
   
+  pdf(file=paste0("testStratModRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
+  plot(allLowRes, stratDists, pch=19, type="o", col="blue", 
+       main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
+  dev.off()
   
+  pdf(file=paste0("testAdm1ModRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
+  plot(allLowRes, admin1Dists, pch=19, type="o", col="blue", 
+       main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
+  dev.off()
+  
+  pdf(file=paste0("testAdm2ModRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
+  plot(allLowRes, admin2Dists, pch=19, type="o", col="blue", 
+       main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
+  dev.off()
+  
+  parPchs = 4
+  pdf(file=paste0("testParModRes_min", min(allRes), "_max", optRes, ".pdf"), width=5, height=5)
+  plot(allLowRes, parDists[1,], pch=19, type="o", col="blue", zlim=range(parDists), 
+       main="", xlab="Number integration points", ylab="Wasserstein distance", log="xy")
+  
+  dev.off()
   
 }
 
