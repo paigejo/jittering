@@ -803,7 +803,7 @@ testResIntPts = function(allRes=c(10, 25, 50, 75, 100, 125, 150, 175, 200, 300, 
 testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   require(transport)
   
-  # get optimal res
+  # get optimal res information
   optRes = max(allRes)
   out = load(file=paste0("savedOutput/testres/M_Mout_", optRes, ".RData"))
   stratPredsOpt = stratPreds$aggregationResults$p
@@ -812,10 +812,18 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   parMatOpt = parMat
   totTimeOpt = totTime
   
+  parMat = rbind(gridPreds$alphaDraws, 
+                 gridPreds$betaDraws, 
+                 gridPreds$sigmaSqDraws, 
+                 gridPreds$sigmaEpsSqDraws)
+  
+  parNames = c("Int", "Urban", "Health", "Elev", "DistRiversLakes", "Pop", "sigmaSq", "sigmaEpsSq")
+  
+  # now get information from other resolutions
   stratDists = numeric(length(allRes)-1)
   admin1Dists = numeric(length(allRes)-1)
   admin2Dists = numeric(length(allRes)-1)
-  parDists = matrix(nrow=nrow(parMatOpt), ncol=numeric(length(allRes)-1))
+  parDists = matrix(nrow=nrow(parMatOpt), ncol=length(allRes)-1)
   totTimes = numeric(length(allRes))
   for(i in 1:(length(allRes)-1)) {
     res = allRes[i]
@@ -835,7 +843,7 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
     }))
     admin2Dists[i] = mean(sapply(1:nrow(admin2Preds), function(i) {
       wasserstein1d(admin2Preds[i,], admin2PredsOpt[i,])
-    }))
+    }), na.rm=TRUE)
     parDists[,i] = sapply(1:nrow(parMat), function(i) {
       wasserstein1d(parMat[i,], parMatOpt[i,])
     })
