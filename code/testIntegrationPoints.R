@@ -823,9 +823,12 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
     # save(stratPreds, admin1Preds, admin2Preds, parMat, totTime, 
     #      file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
     out = load(file=paste0("savedOutput/testres/M_Mout_", res, ".RData"))
+    stratPreds = stratPreds$aggregationResults$p
+    admin1Preds = admin1Preds$aggregationResults$p
+    admin2Preds = admin2Preds$aggregationResults$p
     
     stratDists[i] = mean(sapply(1:nrow(stratPreds), function(i) {
-      wasserstein1d(stratPreds$aggregationResults$p[i,], stratPredsOpt[i,])
+      wasserstein1d(stratPreds[i,], stratPredsOpt[i,])
     }))
     admin1Dists[i] = mean(sapply(1:nrow(admin1Preds), function(i) {
       wasserstein1d(admin1Preds[i,], admin1PredsOpt[i,])
