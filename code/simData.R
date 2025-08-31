@@ -132,7 +132,16 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     surveysDHS = c(surveysDHS, survDHS)
     surveysMICS = c(surveysMICS, survMICS)
     
-    browser()
+    if(FALSE) {
+      pixelIs = c(survDHS[[1]]$pixelIs, survMICS[[1]]$pixelIs)
+      pPops = normPop[pixelIs]
+      urbs = c(survDHS[[1]]$urban, survMICS[[1]]$urban)
+      binMat = cbind(c(survDHS[[1]]$Z, survMICS[[1]]$Z), 
+                     c(survDHS[[1]]$N, survMICS[[1]]$N) - c(survDHS[[1]]$Z, survMICS[[1]]$Z))
+      summary(glm(binMat ~ urbs + pPops, family=binomial()))
+      summary(lm(simPop$logitRiskDraws ~ popMat$urban + normPop))
+      head(fitMd(survDHS[[1]], survMICS[[1]])$TMBobj$env$last.par, 10)
+    }
     
     # estimate time left and print
     thisT = proc.time()[3]
