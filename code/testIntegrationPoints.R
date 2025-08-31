@@ -812,11 +812,6 @@ testResModels = function(allRes=c(15, 25, 50, 75, 100), ...) {
   parMatOpt = parMat
   totTimeOpt = totTime
   
-  parMat = rbind(gridPreds$alphaDraws, 
-                 gridPreds$betaDraws, 
-                 gridPreds$sigmaSqDraws, 
-                 gridPreds$sigmaEpsSqDraws)
-  
   parNames = c("Int", "Urban", "Health", "Elev", "DistRiversLakes", "Pop", "sigmaSq", "sigmaEpsSq")
   
   # now get information from other resolutions
