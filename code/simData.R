@@ -535,7 +535,7 @@ makeIntegrationPointsSim1 = function() {
                                             JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
                                             JOuterRural=JOuterRural, adminMap=adm2Full)
     
-    save(intPtsDHS, file=paste0("intPtsDHS_simStudy1_", i, ".RData"))
+    save(intPtsDHS, file=paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))
   }
   
   invisible(NULL)
