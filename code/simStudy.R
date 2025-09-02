@@ -1,6 +1,6 @@
 # run motivating simulation study
 
-runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE, signif=c(.8, .95)) {
+runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D", "Md"), regenData=FALSE, signif=c(.8, .95)) {
   mod = match.arg(mod)
   
   # load data
@@ -43,6 +43,8 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE, signif
       out = fitMDM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
     } else if(mod == "M_D") {
       out = fitMD(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
+    } else if(mod == "Md") {
+      out = fitMd(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
     }
     
     # generate prediction grid
@@ -85,7 +87,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE, signif
   }
 }
 
-runSimStudy1IPar = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE) {
+runSimStudy1IPar = function(i, mod=c("M_M", "M_DM", "M_D", "Md"), regenData=FALSE) {
   mod = match.arg(mod)
   
   tmplogfile <- paste0("savedOutput/simStudy1/simRun_", mod, "_", i, "_tmp.txt")
@@ -109,7 +111,7 @@ runSimStudy1IPar = function(i, mod=c("M_M", "M_DM", "M_D"), regenData=FALSE) {
   
 }
 
-runSimStudy1All = function(doPar=FALSE, nCores=16, regenData=FALSE, mod=c("M_M", "M_DM", "M_D")) {
+runSimStudy1All = function(doPar=FALSE, nCores=16, regenData=FALSE, mod=c("M_M", "M_DM", "M_D", "Md")) {
   mod = match.arg(mod)
   
   is = 1:100
@@ -134,7 +136,7 @@ runSimStudy1All = function(doPar=FALSE, nCores=16, regenData=FALSE, mod=c("M_M",
 
 
 # aggregate/summarize scores and parameter estimates
-simStudyScores = function(mod=c("M_M", "M_DM", "M_D")) {
+simStudyScores = function(mod=c("M_M", "M_DM", "M_D", "Md")) {
   require(abind)
   mod = match.arg(mod)
   
