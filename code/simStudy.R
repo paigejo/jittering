@@ -245,6 +245,68 @@ simStudyScores = function(mod=c("M_M", "M_DM", "M_D", "Md")) {
   
 }
 
+# check correlation between mean population density and education rate mean for 
+# sim study 1
+testPopDensCor = function() {
+  
+  # get pop density means per MICS stratum, urban and rural
+  # out = load("savedOutput/global/popMatNGAedThresh.RData")
+  out = load("savedOutput/global/intPtsMICS_100.RData")
+  intPtsMICS = straightenMICS(intPtsMICS)
+  XRur = intPtsMICS$XRur[,names(intPtsMICS$XRur) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  XUrb = intPtsMICS$XUrb[,names(intPtsMICS$XUrb) %in% c("strat", "int", "urban", "access", "elev", "distRiversLakes", "normPop")]
+  wUrban = intPtsMICS$wUrban
+  wRural = intPtsMICS$wRural
+  
+  getStratMean = function(i, j=7, urb=TRUE) {
+    if(urb) {
+      X = XUrb
+      w = wUrban
+    } else {
+      X = XRur
+      w = wRural
+    }
+    is = rep(F, 41)
+    is[i] = TRUE
+    is = rep(is, 100)
+    sum(X[is,j] * w[i,])
+  }
+  getStratArea = function(i, urb=TRUE) {
+    5 * sum((popMatNGAedThresh$stratumMICS == intPtsMICS$strataMICS[i]) & (popMatNGAedThresh$urban == urb))
+  }
+  getStratUrbWeight = function(i, urb=TRUE) {
+    thisPops = popMatNGAedThresh$pop[(popMatNGAedThresh$stratumMICS == intPtsMICS$strataMICS[i])]
+    thisUrbs = popMatNGAedThresh$urban[(popMatNGAedThresh$stratumMICS == intPtsMICS$strataMICS[i])]
+    sum(thisPops[thisUrbs])/sum(thisPops)
+  }
+  normPopsUrb = sapply(1:41, getStratMean, urb=TRUE)
+  normPopsRur = sapply(1:41, getStratMean, urb=FALSE)
+  
+  truePopUrb = poppStratMICSThresh$popUrb
+  truePopRur = poppStratMICSThresh$popRur
+  trueAreaUrb = sapply(1:41, getStratArea, urb=TRUE)
+  trueAreaRur = sapply(1:41, getStratArea, urb=FALSE)
+  
+  if(FALSE) {
+    cbind(normPopsUrb, truePopUrb/trueAreaUrb)
+    plot(normPopsUrb, log(truePopUrb/trueAreaUrb))
+    plot(normPopsRur, log(truePopRur/trueAreaRur))
+  }
+  
+  out = load("savedOutput/simStudy1/simPopsSurveys.RData")
+  aggWeightUrb = sapply(1:41, getStratUrbWeight)
+  aggWeightRur = 1-aggWeightUrb
+  
+  cors = apply(stratumPops, 2, function(x) {
+    cor(x, aggWeightUrb * normPopsUrb + aggWeightRur * normPopsRur)
+    })
+  mean(cors)
+  hist(cors)
+  abline(v=mean(cors), col="blue")
+  
+  plot(rep(aggWeightUrb * normPopsUrb + aggWeightRur * normPopsRur, 100), c(stratumPops))
+}
+
 
 
 

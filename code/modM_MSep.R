@@ -13,7 +13,7 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                  pc.bym2Prec=list(u=1, alpha=.1), 
                  pc.expPrec=list(u=1, alpha=.1), 
                  maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE, 
-                 tolSeq = c(1e-06), getSDs=TRUE) {
+                 tolSeq = c(1e-06), getSDs=TRUE, doMCMC=FALSE) {
   
   # make sure Stratum variable exists in MICS data
   if(!("Stratum" %in% names(datMICS))) {
@@ -367,66 +367,89 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   # obj$par = optParINLA
   # obj$par = optPar
   
-  {
-    # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
-    # tolSeq = 1e-06
-    testObj = obj
-    optPar = testObj$par
-    startTime = proc.time()[3]
-    for(thisTol in tolSeq) {
+  if(!doMCMC) {
+    {
+      # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+      # tolSeq = 1e-06
       testObj = obj
-      testObj$env$inner.control = list(maxit=maxit, tol10=thisTol)
-      testObj$env$tracepar = TRUE
-      print(paste0("optimizing for tol = ", thisTol, "."))
-      opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
-                    method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
-      optPar = opt1$par
-      if(!is.null(opt1$message)) {
-        print(paste0("error for tol = ", thisTol, ". Message:"))
-        print(opt1$message)
-        next
-      }
-      else {
-        print(paste0("completed optimization for tol = ", thisTol, ""))
-        
-        if(getSDs) {
-          ## Get standard errors
-          print("getting standard errors...")
-          sdTime = system.time(
-            SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
-                                 bias.correct = TRUE,
-                                 bias.correct.control = list(sd = TRUE))
-          )[3]
+      optPar = testObj$par
+      startTime = proc.time()[3]
+      for(thisTol in tolSeq) {
+        testObj = obj
+        testObj$env$inner.control = list(maxit=maxit, tol10=thisTol)
+        testObj$env$tracepar = TRUE
+        print(paste0("optimizing for tol = ", thisTol, "."))
+        opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+                      method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+        optPar = opt1$par
+        if(!is.null(opt1$message)) {
+          print(paste0("error for tol = ", thisTol, ". Message:"))
+          print(opt1$message)
+          next
+        }
+        else {
+          print(paste0("completed optimization for tol = ", thisTol, ""))
           
-          # SD0
-          print(sdTime/60)
-          # 3.9447 minutes for intern=FALSE
-          
-          if(SD0$pdHess) {
-            print("Optimization and PD hess calculation done!")
-            break
-          }
-          else {
-            print("Hessan not PD. Rerunning optimization with stricter tol...")
+          if(getSDs) {
+            ## Get standard errors
+            print("getting standard errors...")
+            sdTime = system.time(
+              SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
+                                   bias.correct = TRUE,
+                                   bias.correct.control = list(sd = TRUE))
+            )[3]
             
+            # SD0
+            print(sdTime/60)
+            # 3.9447 minutes for intern=FALSE
+            
+            if(SD0$pdHess) {
+              print("Optimization and PD hess calculation done!")
+              break
+            }
+            else {
+              print("Hessan not PD. Rerunning optimization with stricter tol...")
+              
+            }
+          } else {
+            sdTime = 0
+            SD0 = NULL
           }
-        } else {
-          sdTime = 0
-          SD0 = NULL
+          
+          
         }
         
         
+        
       }
-      
-      
-      
+      endTime = proc.time()[3]
+      sdTime/60
+      totalTime = endTime - startTime
+      print(paste0("optimization took ", totalTime/60, " minutes"))
+      # optimization took 21.7764833333333 minutes (for intern=FALSE)
     }
-    endTime = proc.time()[3]
-    sdTime/60
-    totalTime = endTime - startTime
-    print(paste0("optimization took ", totalTime/60, " minutes"))
-    # optimization took 21.7764833333333 minutes (for intern=FALSE)
+  } else {
+    browser()
+    {
+      # tolSeq = c(1e-06, 1e-08, 1e-10, 1e-12, 1e-14)
+      # tolSeq = 1e-06
+      testObj = obj
+      optPar = testObj$par
+      startTime = proc.time()[3]
+      # opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
+      #               method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
+      
+      fit <- tmbstan(obj=obj, silent=FALSE)
+      
+      endTime = proc.time()[3]
+      sdTime/60
+      totalTime = endTime - startTime
+      print(paste0("MCMC took ", totalTime/60, " minutes"))
+      # optimization took 21.7764833333333 minutes (for intern=FALSE)
+    }
+    browser()
   }
+  
   
   if(FALSE) {
     badPar = c(SD0$par.fixed, SD0$par.random)

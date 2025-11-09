@@ -38,6 +38,7 @@ if(FALSE) {
   if(FALSE) {
     install_github("https://github.com/richardli/SUMMER/")
     install_github("https://github.com/paigejo/SUMMER/")
+    install_github("https://github.com/paigejo/splott/")
     install_github("richardli/SUMMER@surveySim")
     install_local("~/git/SUMMER/")
     document("~/git/SUMMER/")
