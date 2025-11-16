@@ -315,7 +315,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     
     # load dynlib, make tmb obj
     dyn.load( dynlib("code/modM_DMSepRepar"))
-    TMB::config(tmbad.sparse_hessian_compress = 1)
+    TMB::config(tmbad.sparse_hessian_compress = 1, DLL="modM_DMSepRepar")
     obj <- MakeADFun(data=data_full,
                      parameters=tmb_params,
                      random=rand_effs,
