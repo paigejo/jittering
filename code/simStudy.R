@@ -41,7 +41,7 @@ runSimStudy1I = function(i, mod=c("M_M", "M_DM", "M_D", "Md"), regenData=FALSE,
     if(mod == "M_M") {
       out = fitMM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE, doMCMC=doMCMC)
     } else if(mod == "M_DM") {
-      out = fitMDM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
+      out = fitMDM(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE, doMCMC=doMCMC)
     } else if(mod == "M_D") {
       out = fitMD(datDHS=thisDHS, datMICS=thisMICS, intPtsDHS=intPtsDHS, repar=TRUE)
     } else if(mod == "Md") {

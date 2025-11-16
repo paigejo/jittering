@@ -88,6 +88,8 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     rand_effs <- c('alpha', 'beta', 'w_bym2Star', 'u_bym2Star', 
                    'nuggetUrbMICS', 'nuggetRurMICS')
   } else {
+    rand_effs <- c('w_bym2Star', 'u_bym2Star', 
+                   'nuggetUrbMICS', 'nuggetRurMICS')
     rand_effs <- c('beta', 'w_bym2Star', 'u_bym2Star', 
                    'nuggetUrbMICS', 'nuggetRurMICS')
   }
@@ -208,6 +210,15 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                        logit_phi = 0, # SPDE parameter related to the range
                        log_tauEps = 0, # Log tau (i.e. log spatial precision, Epsilon)
                        beta = c(initBeta1, rep(0, ncol(data_full$X_betaUrbanMICS)-1)), 
+                       w_bym2Star = rep(initAlpha, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
+                       nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
+                       nuggetRurMICS = rep(0, length(data_full$y_iRuralMICS))
+    )
+    tmb_params <- list(log_tau = 1.51, # Log tau (i.e. log spatial precision, Epsilon)
+                       logit_phi = .529, # SPDE parameter related to the range
+                       log_tauEps = -.494, # Log tau (i.e. log spatial precision, Epsilon)
+                       beta = c(1.12, .114, .091, -.0834, .487), 
                        w_bym2Star = rep(initAlpha, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                        u_bym2Star = rep(0, ncol(bym2ArgsTMB$Q)), # RE on mesh vertices
                        nuggetUrbMICS = rep(0, length(data_full$y_iUrbanMICS)), 
@@ -439,10 +450,9 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       # opt1 <- optim(par=optPar, fn=funWrapper, gr=grWrapper,
       #               method = c("BFGS"), hessian = FALSE, control=list(reltol=thisTol))
       
-      fit <- tmbstan(obj=obj, silent=FALSE)
+      fit <- tmbstan(obj=obj, silent=FALSE, laplace=TRUE)
       
       endTime = proc.time()[3]
-      sdTime/60
       totalTime = endTime - startTime
       print(paste0("MCMC took ", totalTime/60, " minutes"))
       # optimization took 21.7764833333333 minutes (for intern=FALSE)
