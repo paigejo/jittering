@@ -325,9 +325,14 @@ fitMM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     print(paste0("gradient: ", grStr, " for parameters, ", parStr))
     grVal
   }
-  
+  browser()
   if(FALSE) {
     # testing before running optimization
+    
+    out = load("~/stanfit_M_M.RData")
+    out
+    names(fit)
+    
     initAlphaBeta = rep(1, 6)
     initParFull = objFull$par
     initParFull[1:6] = initAlphaBeta

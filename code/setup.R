@@ -83,6 +83,7 @@ library(transport)
 library(stringr)
 library(prodlim)
 library(parallel)
+library(tmbstan)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
