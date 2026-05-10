@@ -15,7 +15,7 @@ if(FALSE) {
   install.packages("raster")
   install.packages("MCMCpack")
   install.packages("numDeriv")
-  install.packages("INLA")
+  # install.packages("INLA")
   install.packages("edfun") # for drawing from empirical distributions quickly
   install.packages("data.table")
   install.packages("sampling")
@@ -29,6 +29,9 @@ if(FALSE) {
   install.packages("colorspace")
   install.packages("TMB")
   install.packages("plyr")
+  install.packages("fastGHQuad")
+  install.packages("stringr")
+  install.packages("transport")
   
   library(devtools)
   if(FALSE) {
