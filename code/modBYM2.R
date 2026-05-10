@@ -736,31 +736,27 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
   
   # print parameter summary table
   if(pdHess) {
-    fixedMat = rbind(alphaDraws, 
-                     betaDraws, 
-                     sigmaSqDraws, 
-                     phiDraws)
-    if(!is.null(betaDraws)) {
+    if(!is.null(sigmaSqDraws) && !is.null(phiDraws)) {
+      fixedMat = rbind(alphaDraws, betaDraws, sigmaSqDraws, phiDraws)
       betaNames = rep("beta", nrow(betaDraws))
+      row.names(fixedMat) = c("(Int)", betaNames, "sigmaSq", "phi")
     } else {
-      betaNames = NULL
+      fixedMat = rbind(alphaDraws, betaDraws)
+      betaNames = rep("beta", nrow(betaDraws))
+      row.names(fixedMat) = c("(Int)", betaNames)
     }
-    
-    row.names(fixedMat) = c("(Int)", 
-                            betaNames, 
-                            "sigmaSq", 
-                            "phi")
   } else {
-    fixedMat = matrix(c(alphaDraws, 
-                        betaDraws, 
-                        sigmaSqDraws, 
-                        phiDraws), ncol=1)
-    betaDraws = matrix(betaDraws, ncol=1)
-    betaNames = rep("beta", nrow(betaDraws))
-    row.names(fixedMat) = c("(Int)", 
-                            betaNames, 
-                            "sigmaSq", 
-                            "phi")
+    if(!is.null(sigmaSqDraws) && !is.null(phiDraws)) {
+      fixedMat = matrix(c(alphaDraws, betaDraws, sigmaSqDraws, phiDraws), ncol=1)
+      betaDraws = matrix(betaDraws, ncol=1)
+      betaNames = rep("beta", nrow(betaDraws))
+      row.names(fixedMat) = c("(Int)", betaNames, "sigmaSq", "phi")
+    } else {
+      fixedMat = matrix(c(alphaDraws, betaDraws), ncol=1)
+      betaDraws = matrix(betaDraws, ncol=1)
+      betaNames = rep("beta", nrow(betaDraws))
+      row.names(fixedMat) = c("(Int)", betaNames)
+    }
   }
   
   
@@ -782,7 +778,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
   if(pdHess) {
     preds = rowMeans(gridDraws, na.rm=TRUE)
   } else {
-    preds = gridDraws
+    preds = c(gridDraws)
   }
   
   
@@ -806,8 +802,15 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
     #   print(paste0("mean data urban prob: ", mean(expit(c(repOut$latentFieldUrbMICS, repOut$latentFieldUrbDHS)), na.rm=TRUE)))
     #   print(paste0("mean data rural prob: ", mean(expit(c(repOut$latentFieldRurMICS, repOut$latentFieldRurDHS)), na.rm=TRUE)))
     # }, error=function(e) {print(e)})
-    print(paste0("mean data urban prob: ", (sum(tmbObj$env$data$y_iUrbanDHS)+sum(tmbObj$env$data$y_iUrbanMICS))/(sum(tmbObj$env$data$n_iUrbanDHS)+sum(tmbObj$env$data$n_iUrbanMICS))))
-    print(paste0("mean data rural prob: ", (sum(tmbObj$env$data$y_iRuralDHS)+sum(tmbObj$env$data$y_iRuralMICS))/(sum(tmbObj$env$data$n_iRuralDHS)+sum(tmbObj$env$data$n_iRuralMICS))))
+    d = tmbObj$env$data
+    hasD = !is.null(d$y_iUrbanDHS)
+    hasM = !is.null(d$y_iUrbanMICS)
+    yUrb = c(if(hasD) d$y_iUrbanDHS, if(hasM) d$y_iUrbanMICS)
+    nUrb = c(if(hasD) d$n_iUrbanDHS, if(hasM) d$n_iUrbanMICS)
+    yRur = c(if(hasD) d$y_iRuralDHS, if(hasM) d$y_iRuralMICS)
+    nRur = c(if(hasD) d$n_iRuralDHS, if(hasM) d$n_iRuralMICS)
+    print(paste0("mean data urban prob: ", sum(yUrb)/sum(nUrb)))
+    print(paste0("mean data rural prob: ", sum(yRur)/sum(nRur)))
   }
   
   if(!is.null(arealPreds)) {
@@ -918,7 +921,7 @@ plotPreds = function(SD0=NULL, tmbObj=NULL, popMat=popMatNGAThresh, gridPreds=NU
   }
 }
 
-summaryTabBYM2 = function(SD0, popMat=popMatNGAThresh, gridPreds=NULL, 
+summaryTabBYM2 = function(SD0, obj=NULL, popMat=popMatNGAThresh, gridPreds=NULL, 
                           normalized=TRUE, extractMethod="bilinear", 
                           nsim=1000, quantiles=c(0.025, 0.975)) {
   
@@ -941,15 +944,19 @@ summaryTabBYM2 = function(SD0, popMat=popMatNGAThresh, gridPreds=NULL,
   pdHess = gridPreds$pdHess
   
   # print parameter summary table
-  fixedMat = rbind(alphaDraws, 
-                   betaDraws, 
-                   sigmaSqDraws, 
-                   phiDraws)
-  betaNames = rep("beta", nrow(betaDraws))
-  row.names(fixedMat) = c("(Int)", 
-                          betaNames, 
-                          "sigmaSq", 
-                          "phi")
+  if(!is.null(sigmaSqDraws) && !is.null(phiDraws)) {
+    fixedMat = rbind(alphaDraws, betaDraws, sigmaSqDraws, phiDraws)
+    betaNames = rep("beta", nrow(betaDraws))
+    row.names(fixedMat) = c("(Int)", betaNames, "sigmaSq", "phi")
+  } else {
+    fixedMat = rbind(alphaDraws, betaDraws)
+    betaNames = rep("beta", nrow(betaDraws))
+    row.names(fixedMat) = c("(Int)", betaNames)
+  }
+  if(!is.null(sigmaEpsSqDraws)) {
+    fixedMat = rbind(fixedMat, sigmaEpsSqDraws)
+    row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
+  }
   
   hasNugget = !is.null(sigmaEpsSqDraws)
   if(hasNugget) {
@@ -978,7 +985,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
                     splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
                     predAtArea=NULL, sep=FALSE, QinvSumsNorm=NULL, 
                     includedCovs=c("urb", "access", "elev", "distRiversLakes", "popValsNorm"), 
-                    constrParameterization=FALSE, obj=NULL) {
+                    constrParameterization=FALSE, constr2n2=FALSE, obj=NULL) {
   admLevel = match.arg(admLevel)
   
   # get parameters
@@ -999,8 +1006,9 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     log_tauEpsI = grep("log_tauEps", names(allPar))
     log_tauEps = allPar[log_tauEpsI]
     log_tau = allPar[-log_tauEpsI][grepl("log_tauEps", names(allPar))]
-    parnames = names(SD0$par.fixed)
+    parnames = names(allPar)
   }
+  includeBeta = !is.null(beta) && length(beta) > 0
   
   if(!is.null(predAtArea)) {
     # if(admLevel == "stratMICS") {
@@ -1031,6 +1039,7 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   } else {
     Amat = t(makeApointToArea(popMat$subarea, adm2Full$NAME_2)) # nrow(popMat) x (# admin2 areas)
   }
+  noSpatialFE = !any(c("w_bym2Free", "Epsilon_bym2", "w_bym2Star", "log_tau", "logit_phi") %in% names(SD0$par.fixed)) && length(SD0$par.random) == 0
   
   # generate draws
   rmvnorm_prec <- function(mu, chol_prec, n.sims) {
@@ -1056,8 +1065,114 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   sigmaEpsSqRMICS_tmb_draws = NULL
   sigmaEpsSqUDHS_tmb_draws = NULL
   sigmaEpsSqRDHS_tmb_draws = NULL
+    if(is.null(SD0$cov.fixed)) {
+      stop("FE prediction needs SD0$cov.fixed to propagate fixed-effect uncertainty.")
+    }
+    fixedDraws = t(MASS::mvrnorm(n=nsim, mu=as.numeric(SD0$par.fixed), Sigma=SD0$cov.fixed))
+    rownames(fixedDraws) = names(SD0$par.fixed)
+    alpha_tmb_draws = matrix(fixedDraws[rownames(fixedDraws) == "alpha",], nrow=1)
+    beta_tmb_draws = fixedDraws[rownames(fixedDraws) == "beta",,drop=FALSE]
+    if("log_tauEps" %in% rownames(fixedDraws)) {
+      sigmaEpsSq_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEps",]), nrow=1)
+    } else if("log_tauEpsUrb" %in% rownames(fixedDraws)) {
+      sigmaEpsSqUrb_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsUrb",]), nrow=1)
+      sigmaEpsSqRur_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsRur",]), nrow=1)
+    }
+    if("log_tauEpsUDHS" %in% rownames(fixedDraws)) {
+      sigmaEpsSqUDHS_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsUDHS",]), nrow=1)
+      sigmaEpsSqRDHS_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsRDHS",]), nrow=1)
+      sigmaEpsSqUMICS_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsUMICS",]), nrow=1)
+      sigmaEpsSqRMICS_tmb_draws = matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tauEpsRMICS",]), nrow=1)
+    }
+    epsilon_tmb_draws = matrix(0, nrow=ncol(Amat), ncol=nsim)
+    gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
+    gridDraws_tmb <- sweep(gridDraws_tmb, 2, alpha_tmb_draws, '+')
+    if(includeBeta) {
+      gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta_tmb_draws)
+    }
+    gridDrawsMICS = NULL
+    if(hasUrbDiffMICS) {
+      gridDrawsMICS = gridDraws_tmb
+      urbanGridI = popMat$urban
+      gridDrawsMICS[urbanGridI,] = sweep(gridDrawsMICS[urbanGridI,], 2, urbDiffDraws, "+")
+    }
+    if(hasRurDiffMICS) {
+      if(is.null(gridDrawsMICS)) {
+        gridDrawsMICS = gridDraws_tmb
+      }
+      ruralGridI = !popMat$urban
+      gridDrawsMICS[ruralGridI,] = sweep(gridDrawsMICS[ruralGridI,], 2, rurDiffDraws, "+")
+    }
+    probDrawsMICS = NULL
+    if(!hasNugget) {
+      probDraws = expit(gridDraws_tmb)
+      if(!is.null(gridDrawsMICS)) {
+        probDrawsMICS = expit(gridDrawsMICS)
+      }
+    } else {
+      if((!URclust) && (!varClust)) {
+        probDraws <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws),
+                                                gridDraws_tmb), logisticApprox=FALSE,
+                                          splineApprox=splineApprox)
+        if(!is.null(gridDrawsMICS)) {
+          probDrawsMICS <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSq_tmb_draws),
+                                                      gridDrawsMICS), logisticApprox=FALSE,
+                                            splineApprox=splineApprox)
+        }
+      } else {
+        gridDraws_tmbUrb = gridDraws_tmb[popMat$urban,]
+        gridDraws_tmbRur = gridDraws_tmb[!popMat$urban,]
+        if(!is.null(gridDrawsMICS)) {
+          gridDrawsMICSUrb = gridDrawsMICS[popMat$urban,]
+          gridDrawsMICSRur = gridDrawsMICS[!popMat$urban,]
+        }
+        if(URclust) {
+          probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUrb_tmb_draws),
+                                                     gridDraws_tmbUrb), logisticApprox=FALSE,
+                                               splineApprox=splineApprox)
+          probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRur_tmb_draws),
+                                                     gridDraws_tmbRur), logisticApprox=FALSE,
+                                               splineApprox=splineApprox)
+          if(!is.null(gridDrawsMICS)) {
+            probDrawsUrbMICS <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUrb_tmb_draws),
+                                                       gridDrawsMICSUrb), logisticApprox=FALSE,
+                                                 splineApprox=splineApprox)
+            probDrawsRurMICS <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRur_tmb_draws),
+                                                       gridDrawsMICSRur), logisticApprox=FALSE,
+                                                 splineApprox=splineApprox)
+          }
+        } else if(varClust) {
+          probDrawsUrb <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUDHS_tmb_draws),
+                                                     gridDraws_tmbUrb), logisticApprox=FALSE,
+                                               splineApprox=splineApprox)
+          probDrawsRur <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRDHS_tmb_draws),
+                                                     gridDraws_tmbRur), logisticApprox=FALSE,
+                                               splineApprox=splineApprox)
+          if(!is.null(gridDrawsMICS)) {
+            probDrawsUrbMICS <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqUMICS_tmb_draws),
+                                                       gridDrawsMICSUrb), logisticApprox=FALSE,
+                                                 splineApprox=splineApprox)
+            probDrawsRurMICS <- logitNormMeanGrouped(rbind(sqrt(sigmaEpsSqRMICS_tmb_draws),
+                                                       gridDrawsMICSRur), logisticApprox=FALSE,
+                                                 splineApprox=splineApprox)
+          }
+        }
+        probDraws = c(probDrawsUrb, probDrawsRur)
+        if(!is.null(gridDrawsMICS)) {
+          probDrawsMICS = c(probDrawsUrbMICS, probDrawsRurMICS)
+        }
+      }
+    }
+    preds = rowMeans(probDraws)
+    quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
+    if(!is.null(probDrawsMICS)) {
+      predsMICS = rowMeans(probDrawsMICS)
+      quantsMICS = apply(probDrawsMICS, 1, quantile, probs=quantiles, na.rm=TRUE)
+    }
+  sigmaSq_tmb_draws = NULL
+  phi_tmb_draws = NULL
   predsMICS = quantsMICS = NULL
-  if(SD0$pdHess) {
+  if(SD0$pdHess && !noSpatialFE) {
     L <- Cholesky(SD0[['jointPrecision']], super = T)
     mu = summary(SD0)[,1]
     t.draws <- rmvnorm_prec(mu = mu , chol_prec = L, n.sims = nsim)
@@ -1065,13 +1180,16 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     # extract fixed effects and random effects from draws
     # parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
     parnames <- colnames(SD0$jointPrecision)
+    noSpatial = !any(c("w_bym2Free", "Epsilon_bym2", "w_bym2Star") %in% parnames)
     
     if(!finalRepar) {
       alpha_tmb_draws    <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
     }
     beta_tmb_draws    <- t.draws[parnames == 'beta',]
-    sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
-    phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
+    if(!noSpatial) {
+      sigmaSq_tmb_draws    <- matrix(1/exp(t.draws[parnames == 'log_tau',]), nrow = 1)
+      phi_tmb_draws    <- matrix(expit(t.draws[parnames == 'logit_phi',]), nrow = 1)
+    }
     
     if(hasUrbDiffMICS) {
       urbDiffDraws = t.draws[parnames == 'diffUrbMICS',]
@@ -1081,7 +1199,16 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
     
     # get the spatial effect
-    if(!sep) {
+    if(noSpatial) {
+      epsilon_tmb_draws = matrix(0, nrow=ncol(Amat), ncol=nsim)
+    } else if(constr2n2 || any(parnames == 'w_bym2Free')) {
+      # Constrained 2n-2 / new GH BYM2: reconstruct full sum-to-zero n-vector from n-1 free params
+      wFree  <- t.draws[parnames == 'w_bym2Free',]
+      wn <- -colSums(wFree)
+      epsilon_tmb_draws <- rbind(wFree, matrix(wn, nrow=1))
+      # alpha is explicit in this parameterization
+      alpha_tmb_draws <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
+    } else if(!sep) {
       epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
     } else {
       wStar  <- t.draws[parnames == 'w_bym2Star',]
@@ -1206,6 +1333,10 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
                                                                    "sigmaEpsSqUDHS", "sigmaEpsSqRDHS")
       }
       
+    }
+    
+    if(noSpatial) {
+      fixedMat = fixedMat[!row.names(fixedMat) %in% c("sigmaSq", "phi"),,drop=FALSE]
     }
     
     # Make parameter summary tables
@@ -1356,50 +1487,86 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
   }
   else {
-    # Prec not PD
-    stop("Precision matrix should be PD")
-    Eps = SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
-    alpha = SD0$par.fixed[grepl("alpha", names(SD0$par.fixed))]
-    beta = SD0$par.fixed[grepl("beta", names(SD0$par.fixed))]
+    # Prec not PD: use point estimates
+    warning("Precision matrix not PD; using point estimates instead of posterior draws.")
+    allFixed = SD0$par.fixed
+    noSpatialFE = !("w_bym2Free" %in% names(allFixed)) && length(SD0$par.random) == 0
     
-    # set "draws" to be just the fixed values
-    epsilon_tmb_draws = Eps
-    alpha_tmb_draws = alpha
-    beta_tmb_draws = beta
-    phi_tmb_draws = expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))])
-    sigmaSq_tmb_draws = 1/exp(SD0$par.fixed[names(SD0$par.fixed) == "log_tau"])
+    # Extract spatial effect
+    if("w_bym2Free" %in% names(allFixed)) {
+      # New GH BYM2 parameterization: reconstruct full sum-to-zero n-vector
+      wFree = allFixed[names(allFixed) == "w_bym2Free"]
+      epsilon_tmb_draws = matrix(c(wFree, -sum(wFree)))
+    } else {
+      if(noSpatialFE) {
+        epsilon_tmb_draws = rep(0, ncol(Amat))
+      } else {
+        Eps = SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
+        epsilon_tmb_draws = Eps
+      }
+    }
+    alpha = allFixed[names(allFixed) == "alpha"]
+    beta = allFixed[names(allFixed) == "beta"]
     
-    fixedMat = rbind(alpha_tmb_draws, 
-                     beta_tmb_draws, 
-                     sigmaSq_tmb_draws, 
-                     phi_tmb_draws)
-    betaNames = colnames(Xmat)
-    row.names(fixedMat) = c("(Int)", 
-                            betaNames, 
-                            "sigmaSq", 
-                            "phi")
+    # set "draws" to be just the fixed values, as single-column matrices
+    # (consistent format with pdHess=TRUE branch which uses nsim columns)
+    alpha_tmb_draws = matrix(alpha, nrow=1)
+    beta_tmb_draws  = matrix(beta, ncol=1)
+    phi_tmb_draws = if(!noSpatialFE) matrix(expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))]), nrow=1) else NULL
+    sigmaSq_tmb_draws = if(!noSpatialFE) matrix(1/exp(SD0$par.fixed[names(SD0$par.fixed) == "log_tau"]), nrow=1) else NULL
+    
+    if(!noSpatialFE) {
+      fixedMat = rbind(alpha_tmb_draws, 
+                       beta_tmb_draws, 
+                       sigmaSq_tmb_draws, 
+                       phi_tmb_draws)
+      betaNames = colnames(Xmat)
+      row.names(fixedMat) = c("(Int)", 
+                              betaNames, 
+                              "sigmaSq", 
+                              "phi")
+    } else {
+      fixedMat = rbind(alpha_tmb_draws, 
+                       beta_tmb_draws)
+      betaNames = colnames(Xmat)
+      row.names(fixedMat) = c("(Int)", 
+                              betaNames)
+    }
     
     # add effects to predictions
-    gridDraws_tmb <- Amat %*% Eps
+    gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
     gridDraws_tmb <- gridDraws_tmb + alpha
     gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta)
     
     if(!hasNugget) {
-      probDraws = expit(gridDraws_tmb)
+      probDraws = matrix(expit(gridDraws_tmb), ncol=1)
     }
     else {
       tauEps = exp(SD0$par.fixed[grepl("log_tauEps", names(SD0$par.fixed))])
       sigmaEps = 1/sqrt(tauEps)
-      probDraws = logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=splineApprox)
+      probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=splineApprox), ncol=1)
       
-      sigmaEpsSq_tmb_draws = sigmaEps^2
+      sigmaEpsSq_tmb_draws = matrix(sigmaEps^2, nrow=1)
       
       fixedMat = rbind(fixedMat, 
                        sigmaEpsSq_tmb_draws)
       row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
     }
     
-    preds = probDraws
+    probDrawsMICS = NULL
+    predsMICS = NULL
+    quantsMICS = NULL
+    sigmaEpsSqUrb_tmb_draws = NULL
+    sigmaEpsSqRur_tmb_draws = NULL
+    sigmaEpsSqUMICS_tmb_draws = NULL
+    sigmaEpsSqRMICS_tmb_draws = NULL
+    sigmaEpsSqUDHS_tmb_draws = NULL
+    sigmaEpsSqRDHS_tmb_draws = NULL
+    if(!hasNugget) {
+      sigmaEpsSq_tmb_draws = NULL
+    }
+    
+    preds = c(probDraws)
     quants = NULL
   }
   

@@ -1,0 +1,440 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+---------------------
+Welcome to edfun version 0.2.0
+Type ?edfun for the main documentation.
+The github page is: https://github.com/talgalili/edfun/
+
+Suggestions and bug-reports can be submitted at: https://github.com/talgalili/edfun/issues
+Or contact: <tal.galili@gmail.com>
+
+	To suppress this message use:  suppressPackageStartupMessages(library(edfun))
+---------------------
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+DHS  n = 1378     MICS n = 2183 
+KMICS= 100   KDHSu= 16   KDHSr= 21   Qgh= 10 
+Fitting BYM2-enabled commensurate-priors fusion (fixedEffectsOnly=FALSE)...
+Loading required package: prodlim
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+iter: 1  value: 6360.207 mgc: 616.836 ustep: 0.004471122 
+iter: 2  value: 5836.99 mgc: 104.329 ustep: 0.06695976 
+iter: 3  value: 5778.182 mgc: 74.99006 ustep: 0.03673873 
+iter: 4  value: 5741.079 mgc: 29.40457 ustep: 0.1917543 
+iter: 5  value: 5720.526 mgc: 2.796477 ustep: 0.4379538 
+iter: 6  value: 5712.805 mgc: 1.193168 ustep: 0.6618146 
+iter: 7  value: 5711.868 mgc: 0.3804328 ustep: 0.8135386 
+iter: 8  value: 5711.836 mgc: 0.06843641 ustep: 0.9019735 
+iter: 9  value: 5711.835 mgc: 0.006566631 ustep: 0.9497279 
+iter: 10  value: 5711.835 mgc: 0.0003368242 ustep: 0.9745424 
+iter: 11  value: 5711.835 mgc: 8.656429e-06 ustep: 0.9871904 
+iter: 12  value: 5711.835 mgc: 1.113428e-07 ustep: 0.9935752 
+iter: 13  mgc: 7.163113e-10 
+iter: 1  mgc: 7.163113e-10 
+Matching hessian patterns... Done
+outer mgc:  198.6404 
+  0:     5754.9544:  0.00000  0.00000  0.00000  0.00000
+iter: 1  value: 5655.817 mgc: 49.51618 ustep: 0.1336527 
+iter: 2  value: 5645.548 mgc: 77.4529 ustep: 0.3656489 
+iter: 3  value: 5644.91 mgc: 10.38181 ustep: 0.6047286 
+iter: 4  value: 5644.836 mgc: 0.1497526 ustep: 0.7776652 
+iter: 5  value: 5644.832 mgc: 0.02668258 ustep: 0.8818651 
+iter: 6  value: 5644.832 mgc: 0.002729598 ustep: 0.9390828 
+iter: 7  value: 5644.832 mgc: 0.0001520699 ustep: 0.969066 
+iter: 8  value: 5644.832 mgc: 4.596132e-06 ustep: 0.984413 
+iter: 9  value: 5644.832 mgc: 8.05886e-08 ustep: 0.9921767 
+iter: 10  mgc: 6.949684e-10 
+iter: 1  mgc: 6.949684e-10 
+outer mgc:  98.21599 
+  1:     5676.1262: 0.0380749 0.0159571 -0.998964 -0.0191680
+iter: 1  value: 5620.075 mgc: 20.78266 ustep: 1 
+iter: 2  value: 5620.025 mgc: 2.288738 ustep: 1 
+iter: 3  value: 5620.025 mgc: 0.1113464 ustep: 1 
+iter: 4  value: 5620.025 mgc: 0.006443234 ustep: 1 
+iter: 5  value: 5620.025 mgc: 3.070354e-05 ustep: 1 
+iter: 6  mgc: 7.401995e-10 
+iter: 1  mgc: 7.401995e-10 
+outer mgc:  7.500655 
+  2:     5660.0913: 0.550077 0.479350 -0.704088 -0.679599
+iter: 1  value: 5612.998 mgc: 5.001523 ustep: 1 
+iter: 2  value: 5612.957 mgc: 1.892027 ustep: 1 
+iter: 3  value: 5612.954 mgc: 0.5257075 ustep: 1 
+iter: 4  value: 5612.954 mgc: 0.02500265 ustep: 1 
+iter: 5  value: 5612.954 mgc: 0.0001101058 ustep: 1 
+iter: 6  mgc: 2.0348e-09 
+iter: 1  mgc: 2.0348e-09 
+outer mgc:  29.03039 
+  3:     5658.5420: -0.0432788 0.950970 -0.690662 -1.33177
+iter: 1  value: 5601.025 mgc: 9.417326 ustep: 1 
+iter: 2  value: 5601.01 mgc: 0.9497921 ustep: 1 
+iter: 3  value: 5601.01 mgc: 0.101911 ustep: 1 
+iter: 4  value: 5601.01 mgc: 0.001861047 ustep: 1 
+iter: 5  value: 5601.01 mgc: 5.962021e-07 ustep: 1 
+iter: 6  mgc: 1.860734e-13 
+iter: 1  mgc: 1.860734e-13 
+outer mgc:  6.110053 
+  4:     5655.7480: 0.192270  1.57689 -0.772126 -2.07076
+iter: 1  value: 5589.249 mgc: 4.01707 ustep: 1 
+iter: 2  value: 5589.249 mgc: 0.134231 ustep: 1 
+iter: 3  value: 5589.249 mgc: 0.003903962 ustep: 1 
+iter: 4  value: 5589.249 mgc: 3.888705e-06 ustep: 1 
+iter: 5  mgc: 3.843678e-12 
+iter: 1  mgc: 3.843678e-12 
+outer mgc:  0.9756932 
+  5:     5655.4641: 0.292926  2.34578 -0.754278 -1.60184
+iter: 1  value: 5591.853 mgc: 1.847831 ustep: 1 
+iter: 2  value: 5591.853 mgc: 0.01422229 ustep: 1 
+iter: 3  value: 5591.853 mgc: 3.929574e-05 ustep: 1 
+iter: 4  mgc: 3.163672e-10 
+iter: 1  mgc: 3.163672e-10 
+outer mgc:  0.8005104 
+  6:     5655.3995: 0.290766  2.16218 -0.754545 -1.78058
+iter: 1  value: 5592.86 mgc: 0.535636 ustep: 1 
+iter: 2  value: 5592.86 mgc: 0.003420089 ustep: 1 
+iter: 3  value: 5592.86 mgc: 2.638631e-06 ustep: 1 
+iter: 4  mgc: 1.49099e-12 
+iter: 1  mgc: 1.49099e-12 
+outer mgc:  0.6893869 
+  7:     5655.3967: 0.266983  2.10287 -0.758338 -1.80352
+iter: 1  value: 5592.562 mgc: 0.1858945 ustep: 1 
+iter: 2  value: 5592.562 mgc: 0.0003755107 ustep: 1 
+iter: 3  value: 5592.562 mgc: 2.486887e-08 ustep: 1 
+mgc: 1.745271e-13 
+iter: 1  mgc: 1.745271e-13 
+outer mgc:  0.01651145 
+  8:     5655.3955: 0.275041  2.11885 -0.756576 -1.80260
+iter: 1  value: 5592.523 mgc: 0.01622487 ustep: 1 
+iter: 2  value: 5592.523 mgc: 4.09373e-07 ustep: 1 
+iter: 3  mgc: 3.282719e-13 
+iter: 1  mgc: 3.282719e-13 
+outer mgc:  0.005775213 
+  9:     5655.3955: 0.274794  2.12147 -0.756631 -1.80145
+iter: 1  value: 5592.512 mgc: 0.004677546 ustep: 1 
+iter: 2  value: 5592.512 mgc: 1.018167e-07 ustep: 1 
+mgc: 1.450117e-13 
+iter: 1  mgc: 1.450117e-13 
+outer mgc:  0.003738504 
+ 10:     5655.3955: 0.274646  2.12207 -0.756628 -1.80186
+iter: 1  value: 5592.504 mgc: 0.00371778 ustep: 1 
+iter: 2  value: 5592.504 mgc: 3.402667e-08 ustep: 1 
+mgc: 2.98872e-13 
+iter: 1  mgc: 2.98872e-13 
+outer mgc:  2.794462e-05 
+ 11:     5655.3955: 0.274567  2.12250 -0.756620 -1.80215
+iter: 1  mgc: 2.98872e-13 
+iter: 1  mgc: 2.98872e-13 
+outer mgc:  2.794462e-05 
+iter: 1  value: 5592.503 mgc: 0.02214882 ustep: 1 
+iter: 2  value: 5592.503 mgc: 8.714602e-07 ustep: 1 
+iter: 3  mgc: 2.380318e-13 
+outer mgc:  0.01611888 
+iter: 1  value: 5592.506 mgc: 0.02211682 ustep: 1 
+iter: 2  value: 5592.506 mgc: 8.703681e-07 ustep: 1 
+iter: 3  mgc: 1.800947e-13 
+outer mgc:  0.01611791 
+iter: 1  value: 5592.488 mgc: 0.003144794 ustep: 1 
+iter: 2  mgc: 7.933128e-09 
+outer mgc:  0.000813617 
+iter: 1  value: 5592.521 mgc: 0.003141717 ustep: 1 
+iter: 2  mgc: 7.940185e-09 
+outer mgc:  0.0008148188 
+iter: 1  value: 5592.49 mgc: 0.06827929 ustep: 1 
+iter: 2  value: 5592.49 mgc: 3.531453e-05 ustep: 1 
+iter: 3  mgc: 2.005832e-10 
+outer mgc:  0.4242198 
+iter: 1  value: 5592.519 mgc: 0.06822049 ustep: 1 
+iter: 2  value: 5592.519 mgc: 3.585273e-05 ustep: 1 
+iter: 3  mgc: 2.101816e-10 
+outer mgc:  0.4244721 
+iter: 1  value: 5592.507 mgc: 0.01079526 ustep: 1 
+iter: 2  value: 5592.507 mgc: 2.70194e-07 ustep: 1 
+iter: 3  mgc: 1.287859e-13 
+outer mgc:  0.002713557 
+iter: 1  value: 5592.502 mgc: 0.01081688 ustep: 1 
+iter: 2  value: 5592.502 mgc: 2.701671e-07 ustep: 1 
+iter: 3  mgc: 1.769696e-13 
+outer mgc:  0.002715486 
+Re-using symbolic Cholesky
+iter: 1  mgc: 2.98872e-13 
+Matching hessian patterns... Done
+outer mgc:  2.794462e-05 
+iter: 1  mgc: 2.98872e-13 
+outer mgc:  2.794462e-05 
+iter: 1  value: 5592.504 mgc: 0.0006077068 ustep: 1 
+iter: 2  mgc: 6.56616e-10 
+outer mgc:  0.0004385227 
+iter: 1  value: 5592.505 mgc: 0.0006076827 ustep: 1 
+iter: 2  mgc: 6.565871e-10 
+outer mgc:  0.0004465938 
+iter: 1  value: 5592.501 mgc: 0.0006672265 ustep: 1 
+iter: 2  mgc: 3.575558e-10 
+outer mgc:  0.0001726568 
+iter: 1  value: 5592.508 mgc: 0.0006670879 ustep: 1 
+iter: 2  mgc: 3.575442e-10 
+outer mgc:  0.0001729794 
+iter: 1  value: 5592.503 mgc: 0.005164094 ustep: 1 
+iter: 2  value: 5592.503 mgc: 2.035822e-07 ustep: 1 
+iter: 3  mgc: 3.004264e-13 
+outer mgc:  0.03207835 
+iter: 1  value: 5592.506 mgc: 0.005163758 ustep: 1 
+iter: 2  value: 5592.506 mgc: 2.038154e-07 ustep: 1 
+iter: 3  mgc: 2.344791e-13 
+outer mgc:  0.03213537 
+iter: 1  value: 5592.505 mgc: 0.001947066 ustep: 1 
+iter: 2  mgc: 8.774928e-09 
+outer mgc:  0.0004899157 
+iter: 1  value: 5592.504 mgc: 0.001947768 ustep: 1 
+iter: 2  mgc: 8.774811e-09 
+outer mgc:  0.0004884806 
+iter: 1  value: 5592.504 mgc: 0.0003038504 ustep: 1 
+iter: 2  mgc: 1.642209e-10 
+outer mgc:  0.0002172409 
+iter: 1  value: 5592.505 mgc: 0.0003038443 ustep: 1 
+iter: 2  mgc: 1.640262e-10 
+outer mgc:  0.0002253174 
+iter: 1  value: 5592.503 mgc: 0.0003335959 ustep: 1 
+iter: 2  mgc: 8.935341e-11 
+outer mgc:  8.626329e-05 
+iter: 1  value: 5592.506 mgc: 0.0003335613 ustep: 1 
+iter: 2  mgc: 8.939249e-11 
+outer mgc:  8.65548e-05 
+iter: 1  value: 5592.504 mgc: 0.002582005 ustep: 1 
+iter: 2  value: 5592.504 mgc: 5.091009e-08 ustep: 1 
+mgc: 1.278977e-13 
+outer mgc:  0.01602535 
+iter: 1  value: 5592.505 mgc: 0.002581921 ustep: 1 
+iter: 2  value: 5592.505 mgc: 5.093927e-08 ustep: 1 
+mgc: 1.596501e-13 
+outer mgc:  0.01608152 
+iter: 1  value: 5592.505 mgc: 0.000973621 ustep: 1 
+iter: 2  mgc: 2.193707e-09 
+outer mgc:  0.0002453579 
+iter: 1  value: 5592.504 mgc: 0.0009737964 ustep: 1 
+iter: 2  mgc: 2.193635e-09 
+outer mgc:  0.0002438403 
+iter: 1  value: 5592.504 mgc: 0.0001519244 ustep: 1 
+iter: 2  mgc: 4.106917e-11 
+outer mgc:  0.0001066007 
+iter: 1  value: 5592.505 mgc: 0.0001519229 ustep: 1 
+iter: 2  mgc: 4.106593e-11 
+outer mgc:  0.0001146785 
+iter: 1  value: 5592.504 mgc: 0.0001667936 ustep: 1 
+iter: 2  mgc: 2.230927e-11 
+outer mgc:  4.306266e-05 
+iter: 1  value: 5592.505 mgc: 0.000166785 ustep: 1 
+iter: 2  mgc: 2.223022e-11 
+outer mgc:  4.334639e-05 
+iter: 1  value: 5592.504 mgc: 0.001290992 ustep: 1 
+iter: 2  value: 5592.504 mgc: 1.272936e-08 ustep: 1 
+mgc: 2.433609e-13 
+outer mgc:  0.007998736 
+iter: 1  value: 5592.505 mgc: 0.001290971 ustep: 1 
+iter: 2  value: 5592.505 mgc: 1.273297e-08 ustep: 1 
+mgc: 2.675637e-13 
+outer mgc:  0.008054695 
+iter: 1  value: 5592.505 mgc: 0.0004868324 ustep: 1 
+iter: 2  mgc: 5.48469e-10 
+outer mgc:  0.0001230686 
+iter: 1  value: 5592.504 mgc: 0.0004868763 ustep: 1 
+iter: 2  mgc: 5.484438e-10 
+outer mgc:  0.0001215305 
+iter: 1  value: 5592.504 mgc: 7.596203e-05 ustep: 1 
+iter: 2  mgc: 1.025584e-11 
+outer mgc:  5.12807e-05 
+iter: 1  value: 5592.505 mgc: 7.596165e-05 ustep: 1 
+iter: 2  mgc: 1.020315e-11 
+outer mgc:  5.935887e-05 
+iter: 1  value: 5592.504 mgc: 8.339574e-05 ustep: 1 
+iter: 2  mgc: 5.657697e-12 
+outer mgc:  3.11847e-05 
+iter: 1  value: 5592.505 mgc: 8.339357e-05 ustep: 1 
+iter: 2  mgc: 5.584866e-12 
+outer mgc:  2.470452e-05 
+iter: 1  value: 5592.504 mgc: 0.0006454934 ustep: 1 
+iter: 2  mgc: 3.182604e-09 
+outer mgc:  0.0039854 
+iter: 1  value: 5592.505 mgc: 0.0006454881 ustep: 1 
+iter: 2  mgc: 3.183041e-09 
+outer mgc:  0.004041315 
+iter: 1  value: 5592.505 mgc: 0.0002434217 ustep: 1 
+iter: 2  mgc: 1.371112e-10 
+outer mgc:  6.192143e-05 
+iter: 1  value: 5592.504 mgc: 0.0002434327 ustep: 1 
+iter: 2  mgc: 1.37137e-10 
+outer mgc:  6.037811e-05 
+Total wall time: 12.94 min
+Saved to: savedOutput/test/fitFEMD_comm_BYM2_app.RData 
+
+========== fitFEMD_comm (BYM2 enabled) =====
+method = GH-comm   fitTime(min) = 4.73   sdTime(min) = 7.77 
+convergence = 0    nll = 5655.395 
+Outer optimum:
+       log_tau      logit_phi     log_tauEps log_sigma_comm 
+        0.2746         2.1225        -0.7566        -1.8022 
+
+log_sigma_comm = -1.8022   =>  sigma_comm = 0.1649 
+log_tau = 0.2746   =>  sigmaBYM2 = 0.8717 
+logit_phi = 2.1225   =>  phi = 0.8931 
+pdHess = TRUE 
+
+----- Outer hyperparameters (with SE) -----
+               Estimate Std. Error
+log_tau          0.2746     0.2546
+logit_phi        2.1225     1.1183
+log_tauEps      -0.7566     0.0486
+log_sigma_comm  -1.8022     0.6137
+
+----- DHS-side vs MICS-side MAP estimates (BYM2 enabled) -----
+                   par  DHS_est  DHS_sd  MICS_est MICS_sd diff_M_minus_D
+                 alpha -1.04054 0.10384 -1.238839 0.14940       -0.19830
+           beta[urban]  1.83579 0.12141  1.783942 0.17219       -0.05185
+          beta[access]  0.21235 0.05899  0.065433 0.10681       -0.14692
+            beta[elev]  0.04466 0.04552  0.002416 0.06882       -0.04224
+ beta[distRiversLakes] -0.10016 0.04762 -0.028125 0.07046        0.07204
+         beta[normPop]  0.16030 0.11227  0.307299 0.17071        0.14700
+
+----- FE-only vs BYM2-enabled commensurate fusion -----
+                   par FEonly_DHS FEonly_MICS BYM2_DHS BYM2_MICS
+                 alpha   -1.06781     -2.3836 -1.04054 -1.238839
+           beta[urban]    2.63525      1.2265  1.83579  1.783942
+          beta[access]    0.30048     -0.3180  0.21235  0.065433
+            beta[elev]    0.08031     -0.8051  0.04466  0.002416
+ beta[distRiversLakes]   -0.20168      0.5179 -0.10016 -0.028125
+         beta[normPop]    0.08814      0.7834  0.16030  0.307299
+
+sigma_comm (FE-only) = 0.8649 
+sigma_comm (BYM2)    = 0.1649 
+
+Done.

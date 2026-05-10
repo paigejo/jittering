@@ -1,5 +1,5 @@
 
-fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
+fitMd_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
                  intPtsMICS=NULL, intPtsDHS=NULL, 
                  KMICS=100,
                  KDHSurb = 11, # 3 rings of 5 each
@@ -9,9 +9,9 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                  JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full, 
                  alpha_pri = c(0, 100^2), 
                  beta_pri = c(0, sqrt(1000)), 
-                 pc.bym2Phi=list(u=0.5, alpha=2/3), 
-                 pc.bym2Prec=list(u=1, alpha=.1), 
-                 pc.expPrec=list(u=1, alpha=.1), 
+                 pc.bym2Phi=list(u=0.5, alpha=1/3), 
+                 pc.bym2Prec=list(u=1, alpha=0.5), 
+                 pc.expPrec=list(u=1, alpha=0.5), 
                  maxit=1000, repar=TRUE, verbose=FALSE) {
   
   # make sure Stratum variable exists in MICS data
@@ -483,6 +483,29 @@ fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   }
   
   list(TMBobj=obj, TMBsd=SD0, totalTime=totalTime, sdTime=sdTime)
+}
+
+fitMd = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
+                 intPtsMICS=NULL, intPtsDHS=NULL,
+                 KMICS=100,
+                 KDHSurb=16, JInnerUrban=4,
+                 KDHSrur=21, JInnerRural=4, JOuterRural=1,
+                 admMICS=admFinal, adm2DHS=adm2Full,
+                 alpha_pri=c(0, 100^2),
+                 beta_pri=c(0, sqrt(1000)),
+                 pc.bym2Phi=list(u=0.5, alpha=1/3),
+                 pc.bym2Prec=list(u=1, alpha=0.5),
+                 pc.expPrec=list(u=1, alpha=0.5),
+                 maxit=1000, repar=TRUE, verbose=FALSE, ...) {
+  fitMd_old(datDHS=datDHS, datMICS=datMICS, inputsMDM=inputsMDM,
+            intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS,
+            KMICS=KMICS,
+            KDHSurb=KDHSurb, JInnerUrban=JInnerUrban,
+            KDHSrur=KDHSrur, JInnerRural=JInnerRural, JOuterRural=JOuterRural,
+            admMICS=admMICS, adm2DHS=adm2DHS,
+            alpha_pri=alpha_pri, beta_pri=beta_pri,
+            pc.bym2Phi=pc.bym2Phi, pc.bym2Prec=pc.bym2Prec, pc.expPrec=pc.expPrec,
+            maxit=maxit, repar=repar, verbose=verbose)
 }
 
 

@@ -2,10 +2,10 @@
 
 makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=NULL, 
                          KMICS=100,
-                         KDHSurb = 11, # 3 rings of 5 each
-                         JInnerUrban = 3,
-                         KDHSrur = 16, # 3 inner + 1 outer rings of 5 each
-                         JInnerRural = 3,
+                         KDHSurb = 16, # default urban points (16)
+                         JInnerUrban = 4,
+                         KDHSrur = 21, # default rural points (21)
+                         JInnerRural = 4,
                          JOuterRural = 1, 
                          admMICS=admFinal, adm2DHS=adm2Full, adm2AsCovariate=FALSE, 
                          saveNewIntPts=FALSE) {
@@ -38,14 +38,15 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   if(is.null(intPtsDHS)) {
     # make integration points if necessary
     
-    if(identical(adm2DHS, adm2Full) && (KDHSurb == 11) && (KDHSrur == 16) && identical(datDHS, ed)) {
-      out = load("savedOutput/global/intPtsDHS.RData")
+    # prefer loading the saved default for KDHSurb=16 / KDHSrur=21 when using the standard adm/datDHS
+    if(identical(adm2DHS, adm2Full) && (KDHSurb == 16) && (KDHSrur == 21) && identical(datDHS, ed)) {
+      out = load("savedOutput/global/intPtsDHS_16_21.RData")
     } else {
       intPtsDHS = makeAllIntegrationPointsDHS(cbind(datDHS$east, datDHS$north), datDHS$urban, 
                                               areaNames=datDHS$subarea, popPrior=TRUE, 
                                               numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
                                               JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                              JOuterRural=JOuterRural, adminMap=adm2DHS, saveOutput=saveNewIntPts)
+                                              JOuterRural=JOuterRural, adminMap=adm2DHS, outFile="savedOutput/global/intPtsDHS_16_21.RData", saveOutput=saveNewIntPts)
     }
   }
   
@@ -86,10 +87,10 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   # XUrb = XUrb[actualIndexUrb,] # now XUrb is [K * nObsUrb] x nVar
   startStratInds = which(XUrb$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
   nAreas = nrow(XUrb)/KMICS
-  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrb[x])})) # length nUrb, range = 1:41. gives area index for each obs
-  allAreaIs = rep(areaI, KMICS) # length nUrb*KMICS, range = 1:41. gives area index for each integration point of each observation
+  areaI_urb = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratUrb[x])})) # length nUrb, gives area index for each obs
+  allAreaIs = rep(areaI_urb, KMICS) # length nUrb*KMICS, gives area index for each integration point of each observation
   nUrb = length(allAreaIs)/KMICS
-  allIntIs = rep(1:KMICS, each=nUrb) # length nUrb*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  allIntIs = rep(1:KMICS, each=nUrb) # gives int point index for each integration point of each observation
   transformIUrb = allAreaIs + (allIntIs-1)*nAreas
   XUrb = XUrb[transformIUrb,] # now XUrb is [K * nObsUrb] x nVar
   
@@ -107,10 +108,10 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   # XRur = XRur[actualIndexRur,] # now XRur is [K * nObsRur] x nVar
   startStratInds = which(XRur$strat == "Abia") # 1, 42, 83, .... Add 1 to this to get Adamawa inds
   nAreas = nrow(XRur)/KMICS
-  areaI = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRur[x])})) # length nRur, range = 1:41. gives area index for each obs
-  allAreaIs = rep(areaI, KMICS) # length nRur*KMICS, range = 1:41. gives area index for each integration point of each observation
+  areaI_rur = unlist(sapply(1:nAreas, function(x) {rep(x, each=numPerStratRur[x])})) # length nRur, gives area index for each obs
+  allAreaIs = rep(areaI_rur, KMICS) # length nRur*KMICS, gives area index for each integration point of each observation
   nRur = length(allAreaIs)/KMICS
-  allIntIs = rep(1:KMICS, each=nRur) # length nRur*KMICS, range = 1:KMICS. gives int point index for each integration point of each observation
+  allIntIs = rep(1:KMICS, each=nRur) # gives int point index for each integration point of each observation
   transformIRur = allAreaIs + (allIntIs-1)*nAreas
   XRur = XRur[transformIRur,]
   
@@ -156,10 +157,12 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   intPtsMICS$XRur = XRur[,-(2:3)]
   intPtsMICS$XUrb = as.matrix(intPtsMICS$XUrb)
   intPtsMICS$XRur = as.matrix(intPtsMICS$XRur)
-  intPtsMICS$wUrban = wUrban
-  intPtsMICS$wRural = wRural
+  intPtsMICS$wUrban = as.matrix(wUrban)
+  intPtsMICS$wRural = as.matrix(wRural)
   intPtsDHS$covsUrb = intPtsDHS$covsUrb[,-1] # don't include intercepts
   intPtsDHS$covsRur = intPtsDHS$covsRur[,-1]
+  if(!is.null(intPtsDHS$wUrban)) intPtsDHS$wUrban = as.matrix(intPtsDHS$wUrban)
+  if(!is.null(intPtsDHS$wRural)) intPtsDHS$wRural = as.matrix(intPtsDHS$wRural)
   
   # convert A matrices to sparse matrices
   # AUrbMICS = as(AUrbMICS, "sparseMatrix")
@@ -183,6 +186,73 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
   # for Adm1 level spatial effects, don't need different areas for each integration point
   areaidxlocUrbanDHS = areaidxlocUrbanDHS[1:length(ysUrbDHS)]
   areaidxlocRuralDHS = areaidxlocRuralDHS[1:length(ysRurDHS)]
+
+  # Use per-observation area indices for MICS (areaI_urb / areaI_rur created above)
+  areaidxlocUrbanMICS = as.integer(areaI_urb) - 1
+  areaidxlocRuralMICS = as.integer(areaI_rur) - 1
+
+  # ---- Defensive checks (catch shape/indexing problems early) ----
+  nUrbObs <- sum(datMICS$urban)
+  nRurObs <- sum(!datMICS$urban)
+  nUrbD <- length(ysUrbDHS)
+  nRurD <- length(ysRurDHS)
+
+  # number of areas inferred from the A matrices (columns)
+  nAreasFromA_Urb <- ncol(AUrbMICS)
+  nAreasFromA_Rur <- ncol(ARurMICS)
+  if(nAreasFromA_Urb != nAreasFromA_Rur) {
+    warning(paste0("nAreas differs between urban/rural A matrices: ", nAreasFromA_Urb, " vs ", nAreasFromA_Rur))
+  }
+  nAreasDetected <- max(nAreasFromA_Urb, nAreasFromA_Rur)
+
+  # Expect areaidx for MICS to be one-per-observation (not per-integration-point)
+  if(length(areaidxlocUrbanMICS) != nUrbObs) {
+    stop(paste0("areaidxlocUrbanMICS length mismatch: expected ", nUrbObs, 
+                " (nObs urban MICS), got ", length(areaidxlocUrbanMICS), 
+                ". This likely indicates makeInputsMDM expanded indices incorrectly."))
+  }
+  if(length(areaidxlocRuralMICS) != nRurObs) {
+    stop(paste0("areaidxlocRuralMICS length mismatch: expected ", nRurObs, 
+                " (nObs rural MICS), got ", length(areaidxlocRuralMICS), 
+                ". This likely indicates makeInputsMDM expanded indices incorrectly."))
+  }
+
+  # DHS areaidx should match number of DHS observations
+  if(length(areaidxlocUrbanDHS) != nUrbD) {
+    stop(paste0("areaidxlocUrbanDHS length mismatch: expected ", nUrbD, " (nObs urban DHS), got ", length(areaidxlocUrbanDHS)))
+  }
+  if(length(areaidxlocRuralDHS) != nRurD) {
+    stop(paste0("areaidxlocRuralDHS length mismatch: expected ", nRurD, " (nObs rural DHS), got ", length(areaidxlocRuralDHS)))
+  }
+
+  # Check bounds (must be 0-based indices < nAreasDetected)
+  chkBounds <- function(v, name) {
+    if(any(is.na(v))) stop(paste0(name, " contains NA"))
+    if(min(v) < 0) stop(paste0(name, " contains negative indices"))
+    if(max(v) >= nAreasDetected) stop(paste0(name, " has index >= nAreasDetected (", nAreasDetected, ")"))
+  }
+  chkBounds(areaidxlocUrbanMICS, "areaidxlocUrbanMICS")
+  chkBounds(areaidxlocRuralMICS, "areaidxlocRuralMICS")
+  chkBounds(areaidxlocUrbanDHS, "areaidxlocUrbanDHS")
+  chkBounds(areaidxlocRuralDHS, "areaidxlocRuralDHS")
+
+  # Check X / weight matrix dimensions align with observation counts
+  if(nrow(intPtsMICS$XUrb) != KMICS * nUrbObs) stop("intPtsMICS$XUrb row count != KMICS * nUrbObs")
+  if(nrow(intPtsMICS$XRur) != KMICS * nRurObs) stop("intPtsMICS$XRur row count != KMICS * nRurObs")
+  if(ncol(intPtsMICS$wUrban) != KMICS) stop("intPtsMICS$wUrban must have KMICS columns")
+  if(nrow(intPtsMICS$wUrban) != nUrbObs) stop("intPtsMICS$wUrban row count must equal nUrbObs")
+  if(ncol(intPtsMICS$wRural) != KMICS) stop("intPtsMICS$wRural must have KMICS columns")
+  if(nrow(intPtsMICS$wRural) != nRurObs) stop("intPtsMICS$wRural row count must equal nRurObs")
+
+  # DHS weights/covs dimensions
+  if(!is.null(intPtsDHS$wUrban)) {
+    if(ncol(intPtsDHS$wUrban) != KDHSurb) stop("intPtsDHS$wUrban must have KDHSurb columns")
+    if(nrow(intPtsDHS$wUrban) != nUrbD) stop("intPtsDHS$wUrban row count must equal number of urban DHS observations")
+  }
+  if(!is.null(intPtsDHS$wRural)) {
+    if(ncol(intPtsDHS$wRural) != KDHSrur) stop("intPtsDHS$wRural must have KDHSrur columns")
+    if(nrow(intPtsDHS$wRural) != nRurD) stop("intPtsDHS$wRural row count must equal number of rural DHS observations")
+  }
   
   list(AUrbMICS=AUrbMICS, ARurMICS=ARurMICS, AUrbDHS=AUrbDHS, ARurDHS=ARurDHS, 
        intPtsDHS=intPtsDHS, intPtsMICS=intPtsMICS, 

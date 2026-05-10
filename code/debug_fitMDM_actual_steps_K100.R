@@ -1,0 +1,77 @@
+#!/usr/bin/env Rscript
+library(TMB)
+setwd("c:/Users/jpaige/git/jittering")
+source("code/setup.R")
+source("code/modM_DMSep.R")
+
+inputsMDM = makeInputsMDM(ed, edMICS,
+                          KMICS=100,
+                          KDHSurb=16, JInnerUrban=4,
+                          KDHSrur=21, JInnerRural=4, JOuterRural=1,
+                          admMICS=admFinal, adm2DHS=adm2Full,
+                          adm2AsCovariate=FALSE)
+thisEnv = environment(); list2env(inputsMDM, envir=thisEnv)
+
+out = load("savedOutput/global/admFinalMat.RData")
+bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3,
+                                         constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+lambdaTau = getLambdaPCprec(u=1, alpha=0.5)
+lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5)
+gh = fastGHQuad::gaussHermiteData(10)
+
+data_gh = list(
+  y_iUrbanMICS=ysUrbMICS, y_iRuralMICS=ysRurMICS,
+  n_iUrbanMICS=nsUrbMICS, n_iRuralMICS=nsRurMICS,
+  areaidxlocUrbanMICS=as.integer(areaidxlocUrbanMICS), areaidxlocRuralMICS=as.integer(areaidxlocRuralMICS),
+  X_betaUrbanMICS=intPtsMICS$XUrb, X_betaRuralMICS=intPtsMICS$XRur,
+  wUrbanMICS=intPtsMICS$wUrban, wRuralMICS=intPtsMICS$wRural,
+  y_iUrbanDHS=ysUrbDHS, y_iRuralDHS=ysRurDHS,
+  n_iUrbanDHS=nsUrbDHS, n_iRuralDHS=nsRurDHS,
+  areaidxlocUrbanDHS=as.integer(areaidxlocUrbanDHS), areaidxlocRuralDHS=as.integer(areaidxlocRuralDHS),
+  X_betaUrbanDHS=intPtsDHS$covsUrb, X_betaRuralDHS=intPtsDHS$covsRur,
+  wUrbanDHS=intPtsDHS$wUrban, wRuralDHS=intPtsDHS$wRural,
+  Q_bym2=bym2ArgsTMB$Q,
+  lchoose_urban_mics=lchoose(nsUrbMICS, ysUrbMICS), lchoose_rural_mics=lchoose(nsRurMICS, ysRurMICS),
+  lchoose_urban_dhs=lchoose(nsUrbDHS, ysUrbDHS), lchoose_rural_dhs=lchoose(nsRurDHS, ysRurDHS),
+  gh_nodes=gh$x, gh_weights=gh$w,
+  alpha_pri=c(0, 100^2), beta_pri=c(0, sqrt(1000)),
+  tr=bym2ArgsTMB$tr, gammaTildesm1=bym2ArgsTMB$gammaTildesm1,
+  lambdaPhi=bym2ArgsTMB$lambda, lambdaTau=lambdaTau, lambdaTauEps=lambdaTauEps,
+  options=0
+)
+
+nAreas = ncol(bym2ArgsTMB$Q); nFree = nAreas - 1; nBeta = ncol(data_gh$X_betaUrbanMICS)
+initUrbP = sum(c(ysUrbMICS, ysUrbDHS))/sum(c(nsUrbMICS, nsUrbDHS))
+initRurP = sum(c(ysRurMICS, ysRurDHS))/sum(c(nsRurMICS, nsRurDHS))
+initAlpha = logit(initRurP); initBeta1 = logit(initUrbP) - initAlpha
+params_init = list(log_tau=0, logit_phi=0, log_tauEps=0, alpha=initAlpha,
+                   beta=c(initBeta1, rep(0, nBeta-1)), w_bym2Free=rep(0, nFree), u_bym2Free=rep(0, nFree))
+
+unloadDynlibs(); dyn.load(dynlib("code/modMDM_BYM2_GH_v2"))
+map_fe = list(w_bym2Free=factor(rep(NA, nFree)), u_bym2Free=factor(rep(NA, nFree)), log_tau=factor(NA), logit_phi=factor(NA))
+cat("Diagnostics before MakeADFun (KMICS=100):\n")
+cat(sprintf(" nAreas=%d, nFree=%d, nBeta=%d\n", nAreas, nFree, ncol(data_gh$X_betaUrbanMICS)))
+cat(sprintf(" ysUrbMICS: length=%d, ysUrbDHS: length=%d\n", length(ysUrbMICS), length(ysUrbDHS)))
+cat(sprintf(" nsUrbMICS: length=%d, nsUrbDHS: length=%d\n", length(nsUrbMICS), length(nsUrbDHS)))
+cat(sprintf(" areaidxlocUrbanMICS: len=%d, range=%d..%d\n", length(areaidxlocUrbanMICS), min(areaidxlocUrbanMICS), max(areaidxlocUrbanMICS)))
+cat(sprintf(" areaidxlocRuralMICS: len=%d, range=%d..%d\n", length(areaidxlocRuralMICS), min(areaidxlocRuralMICS), max(areaidxlocRuralMICS)))
+cat(sprintf(" areaidxlocUrbanDHS: len=%d, range=%d..%d\n", length(areaidxlocUrbanDHS), min(areaidxlocUrbanDHS), max(areaidxlocUrbanDHS)))
+cat(sprintf(" areaidxlocRuralDHS: len=%d, range=%d..%d\n", length(areaidxlocRuralDHS), min(areaidxlocRuralDHS), max(areaidxlocRuralDHS)))
+cat(sprintf(" intPtsMICS$XUrb: %s\n", paste(dim(intPtsMICS$XUrb), collapse=",")))
+cat(sprintf(" intPtsMICS$XRur: %s\n", paste(dim(intPtsMICS$XRur), collapse=",")))
+cat(sprintf(" intPtsMICS$wUrban: %s, intPtsMICS$wRural: %s\n", length(intPtsMICS$wUrban), length(intPtsMICS$wRural)))
+cat(sprintf(" intPtsDHS$covsUrb: %s\n", paste(dim(intPtsDHS$covsUrb), collapse=",")))
+cat(sprintf(" Q_bym2 class=%s, dim=%s\n", class(data_gh$Q_bym2), paste(dim(as.matrix(data_gh$Q_bym2)), collapse=",")))
+
+cat("About to call MakeADFun()...\n")
+obj_fe = NULL
+tryCatch({
+  obj_fe <- MakeADFun(data=data_gh, parameters=params_init, map=map_fe, DLL="modMDM_BYM2_GH_v2", silent=FALSE)
+  cat("MakeADFun completed (returned object).\n")
+}, error=function(e){
+  cat("MakeADFun produced an R-level error:\n")
+  print(e)
+  quit(status=1)
+})
+
+if(!is.null(obj_fe)) cat("MakeADFun succeeded for KMICS=100\n")

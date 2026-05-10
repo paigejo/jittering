@@ -1,0 +1,214 @@
+// FE + nugget model — nuggets integrated out via Gauss-Hermite quadrature
+// Generic beta vector (works with any number of covariates)
+// Optionally includes IID spatial random effects (map out u_spatial for FE-only)
+//
+// For FE-only (u_spatial + log_tau mapped out): zero random effects, pure optimization
+// For IID: u_spatial as random effects in inner Newton
+
+#include <TMB.hpp>
+#include <Eigen/Sparse>
+#include <vector>
+using namespace density;
+using Eigen::SparseMatrix;
+
+// PC prior on precision parameter (on log scale)
+template<class Type>
+Type dPCPriTau(Type logTau, Type lambda)
+{
+  Type tau = exp(logTau);
+  Type ldensity = log(lambda) - log(2.0) - Type(1.5)*logTau - lambda/sqrt(tau);
+  Type ljacobian = logTau;
+  return ldensity + ljacobian;
+}
+
+template<class Type>
+Type objective_function<Type>::operator() ()
+{
+  // ── Data ──
+  DATA_VECTOR( y_iUrbanMICS );
+  DATA_VECTOR( y_iRuralMICS );
+  DATA_VECTOR( n_iUrbanMICS );
+  DATA_VECTOR( n_iRuralMICS );
+  DATA_IVECTOR(areaidxlocUrbanMICS);
+  DATA_IVECTOR(areaidxlocRuralMICS);
+  DATA_MATRIX( X_betaUrbanMICS );   // (nUrb * K) x nBeta
+  DATA_MATRIX( X_betaRuralMICS );   // (nRur * K) x nBeta
+  DATA_ARRAY( wUrbanMICS );         // nUrb x K
+  DATA_ARRAY( wRuralMICS );         // nRur x K
+
+  DATA_INTEGER( nAreas );
+
+  // Precomputed log-binomial-coefficient (DATA — not on AD tape)
+  DATA_VECTOR( lchoose_urban );      // length nUrb
+  DATA_VECTOR( lchoose_rural );      // length nRur
+
+  // Gauss-Hermite quadrature nodes and weights
+  DATA_VECTOR( gh_nodes );           // Q nodes
+  DATA_VECTOR( gh_weights );         // Q weights
+
+  // Prior parameters
+  DATA_VECTOR( alpha_pri );
+  DATA_VECTOR( beta_pri );
+  DATA_SCALAR( lambdaTau );
+  DATA_SCALAR( lambdaTauEps );
+
+  // ── Parameters ──
+  PARAMETER( log_tau );       // IID spatial precision (map out for FE-only)
+  PARAMETER( log_tauEps );    // nugget precision
+
+  PARAMETER( alpha );         // intercept
+  PARAMETER_VECTOR( beta );   // covariate coefficients (generic length)
+
+  PARAMETER_VECTOR( u_spatial ); // IID spatial effects (map out for FE-only)
+
+  // ── Dimensions ──
+  int nUrb = y_iUrbanMICS.size();
+  int nRur = y_iRuralMICS.size();
+  int KUrb = wUrbanMICS.cols();
+  int KRur = wRuralMICS.cols();
+  int Q = gh_nodes.size();
+
+  // ── Transforms ──
+  Type sigma_u = exp(Type(-0.5) * log_tau);
+  Type sigmaEps = exp(Type(-0.5) * log_tauEps);
+
+  Type jnll = Type(0.0);
+
+  // ═══════════════════════════════════
+  // (1) Priors
+  // ═══════════════════════════════════
+
+  // IID spatial random effects prior
+  for(int i = 0; i < u_spatial.size(); i++) {
+    jnll -= dnorm(u_spatial(i), Type(0), sigma_u, true);
+  }
+
+  // PC priors for precision parameters
+  jnll -= dPCPriTau(log_tau, lambdaTau);
+  jnll -= dPCPriTau(log_tauEps, lambdaTauEps);
+
+  // Fixed effect priors
+  jnll -= dnorm(alpha, alpha_pri(0), alpha_pri(1), true);
+  for(int i = 0; i < beta.size(); i++) {
+    jnll -= dnorm(beta(i), beta_pri(0), beta_pri(1), true);
+  }
+
+  // ═══════════════════════════════════
+  // (2) Precompute base linear predictor
+  // ═══════════════════════════════════
+  // fe vectors: length (nObs * K), stacked by integration point
+  vector<Type> feUrb = X_betaUrbanMICS * beta;
+  vector<Type> feRur = X_betaRuralMICS * beta;
+
+  // base_eta for each obs×intpt: alpha + Xbeta + u_spatial[area]
+  // Stored as nObs x K matrix for efficient access
+  matrix<Type> base_eta_urb(nUrb, KUrb);
+  for(int k = 0; k < KUrb; k++) {
+    for(int i = 0; i < nUrb; i++) {
+      int idx = nUrb * k + i;  // column-major: obs i, integration point k
+      base_eta_urb(i, k) = alpha + feUrb(idx) + u_spatial(areaidxlocUrbanMICS(i));
+    }
+  }
+
+  matrix<Type> base_eta_rur(nRur, KRur);
+  for(int k = 0; k < KRur; k++) {
+    for(int i = 0; i < nRur; i++) {
+      int idx = nRur * k + i;
+      base_eta_rur(i, k) = alpha + feRur(idx) + u_spatial(areaidxlocRuralMICS(i));
+    }
+  }
+
+  // GH abscissae: eps_q = sqrt(2) * sigmaEps * node_q
+  vector<Type> eps_gh(Q);
+  for(int q = 0; q < Q; q++) {
+    eps_gh(q) = sqrt(Type(2.0)) * sigmaEps * gh_nodes(q);
+  }
+
+  // Constant: log(1/sqrt(pi))
+  Type log_inv_sqrt_pi = -Type(0.5) * log(M_PI);
+
+  // ═══════════════════════════════════
+  // (3) Likelihood — Urban MICS
+  // ═══════════════════════════════════
+  Type tiny = Type(1e-200);
+  for(int i = 0; i < nUrb; i++) {
+    Type y_i = y_iUrbanMICS(i);
+    Type n_i = n_iUrbanMICS(i);
+
+    // For each GH node, compute the integration-point mixture
+    // Then logSumExp over GH nodes
+    Type max_log_term = Type(-1e10);
+    vector<Type> log_terms(Q);
+
+    for(int q = 0; q < Q; q++) {
+      // Weighted sum over integration points for this GH node
+      Type mix_lik = Type(0.0);
+      for(int k = 0; k < KUrb; k++) {
+        Type w_ik = wUrbanMICS(i, k);
+        if(w_ik > Type(0.0)) {
+          Type eta = base_eta_urb(i, k) + eps_gh(q);
+          // Inline binomial: lchoose + y*eta - n*log(1+exp(eta))
+          Type log_lik_k = lchoose_urban(i) + y_i * eta - n_i * logspace_add(Type(0.0), eta);
+          mix_lik += w_ik * exp(log_lik_k);
+        }
+      }
+      mix_lik = CppAD::CondExpGt(mix_lik, tiny, mix_lik, tiny);
+      log_terms(q) = log(gh_weights(q)) + log(mix_lik);
+      if(q == 0 || asDouble(log_terms(q)) > asDouble(max_log_term))
+        max_log_term = log_terms(q);
+    }
+
+    // logSumExp
+    Type sum_exp = Type(0.0);
+    for(int q = 0; q < Q; q++) {
+      sum_exp += exp(log_terms(q) - max_log_term);
+    }
+    Type log_lik_i = log_inv_sqrt_pi + max_log_term + log(sum_exp);
+    jnll -= log_lik_i;
+  }
+
+  // ═══════════════════════════════════
+  // (4) Likelihood — Rural MICS
+  // ═══════════════════════════════════
+  for(int i = 0; i < nRur; i++) {
+    Type y_i = y_iRuralMICS(i);
+    Type n_i = n_iRuralMICS(i);
+
+    Type max_log_term = Type(-1e10);
+    vector<Type> log_terms(Q);
+
+    for(int q = 0; q < Q; q++) {
+      Type mix_lik = Type(0.0);
+      for(int k = 0; k < KRur; k++) {
+        Type w_ik = wRuralMICS(i, k);
+        if(w_ik > Type(0.0)) {
+          Type eta = base_eta_rur(i, k) + eps_gh(q);
+          Type log_lik_k = lchoose_rural(i) + y_i * eta - n_i * logspace_add(Type(0.0), eta);
+          mix_lik += w_ik * exp(log_lik_k);
+        }
+      }
+      mix_lik = CppAD::CondExpGt(mix_lik, tiny, mix_lik, tiny);
+      log_terms(q) = log(gh_weights(q)) + log(mix_lik);
+      if(q == 0 || asDouble(log_terms(q)) > asDouble(max_log_term))
+        max_log_term = log_terms(q);
+    }
+
+    Type sum_exp = Type(0.0);
+    for(int q = 0; q < Q; q++) {
+      sum_exp += exp(log_terms(q) - max_log_term);
+    }
+    Type log_lik_i = log_inv_sqrt_pi + max_log_term + log(sum_exp);
+    jnll -= log_lik_i;
+  }
+
+  // ── Report ──
+  REPORT(log_tau);
+  REPORT(log_tauEps);
+  REPORT(alpha);
+  REPORT(beta);
+  REPORT(u_spatial);
+  REPORT(sigma_u);
+  REPORT(sigmaEps);
+
+  return jnll;
+}

@@ -9,3 +9,5 @@ documents
 *.tif
 code/*.o
 code/*.so
+*.md
+*.txt

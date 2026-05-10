@@ -1,5 +1,5 @@
 
-fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
+fitMDM_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL, 
                   intPtsMICS=NULL, intPtsDHS=NULL, 
                   KMICS=100,
                   KDHSurb = 11, # 3 rings of 5 each
@@ -9,9 +9,9 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                   JOuterRural = 1, admMICS=admFinal, adm2DHS=adm2Full, 
                   alpha_pri = c(0, 100^2), 
                   beta_pri = c(0, sqrt(1000)), 
-                  pc.bym2Phi=list(u=0.5, alpha=2/3), 
-                  pc.bym2Prec=list(u=1, alpha=.1), 
-                  pc.expPrec=list(u=1, alpha=.1), 
+                  pc.bym2Phi=list(u=0.5, alpha=1/3), 
+                  pc.bym2Prec=list(u=1, alpha=0.5), 
+                  pc.expPrec=list(u=1, alpha=0.5), 
                   maxit=1000, repar=TRUE, MdInit = TRUE, adm2AsCovariate=FALSE, 
                   doMCMC=FALSE) {
   
@@ -56,6 +56,12 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   thisEnv = environment()
   list2env(inputsMDM, envir=thisEnv)
+
+  if(ncol(intPtsMICS$XUrb) != ncol(intPtsDHS$covsUrb)) {
+    stop(paste0("MICS and DHS covariate dimensions differ (",
+                ncol(intPtsMICS$XUrb), " vs ", ncol(intPtsDHS$covsUrb),
+                "). Ensure both use the same covariate specification."))
+  }
   
   datMICS = sortByCol(datMICS, "Stratum", admMICS$NAME_FINAL)
   
@@ -611,6 +617,144 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   
   
   list(TMBobj=obj, TMBsd=SD0, totalTime=totalTime, sdTime=sdTime)
+}
+
+fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
+                  intPtsMICS=NULL, intPtsDHS=NULL,
+                  KMICS=100,
+                  KDHSurb=16, JInnerUrban=4,
+                  KDHSrur=21, JInnerRural=4, JOuterRural=1,
+                  admMICS=admFinal, adm2DHS=adm2Full,
+                  alpha_pri=c(0, 100^2),
+                  beta_pri=c(0, sqrt(1000)),
+                  pc.bym2Phi=list(u=0.5, alpha=1/3),
+                  pc.bym2Prec=list(u=1, alpha=0.5),
+                  pc.expPrec=list(u=1, alpha=0.5),
+                  uniform_phi_prior=FALSE,
+                  maxit=1000, adm2AsCovariate=FALSE,
+                  Qgh=10, getSDs=TRUE, doMCMC=FALSE, verbose=FALSE, ...) {
+
+  if(doMCMC) stop("doMCMC not implemented for GH fusion fitMDM")
+
+  if(!("Stratum" %in% names(datMICS))) {
+    datMICS$Stratum = adm2ToStratumMICS(datMICS$subarea)
+  }
+  nameTab = rbind(c("N", "ns"), c("N", "n"), c("Z", "ys"), c("Z", "y"))
+  for(i in 1:nrow(nameTab)) {
+    fromN = nameTab[i,1]
+    toN = nameTab[i,2]
+    if(!(toN %in% names(datMICS))) datMICS[[toN]] = datMICS[[fromN]]
+    if(!(toN %in% names(datDHS))) datDHS[[toN]] = datDHS[[fromN]]
+  }
+
+  if(is.null(inputsMDM)) {
+    inputsMDM = makeInputsMDM(datDHS, datMICS,
+                              intPtsMICS=intPtsMICS, intPtsDHS=intPtsDHS,
+                              KMICS=KMICS,
+                              KDHSurb=KDHSurb, JInnerUrban=JInnerUrban,
+                              KDHSrur=KDHSrur, JInnerRural=JInnerRural,
+                              JOuterRural=JOuterRural,
+                              admMICS=admMICS, adm2DHS=adm2DHS,
+                              adm2AsCovariate=adm2AsCovariate)
+  }
+
+  thisEnv = environment()
+  list2env(inputsMDM, envir=thisEnv)
+
+  out = load("savedOutput/global/admFinalMat.RData")
+  bym2ArgsTMB = prepareBYM2argumentsForTMB(admFinalMat, u=pc.bym2Phi$u, alpha=pc.bym2Phi$alpha,
+                                           constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+  lambdaTau = getLambdaPCprec(u=pc.bym2Prec$u, alpha=pc.bym2Prec$alpha)
+  lambdaTauEps = getLambdaPCprec(u=pc.expPrec$u, alpha=pc.expPrec$alpha)
+
+  gh = fastGHQuad::gaussHermiteData(Qgh)
+  data_gh = list(
+    y_iUrbanMICS=ysUrbMICS, y_iRuralMICS=ysRurMICS,
+    n_iUrbanMICS=nsUrbMICS, n_iRuralMICS=nsRurMICS,
+    areaidxlocUrbanMICS=as.integer(areaidxlocUrbanMICS),
+    areaidxlocRuralMICS=as.integer(areaidxlocRuralMICS),
+    X_betaUrbanMICS=intPtsMICS$XUrb,
+    X_betaRuralMICS=intPtsMICS$XRur,
+    wUrbanMICS=intPtsMICS$wUrban,
+    wRuralMICS=intPtsMICS$wRural,
+
+    y_iUrbanDHS=ysUrbDHS, y_iRuralDHS=ysRurDHS,
+    n_iUrbanDHS=nsUrbDHS, n_iRuralDHS=nsRurDHS,
+    areaidxlocUrbanDHS=as.integer(areaidxlocUrbanDHS),
+    areaidxlocRuralDHS=as.integer(areaidxlocRuralDHS),
+    X_betaUrbanDHS=intPtsDHS$covsUrb,
+    X_betaRuralDHS=intPtsDHS$covsRur,
+    wUrbanDHS=intPtsDHS$wUrban,
+    wRuralDHS=intPtsDHS$wRural,
+
+    Q_bym2=bym2ArgsTMB$Q,
+    lchoose_urban_mics=lchoose(nsUrbMICS, ysUrbMICS),
+    lchoose_rural_mics=lchoose(nsRurMICS, ysRurMICS),
+    lchoose_urban_dhs=lchoose(nsUrbDHS, ysUrbDHS),
+    lchoose_rural_dhs=lchoose(nsRurDHS, ysRurDHS),
+    gh_nodes=gh$x, gh_weights=gh$w,
+    alpha_pri=alpha_pri, beta_pri=beta_pri,
+    tr=bym2ArgsTMB$tr, gammaTildesm1=bym2ArgsTMB$gammaTildesm1,
+    lambdaPhi=bym2ArgsTMB$lambda, lambdaTau=lambdaTau, lambdaTauEps=lambdaTauEps,
+    uniformPhiPrior=as.integer(uniform_phi_prior),
+    options=0
+  )
+
+  nAreas = ncol(bym2ArgsTMB$Q)
+  nFree = nAreas - 1
+  nBeta = ncol(data_gh$X_betaUrbanMICS)
+
+  initUrbP = sum(c(ysUrbMICS, ysUrbDHS))/sum(c(nsUrbMICS, nsUrbDHS))
+  initRurP = sum(c(ysRurMICS, ysRurDHS))/sum(c(nsRurMICS, nsRurDHS))
+  initAlpha = logit(initRurP)
+  initBeta1 = logit(initUrbP) - initAlpha
+
+  params_init = list(
+    log_tau=0, logit_phi=0, log_tauEps=0,
+    alpha=initAlpha,
+    beta=c(initBeta1, rep(0, nBeta-1)),
+    w_bym2Free=rep(0, nFree),
+    u_bym2Free=rep(0, nFree)
+  )
+
+  fit_fe = fitFEMD(datDHS=datDHS, datMICS=datMICS, inputsMDM=inputsMDM,
+                   alpha_pri=alpha_pri, beta_pri=beta_pri,
+                   pc.expPrec=pc.expPrec,
+                   Qgh=Qgh, maxit=maxit, getSDs=FALSE, verbose=verbose)
+  opt_fe = fit_fe$opt
+
+  params_full = params_init
+  params_full$alpha = as.numeric(opt_fe$par["alpha"])
+  params_full$beta = as.numeric(opt_fe$par[grep("^beta", names(opt_fe$par))])
+  params_full$log_tauEps = as.numeric(opt_fe$par["log_tauEps"])
+
+  unloadDynlibs()
+  if(!any(file.exists(paste0("code/modMDM_BYM2_GH_v2", c(".o", ".so", ".dll"))))) {
+    compile("code/modMDM_BYM2_GH_v2.cpp", framework="TMBad", safebounds=FALSE)
+  }
+  dyn.load(dynlib("code/modMDM_BYM2_GH_v2"))
+
+  obj = MakeADFun(data=data_gh, parameters=params_full,
+                  DLL="modMDM_BYM2_GH_v2", silent=!verbose)
+  startTime = proc.time()[3]
+  opt = optim(obj$par, obj$fn, obj$gr,
+              method="BFGS", control=list(maxit=maxit, reltol=1e-6))
+  totalTime = proc.time()[3] - startTime
+  obj$env$last.par = opt$par
+
+  SD0 = NULL
+  sdTime = 0
+  if(getSDs) {
+    sdTime = system.time({
+      SD0 <- try(TMB::sdreport(obj, getJointPrecision=TRUE,
+                               bias.correct=TRUE,
+                               bias.correct.control=list(sd=TRUE)), silent=TRUE)
+    })[3]
+    if(inherits(SD0, "try-error")) SD0 = NULL
+  }
+
+  list(TMBobj=obj, TMBsd=SD0, totalTime=totalTime, sdTime=sdTime,
+       initOpt=opt_fe, opt=opt, inputsMDM=inputsMDM)
 }
 
 

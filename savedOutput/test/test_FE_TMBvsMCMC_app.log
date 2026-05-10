@@ -1,0 +1,316 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+---------------------
+Welcome to edfun version 0.2.0
+Type ?edfun for the main documentation.
+The github page is: https://github.com/talgalili/edfun/
+
+Suggestions and bug-reports can be submitted at: https://github.com/talgalili/edfun/issues
+Or contact: <tal.galili@gmail.com>
+
+	To suppress this message use:  suppressPackageStartupMessages(library(edfun))
+---------------------
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+DHS  n = 1378     MICS n = 2183 
+KMICS=100  KDHSu=16  KDHSr=21  Qgh=10
+MCMC: chains=2 iter=2000 warmup=1000
+
+[ FEM TMB ] loading cache: savedOutput/global/fitFEM_final.RData 
+[ FED TMB ] fitting ...
+Loading saved intPts: savedOutput/global/intPtsDHS_16_21.RData 
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+[ FED TMB ] saved to: savedOutput/global/fitFED_final.RData 
+[ FEM MCMC ] fitting ...
+Loading required package: prodlim
+[1] "dyn.unload(dynlib('code/'))"
+
+SAMPLING FOR MODEL 'tmb_generic' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.10299 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1029.9 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 4010.48 seconds (Warm-up)
+Chain 1:                6284.46 seconds (Sampling)
+Chain 1:                10294.9 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'tmb_generic' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0.17033 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 1703.3 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 6306.52 seconds (Warm-up)
+Chain 2:                6209.22 seconds (Sampling)
+Chain 2:                12515.7 seconds (Total)
+Chain 2: 
+[ FEM MCMC ] saved to: savedOutput/test/fitFEM_MCMC_app.RData 
+[ FED MCMC ] fitting ...
+Loading saved intPts: savedOutput/global/intPtsDHS_16_21.RData 
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+
+SAMPLING FOR MODEL 'tmb_generic' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 0.095056 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 950.56 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 2185.98 seconds (Warm-up)
+Chain 1:                2894.94 seconds (Sampling)
+Chain 1:                5080.93 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'tmb_generic' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 0.085079 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 850.79 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 2345.98 seconds (Warm-up)
+Chain 2:                2429.28 seconds (Sampling)
+Chain 2:                4775.26 seconds (Total)
+Chain 2: 
+[ FED MCMC ] saved to: savedOutput/test/fitFED_MCMC_app.RData 
+
+Timings (minutes):
+    model   fit_min sdrep_min
+  FEM_TMB   0.13650   0.07367
+  FED_TMB   0.03183   0.01433
+ FEM_MCMC 380.24733   0.00000
+ FED_MCMC 164.32750   0.00000
+
+========== MICS-only FE+nug+GH  (TMB vs MCMC)  ==========
+                   par tmb_est  tmb_sd mcmc_mean mcmc_sd mcmc_q025 mcmc_q975
+            log_tauEps -0.9952 0.08069   -1.0000 0.08092   -1.1561  -0.84110
+                 alpha -2.3729 0.16335   -2.3853 0.17121   -2.7192  -2.05008
+           beta[urban]  1.0301 0.18538    1.0282 0.19105    0.6529   1.41456
+          beta[access] -0.3616 0.14649   -0.3573 0.14775   -0.6425  -0.07136
+            beta[elev] -0.7746 0.06843   -0.7777 0.07093   -0.9184  -0.64053
+ beta[distRiversLakes]  0.5039 0.05816    0.5073 0.05863    0.3941   0.62006
+         beta[normPop]  0.7946 0.25686    0.8074 0.26681    0.2779   1.30962
+   Rhat  n_eff  diff_est ratio_sd
+ 1.0004 1400.4 -0.004860    1.003
+ 1.0022  792.6 -0.012416    1.048
+ 1.0003 1168.2 -0.001858    1.031
+ 1.0019  874.1  0.004250    1.009
+ 0.9998 1464.9 -0.003057    1.037
+ 1.0003 1713.3  0.003370    1.008
+ 1.0030  679.0  0.012777    1.039
+
+========== DHS-only FE+nug+GH  (TMB vs MCMC)  ==========
+                   par  tmb_est  tmb_sd mcmc_mean mcmc_sd mcmc_q025 mcmc_q975
+            log_tauEps -1.26745 0.05617  -1.27435 0.05618  -1.38441  -1.16513
+                 alpha -1.04497 0.16950  -1.07125 0.15789  -1.42253  -0.78755
+             beta[urb]  2.74531 0.20359   2.76268 0.17625   2.40400   3.11450
+          beta[access]  0.30275 0.09253   0.31060 0.09208   0.12850   0.48949
+            beta[elev]  0.07995 0.05397   0.08555 0.05307  -0.01376   0.18911
+ beta[distRiversLakes] -0.21303 0.05580  -0.20910 0.05496  -0.31436  -0.09882
+             beta[pop]  0.03804 0.18657   0.06073 0.17850  -0.27562   0.41291
+   Rhat  n_eff  diff_est ratio_sd
+ 1.0034 1856.5 -0.006902   1.0001
+ 0.9997  989.4 -0.026284   0.9315
+ 1.0013 1446.7  0.017370   0.8657
+ 0.9992  932.6  0.007851   0.9951
+ 0.9995 1606.9  0.005595   0.9833
+ 0.9994 1430.7  0.003934   0.9850
+ 0.9995  859.7  0.022689   0.9567
+
+Done. Summary saved to savedOutput/test/FE_TMBvsMCMC_app_summary.rds

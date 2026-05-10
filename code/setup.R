@@ -15,7 +15,7 @@ if(FALSE) {
   install.packages("raster")
   install.packages("MCMCpack")
   install.packages("numDeriv")
-  # install.packages("INLA")
+  install.packages("INLA")
   install.packages("edfun") # for drawing from empirical distributions quickly
   install.packages("data.table")
   install.packages("sampling")
@@ -29,17 +29,11 @@ if(FALSE) {
   install.packages("colorspace")
   install.packages("TMB")
   install.packages("plyr")
-  install.packages("shapefiles")
-  install.packages("transport")
-  install.packages("prodlim")
-  install.packages("parallel")
   
   library(devtools)
   if(FALSE) {
     install_github("https://github.com/richardli/SUMMER/")
     install_github("https://github.com/paigejo/SUMMER/")
-    install_github("https://github.com/paigejo/splott/")
-    install_github("richardli/SUMMER@surveySim")
     install_local("~/git/SUMMER/")
     document("~/git/SUMMER/")
     load_all("~/git/SUMMER/")
@@ -78,12 +72,10 @@ library(shapefiles)
 library(devtools)
 library(colorspace)
 library(TMB)
+library(fastGHQuad)
 library(plyr)
 library(transport)
 library(stringr)
-library(prodlim)
-library(parallel)
-library(tmbstan)
 
 codeDirectory <<- "~/git/jittering/code/"
 figDirectory <<- "~/git/jittering/figures/"
@@ -142,9 +134,11 @@ source("code/simData.R")
 source("code/modM_DMSep.R")
 source("code/modM_DSep.R")
 source("code/modM_MSep.R")
-source("code/modMdSep.R")
+source("code/modFEM.R")
+source("code/modFED.R")
+source("code/modFEMD.R")
+source("code/modIID_GH.R")
 source("code/makeInputsTMB.R")
-source("code/simStudy.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {

@@ -1133,8 +1133,8 @@ fitModelAtResolutionOld = function(res, optRes=NULL, predGridOnly=FALSE) {
   out = load("savedOutput/global/adm2Mat.RData")
   bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                            constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
-  lambdaTau = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for bym2 precision
-  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for bym2 precision
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for nugget precision
   
   # Specify inputs for TMB ----
   

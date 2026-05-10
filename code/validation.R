@@ -284,8 +284,8 @@ getValidationDataM_d = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
     bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                              constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   }
-  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
-  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=0.5)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -458,8 +458,8 @@ getValidationDataM_D = function(fold, admLevel=c("admFinal", "adm2"), areal=FALS
     bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                              constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   }
-  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
-  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=0.5)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for nugget precision
   
   # Specify starting values for TMB params ----
   tmb_params <- list(alpha = 0, # intercept
@@ -987,8 +987,8 @@ getValidationDataM_dm = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                              constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   }
-  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
-  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=0.5)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for nugget precision
   
   # Specify inputs for TMB ----
   
@@ -1505,8 +1505,8 @@ getValidationDataM_DM = function(fold, admLevel=c("admFinal", "adm2"), areal=FAL
     bym2ArgsTMB = prepareBYM2argumentsForTMB(adm2Mat, u=0.5, alpha=2/3, 
                                              constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
   }
-  lambdaTau = getLambdaPCprec(u=1, alpha=.1)
-  lambdaTauEps = getLambdaPCprec(u=1, alpha=.1) # get PC prior lambda for nugget precision
+  lambdaTau = getLambdaPCprec(u=1, alpha=0.5)
+  lambdaTauEps = getLambdaPCprec(u=1, alpha=0.5) # get PC prior lambda for nugget precision
   
   # Specify inputs for TMB ----
   

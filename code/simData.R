@@ -55,15 +55,16 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   startT = proc.time()[3]
   for(i in 1:nsim) {
     # simulate population at pixel, EA levels 
-    print(paste0("simulating population ", i, "/", nsim))
-    browser()
+    print(paste0("Simulating population ", i, "/", nsim))
+
     simPop = 
       SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat, 
                          poppsub=poppsub, spdeMesh=mesh, 
                          margVar=margVar, sigmaEpsilon=sigmaEpsilon, effRange=effRange, 
                          gamma=gamma, beta0=beta0, seed=NULL, nHHSampled=nHHSampled, 
                          stratifyByUrban=TRUE, subareaLevel=TRUE, offset=offset, 
-                         doFineScaleRisk=FALSE, doSmoothRisk=FALSE, min1PerSubarea=TRUE
+                         doFineScaleRisk=FALSE, doSmoothRisk=FALSE, min1PerSubarea=TRUE, 
+                         verbose=FALSE
       )
     
     # calculate stratum level population information
@@ -88,14 +89,15 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     }
     
     # generate surveys
+    print(paste0("Generating surveys for population ", i, "/", nsim))
     # get EA level population information for population i
     thisEApop = simPop$eaPop$eaDatList[1]
     
     # get associated HH level population information
-    thisHHpop = getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
+    thisHHpop = SUMMER::getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
     
     # sample DHS survey for this population
-    survDHS = sampleClusterSurveys(1, thisHHpop, HHperClust=25)
+    survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=25, clustpaList=list(clustpaDHSed))
     
     # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
     tempClustpa = clustpaMICSed
@@ -103,7 +105,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     
     thisHHpop[[1]]$area = adm2ToStratumMICS(thisHHpop[[1]]$subarea)
     
-    survMICS = sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
+    survMICS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
     
     if(FALSE) {
       pixelIs = c(survDHS[[1]]$pixelIs, survMICS[[1]]$pixelIs)
@@ -160,6 +162,10 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     print(paste0("estimated time remaining: ", (timeLeft/60)/24, " hours"))
   }
   
+  # get area names
+  
+  
+  browser()
   save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS, 
        file="savedOutput/simStudy1/simPopsSurveys.RData")
   
@@ -169,7 +175,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
 # simulates household level population data given EA level population data
 # 
 # 
-getHHpop = function(popSim, fixPopPerHH=NULL) {
+getHHpop = function(popSim, fixPopPerHH=NULL, verbose=TRUE) {
   # first get ea level data from popSim
   if("eaPop" %in% names(popSim)) {
     eaPop = popSim$eaPop
@@ -187,7 +193,7 @@ getHHpop = function(popSim, fixPopPerHH=NULL) {
     stop("popSim has no EA level information. Could set 'returnEAinfo' to TRUE in simPopCustom")
   }
   
-  if(length(eaPopDat) > 1) {
+  if((length(eaPopDat) > 1) && verbose) {
     warning("length(eaPopDat) > 1, so there may be a lot of household level data, and memory issues accordingly...")
   }
   
@@ -254,7 +260,7 @@ getHHpop = function(popSim, fixPopPerHH=NULL) {
 # function for sampling clusters from simulated population
 sampleClusterSurveys = function(n=NULL, popSim=NULL, HHperClust=25, fixPopPerHH=NULL, 
                                 eaSampleStrat=c("pps", "srs"), clustpaList=list(clustpaDHSed), 
-                                seed=NULL) {
+                                seed=NULL, verbose=FALSE) {
   
   eaSampleStrat = match.arg(eaSampleStrat)
   
@@ -307,11 +313,14 @@ sampleClusterSurveys = function(n=NULL, popSim=NULL, HHperClust=25, fixPopPerHH=
     resamplePop = ifelse((length(hhPopDat) == 1) && (n > 1), TRUE, FALSE)
   }
   
-  
-  print("Simulating surveys")
+  if(verbose) {
+    print("Simulating surveys")
+  }
   surveys = list()
   for(i in 1:n) {
-    print(paste0("Sampling survey ", i, "/", n))
+    if(verbose) {
+      print(paste0("Sampling survey ", i, "/", n))
+    }
     
     # get number of clusters to sample per area
     thisClustpa = clustpaList[[min(c(length(clustpaList), i))]]
@@ -327,7 +336,7 @@ sampleClusterSurveys = function(n=NULL, popSim=NULL, HHperClust=25, fixPopPerHH=
         eaDat = eaPopDat[[i]]
       }
       
-      hhDat = getHHpop(list(eaDatList = list(eaDat)), fixPopPerHH = fixPopPerHH)[[1]]
+      hhDat = SUMMER::getHHpop(list(eaDatList = list(eaDat)), fixPopPerHH = fixPopPerHH)[[1]]
       
     } else if(!is.null(hhPopDat)) {
       # we already have HH level info
@@ -524,27 +533,29 @@ getClustpaFromSurvey = function(survDat=ed, stratOrder=easpaNGA$area, stratName=
   clustpa
 }
 
-makeIntegrationPointsSim1 = function() {
+makeIntegrationPointsSim1 = function(regen=FALSE) {
   
-  KMICS=100
-  KDHSurb = 11 # 3 rings of 5 each
-  JInnerUrban = 3
-  KDHSrur = 16 # 3 inner + 1 outer rings of 5 each
-  JInnerRural = 3
+  KDHSurb = 16 # 1 + 3*5: center + 3 inner rings of 5 each
+  JInnerUrban = 4
+  KDHSrur = 21 # 1 + 3*5 + 1*5: center + 3 inner + 1 outer rings
+  JInnerRural = 4
   JOuterRural = 1
   
   out = load("savedOutput/simStudy1/simPopsSurveys.RData")
   
   for(i in 1:length(surveysDHS)) {
-    thisEdDHS = surveysDHS[[i]]
-    
-    intPtsDHS = makeAllIntegrationPointsDHS(cbind(thisEdDHS$east, thisEdDHS$north), thisEdDHS$urban, 
-                                            areaNames=thisEdDHS$subarea, popPrior=TRUE, 
-                                            numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
-                                            JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
-                                            JOuterRural=JOuterRural, adminMap=adm2Full)
-    
-    save(intPtsDHS, file=paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))
+    if(regen || !file.exists(paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))) {
+      print(paste0("Making integration points survey ", i, "/", length(surveysDHS)))
+      thisEdDHS = surveysDHS[[i]]
+      
+      intPtsDHS = makeAllIntegrationPointsDHS(cbind(thisEdDHS$east, thisEdDHS$north), thisEdDHS$urban, 
+                                              areaNames=thisEdDHS$subarea, popPrior=TRUE, 
+                                              numPointsUrban=KDHSurb, numPointsRural=KDHSrur, 
+                                              JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
+                                              JOuterRural=JOuterRural, adminMap=adm2Full, saveOutput=FALSE)
+      
+      save(intPtsDHS, file=paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))
+    }
   }
   
   invisible(NULL)
@@ -552,7 +563,9 @@ makeIntegrationPointsSim1 = function() {
 
 makeInputsSim1 = function() {
   
-  out = load("savedOutput/simStudy1/simSurveys.RData")
+  out = load("savedOutput/simStudy1/simPopsSurveys.RData")
+  
+  browser()
   
   for(i in 1:length(surveysDHS)) {
     thisEdDHS = surveysDHS[[i]]
@@ -568,7 +581,318 @@ makeInputsSim1 = function() {
 }
 
 
+# simulates data from a BYM2 model instead of SPDE
+# BYM2 = spatially structured (ICAR) + unstructured spatial effects at subarea level
+# Otherwise matches simPopSPDE() as closely as possible
+#
+# BYM2 covariance (marginalized form):
+#   Cov = (1/tau) * [(1-phi)*I + phi * Q_besag^{-1}_scaled]
+# Using eigendecomposition Q_scaled = V diag(gammas) V^T:
+#   Cov = V * diag((1/tau) * (1 + phi * gammaTildesm1)) * V^T
+# where gammaTildesm1 = 1/gammas - 1 (with 0 for zero eigenvalues)
+#
+# To simulate: Epsilon_bym2 = V * diag(sqrt(variances)) * z, z ~ N(0,I)
 
+simPopBYM2 = function(nsim=1, easpa, popMat, targetPopMat, poppsub,
+                      graphObj,                     # adjacency graph for BYM2 (e.g. admFinalMat)
+                      areaCol="area",                # column of popMat specifying which areas match the graph
+                      sigmaBYM2=sqrt(0.243),        # BYM2 marginal SD (= 1/sqrt(tau))
+                      phi=0.8,                       # mixing: phi*structured + (1-phi)*IID
+                      sigmaEpsilon=sqrt(0.463), gamma=0.009,
+                      beta0=-3.922, seed=NULL, inla.seed=-1L,
+                      nHHSampled=25, stratifyByUrban=TRUE, subareaLevel=TRUE,
+                      doFineScaleRisk=FALSE, doSmoothRisk=FALSE,
+                      doSmoothRiskLogisticApprox=FALSE,
+                      min1PerSubarea=TRUE, offset=NULL, verbose=TRUE,
+                      constr=TRUE, scale.model=TRUE) {
+  
+  if (!is.null(seed)) {
+    set.seed(seed)
+    if (inla.seed < 0) {
+      stop("seed specified, but not inla.seed. Set inla.seed to a positive integer to ensure reproducibility")
+    }
+  }
+  
+  pixelCoords = cbind(popMat$east, popMat$north)
+  
+  # Build scaled Besag precision matrix and eigendecomposition
+  if (verbose) print("Building BYM2 precision matrix and eigendecomposition...")
+  Q = makeQBesag(graphObj, constr=constr, scale.model=scale.model, matrixType="spam")
+  nGraphAreas = nrow(Q)
+  
+  # Eigendecomposition of Q
+  eigQ = eigen.spam(Q, symmetric=TRUE)
+  gammas = eigQ$values
+  V = eigQ$vectors  # nAreas x nAreas eigenvector matrix
+  
+  # Compute gammaTildes and gammaTildesm1
+  tol = 1e-8
+  gammaTildes = 1/gammas
+  gammaTildes[abs(gammas) < tol] = 0
+  gammaTildesm1 = gammaTildes - 1
+  
+  # Compute marginal variances in eigenbasis for BYM2
+  # Var_i = (1/tau) * (1 + phi * gammaTildesm1_i)
+  # where tau = 1/sigmaBYM2^2
+  tau = 1 / sigmaBYM2^2
+  eigenVars = (1/tau) * (1 + phi * gammaTildesm1)
+  # For the zero eigenvalue(s), gammaTildesm1 = -1, so eigenVars = (1/tau)*(1-phi)
+  eigenVars[eigenVars < 0] = 0  # safety: shouldn't happen for valid phi in [0,1]
+  eigenSDs = sqrt(eigenVars)
+  
+  if (verbose) {
+    cat(sprintf("  nGraphAreas = %d, tau = %.4f, phi = %.4f\n", nGraphAreas, tau, phi))
+    cat(sprintf("  BYM2 marginal SD = %.4f, eigenVar range = [%.4f, %.4f]\n",
+                sigmaBYM2, min(eigenVars), max(eigenVars)))
+  }
+  
+  # Map pixels to the areas defined by areaCol
+  if (!(areaCol %in% names(popMat))) {
+    stop(paste0("Column '", areaCol, "' not found in popMat. Available columns: ",
+                paste(names(popMat), collapse=", ")))
+  }
+  pixelAreas = popMat[[areaCol]]
+  uniqueGraphAreas = sort(unique(pixelAreas))
+  nUniqueGraphAreas = length(uniqueGraphAreas)
+  
+  if (nUniqueGraphAreas != nGraphAreas) {
+    stop(paste0("Number of unique values in popMat$", areaCol, " (", nUniqueGraphAreas,
+                ") doesn't match graph dimension (", nGraphAreas, ")"))
+  }
+  if (verbose) print(paste0("  BYM2 at level '", areaCol, "': ", nGraphAreas, " areas"))
+  pixelAreaIdx = match(pixelAreas, uniqueGraphAreas)
+  
+  # Simulate BYM2 spatial effects for each simulation
+  # For each sim: z ~ N(0,I), then Epsilon_bym2 = V %*% diag(eigenSDs) %*% z
+  simVals = matrix(NA, nrow=nrow(pixelCoords), ncol=nsim)
+  
+  for (i in 1:nsim) {
+    z = rnorm(nGraphAreas)
+    Epsilon_bym2 = as.numeric(V %*% (eigenSDs * z))  # nGraphAreas-vector
+    
+    # Expand to pixel level via area/subarea matching
+    simVals[, i] = Epsilon_bym2[pixelAreaIdx]
+  }
+  
+  # Add intercept and urban effect
+  simVals = simVals + beta0
+  simVals = sweep(simVals, 1, gamma * popMat$urban, "+")
+  
+  # EA-level nugget draws
+  totalEAs = sum(easpa$EATotal)
+  epsc = matrix(stats::rnorm(totalEAs * nsim, sd=sigmaEpsilon), ncol=nsim)
+  
+  probsNoNug = expit(simVals)
+  logitRiskDraws = simVals
+  
+  if (!is.null(offset)) {
+    logitRiskDraws = sweep(logitRiskDraws, 1, offset, "+")
+  }
+  
+  sigmaEpsilonDraws = rep(sigmaEpsilon, nsim)
+  
+  if (verbose) print("Using BYM2 model to simulate EA and pixel level populations")
+  
+  outPixelLevel = simPopCustom(logitRiskDraws=logitRiskDraws,
+                               sigmaEpsilonDraws=sigmaEpsilonDraws,
+                               easpa=easpa,
+                               popMat=popMat,
+                               targetPopMat=targetPopMat,
+                               stratifyByUrban=stratifyByUrban,
+                               doSmoothRisk=doSmoothRisk,
+                               doSmoothRiskLogisticApprox=doSmoothRiskLogisticApprox,
+                               doFineScaleRisk=doFineScaleRisk,
+                               poppsub=poppsub,
+                               subareaLevel=subareaLevel,
+                               min1PerSubarea=min1PerSubarea,
+                               returnEAinfo=TRUE,
+                               epsc=epsc,
+                               verbose=verbose)
+  
+  eaPop = list(eaDatList=outPixelLevel$eaDatList, eaSamples=outPixelLevel$eaSamples)
+  outPixelLevel$eaDatList = NULL
+  outPixelLevel$eaSamples = NULL
+  
+  if (subareaLevel) {
+    if (verbose) print("aggregating from pixel level to subarea level")
+    outSubareaLevel = pixelPopToArea(pixelLevelPop=outPixelLevel,
+                                     eaSamples=eaPop$eaSamples,
+                                     areas=popMat$subarea,
+                                     stratifyByUrban=stratifyByUrban,
+                                     targetPopMat=targetPopMat,
+                                     doFineScaleRisk=doFineScaleRisk,
+                                     doSmoothRisk=doSmoothRisk)
+    if (verbose) print("aggregating from subarea level to area level")
+    tempAreasFrom = popMat$subarea
+    tempAreasTo = popMat$area
+    areasFrom = sort(unique(tempAreasFrom))
+    areasToI = match(areasFrom, tempAreasFrom)
+    areasTo = tempAreasTo[areasToI]
+    outAreaLevel = areaPopToArea(areaLevelPop=outSubareaLevel,
+                                 areasFrom=areasFrom,
+                                 areasTo=areasTo,
+                                 stratifyByUrban=stratifyByUrban,
+                                 doFineScaleRisk=doFineScaleRisk,
+                                 doSmoothRisk=doSmoothRisk)
+  } else {
+    outSubareaLevel = NULL
+    if (verbose) print("aggregating from pixel level to area level")
+    outAreaLevel = pixelPopToArea(pixelLevelPop=outPixelLevel,
+                                  eaSamples=eaPop$eaSamples,
+                                  areas=popMat$area,
+                                  stratifyByUrban=stratifyByUrban,
+                                  doFineScaleRisk=doFineScaleRisk,
+                                  doSmoothRisk=doSmoothRisk)
+  }
+  
+  list(eaPop=eaPop, pixelPop=outPixelLevel, subareaPop=outSubareaLevel,
+       areaPop=outAreaLevel, logitRiskDraws=logitRiskDraws)
+}
 
+# Data simulation for BYM2 model (replaces simData1 with BYM2 spatial effects)
+# By default uses admFinalMat (41 MICS stratum level areas) and popMat$stratumMICS.
+# Pass graphObj and areaCol to use a different graph/area level.
+simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
+                        sigmaEpsilon=sqrt(1.5), 
+                        beta0=-1.25, gamma=1, betaRest=c(0, 0, 0, .5),
+                        easpaDat=easpaNGAed,
+                        popMat=popMatNGAThresh,
+                        targetPopMat=popMatNGAedThresh,
+                        poppsub=poppsubNGAThresh,
+                        graphObj=NULL, areaCol="stratumMICS",
+                        nHHMICS=16, nHHDHS=25, seed=123,
+                        useThreshPopMat=TRUE, fixPopPerHH=NULL,
+                        eaSampleStrat="pps", regenPop=FALSE) {
+  
+  set.seed(seed)
+  
+  # make sure everything is ordered nicely
+  popMat = popMat[order(popMat$subarea),]
+  poppsub = poppsub[order(poppsub$subarea),]
+  
+  # construct logit offset vector based on covariates in betaRest
+  print("Constructing offset based on covariates...")
+  LLcoords = cbind(popMat$lon, popMat$lat)
+  tempDesMat = getDesignMat(LLcoords, normalized=TRUE, useThreshPopMat=useThreshPopMat)
+  
+  load("savedOutput/global/covariatesNorm.RData")
+  popVals = extract(pop, LLcoords, method="bilinear")
+  
+  load("savedOutput/global/popMeanSDCal.RData")
+  popMean = ifelse(useThreshPopMat, popMeanCalThresh, popMeanCal)
+  popSD = ifelse(useThreshPopMat, popSDCalThresh, popSDCal)
+  normPop=(log1p(popVals)-popMeanCal)/popSDCal
+  normPop[is.na(normPop)] = min(normPop, na.rm=TRUE)
+  
+  # get final design matrix
+  covRestMat = tempDesMat[,-c(1:3, 7)] # remove int, pop, urb, urbanicity
+  covRestMat = cbind(covRestMat, normPop=normPop) # add in normalized population density
+  
+  # calculate offset
+  offset = covRestMat %*% betaRest
+  
+  # get aggregation info from admin2 areas to MICS strata
+  tempAreasFrom = popMat$subarea
+  tempAreasTo = popMat$stratumMICS
+  areasFrom = sort(unique(tempAreasFrom))
+  areasToI = match(areasFrom, tempAreasFrom)
+  areasTo = tempAreasTo[areasToI]
+  
+  # load adjacency graph for BYM2 (default: admFinalMat = 41 MICS strata)
+  if (is.null(graphObj)) {
+    out = load("savedOutput/global/admFinalMat.RData")
+    graphObj = admFinalMat
+  }
+  
+  # ensure areaCol exists in popMat; add stratumMICS if needed
+  if (!(areaCol %in% names(popMat))) {
+    if (areaCol == "stratumMICS") {
+      print("Adding stratumMICS column to popMat via adm2ToStratumMICS()...")
+      popMat$stratumMICS = adm2ToStratumMICS(popMat$subarea)
+    } else {
+      stop(paste0("Column '", areaCol, "' not found in popMat"))
+    }
+  }
+  
+  # Call simPopBYM2 one simulation at a time (matching simData1 structure)
+  print("Simulating populations and surveys...")
+  surveysDHS = list()
+  surveysMICS = list()
+  subareaPops = list()
+  areaPops = list()
+  stratumPops = list()
+  startT = proc.time()[3]
+  for(i in 1:nsim) {
+    # simulate population at pixel, EA levels 
+    print(paste0("Simulating population ", i, "/", nsim))
+    
+    simPop = simPopBYM2(nsim=1, easpa=easpaDat, popMat=popMat,
+                        targetPopMat=targetPopMat, poppsub=poppsub,
+                        graphObj=graphObj, areaCol=areaCol,
+                        sigmaBYM2=sigmaBYM2, phi=phi,
+                        sigmaEpsilon=sigmaEpsilon, gamma=gamma,
+                        beta0=beta0, seed=NULL,
+                        nHHSampled=nHHDHS, stratifyByUrban=TRUE,
+                        subareaLevel=TRUE, doFineScaleRisk=FALSE,
+                        doSmoothRisk=FALSE, doSmoothRiskLogisticApprox=FALSE,
+                        min1PerSubarea=TRUE, offset=offset, verbose=FALSE)
+    
+    # calculate stratum level population information
+    stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop, 
+                                     areasFrom=areasFrom, 
+                                     areasTo=areasTo, 
+                                     stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=FALSE)
+    
+    # append population information
+    if(i == 1) {
+      subareaPops = simPop$subareaPop$aggregationResults$pFineScalePrevalence
+      areaPops = simPop$areaPop$aggregationResults$pFineScalePrevalence
+      stratumPops = stratPop$aggregationResults$pFineScalePrevalence
+    } else {
+      # cbind the new pop info to the full set of populations
+      subareaPops = cbind(subareaPops, 
+                          simPop$subareaPop$aggregationResults$pFineScalePrevalence)
+      areaPops = cbind(areaPops, 
+                       simPop$areaPop$aggregationResults$pFineScalePrevalence)
+      stratumPops = cbind(stratumPops, 
+                          stratPop$aggregationResults$pFineScalePrevalence)
+    }
+    
+    # generate surveys
+    print(paste0("Generating surveys for population ", i, "/", nsim))
+    # get EA level population information for population i
+    thisEApop = simPop$eaPop$eaDatList[1]
+    
+    # get associated HH level population information
+    thisHHpop = SUMMER::getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
+    
+    # sample DHS survey for this population
+    survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=25, clustpaList=list(clustpaDHSed))
+    
+    # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
+    tempClustpa = clustpaMICSed
+    names(tempClustpa)[1] = "area"
+    
+    thisHHpop[[1]]$area = adm2ToStratumMICS(thisHHpop[[1]]$subarea)
+    
+    survMICS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
+    
+    # concatenate results
+    surveysDHS = c(surveysDHS, survDHS)
+    surveysMICS = c(surveysMICS, survMICS)
+    
+    # estimate time left and print
+    thisT = proc.time()[3]
+    timePerIter = (thisT - startT)/i
+    timeLeft = timePerIter * (nsim - i)
+    
+    print(paste0("estimated time remaining: ", (timeLeft/60)/24, " hours"))
+  }
+  
+  save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS, 
+       file="savedOutput/simStudy1/simPopsSurveys_BYM2.RData")
+  
+  invisible(NULL)
+}
 
 

@@ -49,7 +49,7 @@ Type dPCPriTau(Type logTau, Type lambda)
 {
   Type sqrtTau = exp(0.5 * logTau);
   
-  Type ldensity = log(lambda) - log(2) -(3/2)*logTau - lambda/sqrtTau;
+  Type ldensity = log(lambda) - log(2) -Type(1.5)*logTau - lambda/sqrtTau;
   
   // add in log Jacobian
   Type ljacobian = logTau;

@@ -274,7 +274,7 @@ Type objective_function<Type>::operator() ()
   Type secondPt = -Type(1.5)*log_tau;
   Type thirdPt = - lambdaTau/sqrt(tau);
   
-  // Type ldensityTau = log(lambdaTau) - log(2) -Type(3/2)*log_tau - lambdaTau/sqrt(tau);
+  // Type ldensityTau = log(lambdaTau) - log(2) -TypeType(1.5)*log_tau - lambdaTau/sqrt(tau);
   Type ldensityTau = firstPt + secondPt + thirdPt;
   
   // add in log Jacobian
