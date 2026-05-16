@@ -47,6 +47,20 @@ for(i in 1:nrow(nameTab)) {
 }
 if(!("Stratum" %in% names(datMICS))) datMICS$Stratum <- adm2ToStratumMICS(datMICS$subarea)
 
+# ---- load integration points directly and pass them into makeInputsMDM ----
+# Otherwise makeInputsMDM would (a) load DHS int pts only if datDHS is identical
+# to the application `ed` (it isn't here — it's a sim survey), so it would fall
+# through to makeAllIntegrationPointsDHS and trigger GDAL/terra. Passing the
+# pre-built integration points explicitly avoids GDAL entirely.
+dhsIntPtsFile  <- sprintf("savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+micsIntPtsFile <- sprintf("savedOutput/global/intPtsMICS_%d.RData", KMICS)
+
+cat("Loading DHS int pts: ", dhsIntPtsFile, "\n", sep="")
+load(dhsIntPtsFile)    # expected to populate object `intPtsDHS`
+cat("Loading MICS int pts:", micsIntPtsFile, "\n", sep="")
+load(micsIntPtsFile)   # expected to populate object `intPtsMICS`
+stopifnot(exists("intPtsDHS"), exists("intPtsMICS"))
+
 # ---- build / load inputsMDM once ----
 inputsFile <- sprintf(
     "savedOutput/simStudy1/inputs_SPDE_sim%d_KMICS%03d_KDHS%02d_%02d.RData",
@@ -55,9 +69,11 @@ if(file.exists(inputsFile)) {
     cat("Loading precomputed inputs:", inputsFile, "\n")
     load(inputsFile)
 } else {
-    cat("Building inputsMDM (one-shot)\n")
-    inputsMDM <- makeInputsMDM(datDHS=datDHS, datMICS=datMICS, KMICS=KMICS,
-                               KDHSurb=KDHSu, KDHSrur=KDHSr, saveNewIntPts=TRUE)
+    cat("Building inputsMDM (one-shot, integration points passed in directly)\n")
+    inputsMDM <- makeInputsMDM(datDHS=datDHS, datMICS=datMICS,
+                               intPtsDHS=intPtsDHS, intPtsMICS=intPtsMICS,
+                               KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                               saveNewIntPts=FALSE)
     save(inputsMDM, file=inputsFile)
 }
 fixDhsNames <- function(mat) {

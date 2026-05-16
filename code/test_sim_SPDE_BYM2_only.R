@@ -34,6 +34,17 @@ for(i in 1:nrow(nameTab)) {
 }
 if(!("Stratum" %in% names(datMICS))) datMICS$Stratum <- adm2ToStratumMICS(datMICS$subarea)
 
+# Load integration points explicitly and pass them in — avoids GDAL fallback
+# inside makeInputsMDM when datDHS is the sim survey (not application `ed`).
+dhsIntPtsFile  <- sprintf("savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+micsIntPtsFile <- sprintf("savedOutput/global/intPtsMICS_%d.RData", KMICS)
+
+cat("Loading DHS int pts: ", dhsIntPtsFile, "\n", sep="")
+load(dhsIntPtsFile)
+cat("Loading MICS int pts:", micsIntPtsFile, "\n", sep="")
+load(micsIntPtsFile)
+stopifnot(exists("intPtsDHS"), exists("intPtsMICS"))
+
 inputsFile <- sprintf(
     "savedOutput/simStudy1/inputs_SPDE_sim%d_KMICS%03d_KDHS%02d_%02d.RData",
     simIndex, KMICS, KDHSu, KDHSr)
@@ -41,9 +52,11 @@ if(file.exists(inputsFile)) {
     cat("Loading cached inputsMDM:", inputsFile, "\n")
     load(inputsFile)
 } else {
-    cat("No cached inputsMDM — building from scratch.\n")
-    inputsMDM <- makeInputsMDM(datDHS=datDHS, datMICS=datMICS, KMICS=KMICS,
-                               KDHSurb=KDHSu, KDHSrur=KDHSr, saveNewIntPts=TRUE)
+    cat("Building inputsMDM (integration points passed in directly)\n")
+    inputsMDM <- makeInputsMDM(datDHS=datDHS, datMICS=datMICS,
+                               intPtsDHS=intPtsDHS, intPtsMICS=intPtsMICS,
+                               KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                               saveNewIntPts=FALSE)
     save(inputsMDM, file=inputsFile)
 }
 fixDhsNames <- function(mat) {
