@@ -749,10 +749,10 @@ makeAllIntegrationPointsDHSold = function(coords, urbanVals,
 #   popPrior: use population density as prior for updating weights if need be.
 #   setMissingToAvg: sets NA covariates to 0 if they are pop or urban or normalized
 makeAllIntegrationPointsDHS = function(coords, urbanVals, areaNames=NULL, 
-                                       numPointsUrban=11, numPointsRural=16, 
+                                       numPointsUrban=16, numPointsRural=21, 
                                        scalingFactor=1, 
-                                       JInnerUrban=3, JOuterUrban=0, 
-                                       JInnerRural=3, JOuterRural=1, 
+                                       JInnerUrban=4, JOuterUrban=0, 
+                                       JInnerRural=4, JOuterRural=1, 
                                        integrationPointType=c("mean", "midpoint"), 
                                        adminMap=adm2Full, areaNameVar="NAME_2", nSubAPerPoint=10, nSubRPerPoint=10, 
                                        popPrior=TRUE, testMode=FALSE, proj=projNigeria, 

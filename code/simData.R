@@ -97,7 +97,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     thisHHpop = SUMMER::getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
     
     # sample DHS survey for this population
-    survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=25, clustpaList=list(clustpaDHSed))
+    survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=nHHDHS, clustpaList=list(clustpaDHSed))
     
     # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
     tempClustpa = clustpaMICSed
@@ -105,7 +105,7 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     
     thisHHpop[[1]]$area = adm2ToStratumMICS(thisHHpop[[1]]$subarea)
     
-    survMICS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
+    survMICS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=nHHMICS, clustpaList=list(tempClustpa))
     
     if(FALSE) {
       pixelIs = c(survDHS[[1]]$pixelIs, survMICS[[1]]$pixelIs)
@@ -533,7 +533,10 @@ getClustpaFromSurvey = function(survDat=ed, stratOrder=easpaNGA$area, stratName=
   clustpa
 }
 
-makeIntegrationPointsSim1 = function(regen=FALSE) {
+makeIntegrationPointsSim1 = function(regen=FALSE, simStr="") {
+  if(! (simStr %in% c("", "_BYM2"))) {
+    stop(paste0("invalid simStr: ", simStr))
+  }
   
   KDHSurb = 16 # 1 + 3*5: center + 3 inner rings of 5 each
   JInnerUrban = 4
@@ -541,10 +544,10 @@ makeIntegrationPointsSim1 = function(regen=FALSE) {
   JInnerRural = 4
   JOuterRural = 1
   
-  out = load("savedOutput/simStudy1/simPopsSurveys.RData")
+  out = load(paste0("savedOutput/simStudy1/simPopsSurveys", simStr, ".RData"))
   
   for(i in 1:length(surveysDHS)) {
-    if(regen || !file.exists(paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))) {
+    if(regen || !file.exists(paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, simStr, ".RData"))) {
       print(paste0("Making integration points survey ", i, "/", length(surveysDHS)))
       thisEdDHS = surveysDHS[[i]]
       
@@ -554,7 +557,7 @@ makeIntegrationPointsSim1 = function(regen=FALSE) {
                                               JInnerUrban=JInnerUrban, JInnerRural=JInnerRural, 
                                               JOuterRural=JOuterRural, adminMap=adm2Full, saveOutput=FALSE)
       
-      save(intPtsDHS, file=paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, ".RData"))
+      save(intPtsDHS, file=paste0("savedOutput/simStudy1/intPtsDHS_simStudy1_", i, simStr, ".RData"))
     }
   }
   
