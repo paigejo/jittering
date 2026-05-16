@@ -11,7 +11,7 @@
 # Wall time: ~10-30 min for FE stage; +30-60 min if BYM2 stage runs.
 
 source("setup.R")
-options(error=traceback)
+options(error=recover)
 source("code/modFED.R")
 source("code/modFEM.R")
 source("code/modFEMD.R")
