@@ -1487,87 +1487,94 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
   }
   else {
-    # Prec not PD: use point estimates
-    warning("Precision matrix not PD; using point estimates instead of posterior draws.")
-    allFixed = SD0$par.fixed
-    noSpatialFE = !("w_bym2Free" %in% names(allFixed)) && length(SD0$par.random) == 0
-    
-    # Extract spatial effect
-    if("w_bym2Free" %in% names(allFixed)) {
-      # New GH BYM2 parameterization: reconstruct full sum-to-zero n-vector
-      wFree = allFixed[names(allFixed) == "w_bym2Free"]
-      epsilon_tmb_draws = matrix(c(wFree, -sum(wFree)))
+    # Reached when the main draws branch (pdHess && !noSpatialFE) is skipped.
+    # Two sub-cases:
+    #  (A) pdHess=TRUE but noSpatialFE=TRUE  — common for FE-only fits with
+    #      log_tau/logit_phi/w_bym2Free all mapped out and no random effects.
+    #      cov.fixed is valid; we sample fixed params from MVN(par.fixed, cov.fixed)
+    #      and propagate posterior draws through Amat / alpha / Xmat just like
+    #      the main branch.
+    #  (B) pdHess=FALSE — fall back to point estimates (legacy behavior).
+    allFixed     = SD0$par.fixed
+    noSpatialFE  = !("w_bym2Free" %in% names(allFixed)) && length(SD0$par.random) == 0
+
+    Lc <- if(isTRUE(SD0$pdHess) && !is.null(SD0$cov.fixed) &&
+             all(is.finite(SD0$cov.fixed)) && length(allFixed) > 0) {
+        tryCatch(chol(SD0$cov.fixed), error=function(e) NULL)
+    } else NULL
+    canDrawFixed <- !is.null(Lc)
+
+    if(canDrawFixed) {
+        nDrawSamples <- nsim
+        z          <- matrix(rnorm(length(allFixed) * nDrawSamples), nrow=length(allFixed))
+        fixedDraws <- allFixed + t(Lc) %*% z          # length(allFixed) x nsim
     } else {
-      if(noSpatialFE) {
-        epsilon_tmb_draws = rep(0, ncol(Amat))
-      } else {
-        Eps = SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
-        epsilon_tmb_draws = Eps
-      }
+        warning("Precision matrix not PD; using point estimates instead of posterior draws.")
+        nDrawSamples <- 1
+        fixedDraws  <- matrix(allFixed, ncol=1)
     }
-    alpha = allFixed[names(allFixed) == "alpha"]
-    beta = allFixed[names(allFixed) == "beta"]
-    
-    # set "draws" to be just the fixed values, as single-column matrices
-    # (consistent format with pdHess=TRUE branch which uses nsim columns)
-    alpha_tmb_draws = matrix(alpha, nrow=1)
-    beta_tmb_draws  = matrix(beta, ncol=1)
-    phi_tmb_draws = if(!noSpatialFE) matrix(expit(SD0$par.fixed[grepl("logit_phi", names(SD0$par.fixed))]), nrow=1) else NULL
-    sigmaSq_tmb_draws = if(!noSpatialFE) matrix(1/exp(SD0$par.fixed[names(SD0$par.fixed) == "log_tau"]), nrow=1) else NULL
-    
+    rownames(fixedDraws) <- names(allFixed)
+
+    # Spatial effect — nArea x nDrawSamples
+    if("w_bym2Free" %in% rownames(fixedDraws)) {
+        wFree <- fixedDraws[rownames(fixedDraws) == "w_bym2Free", , drop=FALSE]
+        epsilon_tmb_draws <- rbind(wFree, matrix(-colSums(wFree), nrow=1))
+    } else if(noSpatialFE) {
+        epsilon_tmb_draws <- matrix(0, nrow=ncol(Amat), ncol=nDrawSamples)
+    } else {
+        Eps <- SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
+        epsilon_tmb_draws <- matrix(Eps, nrow=length(Eps), ncol=nDrawSamples)
+    }
+
+    alpha_tmb_draws <- matrix(fixedDraws[rownames(fixedDraws) == "alpha", ], nrow=1)
+    beta_tmb_draws  <- fixedDraws[rownames(fixedDraws) == "beta", , drop=FALSE]
+    phi_tmb_draws      <- if(!noSpatialFE) matrix(expit(fixedDraws[rownames(fixedDraws) == "logit_phi", ]), nrow=1) else NULL
+    sigmaSq_tmb_draws  <- if(!noSpatialFE) matrix(1/exp(fixedDraws[rownames(fixedDraws) == "log_tau", ]), nrow=1) else NULL
+
+    betaNames <- colnames(Xmat)
     if(!noSpatialFE) {
-      fixedMat = rbind(alpha_tmb_draws, 
-                       beta_tmb_draws, 
-                       sigmaSq_tmb_draws, 
-                       phi_tmb_draws)
-      betaNames = colnames(Xmat)
-      row.names(fixedMat) = c("(Int)", 
-                              betaNames, 
-                              "sigmaSq", 
-                              "phi")
+        fixedMat <- rbind(alpha_tmb_draws, beta_tmb_draws, sigmaSq_tmb_draws, phi_tmb_draws)
+        row.names(fixedMat) <- c("(Int)", betaNames, "sigmaSq", "phi")
     } else {
-      fixedMat = rbind(alpha_tmb_draws, 
-                       beta_tmb_draws)
-      betaNames = colnames(Xmat)
-      row.names(fixedMat) = c("(Int)", 
-                              betaNames)
+        fixedMat <- rbind(alpha_tmb_draws, beta_tmb_draws)
+        row.names(fixedMat) <- c("(Int)", betaNames)
     }
-    
-    # add effects to predictions
+
+    # Build grid linear predictor η = Amat %*% spatial + alpha + Xmat %*% beta,
+    # each piece nGrid x nDrawSamples.
     gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
-    gridDraws_tmb <- gridDraws_tmb + alpha
-    gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta)
-    
+    # alpha_tmb_draws is 1 x nDrawSamples; broadcast across all grid rows.
+    gridDraws_tmb <- gridDraws_tmb +
+                     matrix(alpha_tmb_draws, nrow=nrow(gridDraws_tmb),
+                            ncol=nDrawSamples, byrow=TRUE)
+    gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta_tmb_draws)
+
     if(!hasNugget) {
-      probDraws = matrix(expit(gridDraws_tmb), ncol=1)
+        probDraws <- expit(gridDraws_tmb)
+    } else {
+        tauEps_draws   <- exp(fixedDraws[rownames(fixedDraws) == "log_tauEps", ])
+        sigmaEps_draws <- 1/sqrt(tauEps_draws)
+        # logitNormMean expects pixel-level (mean, sd) pairs; flatten column-major.
+        nGrid    <- nrow(gridDraws_tmb)
+        sigmaCol <- rep(sigmaEps_draws, each=nGrid)
+        probDraws <- matrix(
+            logitNormMean(cbind(c(gridDraws_tmb), sigmaCol),
+                          logisticApprox=splineApprox),
+            nrow=nGrid, ncol=nDrawSamples)
+
+        sigmaEpsSq_tmb_draws <- matrix(sigmaEps_draws^2, nrow=1)
+        fixedMat <- rbind(fixedMat, sigmaEpsSq_tmb_draws)
+        row.names(fixedMat)[nrow(fixedMat)] <- "sigmaEpsSq"
     }
-    else {
-      tauEps = exp(SD0$par.fixed[grepl("log_tauEps", names(SD0$par.fixed))])
-      sigmaEps = 1/sqrt(tauEps)
-      probDraws = matrix(logitNormMean(cbind(c(gridDraws_tmb), rep(sigmaEps, length(gridDraws_tmb))), logisticApprox=splineApprox), ncol=1)
-      
-      sigmaEpsSq_tmb_draws = matrix(sigmaEps^2, nrow=1)
-      
-      fixedMat = rbind(fixedMat, 
-                       sigmaEpsSq_tmb_draws)
-      row.names(fixedMat)[nrow(fixedMat)] = "sigmaEpsSq"
-    }
-    
-    probDrawsMICS = NULL
-    predsMICS = NULL
-    quantsMICS = NULL
-    sigmaEpsSqUrb_tmb_draws = NULL
-    sigmaEpsSqRur_tmb_draws = NULL
-    sigmaEpsSqUMICS_tmb_draws = NULL
-    sigmaEpsSqRMICS_tmb_draws = NULL
-    sigmaEpsSqUDHS_tmb_draws = NULL
-    sigmaEpsSqRDHS_tmb_draws = NULL
-    if(!hasNugget) {
-      sigmaEpsSq_tmb_draws = NULL
-    }
-    
-    preds = c(probDraws)
-    quants = NULL
+
+    probDrawsMICS = NULL; predsMICS = NULL; quantsMICS = NULL
+    sigmaEpsSqUrb_tmb_draws   = NULL; sigmaEpsSqRur_tmb_draws   = NULL
+    sigmaEpsSqUMICS_tmb_draws = NULL; sigmaEpsSqRMICS_tmb_draws = NULL
+    sigmaEpsSqUDHS_tmb_draws  = NULL; sigmaEpsSqRDHS_tmb_draws  = NULL
+    if(!hasNugget) sigmaEpsSq_tmb_draws = NULL
+
+    preds  <- rowMeans(probDraws)
+    quants <- if(nDrawSamples > 1) apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE) else NULL
   }
   
   list(popMat=popMat, 

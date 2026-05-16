@@ -162,14 +162,24 @@ scoreSpatial <- function(res, simIdx, level=c("area","subarea")) {
         truth <- subareaPops[, simIdx]
     }
 
-    estMat <- agg$aggregationResults$p
+    estMat <- as.matrix(agg$aggregationResults$p)
     rownames(estMat) <- agg$aggregationResults$region
     # align estMat rows to truth (defensive — both should be admX$NAME_* order)
     estMat <- estMat[match(names(truth), rownames(estMat)), , drop=FALSE]
 
-    getScores(truth=truth, estMat=estMat,
-              significance=c(.5,.8,.9,.95), doFuzzyReject=TRUE,
-              getAverage=TRUE, na.rm=TRUE)
+    # predGrid falls back to a single point-estimate column when the joint
+    # precision isn't PD (e.g. FE-only fits with no random effects). In that
+    # case there are no posterior draws, so score against the point estimate
+    # via getScores' est= path instead of estMat=.
+    if(ncol(estMat) == 1) {
+        getScores(truth=truth, est=estMat[,1],
+                  significance=c(.5,.8,.9,.95), doFuzzyReject=TRUE,
+                  getAverage=TRUE, na.rm=TRUE)
+    } else {
+        getScores(truth=truth, estMat=estMat,
+                  significance=c(.5,.8,.9,.95), doFuzzyReject=TRUE,
+                  getAverage=TRUE, na.rm=TRUE)
+    }
 }
 
 # Fit one of the named models on the prepped sim inputs.
