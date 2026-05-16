@@ -1,0 +1,169 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+=== Step 1: simData1(nsim=2)  ->  simPopsSurveys.RData ===
+[1] "Constructing offset based on covariates..."
+[1] "Simulating populations and surveys..."
+[1] "Simulating population 1/2"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 1/2"
+[1] "estimated time remaining: 0.0578472222222222 hours"
+[1] "Simulating population 2/2"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 2/2"
+[1] "estimated time remaining: 0 hours"
+Step 1 done in 2.9 min
+
+=== Step 2: K=16/21 DHS integration points for sims 1, 2 ===
+[sim 1] building savedOutput/simStudy1/intPtsDHS_simStudy1_1_K16_21.RData ...
+[sim 1] built in 3.1 min — wUrban=572 x 16, wRural=806 x 21
+[sim 2] building savedOutput/simStudy1/intPtsDHS_simStudy1_2_K16_21.RData ...
+[sim 2] built in 3.6 min — wUrban=572 x 16, wRural=806 x 21
+Removing stale inputsMDM cache: savedOutput/simStudy1/inputs_SPDE_sim1_KMICS100_KDHS16_21.RData
+Removing stale inputsMDM cache: savedOutput/simStudy1/inputs_sim1_KMICS100_KDHS16_21.RData
+
+Done.
+Now you can rerun test_sim_SPDE_FE_then_BYM2.R locally to confirm K=16/21 on fresh data,
+then copy simPopsSurveys.RData + the two intPtsDHS_simStudy1_*_K16_21.RData files to the cluster.
