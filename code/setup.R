@@ -37,6 +37,7 @@ if(FALSE) {
   if(FALSE) {
     install_github("https://github.com/richardli/SUMMER/")
     install_github("https://github.com/paigejo/SUMMER/")
+    install_github("https://github.com/richardli/SUMMER/tree/simPopOffset")
     install_local("~/git/SUMMER/")
     document("~/git/SUMMER/")
     load_all("~/git/SUMMER/")
@@ -59,7 +60,7 @@ library(raster)
 library(MCMCpack)
 library(numDeriv)
 library(INLA)
-library(edfun) # for drawing from empirical distributions quickly
+# library(edfun) # for drawing from empirical distributions quickly
 library(data.table)
 library(sampling)
 library(haven)
