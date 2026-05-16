@@ -52,7 +52,15 @@ if(!("Stratum" %in% names(datMICS))) datMICS$Stratum <- adm2ToStratumMICS(datMIC
 # to the application `ed` (it isn't here — it's a sim survey), so it would fall
 # through to makeAllIntegrationPointsDHS and trigger GDAL/terra. Passing the
 # pre-built integration points explicitly avoids GDAL entirely.
-dhsIntPtsFile  <- sprintf("savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+# Prefer the K-suffixed DHS int pts file (built at the requested K=KDHSu/KDHSr).
+# Unsuffixed files in savedOutput/simStudy1/ are the legacy K=11/16 build, which
+# CLAUDE.md flags as biased; only the *_K<u>_<r>.RData variants are at K=16/21.
+dhsIntPtsFile_K <- sprintf(
+    "savedOutput/simStudy1/intPtsDHS_simStudy1_%d_K%d_%d.RData",
+    simIndex, KDHSu, KDHSr)
+dhsIntPtsFile_default <- sprintf(
+    "savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+dhsIntPtsFile <- if(file.exists(dhsIntPtsFile_K)) dhsIntPtsFile_K else dhsIntPtsFile_default
 micsIntPtsFile <- sprintf("savedOutput/global/intPtsMICS_%d.RData", KMICS)
 
 cat("Loading DHS int pts: ", dhsIntPtsFile, "\n", sep="")
@@ -60,6 +68,15 @@ load(dhsIntPtsFile)    # expected to populate object `intPtsDHS`
 cat("Loading MICS int pts:", micsIntPtsFile, "\n", sep="")
 load(micsIntPtsFile)   # expected to populate object `intPtsMICS`
 stopifnot(exists("intPtsDHS"), exists("intPtsMICS"))
+
+# Hard-check that the loaded resolution matches the requested K, so we don't
+# silently fit at the deprecated K=11/16.
+gotKU <- ncol(intPtsDHS$wUrban); gotKR <- ncol(intPtsDHS$wRural)
+if(gotKU != KDHSu || gotKR != KDHSr) {
+    stop(sprintf(
+        "DHS int pts at WRONG resolution: loaded K=%d/%d but requested KDHSu=%d, KDHSr=%d.\n  File: %s\n  Regenerate this file at the correct K or use a different simIndex.",
+        gotKU, gotKR, KDHSu, KDHSr, dhsIntPtsFile))
+}
 
 # ---- build / load inputsMDM once ----
 inputsFile <- sprintf(

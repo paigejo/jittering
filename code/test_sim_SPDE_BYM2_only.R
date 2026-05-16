@@ -36,7 +36,13 @@ if(!("Stratum" %in% names(datMICS))) datMICS$Stratum <- adm2ToStratumMICS(datMIC
 
 # Load integration points explicitly and pass them in — avoids GDAL fallback
 # inside makeInputsMDM when datDHS is the sim survey (not application `ed`).
-dhsIntPtsFile  <- sprintf("savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+# Prefer the K-suffixed DHS int pts file; unsuffixed files are legacy K=11/16.
+dhsIntPtsFile_K <- sprintf(
+    "savedOutput/simStudy1/intPtsDHS_simStudy1_%d_K%d_%d.RData",
+    simIndex, KDHSu, KDHSr)
+dhsIntPtsFile_default <- sprintf(
+    "savedOutput/simStudy1/intPtsDHS_simStudy1_%d.RData", simIndex)
+dhsIntPtsFile <- if(file.exists(dhsIntPtsFile_K)) dhsIntPtsFile_K else dhsIntPtsFile_default
 micsIntPtsFile <- sprintf("savedOutput/global/intPtsMICS_%d.RData", KMICS)
 
 cat("Loading DHS int pts: ", dhsIntPtsFile, "\n", sep="")
@@ -44,6 +50,12 @@ load(dhsIntPtsFile)
 cat("Loading MICS int pts:", micsIntPtsFile, "\n", sep="")
 load(micsIntPtsFile)
 stopifnot(exists("intPtsDHS"), exists("intPtsMICS"))
+
+gotKU <- ncol(intPtsDHS$wUrban); gotKR <- ncol(intPtsDHS$wRural)
+if(gotKU != KDHSu || gotKR != KDHSr) {
+    stop(sprintf("DHS int pts at WRONG resolution: loaded K=%d/%d but requested KDHSu=%d, KDHSr=%d.\n  File: %s",
+                 gotKU, gotKR, KDHSu, KDHSr, dhsIntPtsFile))
+}
 
 inputsFile <- sprintf(
     "savedOutput/simStudy1/inputs_SPDE_sim%d_KMICS%03d_KDHS%02d_%02d.RData",
