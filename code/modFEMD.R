@@ -98,6 +98,7 @@ fitFEMD = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     alpha_pri=alpha_pri, beta_pri=beta_pri,
     tr=bym2Args$tr, gammaTildesm1=bym2Args$gammaTildesm1,
     lambdaPhi=bym2Args$lambda, lambdaTau=lambdaTau, lambdaTauEps=lambdaTauEps,
+    uniformPhiPrior=as.integer(FALSE),
     options=0
   )
 
