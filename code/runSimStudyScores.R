@@ -240,4 +240,77 @@ for(simIdx in 1:NSIM) {
     }
 }
 
+cat("\nAll fits done. Aggregating scores ...\n")
+
+# ============================================================================
+# Summary: mean scores across sims, per model
+# ============================================================================
+
+# Pull all per-sim score files for one model. Returns a list of three lists
+# (FE / Area / Subarea), each containing one score matrix per sim that fit OK.
+loadModelScores <- function(modName) {
+    out <- list(FE = list(), Area = list(), Subarea = list())
+    for(simIdx in seq_len(NSIM)) {
+        f <- sprintf("%s/scores_%s_sim%d.RData", outDir, modName, simIdx)
+        if(!file.exists(f)) next
+        e <- new.env(); load(f, envir = e)
+        out$FE     [[length(out$FE)      + 1]] <- e$scoresFE
+        out$Area   [[length(out$Area)    + 1]] <- e$scoresArea
+        out$Subarea[[length(out$Subarea) + 1]] <- e$scoresSubarea
+    }
+    out
+}
+
+# Average a list of (same-shape) score matrices / data.frames across sims.
+# Returns a matrix of the common shape, or NULL if the list is empty.
+avgScoreList <- function(lst) {
+    lst <- Filter(function(x) !is.null(x), lst)
+    if(length(lst) == 0) return(NULL)
+    arr <- simplify2array(lapply(lst, as.matrix))
+    if(length(dim(arr)) == 2) arr else apply(arr, c(1, 2), mean, na.rm = TRUE)
+}
+
+# Build a one-row-per-model summary table from a list of Area or Subarea avgs.
+buildAggTable <- function(modelToScoreMat) {
+    rows <- list()
+    for(m in names(modelToScoreMat)) {
+        a <- modelToScoreMat[[m]]
+        if(is.null(a)) next
+        rows[[length(rows) + 1]] <- cbind(model = m, as.data.frame(a))
+    }
+    if(length(rows) == 0) NULL else do.call(rbind, rows)
+}
+
+# Cache all per-sim scores by model — load each file at most once.
+modelData <- setNames(lapply(MODELS, loadModelScores), MODELS)
+
+# ---- Area-level (37 admin1 areas) ------------------------------------------
+areaAvgs <- lapply(modelData, function(d) avgScoreList(d$Area))
+areaTab  <- buildAggTable(areaAvgs)
+cat("\n----- Area-level prediction scores (mean across sims) -----\n")
+if(!is.null(areaTab)) print(areaTab, row.names = FALSE, digits = 4)
+
+# ---- Subarea-level (775 adm2 subareas) -------------------------------------
+subAvgs <- lapply(modelData, function(d) avgScoreList(d$Subarea))
+subTab  <- buildAggTable(subAvgs)
+cat("\n----- Subarea-level prediction scores (mean across sims) -----\n")
+if(!is.null(subTab)) print(subTab, row.names = FALSE, digits = 4)
+
+# ---- Fixed-effect scores: per-parameter block per model --------------------
+cat("\n----- Fixed-effect scores (mean across sims) -----\n")
+parRowNames <- names(TRUE_FE)
+for(m in MODELS) {
+    a <- avgScoreList(modelData[[m]]$FE)
+    if(is.null(a)) next
+    if(nrow(a) == length(parRowNames)) rownames(a) <- parRowNames
+    cat("\n[", m, "]\n", sep = "")
+    print(round(a, 4))
+}
+
+# Also save a single RData with all aggregated tables for downstream analysis.
+save(areaTab, subTab, modelData,
+     file = file.path(outDir, "scoresSummary.RData"))
+cat("\nAggregated tables saved to:",
+    file.path(outDir, "scoresSummary.RData"), "\n")
+
 cat("\nAll done.\n")
