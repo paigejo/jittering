@@ -1540,27 +1540,30 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         row.names(fixedMat) <- c("(Int)", betaNames)
     }
 
-    # Build grid linear predictor η = Amat %*% spatial + alpha + Xmat %*% beta,
-    # each piece nGrid x nDrawSamples.
-    gridDraws_tmb <- as.matrix(Amat %*% epsilon_tmb_draws)
-    # alpha_tmb_draws is 1 x nDrawSamples; broadcast across all grid rows.
-    gridDraws_tmb <- gridDraws_tmb +
-                     matrix(alpha_tmb_draws, nrow=nrow(gridDraws_tmb),
-                            ncol=nDrawSamples, byrow=TRUE)
-    gridDraws_tmb <- gridDraws_tmb + (Xmat %*% beta_tmb_draws)
+    # Build grid linear predictor η = Xmat %*% beta + alpha (+ spatial), where
+    # each piece is nGrid x nDrawSamples. We avoid allocating a full nGrid x
+    # nDrawSamples zero matrix when the spatial component is zero, and use
+    # sweep() (not matrix()) for the alpha broadcast — keeps peak memory low.
+    gridDraws_tmb <- as.matrix(Xmat %*% beta_tmb_draws)               # nGrid x nDraw
+    gridDraws_tmb <- sweep(gridDraws_tmb, 2, as.numeric(alpha_tmb_draws), "+")
+    if(!noSpatialFE) {
+        gridDraws_tmb <- gridDraws_tmb + as.matrix(Amat %*% epsilon_tmb_draws)
+    }
 
     if(!hasNugget) {
         probDraws <- expit(gridDraws_tmb)
     } else {
+        # De-bias the pixel-level prevalence with E[expit(η + ε)] under
+        # ε ~ N(0, σ_ε^2). Use the closed-form logistic approximation
+        #   E[expit(η + ε)] ≈ expit(η / sqrt(1 + k^2 * σ^2)),   k = 16√3 / (15π)
+        # (same as logitNormMean(..., logisticApproximation=TRUE)). Fully
+        # vectorized over pixels and draws — avoids the per-draw spline fits
+        # that dominated the runtime previously.
         tauEps_draws   <- exp(fixedDraws[rownames(fixedDraws) == "log_tauEps", ])
         sigmaEps_draws <- 1/sqrt(tauEps_draws)
-        # logitNormMean expects pixel-level (mean, sd) pairs; flatten column-major.
-        nGrid    <- nrow(gridDraws_tmb)
-        sigmaCol <- rep(sigmaEps_draws, each=nGrid)
-        probDraws <- matrix(
-            logitNormMean(cbind(c(gridDraws_tmb), sigmaCol),
-                          logisticApprox=splineApprox),
-            nrow=nGrid, ncol=nDrawSamples)
+        k <- 16 * sqrt(3) / (15 * pi)
+        scalePerDraw <- 1 / sqrt(1 + k^2 * sigmaEps_draws^2)
+        probDraws <- expit(sweep(gridDraws_tmb, 2, scalePerDraw, "*"))
 
         sigmaEpsSq_tmb_draws <- matrix(sigmaEps_draws^2, nrow=1)
         fixedMat <- rbind(fixedMat, sigmaEpsSq_tmb_draws)
