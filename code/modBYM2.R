@@ -1515,15 +1515,34 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     }
     rownames(fixedDraws) <- names(allFixed)
 
-    # Spatial effect — nArea x nDrawSamples
+    # Spatial effect — nArea x nDrawSamples. The spatial RE can live in either
+    # par.fixed or par.random and is named differently across parameterizations:
+    #   - GH BYM2  (constrained 2n-2): "w_bym2Free" / "u_bym2Free"
+    #   - repar    BYM2 (sep)        : "w_bym2Star"
+    #   - legacy   BYM2              : "Epsilon_bym2"
+    # We hit this else branch only when pdHess=FALSE or noSpatialFE=TRUE, so
+    # there are no posterior samples for the random spatial field — use the
+    # point MAP estimate and tile across draws.
+    parR <- SD0$par.random
     if("w_bym2Free" %in% rownames(fixedDraws)) {
         wFree <- fixedDraws[rownames(fixedDraws) == "w_bym2Free", , drop=FALSE]
         epsilon_tmb_draws <- rbind(wFree, matrix(-colSums(wFree), nrow=1))
+    } else if(!is.null(parR) && "w_bym2Free" %in% names(parR)) {
+        wFree <- parR[names(parR) == "w_bym2Free"]
+        wFull <- c(wFree, -sum(wFree))
+        epsilon_tmb_draws <- matrix(wFull, nrow=length(wFull), ncol=nDrawSamples)
+    } else if(!is.null(parR) && "w_bym2Star" %in% names(parR)) {
+        wStar <- parR[names(parR) == "w_bym2Star"]
+        epsilon_tmb_draws <- matrix(wStar, nrow=length(wStar), ncol=nDrawSamples)
+    } else if(!is.null(parR) && any(grepl("Epsilon", names(parR)))) {
+        Eps <- parR[grepl("Epsilon", names(parR))]
+        epsilon_tmb_draws <- matrix(Eps, nrow=length(Eps), ncol=nDrawSamples)
     } else if(noSpatialFE) {
         epsilon_tmb_draws <- matrix(0, nrow=ncol(Amat), ncol=nDrawSamples)
     } else {
-        Eps <- SD0$par.random[grepl("Epsilon", names(SD0$par.random))]
-        epsilon_tmb_draws <- matrix(Eps, nrow=length(Eps), ncol=nDrawSamples)
+        # Fallback — no spatial RE found; treat as zero with a warning.
+        warning("predGrid else branch: no spatial random effect found in par.fixed or par.random; using zero spatial draws.")
+        epsilon_tmb_draws <- matrix(0, nrow=ncol(Amat), ncol=nDrawSamples)
     }
 
     alpha_tmb_draws <- matrix(fixedDraws[rownames(fixedDraws) == "alpha", ], nrow=1)

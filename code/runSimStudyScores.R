@@ -89,23 +89,44 @@ prepSim <- function(simIdx) {
     list(datDHS=datDHS, datMICS=datMICS, inputsMDM=inp)
 }
 
-# Draw NDRAWS posterior samples of all parameters (fixed + random) as a
-# (nPar x NDRAWS) matrix with row-names = parameter names. Falls back to
-# cov.fixed when jointPrecision isn't available (pure FE-only fits).
+# Draw NDRAWS posterior samples of all parameters as a (nPar x NDRAWS) matrix
+# with row-names = parameter names.
+#  - First try jointPrecision-based draws (full posterior incl. random effects).
+#  - If that fails (non-PD jointPrecision, common when pdHess=FALSE at φ→1
+#    BYM2 boundary), fall back to cov.fixed: draw fixed effects from their
+#    Gaussian posterior and tile random-effect MAP values across draws so the
+#    output still has the same row structure.
 postDraws <- function(SD) {
-    if(!is.null(SD$jointPrecision)) {
+    drawsFromJoint <- function() {
         mode  <- c(SD$par.fixed, SD$par.random)
         L     <- Matrix::Cholesky(SD$jointPrecision, LDL=FALSE, super=NA)
         z     <- matrix(rnorm(length(mode) * NDRAWS), nrow=length(mode))
-        draws <- as.matrix(Matrix::solve(L, z, system="Lt")) + mode
-    } else {
-        mode  <- SD$par.fixed
-        Lc    <- chol(SD$cov.fixed)
-        z     <- matrix(rnorm(length(mode) * NDRAWS), nrow=length(mode))
-        draws <- mode + t(Lc) %*% z
+        out   <- as.matrix(Matrix::solve(L, z, system="Lt")) + mode
+        rownames(out) <- names(mode)
+        out
     }
-    rownames(draws) <- names(mode)
-    draws
+    drawsFromCovFixed <- function() {
+        modeF <- SD$par.fixed
+        Lc    <- chol(SD$cov.fixed)
+        z     <- matrix(rnorm(length(modeF) * NDRAWS), nrow=length(modeF))
+        feDr  <- modeF + t(Lc) %*% z
+        # Tile any random-effect MAPs across draws so the row layout matches
+        # the joint-precision path (callers index by name).
+        if(length(SD$par.random) > 0) {
+            reTile <- matrix(SD$par.random, nrow=length(SD$par.random), ncol=NDRAWS)
+            rownames(reTile) <- names(SD$par.random)
+            rownames(feDr)   <- names(modeF)
+            rbind(feDr, reTile)
+        } else {
+            rownames(feDr) <- names(modeF)
+            feDr
+        }
+    }
+    if(!is.null(SD$jointPrecision)) {
+        out <- tryCatch(drawsFromJoint(), error = function(e) NULL)
+        if(!is.null(out)) return(out)
+    }
+    drawsFromCovFixed()
 }
 
 # Score the fixed effects (alpha + 5 betas) against TRUE_FE.
@@ -228,13 +249,22 @@ for(simIdx in 1:NSIM) {
 
         cat("  [", modName, "] fitting ... ", sep="")
         t0  <- proc.time()[3]
-        res <- tryCatch(fitOne(modName, inp), error=function(e) NULL)
-        if(is.null(res)) { cat("FAILED to fit\n"); next }
+        res <- tryCatch(fitOne(modName, inp),
+                        error = function(e) {
+                            cat("\n    FIT ERROR: ", conditionMessage(e), "\n", sep="")
+                            NULL
+                        })
+        if(is.null(res)) { cat("    -> no score file written\n"); next }
         cat(sprintf("fit %.1f min\n", (proc.time()[3] - t0)/60))
 
-        scoresFE      <- scoreFE     (res)
-        scoresArea    <- scoreSpatial(res, simIdx, "area")
-        scoresSubarea <- scoreSpatial(res, simIdx, "subarea")
+        # Wrap each scoring step so a failure in one (e.g. the known fitMd-repar
+        # predGrid bug for area/subarea aggregation) doesn't kill the whole sim.
+        scoresFE      <- tryCatch(scoreFE(res),
+            error = function(e) { cat("    scoreFE error: ",            conditionMessage(e), "\n", sep=""); NULL })
+        scoresArea    <- tryCatch(scoreSpatial(res, simIdx, "area"),
+            error = function(e) { cat("    scoreSpatial(area) error: ",    conditionMessage(e), "\n", sep=""); NULL })
+        scoresSubarea <- tryCatch(scoreSpatial(res, simIdx, "subarea"),
+            error = function(e) { cat("    scoreSpatial(subarea) error: ", conditionMessage(e), "\n", sep=""); NULL })
 
         save(scoresFE, scoresArea, scoresSubarea, file=outFile)
     }
