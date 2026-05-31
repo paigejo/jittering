@@ -8,12 +8,8 @@
 # simData1 / simData1BYM2 checkpoint after every iteration, so this script is
 # idempotent and crash-safe: re-running picks up wherever the previous attempt
 # left off (matching seed=123).
-
 source("setup.R")
-options(error = traceback)
-source("code/simData.R")
-source("code/makeIntegrationPoints.R")
-source("code/testInfrastructure.R")
+options(error = recover)
 
 prepareSimsForModels(models = c("bym2", "spde"),
                      nsim = 100, seed = 123,

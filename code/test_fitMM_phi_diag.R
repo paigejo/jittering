@@ -9,7 +9,7 @@
 # Then profiles NLL at phi = 0.5..0.999 holding other params at that fit's MLE.
 
 source("setup.R")
-options(error = traceback)
+options(error = recover)
 source("code/modM_MSep.R")
 source("code/makeInputsTMB.R")
 

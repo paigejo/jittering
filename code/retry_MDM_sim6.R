@@ -3,7 +3,7 @@
 # If so, replace them with neutral defaults and refit.
 
 source("setup.R")
-options(error = traceback)
+options(error = recover)
 source("code/modFED.R")
 source("code/modFEM.R")
 source("code/modFEMD.R")

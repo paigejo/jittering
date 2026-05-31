@@ -4,12 +4,7 @@
 #   2. useInla = FALSE   --> Gauss attempted, error if Cholesky fails
 #   3. useInla = TRUE    --> INLA forced regardless
 source("setup.R")
-options(error = traceback)
-source("code/modM_DSep.R")
-source("code/makeInputsTMB.R")
-source("code/modBYM2.R")
-source("code/testInfrastructure.R")
-source("code/inlaStyleDraws.R")
+options(error = recover)
 
 simIdx <- 1
 simEnv <- new.env()

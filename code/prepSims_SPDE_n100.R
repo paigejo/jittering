@@ -2,12 +2,8 @@
 #   1. regenerate simPopsSurveys_SPDE.RData with nsim=100 (seed=123, same as before
 #      so the first 10 sims are byte-identical to the existing file)
 #   2. build K=16/21 DHS int pts for any missing sim — sims 1-10 stay cached.
-
 source("setup.R")
-options(error = traceback)
-source("code/simData.R")
-source("code/makeIntegrationPoints.R")
-source("code/testInfrastructure.R")
+options(error = recover)
 
 env <- new.env()
 simulateSurveys("spde", nsim = 100, seed = 123, regenerate = TRUE, envir = env)

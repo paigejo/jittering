@@ -6,19 +6,7 @@
 # Then exercises predGrid(useInla=TRUE) for an area-level check on M_M.
 
 source("setup.R")
-options(error = traceback)
-source("code/modFEM.R")
-source("code/modFED.R")
-source("code/modFEMD.R")
-source("code/modM_DSep.R")
-source("code/modM_MSep.R")
-source("code/modM_DMSep.R")
-source("code/modMdSep.R")
-source("code/makeInputsTMB.R")
-source("code/modBYM2.R")
-source("code/testInfrastructure.R")
-source("code/scoreSimStudy.R")
-source("code/inlaStyleDraws.R")
+options(error = recover)
 
 simIdx <- 1
 model  <- "bym2"
