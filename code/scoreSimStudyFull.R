@@ -22,8 +22,8 @@
     inf <- sessionInfo()
     running <- if(is.null(inf$running)) "" else inf$running
     isLocal <- grepl("macOS|mac OS|Windows|darwin", running, ignore.case = TRUE)
-    if(isLocal) list(nFE = 8L, nBYM2 = 1L, label = paste("local:", running))
-    else        list(nFE = 32L, nBYM2 = 8L, label = paste("cluster:", running))
+    if(isLocal) list(nFE = 8L,  nBYM2 = 1L, label = paste("local:",   running))
+    else        list(nFE = 16L, nBYM2 = 8L, label = paste("cluster:", running))
 }
 
 # Phase runner: schedule the given `models` across `nWorkers` callr children.
