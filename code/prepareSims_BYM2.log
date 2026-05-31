@@ -1,0 +1,1717 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] generating/resuming savedOutput/simStudy1/simPopsSurveys_BYM2.RData (nsim=100, seed=123)
+[1] "Constructing offset based on covariates..."
+[1] "Existing checkpoint is incompatible (different seed or no metadata); starting fresh."
+[1] "Simulating populations and surveys..."
+[1] "Simulating population 1/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 1/100"
+[1] "estimated time remaining: 6.403375 hours"
+[1] "Simulating population 2/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 2/100"
+[1] "estimated time remaining: 5.92151388888889 hours"
+[1] "Simulating population 3/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 3/100"
+[1] "estimated time remaining: 5.70705787037037 hours"
+[1] "Simulating population 4/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 4/100"
+[1] "estimated time remaining: 5.64083333333333 hours"
+[1] "Simulating population 5/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 5/100"
+[1] "estimated time remaining: 5.5420625 hours"
+[1] "Simulating population 6/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 6/100"
+[1] "estimated time remaining: 5.53892824074074 hours"
+[1] "Simulating population 7/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 7/100"
+[1] "estimated time remaining: 5.42490773809524 hours"
+[1] "Simulating population 8/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 8/100"
+[1] "estimated time remaining: 5.39749305555556 hours"
+[1] "Simulating population 9/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 9/100"
+[1] "estimated time remaining: 5.29618595679012 hours"
+[1] "Simulating population 10/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 10/100"
+[1] "estimated time remaining: 5.326875 hours"
+[1] "Simulating population 11/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 11/100"
+[1] "estimated time remaining: 5.26206881313131 hours"
+[1] "Simulating population 12/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 12/100"
+[1] "estimated time remaining: 5.19189814814815 hours"
+[1] "Simulating population 13/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 13/100"
+[1] "estimated time remaining: 5.1489407051282 hours"
+[1] "Simulating population 14/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 14/100"
+[1] "estimated time remaining: 5.079375 hours"
+[1] "Simulating population 15/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 15/100"
+[1] "estimated time remaining: 5.0203912037037 hours"
+[1] "Simulating population 16/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 16/100"
+[1] "estimated time remaining: 4.96143229166667 hours"
+[1] "Simulating population 17/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 17/100"
+[1] "estimated time remaining: 4.96898080065359 hours"
+[1] "Simulating population 18/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 18/100"
+[1] "estimated time remaining: 4.96751697530864 hours"
+[1] "Simulating population 19/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 19/100"
+[1] "estimated time remaining: 4.94635855263158 hours"
+[1] "Simulating population 20/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 20/100"
+[1] "estimated time remaining: 4.93980555555556 hours"
+[1] "Simulating population 21/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 21/100"
+[1] "estimated time remaining: 4.90184027777778 hours"
+[1] "Simulating population 22/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 22/100"
+[1] "estimated time remaining: 4.81664772727273 hours"
+[1] "Simulating population 23/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 23/100"
+[1] "estimated time remaining: 4.75437801932367 hours"
+[1] "Simulating population 24/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 24/100"
+[1] "estimated time remaining: 4.67065740740741 hours"
+[1] "Simulating population 25/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 25/100"
+[1] "estimated time remaining: 4.63627083333333 hours"
+[1] "Simulating population 26/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 26/100"
+[1] "estimated time remaining: 4.56756303418803 hours"
+[1] "Simulating population 27/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 27/100"
+[1] "estimated time remaining: 4.49642824074074 hours"
+[1] "Simulating population 28/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 28/100"
+[1] "estimated time remaining: 4.42271428571429 hours"
+[1] "Simulating population 29/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 29/100"
+[1] "estimated time remaining: 4.3583900862069 hours"
+[1] "Simulating population 30/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 30/100"
+[1] "estimated time remaining: 4.29263657407407 hours"
+[1] "Simulating population 31/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 31/100"
+[1] "estimated time remaining: 4.23323655913978 hours"
+[1] "Simulating population 32/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 32/100"
+[1] "estimated time remaining: 4.16325868055555 hours"
+[1] "Simulating population 33/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 33/100"
+[1] "estimated time remaining: 4.09433164983165 hours"
+[1] "Simulating population 34/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 34/100"
+[1] "estimated time remaining: 4.03163480392157 hours"
+[1] "Simulating population 35/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 35/100"
+[1] "estimated time remaining: 3.99354067460317 hours"
+[1] "Simulating population 36/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 36/100"
+[1] "estimated time remaining: 3.92855555555556 hours"
+[1] "Simulating population 37/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 37/100"
+[1] "estimated time remaining: 3.89078209459459 hours"
+[1] "Simulating population 38/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 38/100"
+[1] "estimated time remaining: 3.84251571637427 hours"
+[1] "Simulating population 39/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 39/100"
+[1] "estimated time remaining: 3.77674287749288 hours"
+[1] "Simulating population 40/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 40/100"
+[1] "estimated time remaining: 3.71192708333333 hours"
+[1] "Simulating population 41/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 41/100"
+[1] "estimated time remaining: 3.6853014905149 hours"
+[1] "Simulating population 42/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 42/100"
+[1] "estimated time remaining: 3.62161474867725 hours"
+[1] "Simulating population 43/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 43/100"
+[1] "estimated time remaining: 3.5683730620155 hours"
+[1] "Simulating population 44/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 44/100"
+[1] "estimated time remaining: 3.51327525252525 hours"
+[1] "Simulating population 45/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 45/100"
+[1] "estimated time remaining: 3.45565509259259 hours"
+[1] "Simulating population 46/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 46/100"
+[1] "estimated time remaining: 3.3929347826087 hours"
+[1] "Simulating population 47/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 47/100"
+[1] "estimated time remaining: 3.33714406028369 hours"
+[1] "Simulating population 48/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 48/100"
+[1] "estimated time remaining: 3.27666203703704 hours"
+[1] "Simulating population 49/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 49/100"
+[1] "estimated time remaining: 3.22500552721088 hours"
+[1] "Simulating population 50/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 50/100"
+[1] "estimated time remaining: 3.16072916666667 hours"
+[1] "Simulating population 51/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 51/100"
+[1] "estimated time remaining: 3.09954357298475 hours"
+[1] "Simulating population 52/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 52/100"
+[1] "estimated time remaining: 3.03605128205128 hours"
+[1] "Simulating population 53/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 53/100"
+[1] "estimated time remaining: 2.97595846436059 hours"
+[1] "Simulating population 54/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Bauchi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 54/100"
+[1] "estimated time remaining: 2.91519675925926 hours"
+[1] "Simulating population 55/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 55/100"
+[1] "estimated time remaining: 2.85227272727273 hours"
+[1] "Simulating population 56/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 56/100"
+[1] "estimated time remaining: 2.78812896825397 hours"
+[1] "Simulating population 57/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 57/100"
+[1] "estimated time remaining: 2.73032711988304 hours"
+[1] "Simulating population 58/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 58/100"
+[1] "estimated time remaining: 2.67092744252874 hours"
+[1] "Simulating population 59/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 59/100"
+[1] "estimated time remaining: 2.60912205743879 hours"
+[1] "Simulating population 60/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 60/100"
+[1] "estimated time remaining: 2.54203703703704 hours"
+[1] "Simulating population 61/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 61/100"
+[1] "estimated time remaining: 2.4785956284153 hours"
+[1] "Simulating population 62/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 62/100"
+[1] "estimated time remaining: 2.41600918458781 hours"
+[1] "Simulating population 63/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 63/100"
+[1] "estimated time remaining: 2.35556062610229 hours"
+[1] "Simulating population 64/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 64/100"
+[1] "estimated time remaining: 2.30060546875 hours"
+[1] "Simulating population 65/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 65/100"
+[1] "estimated time remaining: 2.23713568376068 hours"
+[1] "Simulating population 66/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 66/100"
+[1] "estimated time remaining: 2.1742398989899 hours"
+[1] "Simulating population 67/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 67/100"
+[1] "estimated time remaining: 2.1100059079602 hours"
+[1] "Simulating population 68/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 68/100"
+[1] "estimated time remaining: 2.0516339869281 hours"
+[1] "Simulating population 69/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 69/100"
+[1] "estimated time remaining: 1.98831179549114 hours"
+[1] "Simulating population 70/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 70/100"
+[1] "estimated time remaining: 1.9249255952381 hours"
+[1] "Simulating population 71/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 71/100"
+[1] "estimated time remaining: 1.86334360328638 hours"
+[1] "Simulating population 72/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 72/100"
+[1] "estimated time remaining: 1.79945100308642 hours"
+[1] "Simulating population 73/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 73/100"
+[1] "estimated time remaining: 1.73569520547945 hours"
+[1] "Simulating population 74/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 74/100"
+[1] "estimated time remaining: 1.67260322822823 hours"
+[1] "Simulating population 75/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 75/100"
+[1] "estimated time remaining: 1.61722453703704 hours"
+[1] "Simulating population 76/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 76/100"
+[1] "estimated time remaining: 1.55396052631579 hours"
+[1] "Simulating population 77/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 77/100"
+[1] "estimated time remaining: 1.49403544372294 hours"
+[1] "Simulating population 78/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 78/100"
+[1] "estimated time remaining: 1.4310714031339 hours"
+[1] "Simulating population 79/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 79/100"
+[1] "estimated time remaining: 1.36672415611814 hours"
+[1] "Simulating population 80/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 80/100"
+[1] "estimated time remaining: 1.30136805555556 hours"
+[1] "Simulating population 81/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 81/100"
+[1] "estimated time remaining: 1.23669410150892 hours"
+[1] "Simulating population 82/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 82/100"
+[1] "estimated time remaining: 1.17257317073171 hours"
+[1] "Simulating population 83/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 83/100"
+[1] "estimated time remaining: 1.10658165997323 hours"
+[1] "Simulating population 84/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 84/100"
+[1] "estimated time remaining: 1.04237566137566 hours"
+[1] "Simulating population 85/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 85/100"
+[1] "estimated time remaining: 0.976627450980392 hours"
+[1] "Simulating population 86/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 86/100"
+[1] "estimated time remaining: 0.913822189922481 hours"
+[1] "Simulating population 87/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 87/100"
+[1] "estimated time remaining: 0.848614224137931 hours"
+[1] "Simulating population 88/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 88/100"
+[1] "estimated time remaining: 0.783454545454546 hours"
+[1] "Simulating population 89/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 89/100"
+[1] "estimated time remaining: 0.717802356429463 hours"
+[1] "Simulating population 90/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 90/100"
+[1] "estimated time remaining: 0.652530864197531 hours"
+[1] "Simulating population 91/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 91/100"
+[1] "estimated time remaining: 0.588001373626374 hours"
+[1] "Simulating population 92/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 92/100"
+[1] "estimated time remaining: 0.522239130434783 hours"
+[1] "Simulating population 93/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 93/100"
+[1] "estimated time remaining: 0.457065188172043 hours"
+[1] "Simulating population 94/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 94/100"
+[1] "estimated time remaining: 0.392195035460993 hours"
+[1] "Simulating population 95/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 95/100"
+[1] "estimated time remaining: 0.326511330409357 hours"
+[1] "Simulating population 96/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 96/100"
+[1] "estimated time remaining: 0.260763599537037 hours"
+[1] "Simulating population 97/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 97/100"
+[1] "estimated time remaining: 0.195368556701031 hours"
+[1] "Simulating population 98/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 98/100"
+[1] "estimated time remaining: 0.130409155328798 hours"
+[1] "Simulating population 99/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 99/100"
+[1] "estimated time remaining: 0.0651236672278339 hours"
+[1] "Simulating population 100/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 100/100"
+[1] "estimated time remaining: 0 hours"
+[sim] done in 156.6 min
+[intPts sim 1] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_1_K16_21.RData
+[intPts sim 2] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_2_K16_21.RData
+[intPts sim 3] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_3_K16_21.RData
+[intPts sim 4] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_4_K16_21.RData
+[intPts sim 5] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_5_K16_21.RData
+[intPts sim 6] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_6_K16_21.RData
+[intPts sim 7] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_7_K16_21.RData
+[intPts sim 8] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_8_K16_21.RData
+[intPts sim 9] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_9_K16_21.RData
+[intPts sim 10] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_10_K16_21.RData
+[intPts sim 11] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_11_K16_21.RData ...
+[intPts sim 11] done in 3.6 min
+[intPts sim 12] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_12_K16_21.RData ...
+[intPts sim 12] done in 3.7 min
+[intPts sim 13] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_13_K16_21.RData ...
+[intPts sim 13] done in 3.4 min
+[intPts sim 14] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_14_K16_21.RData ...
+[intPts sim 14] done in 3.7 min
+[intPts sim 15] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_15_K16_21.RData ...
+[intPts sim 15] done in 3.6 min
+[intPts sim 16] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_16_K16_21.RData ...
+[intPts sim 16] done in 3.5 min
+[intPts sim 17] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_17_K16_21.RData ...
+[intPts sim 17] done in 3.4 min
+[intPts sim 18] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_18_K16_21.RData ...
+[intPts sim 18] done in 3.5 min
+[intPts sim 19] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_19_K16_21.RData ...
+[intPts sim 19] done in 3.3 min
+[intPts sim 20] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_20_K16_21.RData ...
+[intPts sim 20] done in 3.1 min
+[intPts sim 21] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_21_K16_21.RData ...
+[intPts sim 21] done in 3.1 min
+[intPts sim 22] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_22_K16_21.RData ...
+[intPts sim 22] done in 3.1 min
+[intPts sim 23] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_23_K16_21.RData ...
+[intPts sim 23] done in 3.1 min
+[intPts sim 24] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_24_K16_21.RData ...
+[intPts sim 24] done in 3.2 min
+[intPts sim 25] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_25_K16_21.RData ...
+[intPts sim 25] done in 3.1 min
+[intPts sim 26] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_26_K16_21.RData ...
+[intPts sim 26] done in 3.1 min
+[intPts sim 27] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_27_K16_21.RData ...
+[intPts sim 27] done in 3.1 min
+[intPts sim 28] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_28_K16_21.RData ...
+[intPts sim 28] done in 3.1 min
+[intPts sim 29] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_29_K16_21.RData ...
+[intPts sim 29] done in 3.1 min
+[intPts sim 30] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_30_K16_21.RData ...
+[intPts sim 30] done in 3.2 min
+[intPts sim 31] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_31_K16_21.RData ...
+[intPts sim 31] done in 3.2 min
+[intPts sim 32] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_32_K16_21.RData ...
+[intPts sim 32] done in 3.2 min
+[intPts sim 33] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_33_K16_21.RData ...
+[intPts sim 33] done in 3.2 min
+[intPts sim 34] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_34_K16_21.RData ...
+[intPts sim 34] done in 3.2 min
+[intPts sim 35] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_35_K16_21.RData ...
+[intPts sim 35] done in 3.3 min
+[intPts sim 36] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_36_K16_21.RData ...
+[intPts sim 36] done in 3.3 min
+[intPts sim 37] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_37_K16_21.RData ...
+[intPts sim 37] done in 3.4 min
+[intPts sim 38] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_38_K16_21.RData ...
+[intPts sim 38] done in 3.3 min
+[intPts sim 39] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_39_K16_21.RData ...
+[intPts sim 39] done in 3.3 min
+[intPts sim 40] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_40_K16_21.RData ...
+[intPts sim 40] done in 3.3 min
+[intPts sim 41] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_41_K16_21.RData ...
+[intPts sim 41] done in 3.2 min
+[intPts sim 42] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_42_K16_21.RData ...
+[intPts sim 42] done in 3.3 min
+[intPts sim 43] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_43_K16_21.RData ...
+[intPts sim 43] done in 3.3 min
+[intPts sim 44] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_44_K16_21.RData ...
+[intPts sim 44] done in 3.3 min
+[intPts sim 45] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_45_K16_21.RData ...
+[intPts sim 45] done in 3.4 min
+[intPts sim 46] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_46_K16_21.RData ...
+[intPts sim 46] done in 3.3 min
+[intPts sim 47] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_47_K16_21.RData ...
+[intPts sim 47] done in 3.3 min
+[intPts sim 48] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_48_K16_21.RData ...
+[intPts sim 48] done in 3.3 min
+[intPts sim 49] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_49_K16_21.RData ...
+[intPts sim 49] done in 3.2 min
+[intPts sim 50] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_50_K16_21.RData ...
+[intPts sim 50] done in 3.3 min
+[intPts sim 51] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_51_K16_21.RData ...
+[intPts sim 51] done in 3.3 min
+[intPts sim 52] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_52_K16_21.RData ...
+[intPts sim 52] done in 3.5 min
+[intPts sim 53] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_53_K16_21.RData ...
+[intPts sim 53] done in 3.4 min
+[intPts sim 54] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_54_K16_21.RData ...
+[intPts sim 54] done in 3.4 min
+[intPts sim 55] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_55_K16_21.RData ...
+[intPts sim 55] done in 3.5 min
+[intPts sim 56] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_56_K16_21.RData ...
+[intPts sim 56] done in 3.5 min
+[intPts sim 57] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_57_K16_21.RData ...
+[intPts sim 57] done in 3.5 min
+[intPts sim 58] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_58_K16_21.RData ...
+[intPts sim 58] done in 3.5 min
+[intPts sim 59] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_59_K16_21.RData ...
+[intPts sim 59] done in 3.4 min
+[intPts sim 60] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_60_K16_21.RData ...
+[intPts sim 60] done in 3.5 min
+[intPts sim 61] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_61_K16_21.RData ...
+[intPts sim 61] done in 3.5 min
+[intPts sim 62] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_62_K16_21.RData ...
+[intPts sim 62] done in 3.4 min
+[intPts sim 63] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_63_K16_21.RData ...
+[intPts sim 63] done in 3.5 min
+[intPts sim 64] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_64_K16_21.RData ...
+[intPts sim 64] done in 3.3 min
+[intPts sim 65] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_65_K16_21.RData ...
+[intPts sim 65] done in 3.4 min
+[intPts sim 66] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_66_K16_21.RData ...
+[intPts sim 66] done in 3.4 min
+[intPts sim 67] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_67_K16_21.RData ...
+[intPts sim 67] done in 3.3 min
+[intPts sim 68] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_68_K16_21.RData ...
+[intPts sim 68] done in 3.3 min
+[intPts sim 69] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_69_K16_21.RData ...
+[intPts sim 69] done in 3.3 min
+[intPts sim 70] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_70_K16_21.RData ...
+[intPts sim 70] done in 3.3 min
+[intPts sim 71] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_71_K16_21.RData ...
+[intPts sim 71] done in 3.3 min
+[intPts sim 72] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_72_K16_21.RData ...
+[intPts sim 72] done in 3.3 min
+[intPts sim 73] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_73_K16_21.RData ...
+[intPts sim 73] done in 3.3 min
+[intPts sim 74] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_74_K16_21.RData ...
+[intPts sim 74] done in 3.2 min
+[intPts sim 75] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_75_K16_21.RData ...
+[intPts sim 75] done in 3.3 min
+[intPts sim 76] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_76_K16_21.RData ...
+[intPts sim 76] done in 3.3 min
+[intPts sim 77] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_77_K16_21.RData ...
+[intPts sim 77] done in 3.2 min
+[intPts sim 78] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_78_K16_21.RData ...
+[intPts sim 78] done in 3.3 min
+[intPts sim 79] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_79_K16_21.RData ...
+[intPts sim 79] done in 3.3 min
+[intPts sim 80] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_80_K16_21.RData ...
+[intPts sim 80] done in 3.3 min
+[intPts sim 81] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_81_K16_21.RData ...
+[intPts sim 81] done in 3.3 min
+[intPts sim 82] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_82_K16_21.RData ...
+[intPts sim 82] done in 3.2 min
+[intPts sim 83] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_83_K16_21.RData ...
+[intPts sim 83] done in 3.3 min
+[intPts sim 84] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_84_K16_21.RData ...
+[intPts sim 84] done in 3.3 min
+[intPts sim 85] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_85_K16_21.RData ...
+[intPts sim 85] done in 3.3 min
+[intPts sim 86] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_86_K16_21.RData ...
+[intPts sim 86] done in 3.3 min
+[intPts sim 87] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_87_K16_21.RData ...
+[intPts sim 87] done in 3.3 min
+[intPts sim 88] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_88_K16_21.RData ...
+[intPts sim 88] done in 3.3 min
+[intPts sim 89] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_89_K16_21.RData ...
+[intPts sim 89] done in 3.3 min
+[intPts sim 90] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_90_K16_21.RData ...
+[intPts sim 90] done in 3.4 min
+[intPts sim 91] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_91_K16_21.RData ...
+[intPts sim 91] done in 3.5 min
+[intPts sim 92] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_92_K16_21.RData ...
+[intPts sim 92] done in 3.3 min
+[intPts sim 93] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_93_K16_21.RData ...
+[intPts sim 93] done in 3.3 min
+[intPts sim 94] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_94_K16_21.RData ...
+[intPts sim 94] done in 3.3 min
+[intPts sim 95] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_95_K16_21.RData ...
+[intPts sim 95] done in 3.3 min
+[intPts sim 96] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_96_K16_21.RData ...
+[intPts sim 96] done in 3.3 min
+[intPts sim 97] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_97_K16_21.RData ...
+[intPts sim 97] done in 3.3 min
+[intPts sim 98] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_98_K16_21.RData ...
+[intPts sim 98] done in 3.2 min
+[intPts sim 99] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_99_K16_21.RData ...
+[intPts sim 99] done in 3.3 min
+[intPts sim 100] building savedOutput/simStudy1/intPtsDHS_simStudy1_BYM2_100_K16_21.RData ...
+[intPts sim 100] done in 3.3 min

@@ -1,0 +1,333 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_BYM2.RData (>=1 sims complete)
+Loading required package: prodlim
+
+##### M_M_BYM2 sim 1 #####
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+fitMM time: 4.2 min
+fitMM mode: log_tau=1.493  logit_phi=-1.458  log_tauEps=-0.397  pdHess=TRUE
+
+----- M_M Gaussian (posteriorDraws useInla=FALSE) -----
+  alpha           mean=-1.4378  sd=0.1819  q025=-1.7935  q975=-1.0814   truth=-1.2500
+  beta_urban      mean=1.0912  sd=0.2082  q025=0.6887  q975=1.5149   truth=1.0000
+  beta_normPop    mean=0.6257  sd=0.2993  q025=0.0573  q975=1.2238   truth=0.5000
+  sigma_BYM2      mean=0.4803  sd=0.0685  q025=0.3599  q975=0.6231   truth=0.7071
+  phi             mean=0.2679  sd=0.2287  q025=0.0162  q975=0.8459   truth=0.8000
+  sigma_eps       mean=1.2208  sd=0.0376  q025=1.1438  q975=1.2947   truth=1.2247
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4275.1867  (64.1 s)
+  a1_p1  dz=+1.0  dNLL=0.6931  (70.0 s)
+  a1_p2  dz=+2.0  dNLL=1.9806  (75.8 s)
+  a1_p3  dz=+3.0  dNLL=3.5327  (62.0 s)
+  a1_m1  dz=-1.0  dNLL=0.3595  (64.6 s)
+  a1_m2  dz=-2.0  dNLL=1.8913  (66.5 s)
+  a1_m3  dz=-3.0  dNLL=3.4921  (62.4 s)
+  a2_p1  dz=+1.0  dNLL=0.8091  (72.0 s)
+  a2_p2  dz=+2.0  dNLL=2.6559  (61.7 s)
+  a2_m1  dz=-1.0  dNLL=0.1917  (61.9 s)
+  a2_m2  dz=-2.0  dNLL=1.3026  (63.4 s)
+  a2_m3  dz=-3.0  dNLL=3.2258  (67.2 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (85.4 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (83.1 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.101 (from 3 pts)  σ⁻=1.116 (from 3 pts)  asym=0.99
+  axis 2:  σ⁺=0.862 (from 2 pts)  σ⁻=1.193 (from 3 pts)  asym=0.72
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+inlaStyleDraws time: 16.1 min
+
+----- M_M INLA-style (posteriorDraws useInla=TRUE) -----
+  alpha           mean=-1.3845  sd=0.1766  q025=-1.7261  q975=-1.0368   truth=-1.2500
+  beta_urban      mean=1.1322  sd=0.1887  q025=0.7777  q975=1.5107   truth=1.0000
+  beta_normPop    mean=0.5673  sd=0.2631  q025=0.0522  q975=1.0867   truth=0.5000
+  sigma_BYM2      mean=0.5024  sd=0.0749  q025=0.3802  q975=0.6716   truth=0.7071
+  phi             mean=0.2787  sd=0.2449  q025=0.0130  q975=0.8555   truth=0.8000
+  sigma_eps       mean=1.2206  sd=0.0387  q025=1.1499  q975=1.2974   truth=1.2247
+
+--- predGrid (useInla=FALSE vs useInla=TRUE) ---
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Sat May 23 16:27:37 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.43 & -1.80 & -1.68 & -1.18 & -1.04 \\ 
+  urb & 1.09 & 0.70 & 0.81 & 1.36 & 1.50 \\ 
+  access & 0.06 & -0.36 & -0.20 & 0.31 & 0.46 \\ 
+  elev & -0.02 & -0.23 & -0.15 & 0.11 & 0.17 \\ 
+  distRiversLakes & -0.12 & -0.32 & -0.24 & 0.01 & 0.06 \\ 
+  popValsNorm & 0.60 & -0.05 & 0.21 & 1.01 & 1.24 \\ 
+  sigmaSq & 0.24 & 0.13 & 0.16 & 0.32 & 0.40 \\ 
+  phi & 0.26 & 0.02 & 0.04 & 0.61 & 0.80 \\ 
+  sigmaEpsSq & 1.50 & 1.32 & 1.37 & 1.62 & 1.68 \\ 
+   \hline
+\end{tabular}
+\end{table}
+  Gaussian predGrid: 53.8 s
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4275.1867  (59.5 s)
+  a1_p1  dz=+1.0  dNLL=0.6931  (58.6 s)
+  a1_p2  dz=+2.0  dNLL=1.9806  (84.2 s)
+  a1_p3  dz=+3.0  dNLL=3.5327  (62.4 s)
+  a1_m1  dz=-1.0  dNLL=0.3595  (66.6 s)
+  a1_m2  dz=-2.0  dNLL=1.8913  (65.2 s)
+  a1_m3  dz=-3.0  dNLL=3.4921  (70.0 s)
+  a2_p1  dz=+1.0  dNLL=0.8091  (70.0 s)
+  a2_p2  dz=+2.0  dNLL=2.6559  (70.3 s)
+  a2_m1  dz=-1.0  dNLL=0.1917  (63.0 s)
+  a2_m2  dz=-2.0  dNLL=1.3026  (62.5 s)
+  a2_m3  dz=-3.0  dNLL=3.2258  (68.1 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (114.0 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (54.1 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.101 (from 3 pts)  σ⁻=1.116 (from 3 pts)  asym=0.99
+  axis 2:  σ⁺=0.862 (from 2 pts)  σ⁻=1.193 (from 3 pts)  asym=0.72
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Sat May 23 16:44:44 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.38 & -1.73 & -1.62 & -1.16 & -1.03 \\ 
+  urb & 1.13 & 0.73 & 0.87 & 1.39 & 1.50 \\ 
+  access & 0.06 & -0.25 & -0.15 & 0.28 & 0.40 \\ 
+  elev & -0.02 & -0.22 & -0.15 & 0.12 & 0.20 \\ 
+  distRiversLakes & -0.11 & -0.30 & -0.24 & 0.01 & 0.08 \\ 
+  popValsNorm & 0.57 & 0.08 & 0.23 & 0.90 & 1.11 \\ 
+  sigmaSq & 0.25 & 0.14 & 0.17 & 0.36 & 0.45 \\ 
+  phi & 0.27 & 0.01 & 0.03 & 0.65 & 0.87 \\ 
+  sigmaEpsSq & 1.49 & 1.31 & 1.37 & 1.61 & 1.69 \\ 
+   \hline
+\end{tabular}
+\end{table}
+  INLA  predGrid: 1029.6 s
+Area-level RMSE   Gaussian = 0.0496   INLA = 0.0498
+Area-level CI95 width  Gaussian = NaN   INLA = NaN
+
+
+##### M_D_BYM2 sim 1 #####
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+fitMD time: 0.4 min
+fitMD mode: log_tau=-0.001  logit_phi=-0.003  log_tauEps=-0.520  pdHess=FALSE
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+gaussian draws failed: the leading minor of order 1 is not positive 
+Warning in inlaStyleDraws(res, NDRAWS = NDRAWS, ...) :
+  hyper covariance non-PD; clamping to |eigenvalues|
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3272.3642  (12.2 s)
+  a1_p1  dz=+1.0  dNLL=-0.0309  (11.9 s)
+  a1_p2  dz=+2.0  dNLL=-0.1162  (12.1 s)
+  a1_p3  dz=+3.0  dNLL=-0.4675  (12.3 s)
+  a1_p4  dz=+4.0  dNLL=0.2477  (12.7 s)
+  a1_m1  dz=-1.0  dNLL=0.0103  (11.8 s)
+  a1_m2  dz=-2.0  dNLL=0.0120  (12.0 s)
+  a1_m3  dz=-3.0  dNLL=0.0111  (12.1 s)
+  a1_m4  dz=-4.0  dNLL=0.0108  (12.4 s)
+  a2_p1  dz=+1.0  dNLL=0.0040  (12.3 s)
+  a2_p2  dz=+2.0  dNLL=-0.0012  (12.0 s)
+  a2_p3  dz=+3.0  dNLL=-0.0045  (12.1 s)
+  a2_p4  dz=+4.0  dNLL=-0.0003  (12.0 s)
+  a2_m1  dz=-1.0  dNLL=-0.0419  (12.0 s)
+  a2_m2  dz=-2.0  dNLL=-0.2646  (12.2 s)
+  a2_m3  dz=-3.0  dNLL=0.2709  (13.6 s)
+  a2_m4  dz=-4.0  dNLL=0.5022  (14.3 s)
+  a3_p1  dz=+1.0  dNLL=0.0502  (12.5 s)
+  a3_p2  dz=+2.0  dNLL=0.0318  (12.4 s)
+  a3_p3  dz=+3.0  dNLL=-0.0070  (12.1 s)
+  a3_p4  dz=+4.0  dNLL=-0.0507  (12.5 s)
+  a3_m1  dz=-1.0  dNLL=0.2292  (14.8 s)
+  a3_m2  dz=-2.0  dNLL=0.5528  (14.2 s)
+  a3_m3  dz=-3.0  dNLL=0.8209  (14.3 s)
+  a3_m4  dz=-4.0  dNLL=1.0730  (13.9 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=5.684 (from 4 pts)  σ⁻=23.104 (from 4 pts)  asym=0.25
+  axis 2:  σ⁺=11.248 (from 4 pts)  σ⁻=4.011 (from 4 pts)  asym=2.80
+  axis 3:  σ⁺=6.925 (from 4 pts)  σ⁻=2.561 (from 4 pts)  asym=2.70
+inlaStyleDraws time: 5.3 min
+
+----- M_D INLA-style (posteriorDraws useInla=TRUE) -----
+  alpha           mean=-1.3437  sd=0.0866  q025=-1.5146  q975=-1.1779   truth=-1.2500
+  beta_urban      mean=1.0400  sd=0.1120  q025=0.8111  q975=1.2511   truth=1.0000
+  beta_normPop    mean=0.5023  sd=0.1036  q025=0.2928  q975=0.6955   truth=0.5000
+  sigma_BYM2      mean=0.8779  sd=0.1783  q025=0.5361  q975=1.2000   truth=0.7071
+  phi             mean=0.5076  sd=0.0296  q025=0.4539  q975=0.5690   truth=0.8000
+  sigma_eps       mean=1.3903  sd=0.0716  q025=1.2746  q975=1.5549   truth=1.2247
+
+
+Done.

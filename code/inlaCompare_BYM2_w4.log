@@ -1,0 +1,214 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_BYM2.RData (>=10 sims complete)
+Loading required package: prodlim
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Sat May 23 20:21:44 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.19 & -1.60 & -1.46 & -0.91 & -0.77 \\ 
+  urb & 0.90 & 0.50 & 0.63 & 1.19 & 1.33 \\ 
+  access & -0.32 & -0.69 & -0.57 & -0.08 & 0.02 \\ 
+  elev & -0.06 & -0.35 & -0.26 & 0.15 & 0.26 \\ 
+  distRiversLakes & -0.09 & -0.33 & -0.25 & 0.07 & 0.15 \\ 
+  popValsNorm & 0.07 & -0.61 & -0.37 & 0.50 & 0.70 \\ 
+  sigmaSq & 0.50 & 0.30 & 0.34 & 0.69 & 0.81 \\ 
+  phi & 0.23 & 0.01 & 0.03 & 0.56 & 0.78 \\ 
+  sigmaEpsSq & 1.48 & 1.26 & 1.33 & 1.63 & 1.73 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4204.1144  (339.3 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a1_p1  dz=+1.0  dNLL=NaN  (155.3 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a1_m1  dz=-1.0  dNLL=NaN  (95.5 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_p1  dz=+1.0  dNLL=NaN  (45.5 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (57.8 s) [skipped: non-finite NLL]
+  a3_p1  dz=+1.0  dNLL=NaN  (10.6 s) [skipped: Caught exception 'std::bad_alloc' in function 'TransformADFunObjectTemplate'
+]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (49.1 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+  axis 2:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  centre   NLL=NaN  (118.5 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a1_p1  dz=+1.0  dNLL=NaN  (91.4 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation

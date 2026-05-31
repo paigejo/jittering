@@ -1,0 +1,290 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_SPDE.RData (>=10 sims complete)
+Loading required package: prodlim
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 04:25:17 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.56 & -1.94 & -1.80 & -1.31 & -1.18 \\ 
+  urb & 0.79 & 0.35 & 0.49 & 1.11 & 1.24 \\ 
+  access & 0.21 & -0.30 & -0.12 & 0.53 & 0.70 \\ 
+  elev & -0.12 & -0.33 & -0.27 & 0.02 & 0.10 \\ 
+  distRiversLakes & -0.03 & -0.22 & -0.15 & 0.08 & 0.14 \\ 
+  popValsNorm & 1.02 & 0.33 & 0.58 & 1.45 & 1.71 \\ 
+  sigmaSq & 0.22 & 0.12 & 0.15 & 0.31 & 0.39 \\ 
+  phi & 0.77 & 0.34 & 0.51 & 0.96 & 0.98 \\ 
+  sigmaEpsSq & 1.69 & 1.47 & 1.55 & 1.85 & 1.93 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4228.6427  (80.8 s)
+  a1_p1  dz=+1.0  dNLL=0.6878  (77.0 s)
+  a1_p2  dz=+2.0  dNLL=2.9612  (76.6 s)
+  a1_m1  dz=-1.0  dNLL=0.3202  (81.1 s)
+  a1_m2  dz=-2.0  dNLL=0.8737  (76.1 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a1_m3  dz=-3.0  dNLL=NaN  (103.4 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_p1  dz=+1.0  dNLL=NaN  (63.9 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (76.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (56.7 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (68.6 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.824 (from 2 pts)  σ⁻=1.493 (from 2 pts)  asym=0.55
+  axis 2:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4228.6427  (82.7 s)
+  a1_p1  dz=+1.0  dNLL=0.6878  (76.4 s)
+  a1_p2  dz=+2.0  dNLL=2.9612  (79.3 s)
+  a1_m1  dz=-1.0  dNLL=0.3202  (84.2 s)
+  a1_m2  dz=-2.0  dNLL=0.8737  (69.4 s)
+  a1_m3  dz=-3.0  dNLL=1.2789  (73.4 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a1_m4  dz=-4.0  dNLL=NaN  (194.4 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_p1  dz=+1.0  dNLL=NaN  (53.6 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (46.1 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (69.6 s) [skipped: non-finite NLL]
+  a3_m1  dz=-1.0  dNLL=0.6465  (83.2 s)
+  a3_m2  dz=-2.0  dNLL=2.4154  (65.3 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m3  dz=-3.0  dNLL=NaN  (63.7 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.824 (from 2 pts)  σ⁻=1.788 (from 3 pts)  asym=0.46
+  axis 2:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=0.908 (from 2 pts)  asym=1.10
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 04:56:34 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.49 & -1.82 & -1.71 & -1.27 & -1.17 \\ 
+  urb & 0.82 & 0.37 & 0.53 & 1.10 & 1.24 \\ 
+  access & 0.16 & -0.27 & -0.11 & 0.42 & 0.60 \\ 
+  elev & -0.13 & -0.33 & -0.26 & 0.01 & 0.07 \\ 
+  distRiversLakes & -0.04 & -0.21 & -0.15 & 0.08 & 0.14 \\ 
+  popValsNorm & 0.90 & 0.37 & 0.53 & 1.26 & 1.45 \\ 
+  sigmaSq & 0.23 & 0.12 & 0.15 & 0.32 & 0.40 \\ 
+  phi & 0.85 & 0.48 & 0.64 & 0.99 & 1.00 \\ 
+  sigmaEpsSq & 1.69 & 1.47 & 1.55 & 1.83 & 1.90 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 2] M_M_BYM2  fit=4.4 gauss=1.0 inla=31.4 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 05:02:42 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.43 & -0.86 & -0.72 & -0.13 & 0.03 \\ 
+  urb & 1.76 & 1.32 & 1.46 & 2.05 & 2.24 \\ 
+  access & 0.28 & -0.03 & 0.06 & 0.50 & 0.61 \\ 
+  elev & 0.11 & -0.16 & -0.06 & 0.27 & 0.36 \\ 
+  distRiversLakes & 0.03 & -0.18 & -0.10 & 0.17 & 0.25 \\ 
+  popValsNorm & 0.08 & -0.54 & -0.36 & 0.51 & 0.67 \\ 
+  sigmaSq & 0.30 & 0.16 & 0.20 & 0.40 & 0.49 \\ 
+  phi & 0.65 & 0.22 & 0.37 & 0.89 & 0.94 \\ 
+  sigmaEpsSq & 1.62 & 1.43 & 1.50 & 1.75 & 1.82 \\ 
+   \hline
+\end{tabular}
+\end{table}

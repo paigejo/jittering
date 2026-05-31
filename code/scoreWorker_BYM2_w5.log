@@ -1,0 +1,1210 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_BYM2.RData (>=10 sims complete)
+Loading required package: prodlim
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 21 12:15:45 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.21 & -1.40 & -1.33 & -1.09 & -1.01 \\ 
+  urb & 1.07 & 0.89 & 0.94 & 1.19 & 1.26 \\ 
+  access & -0.05 & -0.15 & -0.13 & 0.02 & 0.05 \\ 
+  elev & -0.04 & -0.15 & -0.12 & 0.04 & 0.07 \\ 
+  distRiversLakes & 0.08 & -0.03 & 0.01 & 0.15 & 0.19 \\ 
+  popValsNorm & 0.38 & 0.15 & 0.24 & 0.54 & 0.61 \\ 
+  sigmaSq & 0.44 & 0.27 & 0.31 & 0.59 & 0.69 \\ 
+  phi & 0.15 & 0.01 & 0.02 & 0.32 & 0.56 \\ 
+  sigmaEpsSq & 1.44 & 1.31 & 1.35 & 1.51 & 1.56 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [bym2 sim 5] M_DM_BYM2  fit=99.3 score=1.4 total=100.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 1] M_DM_FE  fit=2.1 score=1.6 total=3.8 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 3] M_DM_FE  fit=2.0 score=1.5 total=3.5 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 2 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 5] M_DM_FE  fit=2.1 score=1.6 total=3.8 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 2 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 7] M_DM_FE  fit=2.1 score=1.6 total=3.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 2 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] sizes: nUrbM=741 nRurM=1442 nUrbD=572 nRurD=806 nAreas=41 KUrbM=100 KRurM=100 KUrbD=16 KRurD=21 Q=10
+[modMDM_BYM2_GH_v2] about to multiply Q_bym2 by u_bym2 (nAreas=41)
+[modMDM_BYM2_GH_v2] completed Q_bym2 * u_bym2 multiply
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=741 Kint=100 fe.size=74100 w.rows=741 w.cols=100 lchoose=741 areaidx.len=741 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=1442 Kint=100 fe.size=144200 w.rows=1442 w.cols=100 lchoose=1442 areaidx.len=1442 areaidx.range=0..37
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=572 Kint=16 fe.size=9152 w.rows=572 w.cols=16 lchoose=572 areaidx.len=572 areaidx.range=0..40
+[modMDM_BYM2_GH_v2] add_dataset start: nObs=806 Kint=21 fe.size=16926 w.rows=806 w.cols=21 lchoose=806 areaidx.len=806 areaidx.range=0..37
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 9] M_DM_FE  fit=2.0 score=1.5 total=3.5 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 2 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 2] M_D_FE  fit=0.1 score=1.5 total=1.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 4] M_D_FE  fit=0.1 score=1.6 total=1.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 6] M_D_FE  fit=0.1 score=1.6 total=1.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 8] M_D_FE  fit=0.1 score=1.5 total=1.6 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning in TMB::sdreport(obj, getJointPrecision = TRUE, bias.correct = TRUE,  :
+  'bias.correct' does nothing without random effects
+    [bym2 sim 10] M_D_FE  fit=0.1 score=1.6 total=1.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 21 12:50:16 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.38 & -1.79 & -1.64 & -1.11 & -0.96 \\ 
+  urb & 1.05 & 0.55 & 0.73 & 1.37 & 1.54 \\ 
+  access & -0.07 & -0.56 & -0.36 & 0.25 & 0.44 \\ 
+  elev & -0.12 & -0.43 & -0.31 & 0.08 & 0.19 \\ 
+  distRiversLakes & -0.16 & -0.38 & -0.30 & -0.02 & 0.08 \\ 
+  popValsNorm & 0.44 & -0.23 & 0.00 & 0.88 & 1.12 \\ 
+  sigmaSq & 0.41 & 0.20 & 0.25 & 0.58 & 0.75 \\ 
+  phi & 0.37 & 0.01 & 0.04 & 0.83 & 0.92 \\ 
+  sigmaEpsSq & 1.50 & 1.30 & 1.35 & 1.65 & 1.72 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [bym2 sim 9] M_M_BYM2  fit=6.2 score=1.5 total=7.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "compiling code/modM_DSepRepar.cpp..."
+using C++ compiler: 'G__~1.EXE (GCC) 13.3.0'
+make: Nothing to be done for 'all'.
+[1] "optimizing for tol = 1e-06."
+par:
+   log_tau  logit_phi log_tauEps 
+         0          0          0 
+iter: 1  value: 3772.891 mgc: 296.2672 ustep: 1 
+iter: 2  value: 3707.945 mgc: 110.8987 ustep: 1 
+iter: 3  value: 3706.326 mgc: 8.930034 ustep: 1 
+iter: 4  value: 3706.321 mgc: 0.3691252 ustep: 1 
+iter: 5  value: 3706.321 mgc: 0.00263625 ustep: 1 
+iter: 6  value: 3706.321 mgc: 2.844632e-07 ustep: 1 
+iter: 7  mgc: 1.786038e-13 
+iter: 1  mgc: 1.786038e-13 
+Matching hessian patterns... Done
+outer mgc:  109.3183 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.3057379  0.0039226 -4.3727330 
+iter: 1  value: 5899.997 mgc: 2.420417 ustep: 1 
+iter: 2  value: 5849.799 mgc: 24.00464 ustep: 1 
+iter: 3  value: 5838.937 mgc: 7.919683 ustep: 1 
+iter: 4  value: 5837.622 mgc: 2.079852 ustep: 1 
+iter: 5  value: 5837.585 mgc: 0.2718924 ustep: 1 
+iter: 6  value: 5837.585 mgc: 0.007923093 ustep: 1 
+iter: 7  value: 5837.585 mgc: 1.634561e-05 ustep: 1 
+iter: 8  mgc: 1.991401e-10 
+par:
+    log_tau   logit_phi  log_tauEps 
+ 0.06114757  0.00078452 -0.87454660 
+iter: 1  value: 3939.944 mgc: 1.429009 ustep: 1 
+iter: 2  value: 3939.09 mgc: 5.238788 ustep: 1 
+iter: 3  value: 3939.09 mgc: 0.1133251 ustep: 1 
+iter: 4  value: 3939.09 mgc: 6.457595e-05 ustep: 1 
+iter: 5  mgc: 5.850236e-11 
+par:
+     log_tau    logit_phi   log_tauEps 
+ 0.012229514  0.000156904 -0.174909320 
+iter: 1  value: 3742.695 mgc: 0.3933596 ustep: 1 
+iter: 2  value: 3742.693 mgc: 0.2696995 ustep: 1 
+iter: 3  value: 3742.693 mgc: 0.0001588203 ustep: 1 
+iter: 4  mgc: 7.050467e-11 
+iter: 1  mgc: 7.050467e-11 
+outer mgc:  65.4786 
+par:
+    log_tau   logit_phi  log_tauEps 
+ 6.44743976 -0.04833131 -0.36476488 
+iter: 1  value: 3824.24 mgc: 2786.978 ustep: 1 
+iter: 2  value: 3823.883 mgc: 4.410056 ustep: 1 
+iter: 3  value: 3823.883 mgc: 0.05736903 ustep: 1 
+iter: 4  value: 3823.883 mgc: 2.244646e-05 ustep: 1 
+iter: 5  mgc: 4.774847e-12 
+par:
+     log_tau    logit_phi   log_tauEps 
+ 1.299271563 -0.009540738 -0.212880432 
+iter: 1  value: 3747.685 mgc: 9.015057 ustep: 1 
+iter: 2  value: 3747.684 mgc: 0.1806576 ustep: 1 
+iter: 3  value: 3747.684 mgc: 0.0003524049 ustep: 1 
+iter: 4  mgc: 4.316116e-09 
+par:
+     log_tau    logit_phi   log_tauEps 
+ 0.269637924 -0.001782624 -0.182503542 
+iter: 1  value: 3742.1 mgc: 0.9246857 ustep: 1 
+iter: 2  value: 3742.1 mgc: 0.004756869 ustep: 1 
+iter: 3  value: 3742.1 mgc: 4.406041e-07 ustep: 1 
+iter: 4  mgc: 1.540823e-13 
+iter: 1  mgc: 1.540823e-13 
+outer mgc:  62.97784 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.6026565 -1.1222522 -0.5248660 
+iter: 1  value: 3833.622 mgc: 1.694735 ustep: 1 
+iter: 2  value: 3833.6 mgc: 0.9571435 ustep: 1 
+iter: 3  value: 3833.6 mgc: 0.002822879 ustep: 1 
+iter: 4  value: 3833.6 mgc: 3.023616e-08 ustep: 1 
+mgc: 5.446293e-13 
+iter: 1  mgc: 5.446293e-13 
+outer mgc:  26.38234 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5584881 -0.7762895 -0.4224414 
+iter: 1  value: 3804.068 mgc: 0.5336607 ustep: 1 
+iter: 2  value: 3804.068 mgc: 0.0924478 ustep: 1 
+iter: 3  value: 3804.068 mgc: 2.640953e-05 ustep: 1 
+iter: 4  mgc: 2.354304e-12 
+iter: 1  mgc: 2.354304e-12 
+outer mgc:  0.3682052 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5673848 -0.7898540 -0.4236460 
+iter: 1  value: 3804.419 mgc: 0.04564664 ustep: 1 
+iter: 2  value: 3804.419 mgc: 1.530307e-05 ustep: 1 
+iter: 3  mgc: 5.587781e-13 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.6666967 -0.7925116 -0.7918513 
+iter: 1  value: 3912.784 mgc: 0.5704276 ustep: 1 
+iter: 2  value: 3912.753 mgc: 0.9849166 ustep: 1 
+iter: 3  value: 3912.753 mgc: 0.00421288 ustep: 1 
+iter: 4  value: 3912.753 mgc: 9.17858e-08 ustep: 1 
+iter: 5  mgc: 2.903277e-14 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5872472 -0.7903855 -0.4972871 
+iter: 1  value: 3824.202 mgc: 0.1314746 ustep: 1 
+iter: 2  value: 3824.202 mgc: 0.04439995 ustep: 1 
+iter: 3  value: 3824.202 mgc: 6.55491e-06 ustep: 1 
+iter: 4  mgc: 2.051935e-13 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5713573 -0.7899603 -0.4383742 
+iter: 1  value: 3808.301 mgc: 0.02707512 ustep: 1 
+iter: 2  value: 3808.301 mgc: 0.001814294 ustep: 1 
+iter: 3  value: 3808.301 mgc: 1.034858e-08 ustep: 1 
+mgc: 4.760797e-13 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5681793 -0.7898753 -0.4265917 
+iter: 1  value: 3805.192 mgc: 0.005446973 ustep: 1 
+iter: 2  value: 3805.192 mgc: 7.287385e-05 ustep: 1 
+iter: 3  mgc: 1.636684e-11 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5675437 -0.7898583 -0.4242352 
+iter: 1  value: 3804.573 mgc: 0.001090679 ustep: 1 
+iter: 2  value: 3804.573 mgc: 2.917364e-06 ustep: 1 
+iter: 3  mgc: 8.149017e-14 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.5674166 -0.7898549 -0.4237639 
+iter: 1  value: 3804.45 mgc: 0.0002181871 ustep: 1 
+iter: 2  value: 3804.45 mgc: 1.167142e-07 ustep: 1 
+iter: 3  mgc: 2.932468e-13 
+[1] "completed optimization for tol = 1e-06"
+iter: 1  mgc: 2.932468e-13 
+outer mgc:  0.03393432 
+iter: 1  value: 3804.445 mgc: 0.004028173 ustep: 1 
+iter: 2  value: 3804.445 mgc: 7.848908e-08 ustep: 1 
+iter: 3  mgc: 5.285761e-13 
+outer mgc:  0.04949342 
+iter: 1  value: 3804.455 mgc: 0.004023497 ustep: 1 
+iter: 2  value: 3804.455 mgc: 7.841083e-08 ustep: 1 
+iter: 3  mgc: 2.205159e-13 
+outer mgc:  0.01838333 
+iter: 1  value: 3804.444 mgc: 0.001395287 ustep: 1 
+iter: 2  mgc: 4.127487e-09 
+outer mgc:  0.03453979 
+iter: 1  value: 3804.456 mgc: 0.001394167 ustep: 1 
+iter: 2  mgc: 4.123061e-09 
+outer mgc:  0.03333018 
+iter: 1  value: 3804.186 mgc: 0.001852666 ustep: 1 
+iter: 2  value: 3804.186 mgc: 8.457173e-06 ustep: 1 
+iter: 3  mgc: 1.756241e-13 
+outer mgc:  0.2645952 
+iter: 1  value: 3804.713 mgc: 0.001850814 ustep: 1 
+iter: 2  value: 3804.713 mgc: 8.451388e-06 ustep: 1 
+iter: 3  mgc: 4.469868e-13 
+outer mgc:  0.2562038 
+Re-using symbolic Cholesky
+iter: 1  mgc: 2.932468e-13 
+Matching hessian patterns... Done
+outer mgc:  0.03393432 
+iter: 1  mgc: 2.932468e-13 
+outer mgc:  0.03393432 
+iter: 1  value: 3804.449 mgc: 0.00022844 ustep: 1 
+iter: 2  mgc: 2.524115e-10 
+outer mgc:  0.03481695 
+iter: 1  value: 3804.45 mgc: 0.0002284249 ustep: 1 
+iter: 2  mgc: 2.523041e-10 
+outer mgc:  0.03305172 
+iter: 1  value: 3804.449 mgc: 0.0001101666 ustep: 1 
+iter: 2  mgc: 2.512166e-11 
+outer mgc:  0.0339821 
+iter: 1  value: 3804.45 mgc: 0.0001101597 ustep: 1 
+iter: 2  mgc: 2.544322e-11 
+outer mgc:  0.03388656 
+iter: 1  value: 3804.439 mgc: 7.847169e-05 ustep: 1 
+iter: 2  value: 3804.439 mgc: 1.518165e-08 ustep: 1 
+mgc: 8.582308e-14 
+outer mgc:  0.033838 
+iter: 1  value: 3804.461 mgc: 7.846837e-05 ustep: 1 
+iter: 2  value: 3804.461 mgc: 1.518161e-08 ustep: 1 
+mgc: 1.970632e-13 
+outer mgc:  0.03403064 
+iter: 1  value: 3804.45 mgc: 0.0001142181 ustep: 1 
+iter: 2  mgc: 6.316955e-11 
+outer mgc:  0.03437564 
+iter: 1  value: 3804.45 mgc: 0.0001142144 ustep: 1 
+iter: 2  mgc: 6.296481e-11 
+outer mgc:  0.03349302 
+iter: 1  value: 3804.45 mgc: 5.508245e-05 ustep: 1 
+iter: 2  mgc: 6.00441e-12 
+outer mgc:  0.03395821 
+iter: 1  value: 3804.45 mgc: 5.50807e-05 ustep: 1 
+iter: 2  mgc: 6.522236e-12 
+outer mgc:  0.03391044 
+iter: 1  value: 3804.444 mgc: 3.923543e-05 ustep: 1 
+iter: 2  mgc: 3.794984e-09 
+outer mgc:  0.03388616 
+iter: 1  value: 3804.455 mgc: 3.92346e-05 ustep: 1 
+iter: 2  mgc: 3.795167e-09 
+outer mgc:  0.03398248 
+iter: 1  value: 3804.45 mgc: 5.710859e-05 ustep: 1 
+iter: 2  mgc: 1.583575e-11 
+outer mgc:  0.03415498 
+iter: 1  value: 3804.45 mgc: 5.710765e-05 ustep: 1 
+iter: 2  mgc: 1.575758e-11 
+outer mgc:  0.03371367 
+iter: 1  value: 3804.45 mgc: 2.754101e-05 ustep: 1 
+iter: 2  mgc: 1.418277e-12 
+outer mgc:  0.03394627 
+iter: 1  value: 3804.45 mgc: 2.754057e-05 ustep: 1 
+iter: 2  mgc: 1.503552e-12 
+outer mgc:  0.03392238 
+iter: 1  value: 3804.447 mgc: 1.961761e-05 ustep: 1 
+iter: 2  mgc: 9.491295e-10 
+outer mgc:  0.03391024 
+iter: 1  value: 3804.453 mgc: 1.96174e-05 ustep: 1 
+iter: 2  mgc: 9.492362e-10 
+outer mgc:  0.0339584 
+iter: 1  value: 3804.45 mgc: 2.855418e-05 ustep: 1 
+iter: 2  mgc: 3.94516e-12 
+outer mgc:  0.03404465 
+iter: 1  value: 3804.45 mgc: 2.855394e-05 ustep: 1 
+iter: 2  mgc: 3.772349e-12 
+outer mgc:  0.033824 
+iter: 1  value: 3804.45 mgc: 1.377045e-05 ustep: 1 
+iter: 2  mgc: 5.140514e-13 
+outer mgc:  0.03394029 
+iter: 1  value: 3804.45 mgc: 1.377034e-05 ustep: 1 
+iter: 2  mgc: 3.526296e-13 
+outer mgc:  0.03392835 
+iter: 1  value: 3804.448 mgc: 9.808779e-06 ustep: 1 
+iter: 2  mgc: 2.366625e-10 
+outer mgc:  0.03392228 
+iter: 1  value: 3804.451 mgc: 9.808728e-06 ustep: 1 
+iter: 2  mgc: 2.366257e-10 
+outer mgc:  0.03394636 
+  elapsed 
+0.3236667 
+[1] "optimization took 0.552333333333339 minutes"
+Warning in sweep(gridDraws_tmb, 2, alpha_tmb_draws, "+") :
+  length(STATS) or dim(STATS) do not match dim(x)[MARGIN]
+    [bym2 sim 7] Md  fit=0.6 score=0.6 total=1.2 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "compiling code/modM_DSepRepar.cpp..."
+using C++ compiler: 'G__~1.EXE (GCC) 13.3.0'
+make: Nothing to be done for 'all'.
+[1] "optimizing for tol = 1e-06."
+par:
+   log_tau  logit_phi log_tauEps 
+         0          0          0 
+iter: 1  value: 3759.595 mgc: 339.2065 ustep: 1 
+iter: 2  value: 3710.431 mgc: 295.8869 ustep: 1 
+iter: 3  value: 3709.552 mgc: 26.40106 ustep: 1 
+iter: 4  value: 3709.55 mgc: 0.7550492 ustep: 1 
+iter: 5  value: 3709.55 mgc: 0.002207312 ustep: 1 
+iter: 6  value: 3709.55 mgc: 1.090841e-07 ustep: 1 
+iter: 7  mgc: 3.719653e-13 
+iter: 1  mgc: 3.719653e-13 
+Matching hessian patterns... Done
+outer mgc:  92.16517 
+par:
+    log_tau   logit_phi  log_tauEps 
+ 0.42805351  0.01249054 -3.68660697 
+iter: 1  value: 5470.756 mgc: 2.22445 ustep: 1 
+iter: 2  value: 5429.243 mgc: 36.87501 ustep: 1 
+iter: 3  value: 5422.683 mgc: 10.35382 ustep: 1 
+iter: 4  value: 5422.295 mgc: 2.090263 ustep: 1 
+iter: 5  value: 5422.293 mgc: 0.1500232 ustep: 1 
+iter: 6  value: 5422.293 mgc: 0.0009561775 ustep: 1 
+iter: 7  value: 5422.293 mgc: 3.833204e-08 ustep: 1 
+iter: 8  mgc: 5.24357e-13 
+par:
+     log_tau    logit_phi   log_tauEps 
+ 0.085610701  0.002498109 -0.737321394 
+iter: 1  value: 3904.718 mgc: 1.190108 ustep: 1 
+iter: 2  value: 3904.274 mgc: 7.197735 ustep: 1 
+iter: 3  value: 3904.274 mgc: 0.1227716 ustep: 1 
+iter: 4  value: 3904.274 mgc: 4.293332e-05 ustep: 1 
+iter: 5  mgc: 8.63153e-12 
+par:
+      log_tau     logit_phi    log_tauEps 
+ 0.0171221403  0.0004996217 -0.1474642789 
+iter: 1  value: 3741.404 mgc: 0.3128255 ustep: 1 
+iter: 2  value: 3741.404 mgc: 0.3793883 ustep: 1 
+iter: 3  value: 3741.404 mgc: 0.0002029345 ustep: 1 
+iter: 4  mgc: 6.916772e-11 
+iter: 1  mgc: 6.916772e-11 
+outer mgc:  55.33438 
+par:
+   log_tau  logit_phi log_tauEps 
+ 9.7804431  0.1592407 -0.2603954 
+iter: 1  value: 3698.517 mgc: 78788.7 ustep: 1 
+iter: 2  value: 3698.288 mgc: 4.387057 ustep: 1 
+iter: 3  value: 3698.288 mgc: 0.06159434 ustep: 1 
+iter: 4  value: 3698.288 mgc: 1.399372e-05 ustep: 1 
+iter: 5  mgc: 7.275958e-12 
+par:
+    log_tau   logit_phi  log_tauEps 
+ 1.96978632  0.03224783 -0.17005050 
+iter: 1  value: 3740.293 mgc: 21.88937 ustep: 1 
+iter: 2  value: 3740.29 mgc: 0.4324676 ustep: 1 
+iter: 3  value: 3740.29 mgc: 0.001102509 ustep: 1 
+iter: 4  value: 3740.29 mgc: 1.015219e-08 ustep: 1 
+mgc: 8.005268e-14 
+par:
+     log_tau    logit_phi   log_tauEps 
+ 0.407654977  0.006849264 -0.151981524 
+iter: 1  value: 3737.964 mgc: 1.515417 ustep: 1 
+iter: 2  value: 3737.964 mgc: 0.004634617 ustep: 1 
+iter: 3  value: 3737.964 mgc: 2.084387e-07 ustep: 1 
+iter: 4  mgc: 3.293765e-13 
+iter: 1  mgc: 3.293765e-13 
+outer mgc:  53.38242 
+par:
+   log_tau  logit_phi log_tauEps 
+  1.143229  -1.339446  -0.389339 
+iter: 1  value: 3799.989 mgc: 3.29487 ustep: 1 
+iter: 2  value: 3799.984 mgc: 0.8701226 ustep: 1 
+iter: 3  value: 3799.984 mgc: 0.001212589 ustep: 1 
+iter: 4  mgc: 2.504986e-09 
+iter: 1  mgc: 2.504986e-09 
+outer mgc:  8.872213 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9168534 -1.2844160 -0.3617310 
+iter: 1  value: 3793.489 mgc: 1.209833 ustep: 1 
+iter: 2  value: 3793.489 mgc: 0.01027799 ustep: 1 
+iter: 3  value: 3793.489 mgc: 1.590839e-07 ustep: 1 
+iter: 4  mgc: 3.613055e-13 
+iter: 1  mgc: 3.613055e-13 
+outer mgc:  1.33699 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9738174 -1.5558892 -0.3525981 
+iter: 1  value: 3791.805 mgc: 0.4089985 ustep: 1 
+iter: 2  value: 3791.805 mgc: 0.002566767 ustep: 1 
+iter: 3  value: 3791.805 mgc: 2.293104e-08 ustep: 1 
+mgc: 1.075025e-13 
+iter: 1  mgc: 1.075025e-13 
+outer mgc:  0.9485548 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9788718 -1.7427800 -0.3559104 
+iter: 1  value: 3793.275 mgc: 0.2264919 ustep: 1 
+iter: 2  value: 3793.275 mgc: 0.0004797647 ustep: 1 
+iter: 3  mgc: 3.606289e-10 
+iter: 1  mgc: 3.606289e-10 
+outer mgc:  0.1521767 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9715018 -1.8253492 -0.3564174 
+iter: 1  value: 3793.706 mgc: 0.1085355 ustep: 1 
+iter: 2  value: 3793.706 mgc: 4.097407e-05 ustep: 1 
+iter: 3  mgc: 3.162009e-12 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.8193251 -1.8666079 -0.4598264 
+iter: 1  value: 3822.845 mgc: 0.642546 ustep: 1 
+iter: 2  value: 3822.845 mgc: 0.1732409 ustep: 1 
+iter: 3  value: 3822.845 mgc: 6.179112e-05 ustep: 1 
+iter: 4  mgc: 9.147925e-12 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9410665 -1.8336010 -0.3770992 
+iter: 1  value: 3799.369 mgc: 0.1379766 ustep: 1 
+iter: 2  value: 3799.369 mgc: 0.007215505 ustep: 1 
+iter: 3  value: 3799.369 mgc: 9.912783e-08 ustep: 1 
+mgc: 2.776499e-13 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9654148 -1.8269996 -0.3605537 
+iter: 1  value: 3794.832 mgc: 0.02799527 ustep: 1 
+iter: 2  value: 3794.832 mgc: 0.000290917 ustep: 1 
+iter: 3  mgc: 1.586209e-10 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9702844 -1.8256793 -0.3572446 
+iter: 1  value: 3793.931 mgc: 0.005615229 ustep: 1 
+iter: 2  value: 3793.931 mgc: 1.165507e-05 ustep: 1 
+iter: 3  mgc: 1.454169e-13 
+par:
+   log_tau  logit_phi log_tauEps 
+ 0.9712584 -1.8254152 -0.3565828 
+iter: 1  value: 3793.751 mgc: 0.001123694 ustep: 1 
+iter: 2  value: 3793.751 mgc: 4.663502e-07 ustep: 1 
+iter: 3  mgc: 3.570031e-13 
+[1] "completed optimization for tol = 1e-06"
+iter: 1  mgc: 3.570031e-13 
+outer mgc:  0.04689114 
+iter: 1  value: 3793.746 mgc: 0.004783675 ustep: 1 
+iter: 2  value: 3793.746 mgc: 6.606428e-08 ustep: 1 
+mgc: 5.94659e-13 
+outer mgc:  0.04882026 
+iter: 1  value: 3793.756 mgc: 0.004778256 ustep: 1 
+iter: 2  value: 3793.756 mgc: 6.597151e-08 ustep: 1 
+mgc: 4.599589e-13 
+outer mgc:  0.04496023 
+iter: 1  value: 3793.748 mgc: 0.001241921 ustep: 1 
+iter: 2  mgc: 7.314435e-09 
+outer mgc:  0.04699874 
+iter: 1  value: 3793.754 mgc: 0.001241092 ustep: 1 
+iter: 2  mgc: 7.311698e-09 
+outer mgc:  0.04678357 
+iter: 1  value: 3793.488 mgc: 0.001756638 ustep: 1 
+iter: 2  value: 3793.488 mgc: 1.634416e-05 ustep: 1 
+iter: 3  mgc: 3.322998e-13 
+outer mgc:  0.2118377 
+iter: 1  value: 3794.014 mgc: 0.001754882 ustep: 1 
+iter: 2  value: 3794.014 mgc: 1.632923e-05 ustep: 1 
+iter: 3  mgc: 6.177726e-13 
+outer mgc:  0.3056288 
+Re-using symbolic Cholesky
+iter: 1  mgc: 3.570031e-13 
+Matching hessian patterns... Done
+outer mgc:  0.04689114 
+iter: 1  mgc: 3.570031e-13 
+outer mgc:  0.04689114 
+iter: 1  value: 3793.75 mgc: 0.0004643807 ustep: 1 
+iter: 2  mgc: 6.228156e-10 
+outer mgc:  0.04707858 
+iter: 1  value: 3793.752 mgc: 0.0004643296 ustep: 1 
+iter: 2  mgc: 6.227205e-10 
+outer mgc:  0.04670367 
+iter: 1  value: 3793.75 mgc: 0.0002266403 ustep: 1 
+iter: 2  mgc: 2.436321e-10 
+outer mgc:  0.04691078 
+iter: 1  value: 3793.752 mgc: 0.0002266127 ustep: 1 
+iter: 2  mgc: 2.435901e-10 
+outer mgc:  0.0468715 
+iter: 1  value: 3793.742 mgc: 6.26085e-05 ustep: 1 
+iter: 2  value: 3793.742 mgc: 2.077293e-08 ustep: 1 
+mgc: 8.392837e-14 
+outer mgc:  0.03766516 
+iter: 1  value: 3793.76 mgc: 6.260627e-05 ustep: 1 
+iter: 2  value: 3793.76 mgc: 2.077245e-08 ustep: 1 
+mgc: 6.486592e-14 
+outer mgc:  0.05611713 
+iter: 1  value: 3793.751 mgc: 0.000232184 ustep: 1 
+iter: 2  mgc: 1.557057e-10 
+outer mgc:  0.04698486 
+iter: 1  value: 3793.751 mgc: 0.0002321712 ustep: 1 
+iter: 2  mgc: 1.556852e-10 
+outer mgc:  0.04679741 
+iter: 1  value: 3793.751 mgc: 0.0001133167 ustep: 1 
+iter: 2  mgc: 6.088127e-11 
+outer mgc:  0.04690096 
+iter: 1  value: 3793.751 mgc: 0.0001133098 ustep: 1 
+iter: 2  mgc: 6.116402e-11 
+outer mgc:  0.04688132 
+iter: 1  value: 3793.746 mgc: 3.130397e-05 ustep: 1 
+iter: 2  mgc: 5.193619e-09 
+outer mgc:  0.04227815 
+iter: 1  value: 3793.756 mgc: 3.130341e-05 ustep: 1 
+iter: 2  mgc: 5.193073e-09 
+outer mgc:  0.05150413 
+iter: 1  value: 3793.751 mgc: 0.0001160904 ustep: 1 
+iter: 2  mgc: 3.891376e-11 
+outer mgc:  0.046938 
+iter: 1  value: 3793.751 mgc: 0.0001160872 ustep: 1 
+iter: 2  mgc: 3.89182e-11 
+outer mgc:  0.04684427 
+iter: 1  value: 3793.751 mgc: 5.665748e-05 ustep: 1 
+iter: 2  mgc: 1.520937e-11 
+outer mgc:  0.04689605 
+iter: 1  value: 3793.751 mgc: 5.665576e-05 ustep: 1 
+iter: 2  mgc: 1.535784e-11 
+outer mgc:  0.04688623 
+iter: 1  value: 3793.749 mgc: 1.565192e-05 ustep: 1 
+iter: 2  mgc: 1.298223e-09 
+outer mgc:  0.04458464 
+iter: 1  value: 3793.753 mgc: 1.565178e-05 ustep: 1 
+iter: 2  mgc: 1.298008e-09 
+outer mgc:  0.04919763 
+iter: 1  value: 3793.751 mgc: 5.804479e-05 ustep: 1 
+iter: 2  mgc: 9.729995e-12 
+outer mgc:  0.04691457 
+iter: 1  value: 3793.751 mgc: 5.8044e-05 ustep: 1 
+iter: 2  mgc: 9.716672e-12 
+outer mgc:  0.0468677 
+iter: 1  value: 3793.751 mgc: 2.832852e-05 ustep: 1 
+iter: 2  mgc: 4.22695e-12 
+outer mgc:  0.04689359 
+iter: 1  value: 3793.751 mgc: 2.832809e-05 ustep: 1 
+iter: 2  mgc: 4.281648e-12 
+outer mgc:  0.04688868 
+iter: 1  value: 3793.75 mgc: 7.82594e-06 ustep: 1 
+iter: 2  mgc: 3.244724e-10 
+outer mgc:  0.04573789 
+iter: 1  value: 3793.752 mgc: 7.825906e-06 ustep: 1 
+iter: 2  mgc: 3.244485e-10 
+outer mgc:  0.04804438 
+  elapsed 
+0.3128333 
+[1] "optimization took 0.54383333333332 minutes"
+Warning in sweep(gridDraws_tmb, 2, alpha_tmb_draws, "+") :
+  length(STATS) or dim(STATS) do not match dim(x)[MARGIN]
+    [bym2 sim 10] Md  fit=0.6 score=0.6 total=1.2 min

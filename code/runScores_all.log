@@ -1,0 +1,200 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[BYM2] 80 tasks across 6 workers; est total walltime 205 min
+  worker 1: 13 tasks, ~205 min
+  worker 2: 13 tasks, ~205 min
+  worker 3: 13 tasks, ~205 min
+  worker 4: 13 tasks, ~205 min
+  worker 5: 14 tasks, ~205 min
+  worker 6: 14 tasks, ~205 min
+
+[BYM2] all workers done. Aggregating ...
+
+----- [BYM2] Area-level scores (mean across sims) -----
+     model       Bias       Var       MSE    RMSE    CRPS IntervalScore50
+     Md_FE  0.0011626 0.0116491 0.0117207 0.10745 0.08058         0.33189
+    M_D_FE -0.0006691 0.0116328 0.0117094 0.10742 0.08040         0.33137
+    M_M_FE -0.0063031 0.0104671 0.0105843 0.10218 0.07596         0.31392
+   M_DM_FE -0.0029941 0.0109418 0.0109847 0.10413 0.07955         0.32531
+  M_D_BYM2  0.0013914 0.0114493 0.0115458 0.10702 0.06161         0.27977
+  M_M_BYM2 -0.0054385 0.0012638 0.0013167 0.03616 0.02043         0.09181
+ M_DM_BYM2 -0.0044096 0.0007861 0.0008233 0.02861 0.01637         0.07357
+ IntervalScore80 IntervalScore90 IntervalScore95 Coverage50 Coverage80
+          0.7546          1.4137          2.6753    0.03243    0.09459
+          0.7519          1.4061          2.6581    0.03514    0.07568
+          0.7054          1.3095          2.4557    0.07297    0.11081
+          0.7579          1.4459          2.7770    0.03784    0.08108
+          0.4043          0.5002          0.5765    0.60618    0.89961
+          0.1297          0.1514          0.1688    0.50541    0.75946
+          0.1010          0.1196          0.1369    0.45608    0.73311
+ Coverage90 Coverage95 Width50 Width80 Width90 Width95
+     0.1324     0.1622 0.01559 0.02959 0.03798 0.04521
+     0.1351     0.1595 0.01595 0.03011 0.03861 0.04589
+     0.1568     0.1811 0.01718 0.03258 0.04162 0.04951
+     0.0973     0.1189 0.01149 0.02178 0.02786 0.03311
+     0.9459     0.9614 0.18658 0.34492 0.43130 0.49907
+     0.8622     0.9189 0.04640 0.08793 0.11250 0.13358
+     0.8547     0.9122 0.03488 0.06598 0.08447 0.10037
+[SPDE] 80 tasks across 6 workers; est total walltime 205 min
+  worker 1: 13 tasks, ~205 min
+  worker 2: 13 tasks, ~205 min
+  worker 3: 13 tasks, ~205 min
+  worker 4: 13 tasks, ~205 min
+  worker 5: 14 tasks, ~205 min
+  worker 6: 14 tasks, ~205 min
+
+[SPDE] all workers done. Aggregating ...
+
+----- [SPDE] Area-level scores (mean across sims) -----
+     model       Bias      Var       MSE    RMSE    CRPS IntervalScore50
+     Md_FE  4.746e-04 0.007117 0.0071463 0.08342 0.06226         0.25864
+    M_D_FE -4.635e-05 0.007143 0.0071717 0.08360 0.06229         0.25896
+    M_M_FE  3.481e-03 0.005859 0.0059259 0.07586 0.05460         0.22809
+   M_DM_FE  3.013e-03 0.006193 0.0062335 0.07800 0.05914         0.24382
+  M_D_BYM2  1.387e-03 0.008785 0.0088602 0.09225 0.06019         0.27999
+  M_M_BYM2  1.951e-03 0.001178 0.0012101 0.03453 0.01946         0.08715
+ M_DM_BYM2  2.266e-03 0.000827 0.0008497 0.02902 0.01639         0.07364
+ IntervalScore80 IntervalScore90 IntervalScore95 Coverage50 Coverage80
+          0.5710          1.0477          1.9474    0.07027    0.11622
+          0.5701          1.0426          1.9345    0.07027    0.12703
+          0.4921          0.8882          1.6262    0.09189    0.15405
+          0.5519          1.0303          1.9435    0.02703    0.08649
+          0.4322          0.5293          0.6240    0.66216    0.87500
+          0.1250          0.1499          0.1729    0.51622    0.77838
+          0.1049          0.1263          0.1465    0.48311    0.74662
+ Coverage90 Coverage95 Width50 Width80 Width90 Width95
+     0.1892     0.2189 0.01626 0.03076 0.03931 0.04680
+     0.1865     0.2216 0.01649 0.03146 0.04041 0.04800
+     0.2243     0.2757 0.01740 0.03307 0.04242 0.05042
+     0.1297     0.1676 0.01199 0.02276 0.02917 0.03478
+     0.9291     0.9493 0.20790 0.36851 0.44925 0.51030
+     0.8757     0.9270 0.04453 0.08433 0.10788 0.12830
+     0.8615     0.8986 0.03497 0.06622 0.08479 0.10089
+
+Done.

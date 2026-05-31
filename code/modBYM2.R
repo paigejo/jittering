@@ -979,13 +979,15 @@ summaryTabBYM2 = function(SD0, obj=NULL, popMat=popMatNGAThresh, gridPreds=NULL,
 # normalized: whether covariates are normalized
 # extractMethod: extraction method for covariates in terra:extract
 # predAtArea: name of area to predict at, if only 1
-predGrid = function(SD0=NULL, popMat=popMatNGAThresh, 
-                    normalized=TRUE, extractMethod="bilinear", 
-                    nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975), 
-                    splineApprox=TRUE, admLevel=c("stratMICS", "adm2"), 
-                    predAtArea=NULL, sep=FALSE, QinvSumsNorm=NULL, 
-                    includedCovs=c("urb", "access", "elev", "distRiversLakes", "popValsNorm"), 
-                    constrParameterization=FALSE, constr2n2=FALSE, obj=NULL) {
+predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
+                    normalized=TRUE, extractMethod="bilinear",
+                    nsim=1000, quantiles=c(0.025, 0.1, 0.9, 0.975),
+                    splineApprox=TRUE, admLevel=c("stratMICS", "adm2"),
+                    predAtArea=NULL, sep=FALSE, QinvSumsNorm=NULL,
+                    includedCovs=c("urb", "access", "elev", "distRiversLakes", "popValsNorm"),
+                    constrParameterization=FALSE, constr2n2=FALSE, obj=NULL,
+                    useInla="auto", res=NULL, inlaDeltaZ=1.0, inlaDeltaPi=2.5,
+                    inlaMaxAxialSteps=4) {
   admLevel = match.arg(admLevel)
   
   # get parameters
@@ -1173,13 +1175,20 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   phi_tmb_draws = NULL
   predsMICS = quantsMICS = NULL
   if(SD0$pdHess && !noSpatialFE) {
-    L <- Cholesky(SD0[['jointPrecision']], super = T)
-    mu = summary(SD0)[,1]
-    t.draws <- rmvnorm_prec(mu = mu , chol_prec = L, n.sims = nsim)
-    
-    # extract fixed effects and random effects from draws
-    # parnames <- c(names(SD0[['par.fixed']]), names(SD0[['par.random']]))
-    parnames <- colnames(SD0$jointPrecision)
+    # Single dispatch — Gaussian and INLA-style both live in inlaStyleDraws.R.
+    # useInla="auto" (default): try Gaussian; fall back to INLA if the
+    # jointPrecision Cholesky fails.
+    needsRes <- isTRUE(useInla) || identical(useInla, "yes") ||
+                identical(useInla, "auto")
+    if(needsRes && is.null(res))
+      stop("predGrid: `res` (full fit) is needed for useInla=", deparse(useInla))
+    if(!exists("posteriorDraws"))
+      source("code/inlaStyleDraws.R")
+    resForDraws <- if(!is.null(res)) res else list(TMBsd = SD0, TMBobj = obj)
+    t.draws <- posteriorDraws(resForDraws, NDRAWS = nsim, useInla = useInla,
+                              deltaZ = inlaDeltaZ, deltaPi = inlaDeltaPi,
+                              maxAxialSteps = inlaMaxAxialSteps)
+    parnames <- rownames(t.draws)
     noSpatial = !any(c("w_bym2Free", "Epsilon_bym2", "w_bym2Star") %in% parnames)
     
     if(!finalRepar) {

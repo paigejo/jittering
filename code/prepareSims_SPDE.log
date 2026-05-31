@@ -1,0 +1,1483 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] generating/resuming savedOutput/simStudy1/simPopsSurveys_SPDE.RData (nsim=100, seed=123)
+[1] "Constructing offset based on covariates..."
+[1] "Existing checkpoint is incompatible (different seed or no metadata); starting fresh."
+[1] "Simulating populations and surveys..."
+[1] "Simulating population 1/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 1/100"
+[1] "estimated time remaining: 7.137625 hours"
+[1] "Simulating population 2/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 2/100"
+[1] "estimated time remaining: 6.44077777777778 hours"
+[1] "Simulating population 3/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 3/100"
+[1] "estimated time remaining: 6.12087962962963 hours"
+[1] "Simulating population 4/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 4/100"
+[1] "estimated time remaining: 5.9275 hours"
+[1] "Simulating population 5/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 5/100"
+[1] "estimated time remaining: 5.78101388888889 hours"
+[1] "Simulating population 6/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 6/100"
+[1] "estimated time remaining: 5.66600231481481 hours"
+[1] "Simulating population 7/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 7/100"
+[1] "estimated time remaining: 5.59005654761905 hours"
+[1] "Simulating population 8/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing......
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 8/100"
+[1] "estimated time remaining: 5.48414236111111 hours"
+[1] "Simulating population 9/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 9/100"
+[1] "estimated time remaining: 5.37314274691358 hours"
+[1] "Simulating population 10/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 10/100"
+[1] "estimated time remaining: 5.3490625 hours"
+[1] "Simulating population 11/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 11/100"
+[1] "estimated time remaining: 5.26178787878788 hours"
+[1] "Simulating population 12/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 12/100"
+[1] "estimated time remaining: 5.19154166666667 hours"
+[1] "Simulating population 13/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 13/100"
+[1] "estimated time remaining: 5.16320833333333 hours"
+[1] "Simulating population 14/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 14/100"
+[1] "estimated time remaining: 5.09788888888889 hours"
+[1] "Simulating population 15/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 15/100"
+[1] "estimated time remaining: 5.05021990740741 hours"
+[1] "Simulating population 16/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 16/100"
+[1] "estimated time remaining: 4.97823958333333 hours"
+[1] "Simulating population 17/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 17/100"
+[1] "estimated time remaining: 4.98684885620915 hours"
+[1] "Simulating population 18/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 18/100"
+[1] "estimated time remaining: 5.02202546296296 hours"
+[1] "Simulating population 19/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 19/100"
+[1] "estimated time remaining: 5.00009210526316 hours"
+[1] "Simulating population 20/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 20/100"
+[1] "estimated time remaining: 4.97980555555556 hours"
+[1] "Simulating population 21/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 21/100"
+[1] "estimated time remaining: 4.94215013227513 hours"
+[1] "Simulating population 22/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 22/100"
+[1] "estimated time remaining: 4.86505303030303 hours"
+[1] "Simulating population 23/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 23/100"
+[1] "estimated time remaining: 4.80361896135266 hours"
+[1] "Simulating population 24/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 24/100"
+[1] "estimated time remaining: 4.73084606481482 hours"
+[1] "Simulating population 25/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 25/100"
+[1] "estimated time remaining: 4.67664583333333 hours"
+[1] "Simulating population 26/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 26/100"
+[1] "estimated time remaining: 4.60902991452991 hours"
+[1] "Simulating population 27/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 27/100"
+[1] "estimated time remaining: 4.5390491255144 hours"
+[1] "Simulating population 28/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 28/100"
+[1] "estimated time remaining: 4.46930357142857 hours"
+[1] "Simulating population 29/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 29/100"
+[1] "estimated time remaining: 4.3917648467433 hours"
+[1] "Simulating population 30/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 30/100"
+[1] "estimated time remaining: 4.32112268518518 hours"
+[1] "Simulating population 31/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 31/100"
+[1] "estimated time remaining: 4.26877217741935 hours"
+[1] "Simulating population 32/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 32/100"
+[1] "estimated time remaining: 4.19644704861111 hours"
+[1] "Simulating population 33/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 33/100"
+[1] "estimated time remaining: 4.12966456228956 hours"
+[1] "Simulating population 34/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 34/100"
+[1] "estimated time remaining: 4.0595931372549 hours"
+[1] "Simulating population 35/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 35/100"
+[1] "estimated time remaining: 4.00290376984127 hours"
+[1] "Simulating population 36/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 36/100"
+[1] "estimated time remaining: 3.94153086419753 hours"
+[1] "Simulating population 37/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 37/100"
+[1] "estimated time remaining: 3.90138851351351 hours"
+[1] "Simulating population 38/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 38/100"
+[1] "estimated time remaining: 3.84209649122807 hours"
+[1] "Simulating population 39/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 39/100"
+[1] "estimated time remaining: 3.78712678062678 hours"
+[1] "Simulating population 40/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 40/100"
+[1] "estimated time remaining: 3.72633333333333 hours"
+[1] "Simulating population 41/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 41/100"
+[1] "estimated time remaining: 3.68628082655827 hours"
+[1] "Simulating population 42/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 42/100"
+[1] "estimated time remaining: 3.64038227513227 hours"
+[1] "Simulating population 43/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 43/100"
+[1] "estimated time remaining: 3.58176695736434 hours"
+[1] "Simulating population 44/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 44/100"
+[1] "estimated time remaining: 3.53216287878788 hours"
+[1] "Simulating population 45/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 45/100"
+[1] "estimated time remaining: 3.46921836419753 hours"
+[1] "Simulating population 46/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 46/100"
+[1] "estimated time remaining: 3.40922282608696 hours"
+[1] "Simulating population 47/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 47/100"
+[1] "estimated time remaining: 3.34936037234043 hours"
+[1] "Simulating population 48/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 48/100"
+[1] "estimated time remaining: 3.28521585648148 hours"
+[1] "Simulating population 49/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 49/100"
+[1] "estimated time remaining: 3.23027465986395 hours"
+[1] "Simulating population 50/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 50/100"
+[1] "estimated time remaining: 3.17279166666667 hours"
+[1] "Simulating population 51/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 51/100"
+[1] "estimated time remaining: 3.11051252723312 hours"
+[1] "Simulating population 52/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 52/100"
+[1] "estimated time remaining: 3.05002564102564 hours"
+[1] "Simulating population 53/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 53/100"
+[1] "estimated time remaining: 2.98626126834382 hours"
+[1] "Simulating population 54/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 54/100"
+[1] "estimated time remaining: 2.92643647119342 hours"
+[1] "Simulating population 55/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 55/100"
+[1] "estimated time remaining: 2.86182386363636 hours"
+[1] "Simulating population 56/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing......
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 56/100"
+[1] "estimated time remaining: 2.8052619047619 hours"
+[1] "Simulating population 57/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 57/100"
+[1] "estimated time remaining: 2.74125 hours"
+[1] "Simulating population 58/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 58/100"
+[1] "estimated time remaining: 2.68351939655172 hours"
+[1] "Simulating population 59/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 59/100"
+[1] "estimated time remaining: 2.62103213276836 hours"
+[1] "Simulating population 60/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 60/100"
+[1] "estimated time remaining: 2.55388888888889 hours"
+[1] "Simulating population 61/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 61/100"
+[1] "estimated time remaining: 2.49178210382514 hours"
+[1] "Simulating population 62/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 62/100"
+[1] "estimated time remaining: 2.42683714157706 hours"
+[1] "Simulating population 63/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 63/100"
+[1] "estimated time remaining: 2.36895844356261 hours"
+[1] "Simulating population 64/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 64/100"
+[1] "estimated time remaining: 2.3116484375 hours"
+[1] "Simulating population 65/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 65/100"
+[1] "estimated time remaining: 2.24869391025641 hours"
+[1] "Simulating population 66/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 66/100"
+[1] "estimated time remaining: 2.18524410774411 hours"
+[1] "Simulating population 67/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 67/100"
+[1] "estimated time remaining: 2.12101274875622 hours"
+[1] "Simulating population 68/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Bauchi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 68/100"
+[1] "estimated time remaining: 2.05801633986928 hours"
+[1] "Simulating population 69/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 69/100"
+[1] "estimated time remaining: 1.994504931562 hours"
+[1] "Simulating population 70/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 70/100"
+[1] "estimated time remaining: 1.9303869047619 hours"
+[1] "Simulating population 71/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 71/100"
+[1] "estimated time remaining: 1.87080917449139 hours"
+[1] "Simulating population 72/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 72/100"
+[1] "estimated time remaining: 1.80606481481481 hours"
+[1] "Simulating population 73/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 73/100"
+[1] "estimated time remaining: 1.74214469178082 hours"
+[1] "Simulating population 74/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 74/100"
+[1] "estimated time remaining: 1.67839076576577 hours"
+[1] "Simulating population 75/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 75/100"
+[1] "estimated time remaining: 1.61744212962963 hours"
+[1] "Simulating population 76/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 76/100"
+[1] "estimated time remaining: 1.55345614035088 hours"
+[1] "Simulating population 77/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 77/100"
+[1] "estimated time remaining: 1.49272447691198 hours"
+[1] "Simulating population 78/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 78/100"
+[1] "estimated time remaining: 1.42971011396011 hours"
+[1] "Simulating population 79/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 79/100"
+[1] "estimated time remaining: 1.3664029535865 hours"
+[1] "Simulating population 80/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 80/100"
+[1] "estimated time remaining: 1.29992534722222 hours"
+[1] "Simulating population 81/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 81/100"
+[1] "estimated time remaining: 1.23432887517147 hours"
+[1] "Simulating population 82/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 82/100"
+[1] "estimated time remaining: 1.17030487804878 hours"
+[1] "Simulating population 83/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 83/100"
+[1] "estimated time remaining: 1.10419494645248 hours"
+[1] "Simulating population 84/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 84/100"
+[1] "estimated time remaining: 1.04082010582011 hours"
+[1] "Simulating population 85/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 85/100"
+[1] "estimated time remaining: 0.976904411764706 hours"
+[1] "Simulating population 86/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Katsina may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 86/100"
+[1] "estimated time remaining: 0.915104166666667 hours"
+[1] "Simulating population 87/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 87/100"
+[1] "estimated time remaining: 0.849730763090677 hours"
+[1] "Simulating population 88/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 88/100"
+[1] "estimated time remaining: 0.785257575757576 hours"
+[1] "Simulating population 89/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 89/100"
+[1] "estimated time remaining: 0.720805555555555 hours"
+[1] "Simulating population 90/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 90/100"
+[1] "estimated time remaining: 0.654448302469136 hours"
+[1] "Simulating population 91/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 91/100"
+[1] "estimated time remaining: 0.588983516483516 hours"
+[1] "Simulating population 92/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 92/100"
+[1] "estimated time remaining: 0.523420289855072 hours"
+[1] "Simulating population 93/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 93/100"
+[1] "estimated time remaining: 0.457736335125448 hours"
+[1] "Simulating population 94/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 94/100"
+[1] "estimated time remaining: 0.392447695035461 hours"
+[1] "Simulating population 95/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 95/100"
+[1] "estimated time remaining: 0.32724817251462 hours"
+[1] "Simulating population 96/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 96/100"
+[1] "estimated time remaining: 0.261634837962963 hours"
+[1] "Simulating population 97/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 97/100"
+[1] "estimated time remaining: 0.196254725085911 hours"
+[1] "Simulating population 98/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 98/100"
+[1] "estimated time remaining: 0.130704931972789 hours"
+[1] "Simulating population 99/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 99/100"
+[1] "estimated time remaining: 0.0652877384960718 hours"
+[1] "Simulating population 100/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 100/100"
+[1] "estimated time remaining: 0 hours"
+[sim] done in 156.9 min
+[intPts sim 1] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_1_K16_21.RData
+[intPts sim 2] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_2_K16_21.RData
+[intPts sim 3] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_3_K16_21.RData
+[intPts sim 4] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_4_K16_21.RData
+[intPts sim 5] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_5_K16_21.RData
+[intPts sim 6] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_6_K16_21.RData
+[intPts sim 7] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_7_K16_21.RData
+[intPts sim 8] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_8_K16_21.RData
+[intPts sim 9] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_9_K16_21.RData
+[intPts sim 10] loading cached savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_10_K16_21.RData
+[intPts sim 11] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_11_K16_21.RData ...
+[intPts sim 11] done in 3.6 min
+[intPts sim 12] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_12_K16_21.RData ...
+[intPts sim 12] done in 3.5 min
+[intPts sim 13] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_13_K16_21.RData ...
+[intPts sim 13] done in 3.7 min
+[intPts sim 14] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_14_K16_21.RData ...
+[intPts sim 14] done in 3.7 min
+[intPts sim 15] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_15_K16_21.RData ...
+[intPts sim 15] done in 3.8 min
+[intPts sim 16] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_16_K16_21.RData ...
+[intPts sim 16] done in 3.6 min
+[intPts sim 17] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_17_K16_21.RData ...
+[intPts sim 17] done in 3.6 min
+[intPts sim 18] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_18_K16_21.RData ...
+[intPts sim 18] done in 3.5 min
+[intPts sim 19] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_19_K16_21.RData ...
+[intPts sim 19] done in 3.2 min
+[intPts sim 20] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_20_K16_21.RData ...
+[intPts sim 20] done in 3.2 min
+[intPts sim 21] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_21_K16_21.RData ...
+[intPts sim 21] done in 3.1 min
+[intPts sim 22] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_22_K16_21.RData ...
+[intPts sim 22] done in 3.2 min
+[intPts sim 23] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_23_K16_21.RData ...
+[intPts sim 23] done in 3.2 min
+[intPts sim 24] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_24_K16_21.RData ...
+[intPts sim 24] done in 3.1 min
+[intPts sim 25] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_25_K16_21.RData ...
+[intPts sim 25] done in 3.1 min
+[intPts sim 26] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_26_K16_21.RData ...
+[intPts sim 26] done in 3.2 min
+[intPts sim 27] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_27_K16_21.RData ...
+[intPts sim 27] done in 3.1 min
+[intPts sim 28] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_28_K16_21.RData ...
+[intPts sim 28] done in 3.1 min
+[intPts sim 29] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_29_K16_21.RData ...
+[intPts sim 29] done in 3.2 min
+[intPts sim 30] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_30_K16_21.RData ...
+[intPts sim 30] done in 3.2 min
+[intPts sim 31] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_31_K16_21.RData ...
+[intPts sim 31] done in 3.1 min
+[intPts sim 32] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_32_K16_21.RData ...
+[intPts sim 32] done in 3.2 min
+[intPts sim 33] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_33_K16_21.RData ...
+[intPts sim 33] done in 3.2 min
+[intPts sim 34] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_34_K16_21.RData ...
+[intPts sim 34] done in 3.2 min
+[intPts sim 35] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_35_K16_21.RData ...
+[intPts sim 35] done in 3.3 min
+[intPts sim 36] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_36_K16_21.RData ...
+[intPts sim 36] done in 3.4 min
+[intPts sim 37] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_37_K16_21.RData ...
+[intPts sim 37] done in 3.4 min
+[intPts sim 38] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_38_K16_21.RData ...
+[intPts sim 38] done in 3.4 min
+[intPts sim 39] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_39_K16_21.RData ...
+[intPts sim 39] done in 3.3 min
+[intPts sim 40] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_40_K16_21.RData ...
+[intPts sim 40] done in 3.2 min
+[intPts sim 41] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_41_K16_21.RData ...
+[intPts sim 41] done in 3.2 min
+[intPts sim 42] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_42_K16_21.RData ...
+[intPts sim 42] done in 3.3 min
+[intPts sim 43] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_43_K16_21.RData ...
+[intPts sim 43] done in 3.3 min
+[intPts sim 44] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_44_K16_21.RData ...
+[intPts sim 44] done in 3.2 min
+[intPts sim 45] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_45_K16_21.RData ...
+[intPts sim 45] done in 3.4 min
+[intPts sim 46] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_46_K16_21.RData ...
+[intPts sim 46] done in 3.3 min
+[intPts sim 47] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_47_K16_21.RData ...
+[intPts sim 47] done in 3.3 min
+[intPts sim 48] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_48_K16_21.RData ...
+[intPts sim 48] done in 3.3 min
+[intPts sim 49] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_49_K16_21.RData ...
+[intPts sim 49] done in 3.3 min
+[intPts sim 50] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_50_K16_21.RData ...
+[intPts sim 50] done in 3.3 min
+[intPts sim 51] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_51_K16_21.RData ...
+[intPts sim 51] done in 3.3 min
+[intPts sim 52] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_52_K16_21.RData ...
+[intPts sim 52] done in 3.5 min
+[intPts sim 53] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_53_K16_21.RData ...
+[intPts sim 53] done in 3.5 min
+[intPts sim 54] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_54_K16_21.RData ...
+[intPts sim 54] done in 3.5 min
+[intPts sim 55] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_55_K16_21.RData ...
+[intPts sim 55] done in 3.5 min
+[intPts sim 56] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_56_K16_21.RData ...
+[intPts sim 56] done in 3.5 min
+[intPts sim 57] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_57_K16_21.RData ...
+[intPts sim 57] done in 3.5 min
+[intPts sim 58] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_58_K16_21.RData ...
+[intPts sim 58] done in 3.5 min
+[intPts sim 59] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_59_K16_21.RData ...
+[intPts sim 59] done in 3.4 min
+[intPts sim 60] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_60_K16_21.RData ...
+[intPts sim 60] done in 3.5 min
+[intPts sim 61] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_61_K16_21.RData ...
+[intPts sim 61] done in 3.5 min
+[intPts sim 62] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_62_K16_21.RData ...
+[intPts sim 62] done in 3.5 min
+[intPts sim 63] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_63_K16_21.RData ...
+[intPts sim 63] done in 3.4 min
+[intPts sim 64] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_64_K16_21.RData ...
+[intPts sim 64] done in 3.3 min
+[intPts sim 65] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_65_K16_21.RData ...
+[intPts sim 65] done in 3.4 min
+[intPts sim 66] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_66_K16_21.RData ...
+[intPts sim 66] done in 3.3 min
+[intPts sim 67] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_67_K16_21.RData ...
+[intPts sim 67] done in 3.3 min
+[intPts sim 68] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_68_K16_21.RData ...
+[intPts sim 68] done in 3.3 min
+[intPts sim 69] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_69_K16_21.RData ...
+[intPts sim 69] done in 3.3 min
+[intPts sim 70] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_70_K16_21.RData ...
+[intPts sim 70] done in 3.3 min
+[intPts sim 71] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_71_K16_21.RData ...
+[intPts sim 71] done in 3.4 min
+[intPts sim 72] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_72_K16_21.RData ...
+[intPts sim 72] done in 3.3 min
+[intPts sim 73] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_73_K16_21.RData ...
+[intPts sim 73] done in 3.2 min
+[intPts sim 74] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_74_K16_21.RData ...
+[intPts sim 74] done in 3.3 min
+[intPts sim 75] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_75_K16_21.RData ...
+[intPts sim 75] done in 3.3 min
+[intPts sim 76] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_76_K16_21.RData ...
+[intPts sim 76] done in 3.3 min
+[intPts sim 77] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_77_K16_21.RData ...
+[intPts sim 77] done in 3.3 min
+[intPts sim 78] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_78_K16_21.RData ...
+[intPts sim 78] done in 3.3 min
+[intPts sim 79] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_79_K16_21.RData ...
+[intPts sim 79] done in 3.3 min
+[intPts sim 80] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_80_K16_21.RData ...
+[intPts sim 80] done in 3.3 min
+[intPts sim 81] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_81_K16_21.RData ...
+[intPts sim 81] done in 3.3 min
+[intPts sim 82] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_82_K16_21.RData ...
+[intPts sim 82] done in 3.3 min
+[intPts sim 83] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_83_K16_21.RData ...
+[intPts sim 83] done in 3.3 min
+[intPts sim 84] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_84_K16_21.RData ...
+[intPts sim 84] done in 3.3 min
+[intPts sim 85] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_85_K16_21.RData ...
+[intPts sim 85] done in 3.3 min
+[intPts sim 86] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_86_K16_21.RData ...
+[intPts sim 86] done in 3.3 min
+[intPts sim 87] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_87_K16_21.RData ...
+[intPts sim 87] done in 3.3 min
+[intPts sim 88] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_88_K16_21.RData ...
+[intPts sim 88] done in 3.4 min
+[intPts sim 89] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_89_K16_21.RData ...
+[intPts sim 89] done in 3.4 min
+[intPts sim 90] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_90_K16_21.RData ...
+[intPts sim 90] done in 3.4 min
+[intPts sim 91] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_91_K16_21.RData ...
+[intPts sim 91] done in 3.4 min
+[intPts sim 92] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_92_K16_21.RData ...
+[intPts sim 92] done in 3.4 min
+[intPts sim 93] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_93_K16_21.RData ...
+[intPts sim 93] done in 3.4 min
+[intPts sim 94] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_94_K16_21.RData ...
+[intPts sim 94] done in 3.2 min
+[intPts sim 95] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_95_K16_21.RData ...
+[intPts sim 95] done in 3.3 min
+[intPts sim 96] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_96_K16_21.RData ...
+[intPts sim 96] done in 3.4 min
+[intPts sim 97] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_97_K16_21.RData ...
+[intPts sim 97] done in 3.4 min
+[intPts sim 98] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_98_K16_21.RData ...
+[intPts sim 98] done in 3.3 min
+[intPts sim 99] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_99_K16_21.RData ...
+[intPts sim 99] done in 3.3 min
+[intPts sim 100] building savedOutput/simStudy1/intPtsDHS_simStudy1_SPDE_100_K16_21.RData ...
+[intPts sim 100] done in 3.1 min

@@ -1,0 +1,17 @@
+# BYM2-from-scratch reproducibility test:
+#   - Generate nsim BYM2-simulated populations + surveys (regenerate=TRUE)
+#   - Build K=16/21 DHS integration points for each sim
+#   - Fit fitMM (BYM2 MICS-only) on sim 1, report MLE vs truth + NLL profile in phi
+# All heavy lifting lives in testInfrastructure.R::testFitMM.
+
+source("setup.R")
+options(error = traceback)
+source("code/simData.R")
+source("code/makeIntegrationPoints.R")
+source("code/modM_MSep.R")
+source("code/makeInputsTMB.R")
+source("code/testInfrastructure.R")
+
+res <- testFitMM(model = "bym2", nsim = 1, regenerate = TRUE)
+
+cat("\nDone.\n")

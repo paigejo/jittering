@@ -744,6 +744,7 @@ fit_fe = fitFED(datDHS=datDHS, inputsMDM=inputsMDM,
       dyn.load(dynlib("code/modD_BYM2_GH_v2"))
 
       obj = MakeADFun(data=data_gh, parameters=params_full,
+                      random=c("w_bym2Free", "u_bym2Free"),
                       DLL="modD_BYM2_GH_v2", silent=!verbose)
 
       startTime = proc.time()[3]

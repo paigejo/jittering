@@ -735,6 +735,7 @@ fitMDM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
   dyn.load(dynlib("code/modMDM_BYM2_GH_v2"))
 
   obj = MakeADFun(data=data_gh, parameters=params_full,
+                  random=c("w_bym2Free", "u_bym2Free"),
                   DLL="modMDM_BYM2_GH_v2", silent=!verbose)
   startTime = proc.time()[3]
   opt = optim(obj$par, obj$fn, obj$gr,

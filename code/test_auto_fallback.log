@@ -1,0 +1,228 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_BYM2.RData (>=1 sims complete)
+Loading required package: prodlim
+
+=== Fitting M_D_BYM2 sim 1 ===
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+fitMD time: 0.7 min  pdHess=FALSE
+
+=== posteriorDraws(useInla = "auto") ===
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+[posteriorDraws] Gaussian draws failed (jointPrecision Cholesky failed: leading principal minor of order 2 is not positive); falling back to INLA-style.
+Warning in inlaStyleDraws(res, NDRAWS = NDRAWS, ...) :
+  hyper covariance non-PD; clamping to |eigenvalues|
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3272.3642  (20.4 s)
+  a1_p1  dz=+1.0  dNLL=-0.0309  (18.9 s)
+  a1_p2  dz=+2.0  dNLL=-0.1162  (19.7 s)
+  a1_p3  dz=+3.0  dNLL=-0.4680  (20.2 s)
+  a1_p4  dz=+4.0  dNLL=0.2477  (21.7 s)
+  a1_m1  dz=-1.0  dNLL=0.0103  (20.1 s)
+  a1_m2  dz=-2.0  dNLL=0.0120  (20.1 s)
+  a1_m3  dz=-3.0  dNLL=0.0111  (20.6 s)
+  a1_m4  dz=-4.0  dNLL=0.0108  (20.6 s)
+  a2_p1  dz=+1.0  dNLL=0.0040  (22.6 s)
+  a2_p2  dz=+2.0  dNLL=-0.0012  (23.9 s)
+  a2_p3  dz=+3.0  dNLL=-0.0045  (23.4 s)
+  a2_p4  dz=+4.0  dNLL=-0.0003  (20.7 s)
+  a2_m1  dz=-1.0  dNLL=-0.0419  (21.2 s)
+  a2_m2  dz=-2.0  dNLL=-0.2647  (21.2 s)
+  a2_m3  dz=-3.0  dNLL=0.2709  (23.2 s)
+  a2_m4  dz=-4.0  dNLL=0.5022  (23.1 s)
+  a3_p1  dz=+1.0  dNLL=0.0502  (20.6 s)
+  a3_p2  dz=+2.0  dNLL=0.0318  (21.5 s)
+  a3_p3  dz=+3.0  dNLL=-0.0070  (21.6 s)
+  a3_p4  dz=+4.0  dNLL=-0.0507  (20.0 s)
+  a3_m1  dz=-1.0  dNLL=0.2293  (24.1 s)
+  a3_m2  dz=-2.0  dNLL=0.5528  (21.9 s)
+  a3_m3  dz=-3.0  dNLL=0.8210  (23.4 s)
+  a3_m4  dz=-4.0  dNLL=1.0730  (23.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=5.683 (from 4 pts)  σ⁻=23.104 (from 4 pts)  asym=0.25
+  axis 2:  σ⁺=11.249 (from 4 pts)  σ⁻=4.011 (from 4 pts)  asym=2.80
+  axis 3:  σ⁺=6.925 (from 4 pts)  σ⁻=2.560 (from 4 pts)  asym=2.70
+  time: 9.0 min  rows=89  cols=200
+
+=== posteriorDraws(useInla = FALSE) ===
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+EXPECTED ERROR (Gauss can't handle non-PSD): jointPrecision Cholesky failed: leading principal minor of order 2 is not positive 
+  time: 0.0 min  result: errored as expected
+
+=== posteriorDraws(useInla = TRUE) ===
+Warning in inlaStyleDraws(res, NDRAWS = NDRAWS, ...) :
+  hyper covariance non-PD; clamping to |eigenvalues|
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3272.3642  (22.1 s)
+  a1_p1  dz=+1.0  dNLL=-0.0309  (19.1 s)
+  a1_p2  dz=+2.0  dNLL=-0.1162  (20.6 s)
+  a1_p3  dz=+3.0  dNLL=-0.4680  (19.9 s)
+  a1_p4  dz=+4.0  dNLL=0.2477  (20.6 s)
+  a1_m1  dz=-1.0  dNLL=0.0103  (19.4 s)
+  a1_m2  dz=-2.0  dNLL=0.0120  (20.1 s)
+  a1_m3  dz=-3.0  dNLL=0.0111  (20.9 s)
+  a1_m4  dz=-4.0  dNLL=0.0108  (20.5 s)
+  a2_p1  dz=+1.0  dNLL=0.0040  (19.9 s)
+  a2_p2  dz=+2.0  dNLL=-0.0012  (22.0 s)
+  a2_p3  dz=+3.0  dNLL=-0.0045  (19.5 s)
+  a2_p4  dz=+4.0  dNLL=-0.0003  (19.7 s)
+  a2_m1  dz=-1.0  dNLL=-0.0419  (20.5 s)
+  a2_m2  dz=-2.0  dNLL=-0.2647  (22.4 s)
+  a2_m3  dz=-3.0  dNLL=0.2709  (22.4 s)
+  a2_m4  dz=-4.0  dNLL=0.5022  (22.0 s)
+  a3_p1  dz=+1.0  dNLL=0.0502  (20.3 s)
+  a3_p2  dz=+2.0  dNLL=0.0318  (20.3 s)
+  a3_p3  dz=+3.0  dNLL=-0.0070  (20.5 s)
+  a3_p4  dz=+4.0  dNLL=-0.0507  (19.8 s)
+  a3_m1  dz=-1.0  dNLL=0.2293  (24.6 s)
+  a3_m2  dz=-2.0  dNLL=0.5528  (23.0 s)
+  a3_m3  dz=-3.0  dNLL=0.8210  (21.6 s)
+  a3_m4  dz=-4.0  dNLL=1.0730  (21.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=5.683 (from 4 pts)  σ⁻=23.104 (from 4 pts)  asym=0.25
+  axis 2:  σ⁺=11.249 (from 4 pts)  σ⁻=4.011 (from 4 pts)  asym=2.80
+  axis 3:  σ⁺=6.925 (from 4 pts)  σ⁻=2.560 (from 4 pts)  asym=2.70
+  time: 8.7 min  rows=89  cols=200
+
+Done.

@@ -1,0 +1,1967 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+[sim] loading cached savedOutput/simStudy1/simPopsSurveys_SPDE.RData (>=10 sims complete)
+Loading required package: prodlim
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 19:43:26 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.17 & -1.58 & -1.43 & -0.90 & -0.75 \\ 
+  urb & 1.29 & 0.87 & 1.00 & 1.58 & 1.73 \\ 
+  access & 0.18 & -0.16 & -0.05 & 0.40 & 0.51 \\ 
+  elev & -0.24 & -0.46 & -0.39 & -0.09 & -0.01 \\ 
+  distRiversLakes & 0.06 & -0.12 & -0.06 & 0.18 & 0.25 \\ 
+  popValsNorm & 0.57 & -0.01 & 0.20 & 0.94 & 1.13 \\ 
+  sigmaSq & 0.24 & 0.13 & 0.16 & 0.33 & 0.41 \\ 
+  phi & 0.70 & 0.26 & 0.40 & 0.92 & 0.96 \\ 
+  sigmaEpsSq & 1.53 & 1.35 & 1.41 & 1.66 & 1.72 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4338.0303  (69.4 s)
+  a1_p1  dz=+1.0  dNLL=0.6446  (64.3 s)
+  a1_p2  dz=+2.0  dNLL=2.5080  (74.6 s)
+  a1_m1  dz=-1.0  dNLL=0.3470  (65.2 s)
+  a1_m2  dz=-2.0  dNLL=1.0177  (62.2 s)
+  a1_m3  dz=-3.0  dNLL=1.6049  (66.7 s)
+  a1_m4  dz=-4.0  dNLL=2.0039  (62.5 s)
+  a2_p1  dz=+1.0  dNLL=0.7776  (67.2 s)
+  a2_p2  dz=+2.0  dNLL=2.5762  (65.3 s)
+  a2_m1  dz=-1.0  dNLL=0.2232  (73.6 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m2  dz=-2.0  dNLL=NaN  (89.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (88.7 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (87.4 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.892 (from 2 pts)  σ⁻=1.864 (from 4 pts)  asym=0.48
+  axis 2:  σ⁺=0.876 (from 2 pts)  σ⁻=1.497 (from 1 pts)  asym=0.59
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4338.0303  (64.7 s)
+  a1_p1  dz=+1.0  dNLL=0.6446  (63.5 s)
+  a1_p2  dz=+2.0  dNLL=2.5080  (87.4 s)
+  a1_m1  dz=-1.0  dNLL=0.3470  (66.2 s)
+  a1_m2  dz=-2.0  dNLL=1.0177  (66.1 s)
+  a1_m3  dz=-3.0  dNLL=1.6049  (67.8 s)
+  a1_m4  dz=-4.0  dNLL=2.0039  (64.0 s)
+  a2_p1  dz=+1.0  dNLL=0.7776  (72.5 s)
+  a2_p2  dz=+2.0  dNLL=2.5762  (66.8 s)
+  a2_m1  dz=-1.0  dNLL=0.2232  (72.2 s)
+  a2_m2  dz=-2.0  dNLL=1.3839  (65.9 s)
+  a2_m3  dz=-3.0  dNLL=3.3895  (75.6 s)
+  a3_p1  dz=+1.0  dNLL=0.3011  (65.4 s)
+  a3_p2  dz=+2.0  dNLL=1.4168  (69.6 s)
+  a3_p3  dz=+3.0  dNLL=3.1621  (69.1 s)
+  a3_m1  dz=-1.0  dNLL=0.6652  (75.1 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m2  dz=-2.0  dNLL=NaN  (97.3 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.892 (from 2 pts)  σ⁻=1.864 (from 4 pts)  asym=0.48
+  axis 2:  σ⁺=0.876 (from 2 pts)  σ⁻=1.162 (from 3 pts)  asym=0.75
+  axis 3:  σ⁺=1.193 (from 3 pts)  σ⁻=0.867 (from 1 pts)  asym=1.38
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 20:20:23 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.12 & -1.50 & -1.37 & -0.87 & -0.74 \\ 
+  urb & 1.30 & 0.88 & 1.02 & 1.56 & 1.70 \\ 
+  access & 0.14 & -0.18 & -0.06 & 0.35 & 0.48 \\ 
+  elev & -0.23 & -0.47 & -0.37 & -0.08 & 0.00 \\ 
+  distRiversLakes & 0.06 & -0.12 & -0.06 & 0.18 & 0.24 \\ 
+  popValsNorm & 0.49 & -0.06 & 0.14 & 0.86 & 1.04 \\ 
+  sigmaSq & 0.26 & 0.14 & 0.17 & 0.38 & 0.49 \\ 
+  phi & 0.80 & 0.38 & 0.53 & 0.98 & 0.99 \\ 
+  sigmaEpsSq & 1.52 & 1.32 & 1.39 & 1.64 & 1.71 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 3] M_M_BYM2  fit=4.3 gauss=1.0 inla=37.0 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 20:26:05 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.43 & -0.90 & -0.76 & -0.13 & 0.07 \\ 
+  urb & 1.74 & 1.29 & 1.44 & 2.04 & 2.20 \\ 
+  access & 0.27 & -0.04 & 0.06 & 0.50 & 0.57 \\ 
+  elev & 0.11 & -0.14 & -0.06 & 0.28 & 0.37 \\ 
+  distRiversLakes & 0.03 & -0.20 & -0.12 & 0.18 & 0.25 \\ 
+  popValsNorm & 0.08 & -0.58 & -0.34 & 0.53 & 0.73 \\ 
+  sigmaSq & 0.29 & 0.15 & 0.19 & 0.40 & 0.51 \\ 
+  phi & 0.66 & 0.25 & 0.39 & 0.89 & 0.94 \\ 
+  sigmaEpsSq & 1.63 & 1.45 & 1.50 & 1.76 & 1.83 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4321.8838  (65.8 s)
+  a1_p1  dz=+1.0  dNLL=0.6778  (67.9 s)
+  a1_p2  dz=+2.0  dNLL=2.3213  (75.5 s)
+  a1_p3  dz=+3.0  dNLL=4.3049  (74.8 s)
+  a1_m1  dz=-1.0  dNLL=0.3245  (66.1 s)
+  a1_m2  dz=-2.0  dNLL=1.0565  (69.2 s)
+  a1_m3  dz=-3.0  dNLL=1.7432  (64.9 s)
+  a1_m4  dz=-4.0  dNLL=2.2612  (69.7 s)
+  a2_p1  dz=+1.0  dNLL=0.8319  (64.4 s)
+  a2_p2  dz=+2.0  dNLL=2.7004  (81.8 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (87.7 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (85.9 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (83.9 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.003 (from 3 pts)  σ⁻=1.771 (from 4 pts)  asym=0.57
+  axis 2:  σ⁺=0.855 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.85
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4321.8838  (61.9 s)
+  a1_p1  dz=+1.0  dNLL=0.6778  (62.2 s)
+  a1_p2  dz=+2.0  dNLL=2.3213  (66.6 s)
+  a1_p3  dz=+3.0  dNLL=4.3049  (70.9 s)
+  a1_m1  dz=-1.0  dNLL=0.3245  (62.8 s)
+  a1_m2  dz=-2.0  dNLL=1.0565  (65.8 s)
+  a1_m3  dz=-3.0  dNLL=1.7432  (68.5 s)
+  a1_m4  dz=-4.0  dNLL=2.2612  (62.9 s)
+  a2_p1  dz=+1.0  dNLL=0.8319  (64.5 s)
+  a2_p2  dz=+2.0  dNLL=2.7004  (62.9 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (107.7 s) [skipped: non-finite NLL]
+  a3_p1  dz=+1.0  dNLL=0.3955  (70.0 s)
+  a3_p2  dz=+2.0  dNLL=1.6034  (68.5 s)
+  a3_p3  dz=+3.0  dNLL=3.3818  (69.2 s)
+  a3_m1  dz=-1.0  dNLL=0.5973  (68.7 s)
+  a3_m2  dz=-2.0  dNLL=2.2954  (65.1 s)
+  a3_m3  dz=-3.0  dNLL=5.1652  (73.4 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.003 (from 3 pts)  σ⁻=1.771 (from 4 pts)  asym=0.57
+  axis 2:  σ⁺=0.855 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.85
+  axis 3:  σ⁺=1.147 (from 3 pts)  σ⁻=0.933 (from 3 pts)  asym=1.23
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 21:02:43 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.46 & -0.94 & -0.76 & -0.17 & -0.02 \\ 
+  urb & 1.70 & 1.27 & 1.41 & 2.00 & 2.16 \\ 
+  access & 0.23 & -0.09 & 0.01 & 0.46 & 0.57 \\ 
+  elev & 0.09 & -0.17 & -0.07 & 0.26 & 0.35 \\ 
+  distRiversLakes & 0.03 & -0.16 & -0.09 & 0.17 & 0.24 \\ 
+  popValsNorm & 0.06 & -0.56 & -0.37 & 0.51 & 0.73 \\ 
+  sigmaSq & 0.33 & 0.17 & 0.21 & 0.46 & 0.57 \\ 
+  phi & 0.73 & 0.23 & 0.41 & 0.96 & 0.99 \\ 
+  sigmaEpsSq & 1.61 & 1.41 & 1.48 & 1.75 & 1.82 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 4] M_M_BYM2  fit=4.5 gauss=1.1 inla=36.7 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 21:08:16 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.15 & -1.58 & -1.44 & -0.87 & -0.67 \\ 
+  urb & 1.01 & 0.56 & 0.71 & 1.31 & 1.48 \\ 
+  access & -0.20 & -0.62 & -0.50 & 0.10 & 0.24 \\ 
+  elev & -0.31 & -0.54 & -0.44 & -0.17 & -0.07 \\ 
+  distRiversLakes & -0.09 & -0.26 & -0.20 & 0.04 & 0.10 \\ 
+  popValsNorm & 0.18 & -0.54 & -0.27 & 0.63 & 0.85 \\ 
+  sigmaSq & 0.22 & 0.12 & 0.14 & 0.32 & 0.41 \\ 
+  phi & 0.63 & 0.14 & 0.29 & 0.91 & 0.96 \\ 
+  sigmaEpsSq & 1.53 & 1.33 & 1.39 & 1.67 & 1.76 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4384.9672  (68.7 s)
+  a1_p1  dz=+1.0  dNLL=0.6143  (69.0 s)
+  a1_p2  dz=+2.0  dNLL=2.1331  (72.8 s)
+  a1_p3  dz=+3.0  dNLL=4.0148  (68.1 s)
+  a1_m1  dz=-1.0  dNLL=0.3522  (73.9 s)
+  a1_m2  dz=-2.0  dNLL=1.1024  (65.1 s)
+  a1_m3  dz=-3.0  dNLL=1.8123  (70.6 s)
+  a1_m4  dz=-4.0  dNLL=2.3951  (65.4 s)
+  a2_p1  dz=+1.0  dNLL=0.7834  (73.3 s)
+  a2_p2  dz=+2.0  dNLL=2.5897  (66.9 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (89.1 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (87.1 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (87.9 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.040 (from 3 pts)  σ⁻=1.726 (from 4 pts)  asym=0.60
+  axis 2:  σ⁺=0.873 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.87
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4384.9672  (68.9 s)
+  a1_p1  dz=+1.0  dNLL=0.6143  (70.9 s)
+  a1_p2  dz=+2.0  dNLL=2.1331  (76.5 s)
+  a1_p3  dz=+3.0  dNLL=4.0148  (74.7 s)
+  a1_m1  dz=-1.0  dNLL=0.3522  (65.9 s)
+  a1_m2  dz=-2.0  dNLL=1.1024  (70.4 s)
+  a1_m3  dz=-3.0  dNLL=1.8123  (71.9 s)
+  a1_m4  dz=-4.0  dNLL=2.3951  (67.9 s)
+  a2_p1  dz=+1.0  dNLL=0.7834  (77.9 s)
+  a2_p2  dz=+2.0  dNLL=2.5897  (68.1 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (91.9 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (92.7 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (87.3 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.040 (from 3 pts)  σ⁻=1.726 (from 4 pts)  asym=0.60
+  axis 2:  σ⁺=0.873 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.87
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 21:41:51 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.14 & -1.54 & -1.41 & -0.88 & -0.74 \\ 
+  urb & 1.06 & 0.66 & 0.81 & 1.31 & 1.45 \\ 
+  access & -0.13 & -0.48 & -0.38 & 0.10 & 0.26 \\ 
+  elev & -0.31 & -0.53 & -0.44 & -0.16 & -0.09 \\ 
+  distRiversLakes & -0.09 & -0.27 & -0.19 & 0.03 & 0.09 \\ 
+  popValsNorm & 0.23 & -0.38 & -0.18 & 0.63 & 0.85 \\ 
+  sigmaSq & 0.25 & 0.13 & 0.15 & 0.36 & 0.47 \\ 
+  phi & 0.71 & 0.18 & 0.33 & 0.97 & 0.99 \\ 
+  sigmaEpsSq & 1.52 & 1.33 & 1.39 & 1.66 & 1.74 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 5] M_M_BYM2  fit=4.3 gauss=1.1 inla=33.6 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 21:47:36 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.06 & -1.54 & -1.38 & -0.75 & -0.58 \\ 
+  urb & 1.16 & 0.68 & 0.85 & 1.46 & 1.62 \\ 
+  access & -0.03 & -0.44 & -0.26 & 0.23 & 0.36 \\ 
+  elev & -0.26 & -0.51 & -0.42 & -0.10 & -0.01 \\ 
+  distRiversLakes & -0.18 & -0.38 & -0.30 & -0.06 & 0.01 \\ 
+  popValsNorm & 0.38 & -0.32 & -0.06 & 0.84 & 1.13 \\ 
+  sigmaSq & 0.27 & 0.14 & 0.17 & 0.39 & 0.46 \\ 
+  phi & 0.66 & 0.22 & 0.36 & 0.89 & 0.94 \\ 
+  sigmaEpsSq & 1.85 & 1.62 & 1.70 & 2.01 & 2.10 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4276.8113  (66.4 s)
+  a1_p1  dz=+1.0  dNLL=0.6172  (78.7 s)
+  a1_p2  dz=+2.0  dNLL=2.2529  (64.8 s)
+  a1_p3  dz=+3.0  dNLL=4.2955  (67.5 s)
+  a1_m1  dz=-1.0  dNLL=0.3643  (65.3 s)
+  a1_m2  dz=-2.0  dNLL=1.1079  (63.6 s)
+  a1_m3  dz=-3.0  dNLL=1.7904  (68.8 s)
+  a1_m4  dz=-4.0  dNLL=2.2907  (64.1 s)
+  a2_p1  dz=+1.0  dNLL=0.7486  (66.2 s)
+  a2_p2  dz=+2.0  dNLL=2.5383  (62.7 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (91.6 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (87.1 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (86.2 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.007 (from 3 pts)  σ⁻=1.754 (from 4 pts)  asym=0.57
+  axis 2:  σ⁺=0.883 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.88
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4276.8113  (67.5 s)
+  a1_p1  dz=+1.0  dNLL=0.6172  (61.1 s)
+  a1_p2  dz=+2.0  dNLL=2.2529  (85.8 s)
+  a1_p3  dz=+3.0  dNLL=4.2955  (64.1 s)
+  a1_m1  dz=-1.0  dNLL=0.3643  (67.5 s)
+  a1_m2  dz=-2.0  dNLL=1.1079  (64.9 s)
+  a1_m3  dz=-3.0  dNLL=1.7904  (64.7 s)
+  a1_m4  dz=-4.0  dNLL=2.2907  (64.1 s)
+  a2_p1  dz=+1.0  dNLL=0.7486  (70.0 s)
+  a2_p2  dz=+2.0  dNLL=2.5383  (64.5 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (120.5 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (56.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (55.3 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.007 (from 3 pts)  σ⁻=1.754 (from 4 pts)  asym=0.57
+  axis 2:  σ⁺=0.883 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.88
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 22:19:29 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.01 & -1.49 & -1.34 & -0.69 & -0.55 \\ 
+  urb & 1.21 & 0.77 & 0.91 & 1.50 & 1.65 \\ 
+  access & 0.00 & -0.32 & -0.21 & 0.21 & 0.30 \\ 
+  elev & -0.22 & -0.44 & -0.37 & -0.08 & -0.01 \\ 
+  distRiversLakes & -0.18 & -0.37 & -0.30 & -0.06 & 0.01 \\ 
+  popValsNorm & 0.37 & -0.27 & -0.06 & 0.79 & 1.04 \\ 
+  sigmaSq & 0.30 & 0.16 & 0.20 & 0.42 & 0.51 \\ 
+  phi & 0.73 & 0.24 & 0.39 & 0.97 & 0.99 \\ 
+  sigmaEpsSq & 1.85 & 1.63 & 1.71 & 2.00 & 2.08 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 6] M_M_BYM2  fit=4.5 gauss=1.1 inla=32.0 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 22:24:59 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.77 & -1.11 & -1.00 & -0.54 & -0.41 \\ 
+  urb & 0.93 & 0.58 & 0.68 & 1.17 & 1.30 \\ 
+  access & -0.24 & -0.55 & -0.43 & -0.05 & 0.06 \\ 
+  elev & -0.03 & -0.23 & -0.15 & 0.10 & 0.16 \\ 
+  distRiversLakes & 0.01 & -0.15 & -0.09 & 0.10 & 0.17 \\ 
+  popValsNorm & 0.22 & -0.33 & -0.12 & 0.57 & 0.71 \\ 
+  sigmaSq & 0.13 & 0.06 & 0.08 & 0.19 & 0.24 \\ 
+  phi & 0.70 & 0.14 & 0.36 & 0.95 & 0.97 \\ 
+  sigmaEpsSq & 1.47 & 1.27 & 1.33 & 1.60 & 1.68 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4351.6807  (65.4 s)
+  a1_p1  dz=+1.0  dNLL=0.6293  (79.5 s)
+  a1_p2  dz=+2.0  dNLL=1.9081  (67.2 s)
+  a1_p3  dz=+3.0  dNLL=3.3033  (70.4 s)
+  a1_m1  dz=-1.0  dNLL=0.3194  (66.0 s)
+  a1_m2  dz=-2.0  dNLL=0.9627  (73.4 s)
+  a1_m3  dz=-3.0  dNLL=1.4177  (66.8 s)
+  a1_m4  dz=-4.0  dNLL=1.6750  (71.7 s)
+  a2_p1  dz=+1.0  dNLL=0.8006  (65.3 s)
+  a2_p2  dz=+2.0  dNLL=2.5225  (72.4 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (90.5 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (88.1 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (85.3 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.136 (from 3 pts)  σ⁻=2.012 (from 4 pts)  asym=0.56
+  axis 2:  σ⁺=0.883 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.88
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4351.6807  (61.7 s)
+  a1_p1  dz=+1.0  dNLL=0.6293  (63.7 s)
+  a1_p2  dz=+2.0  dNLL=1.9081  (71.9 s)
+  a1_p3  dz=+3.0  dNLL=3.3033  (72.5 s)
+  a1_m1  dz=-1.0  dNLL=0.3194  (63.2 s)
+  a1_m2  dz=-2.0  dNLL=0.9627  (67.8 s)
+  a1_m3  dz=-3.0  dNLL=1.4177  (62.0 s)
+  a1_m4  dz=-4.0  dNLL=1.6750  (69.2 s)
+  a2_p1  dz=+1.0  dNLL=0.8006  (62.6 s)
+  a2_p2  dz=+2.0  dNLL=2.5225  (65.0 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (83.4 s) [skipped: non-finite NLL]
+  a3_p1  dz=+1.0  dNLL=0.4592  (70.7 s)
+  a3_p2  dz=+2.0  dNLL=1.6898  (74.8 s)
+  a3_p3  dz=+3.0  dNLL=3.4427  (66.0 s)
+  a3_m1  dz=-1.0  dNLL=0.5628  (67.0 s)
+  a3_m2  dz=-2.0  dNLL=2.3512  (62.7 s)
+  a3_m3  dz=-3.0  dNLL=5.5092  (70.0 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.136 (from 3 pts)  σ⁻=2.012 (from 4 pts)  asym=0.56
+  axis 2:  σ⁺=0.883 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.88
+  axis 3:  σ⁺=1.133 (from 3 pts)  σ⁻=0.907 (from 3 pts)  asym=1.25
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 23:01:28 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.76 & -1.11 & -0.97 & -0.54 & -0.42 \\ 
+  urb & 0.96 & 0.58 & 0.73 & 1.19 & 1.29 \\ 
+  access & -0.22 & -0.52 & -0.40 & -0.03 & 0.07 \\ 
+  elev & -0.04 & -0.22 & -0.15 & 0.09 & 0.15 \\ 
+  distRiversLakes & -0.00 & -0.14 & -0.10 & 0.09 & 0.15 \\ 
+  popValsNorm & 0.22 & -0.29 & -0.10 & 0.55 & 0.71 \\ 
+  sigmaSq & 0.14 & 0.07 & 0.09 & 0.21 & 0.26 \\ 
+  phi & 0.76 & 0.16 & 0.38 & 0.99 & 1.00 \\ 
+  sigmaEpsSq & 1.45 & 1.25 & 1.32 & 1.58 & 1.65 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 7] M_M_BYM2  fit=4.2 gauss=1.2 inla=36.5 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 23:06:52 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.10 & -1.41 & -1.31 & -0.90 & -0.80 \\ 
+  urb & 0.77 & 0.45 & 0.55 & 0.97 & 1.07 \\ 
+  access & -0.21 & -0.52 & -0.42 & 0.00 & 0.11 \\ 
+  elev & 0.07 & -0.11 & -0.05 & 0.18 & 0.24 \\ 
+  distRiversLakes & 0.07 & -0.06 & -0.02 & 0.15 & 0.20 \\ 
+  popValsNorm & 0.33 & -0.16 & -0.00 & 0.66 & 0.83 \\ 
+  sigmaSq & 0.08 & 0.04 & 0.05 & 0.13 & 0.16 \\ 
+  phi & 0.60 & 0.10 & 0.23 & 0.91 & 0.96 \\ 
+  sigmaEpsSq & 1.65 & 1.44 & 1.51 & 1.79 & 1.88 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4397.7581  (61.1 s)
+  a1_p1  dz=+1.0  dNLL=0.7128  (64.6 s)
+  a1_p2  dz=+2.0  dNLL=2.1348  (67.0 s)
+  a1_p3  dz=+3.0  dNLL=3.6544  (69.8 s)
+  a1_m1  dz=-1.0  dNLL=0.3182  (61.6 s)
+  a1_m2  dz=-2.0  dNLL=1.0784  (66.4 s)
+  a1_m3  dz=-3.0  dNLL=1.6742  (62.2 s)
+  a1_m4  dz=-4.0  dNLL=1.9522  (67.6 s)
+  a2_p1  dz=+1.0  dNLL=0.8551  (62.1 s)
+  a2_p2  dz=+2.0  dNLL=2.4210  (65.7 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_p3  dz=+3.0  dNLL=NaN  (86.7 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (83.5 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (81.0 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (84.7 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.078 (from 3 pts)  σ⁻=1.864 (from 4 pts)  asym=0.58
+  axis 2:  σ⁺=0.898 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.90
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4397.7581  (60.2 s)
+  a1_p1  dz=+1.0  dNLL=0.7128  (59.1 s)
+  a1_p2  dz=+2.0  dNLL=2.1348  (85.6 s)
+  a1_p3  dz=+3.0  dNLL=3.6544  (62.7 s)
+  a1_m1  dz=-1.0  dNLL=0.3182  (66.4 s)
+  a1_m2  dz=-2.0  dNLL=1.0784  (62.2 s)
+  a1_m3  dz=-3.0  dNLL=1.6742  (70.6 s)
+  a1_m4  dz=-4.0  dNLL=1.9522  (62.4 s)
+  a2_p1  dz=+1.0  dNLL=0.8551  (63.1 s)
+  a2_p2  dz=+2.0  dNLL=2.4210  (62.8 s)
+  a2_p3  dz=+3.0  dNLL=4.4127  (73.1 s)
+  a2_m1  dz=-1.0  dNLL=0.1003  (62.6 s)
+  a2_m2  dz=-2.0  dNLL=1.3252  (63.0 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m3  dz=-3.0  dNLL=NaN  (97.6 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (87.6 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (85.9 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.078 (from 3 pts)  σ⁻=1.864 (from 4 pts)  asym=0.58
+  axis 2:  σ⁺=0.987 (from 3 pts)  σ⁻=1.254 (from 2 pts)  asym=0.79
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 23:43:10 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.11 & -1.43 & -1.32 & -0.89 & -0.79 \\ 
+  urb & 0.78 & 0.47 & 0.58 & 0.97 & 1.09 \\ 
+  access & -0.19 & -0.50 & -0.40 & 0.01 & 0.13 \\ 
+  elev & 0.06 & -0.12 & -0.05 & 0.18 & 0.25 \\ 
+  distRiversLakes & 0.06 & -0.08 & -0.02 & 0.15 & 0.19 \\ 
+  popValsNorm & 0.35 & -0.20 & 0.00 & 0.69 & 0.87 \\ 
+  sigmaSq & 0.10 & 0.04 & 0.05 & 0.16 & 0.23 \\ 
+  phi & 0.69 & 0.10 & 0.26 & 0.99 & 1.00 \\ 
+  sigmaEpsSq & 1.65 & 1.45 & 1.51 & 1.80 & 1.86 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 8] M_M_BYM2  fit=4.2 gauss=1.1 inla=36.4 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Wed May 27 23:48:41 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.35 & -1.75 & -1.62 & -1.09 & -0.96 \\ 
+  urb & 0.77 & 0.35 & 0.52 & 1.03 & 1.14 \\ 
+  access & -0.02 & -0.48 & -0.33 & 0.28 & 0.44 \\ 
+  elev & 0.18 & -0.08 & 0.01 & 0.36 & 0.46 \\ 
+  distRiversLakes & 0.06 & -0.12 & -0.05 & 0.17 & 0.24 \\ 
+  popValsNorm & 0.69 & 0.00 & 0.25 & 1.15 & 1.38 \\ 
+  sigmaSq & 0.19 & 0.10 & 0.12 & 0.27 & 0.33 \\ 
+  phi & 0.49 & 0.07 & 0.16 & 0.84 & 0.93 \\ 
+  sigmaEpsSq & 1.61 & 1.41 & 1.47 & 1.75 & 1.83 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4338.0311  (76.2 s)
+  a1_p1  dz=+1.0  dNLL=0.7215  (72.4 s)
+  a1_p2  dz=+2.0  dNLL=2.1937  (70.3 s)
+  a1_p3  dz=+3.0  dNLL=3.8939  (76.3 s)
+  a1_m1  dz=-1.0  dNLL=0.3432  (65.2 s)
+  a1_m2  dz=-2.0  dNLL=1.2095  (70.5 s)
+  a1_m3  dz=-3.0  dNLL=1.9908  (63.8 s)
+  a1_m4  dz=-4.0  dNLL=2.4890  (68.1 s)
+  a2_p1  dz=+1.0  dNLL=0.8427  (62.3 s)
+  a2_p2  dz=+2.0  dNLL=2.6341  (71.0 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (94.3 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (88.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (86.1 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.049 (from 3 pts)  σ⁻=1.677 (from 4 pts)  asym=0.63
+  axis 2:  σ⁺=0.864 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.86
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4338.0311  (63.2 s)
+  a1_p1  dz=+1.0  dNLL=0.7215  (61.1 s)
+  a1_p2  dz=+2.0  dNLL=2.1937  (86.5 s)
+  a1_p3  dz=+3.0  dNLL=3.8939  (68.8 s)
+  a1_m1  dz=-1.0  dNLL=0.3432  (77.6 s)
+  a1_m2  dz=-2.0  dNLL=1.2095  (69.6 s)
+  a1_m3  dz=-3.0  dNLL=1.9908  (75.6 s)
+  a1_m4  dz=-4.0  dNLL=2.4890  (67.8 s)
+  a2_p1  dz=+1.0  dNLL=0.8427  (74.5 s)
+  a2_p2  dz=+2.0  dNLL=2.6341  (66.2 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m1  dz=-1.0  dNLL=NaN  (95.6 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (94.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (89.7 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.049 (from 3 pts)  σ⁻=1.677 (from 4 pts)  asym=0.63
+  axis 2:  σ⁺=0.864 (from 2 pts)  σ⁻=1.000 (from 0 pts)  asym=0.86
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 00:22:30 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.33 & -1.70 & -1.56 & -1.09 & -0.94 \\ 
+  urb & 0.77 & 0.45 & 0.54 & 1.00 & 1.10 \\ 
+  access & -0.06 & -0.47 & -0.31 & 0.21 & 0.37 \\ 
+  elev & 0.16 & -0.09 & -0.01 & 0.31 & 0.39 \\ 
+  distRiversLakes & 0.05 & -0.12 & -0.06 & 0.16 & 0.23 \\ 
+  popValsNorm & 0.63 & 0.04 & 0.22 & 1.05 & 1.29 \\ 
+  sigmaSq & 0.20 & 0.10 & 0.13 & 0.28 & 0.37 \\ 
+  phi & 0.57 & 0.07 & 0.17 & 0.94 & 0.98 \\ 
+  sigmaEpsSq & 1.60 & 1.39 & 1.47 & 1.74 & 1.81 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 9] M_M_BYM2  fit=4.3 gauss=1.2 inla=33.9 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 4 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning: 3 external pointers will be removed
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 00:28:29 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.82 & -1.28 & -1.14 & -0.50 & -0.37 \\ 
+  urb & 1.19 & 0.74 & 0.89 & 1.50 & 1.66 \\ 
+  access & -0.39 & -0.67 & -0.58 & -0.19 & -0.09 \\ 
+  elev & 0.06 & -0.18 & -0.11 & 0.22 & 0.31 \\ 
+  distRiversLakes & 0.15 & -0.07 & 0.01 & 0.28 & 0.37 \\ 
+  popValsNorm & -0.23 & -0.81 & -0.64 & 0.19 & 0.38 \\ 
+  sigmaSq & 0.33 & 0.18 & 0.21 & 0.45 & 0.56 \\ 
+  phi & 0.73 & 0.29 & 0.43 & 0.93 & 0.97 \\ 
+  sigmaEpsSq & 1.60 & 1.40 & 1.46 & 1.73 & 1.82 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4223.1901  (71.5 s)
+  a1_p1  dz=+1.0  dNLL=0.7397  (77.8 s)
+  a1_p2  dz=+2.0  dNLL=3.2013  (68.4 s)
+  a1_m1  dz=-1.0  dNLL=0.2971  (75.6 s)
+  a1_m2  dz=-2.0  dNLL=0.8834  (65.6 s)
+  a1_m3  dz=-3.0  dNLL=1.3986  (78.7 s)
+  a1_m4  dz=-4.0  dNLL=1.7747  (67.0 s)
+  a2_p1  dz=+1.0  dNLL=0.7891  (70.6 s)
+  a2_p2  dz=+2.0  dNLL=2.6404  (65.0 s)
+  a2_m1  dz=-1.0  dNLL=0.2131  (74.4 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a2_m2  dz=-2.0  dNLL=NaN  (91.8 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_p1  dz=+1.0  dNLL=NaN  (107.3 s) [skipped: non-finite NLL]
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m1  dz=-1.0  dNLL=NaN  (90.4 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.792 (from 2 pts)  σ⁻=1.987 (from 4 pts)  asym=0.40
+  axis 2:  σ⁺=0.865 (from 2 pts)  σ⁻=1.532 (from 1 pts)  asym=0.56
+  axis 3:  σ⁺=1.000 (from 0 pts)  σ⁻=1.000 (from 0 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=4223.1901  (69.6 s)
+  a1_p1  dz=+1.0  dNLL=0.7397  (67.8 s)
+  a1_p2  dz=+2.0  dNLL=3.2013  (73.0 s)
+  a1_m1  dz=-1.0  dNLL=0.2971  (78.5 s)
+  a1_m2  dz=-2.0  dNLL=0.8834  (64.0 s)
+  a1_m3  dz=-3.0  dNLL=1.3986  (68.3 s)
+  a1_m4  dz=-4.0  dNLL=1.7747  (66.0 s)
+  a2_p1  dz=+1.0  dNLL=0.7891  (65.2 s)
+  a2_p2  dz=+2.0  dNLL=2.6404  (73.8 s)
+  a2_m1  dz=-1.0  dNLL=0.2131  (68.0 s)
+  a2_m2  dz=-2.0  dNLL=1.3340  (73.7 s)
+  a2_m3  dz=-3.0  dNLL=3.2483  (75.1 s)
+  a3_p1  dz=+1.0  dNLL=0.5033  (71.2 s)
+  a3_p2  dz=+2.0  dNLL=1.7450  (75.0 s)
+  a3_p3  dz=+3.0  dNLL=3.4496  (69.1 s)
+  a3_m1  dz=-1.0  dNLL=0.5111  (68.9 s)
+Warning in doTryCatch(return(expr), name, parentenv, handler) :
+  restarting interrupted promise evaluation
+Warning in he(par) : restarting interrupted promise evaluation
+Warning in TMB::sdreport(obj_k, getJointPrecision = TRUE) :
+  restarting interrupted promise evaluation
+  a3_m2  dz=-2.0  dNLL=NaN  (129.7 s) [skipped: non-finite NLL]
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.792 (from 2 pts)  σ⁻=1.987 (from 4 pts)  asym=0.40
+  axis 2:  σ⁺=0.865 (from 2 pts)  σ⁻=1.187 (from 3 pts)  asym=0.73
+  axis 3:  σ⁺=1.128 (from 3 pts)  σ⁻=0.989 (from 1 pts)  asym=1.14
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:07:25 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.80 & -1.24 & -1.11 & -0.50 & -0.31 \\ 
+  urb & 1.22 & 0.77 & 0.93 & 1.53 & 1.68 \\ 
+  access & -0.36 & -0.64 & -0.55 & -0.18 & -0.07 \\ 
+  elev & 0.07 & -0.20 & -0.10 & 0.23 & 0.35 \\ 
+  distRiversLakes & 0.14 & -0.05 & 0.01 & 0.28 & 0.35 \\ 
+  popValsNorm & -0.22 & -0.84 & -0.62 & 0.18 & 0.34 \\ 
+  sigmaSq & 0.39 & 0.20 & 0.25 & 0.57 & 0.71 \\ 
+  phi & 0.84 & 0.45 & 0.62 & 0.99 & 1.00 \\ 
+  sigmaEpsSq & 1.60 & 1.37 & 1.44 & 1.76 & 1.84 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 10] M_M_BYM2  fit=4.7 gauss=1.2 inla=39.1 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:09:07 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.64 & -0.80 & -0.74 & -0.55 & -0.50 \\ 
+  urb & 1.18 & 0.98 & 1.05 & 1.31 & 1.37 \\ 
+  access & -0.12 & -0.20 & -0.18 & -0.06 & -0.03 \\ 
+  elev & -0.02 & -0.08 & -0.06 & 0.03 & 0.05 \\ 
+  distRiversLakes & 0.01 & -0.06 & -0.04 & 0.05 & 0.08 \\ 
+  popValsNorm & -0.17 & -0.34 & -0.28 & -0.06 & 0.00 \\ 
+  sigmaSq & 7.18 & 2.54 & 3.59 & 11.65 & 16.63 \\ 
+  phi & 0.36 & 0.05 & 0.11 & 0.67 & 0.82 \\ 
+  sigmaEpsSq & 1.99 & 1.77 & 1.84 & 2.14 & 2.24 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3355.4232  (15.4 s)
+  a1_p1  dz=+1.0  dNLL=0.3980  (13.4 s)
+  a1_p2  dz=+2.0  dNLL=1.3896  (13.2 s)
+  a1_p3  dz=+3.0  dNLL=2.7043  (13.0 s)
+  a1_m1  dz=-1.0  dNLL=0.5848  (13.0 s)
+  a1_m2  dz=-2.0  dNLL=1.8714  (13.0 s)
+  a1_m3  dz=-3.0  dNLL=3.1994  (13.2 s)
+  a2_p1  dz=+1.0  dNLL=0.2586  (13.1 s)
+  a2_p2  dz=+2.0  dNLL=0.7253  (12.9 s)
+  a2_p3  dz=+3.0  dNLL=1.4521  (13.1 s)
+  a2_p4  dz=+4.0  dNLL=2.4876  (13.3 s)
+  a2_m1  dz=-1.0  dNLL=0.6548  (13.2 s)
+  a2_m2  dz=-2.0  dNLL=1.8783  (14.3 s)
+  a2_m3  dz=-3.0  dNLL=3.5440  (14.4 s)
+  a3_p1  dz=+1.0  dNLL=0.5232  (13.0 s)
+  a3_p2  dz=+2.0  dNLL=1.8486  (12.9 s)
+  a3_p3  dz=+3.0  dNLL=3.9504  (13.4 s)
+  a3_m1  dz=-1.0  dNLL=0.5397  (13.4 s)
+  a3_m2  dz=-2.0  dNLL=2.3646  (14.2 s)
+  a3_m3  dz=-3.0  dNLL=5.1413  (14.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.272 (from 3 pts)  σ⁻=1.153 (from 3 pts)  asym=1.10
+  axis 2:  σ⁺=1.777 (from 4 pts)  σ⁻=1.106 (from 3 pts)  asym=1.61
+  axis 3:  σ⁺=1.062 (from 3 pts)  σ⁻=0.933 (from 3 pts)  asym=1.14
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3355.4232  (14.8 s)
+  a1_p1  dz=+1.0  dNLL=0.3980  (13.3 s)
+  a1_p2  dz=+2.0  dNLL=1.3896  (13.7 s)
+  a1_p3  dz=+3.0  dNLL=2.7043  (13.3 s)
+  a1_m1  dz=-1.0  dNLL=0.5848  (13.2 s)
+  a1_m2  dz=-2.0  dNLL=1.8714  (13.3 s)
+  a1_m3  dz=-3.0  dNLL=3.1994  (12.8 s)
+  a2_p1  dz=+1.0  dNLL=0.2586  (12.8 s)
+  a2_p2  dz=+2.0  dNLL=0.7253  (14.0 s)
+  a2_p3  dz=+3.0  dNLL=1.4521  (13.1 s)
+  a2_p4  dz=+4.0  dNLL=2.4876  (13.5 s)
+  a2_m1  dz=-1.0  dNLL=0.6548  (13.5 s)
+  a2_m2  dz=-2.0  dNLL=1.8783  (14.0 s)
+  a2_m3  dz=-3.0  dNLL=3.5440  (14.2 s)
+  a3_p1  dz=+1.0  dNLL=0.5232  (12.7 s)
+  a3_p2  dz=+2.0  dNLL=1.8486  (13.0 s)
+  a3_p3  dz=+3.0  dNLL=3.9504  (12.8 s)
+  a3_m1  dz=-1.0  dNLL=0.5397  (13.0 s)
+  a3_m2  dz=-2.0  dNLL=2.3646  (13.4 s)
+  a3_m3  dz=-3.0  dNLL=5.1413  (13.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.272 (from 3 pts)  σ⁻=1.153 (from 3 pts)  asym=1.10
+  axis 2:  σ⁺=1.777 (from 4 pts)  σ⁻=1.106 (from 3 pts)  asym=1.61
+  axis 3:  σ⁺=1.062 (from 3 pts)  σ⁻=0.933 (from 3 pts)  asym=1.14
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:19:18 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.65 & -0.79 & -0.74 & -0.56 & -0.50 \\ 
+  urb & 1.17 & 0.98 & 1.05 & 1.30 & 1.37 \\ 
+  access & -0.12 & -0.20 & -0.17 & -0.07 & -0.03 \\ 
+  elev & -0.02 & -0.09 & -0.06 & 0.03 & 0.05 \\ 
+  distRiversLakes & 0.01 & -0.06 & -0.04 & 0.06 & 0.08 \\ 
+  popValsNorm & -0.17 & -0.35 & -0.28 & -0.06 & 0.00 \\ 
+  sigmaSq & 6.43 & 1.66 & 2.48 & 11.32 & 17.87 \\ 
+  phi & 0.37 & 0.03 & 0.07 & 0.75 & 0.87 \\ 
+  sigmaEpsSq & 1.95 & 1.70 & 1.78 & 2.11 & 2.19 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 1] M_D_BYM2  fit=0.3 gauss=1.2 inla=10.2 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:20:48 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.16 & -1.33 & -1.27 & -1.06 & -1.00 \\ 
+  urb & 1.69 & 1.46 & 1.53 & 1.85 & 1.95 \\ 
+  access & -0.06 & -0.17 & -0.13 & 0.00 & 0.04 \\ 
+  elev & -0.01 & -0.07 & -0.05 & 0.03 & 0.05 \\ 
+  distRiversLakes & 0.01 & -0.07 & -0.04 & 0.06 & 0.08 \\ 
+  popValsNorm & 0.14 & -0.08 & 0.00 & 0.29 & 0.37 \\ 
+  sigmaSq & 0.54 & 0.01 & 0.02 & 1.29 & 3.35 \\ 
+  phi & 0.40 & 0.02 & 0.06 & 0.84 & 0.93 \\ 
+  sigmaEpsSq & 2.16 & 1.92 & 2.00 & 2.32 & 2.40 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3253.1229  (14.5 s)
+  a1_p1  dz=+1.0  dNLL=0.4707  (12.8 s)
+  a1_p2  dz=+2.0  dNLL=1.7037  (12.9 s)
+  a1_p3  dz=+3.0  dNLL=3.3151  (13.0 s)
+  a1_m1  dz=-1.0  dNLL=0.4773  (12.6 s)
+  a1_m2  dz=-2.0  dNLL=1.5750  (12.7 s)
+  a1_m3  dz=-3.0  dNLL=2.5614  (12.9 s)
+  a2_p1  dz=+1.0  dNLL=0.3714  (13.4 s)
+  a2_p2  dz=+2.0  dNLL=1.1597  (12.8 s)
+  a2_p3  dz=+3.0  dNLL=1.9509  (14.0 s)
+  a2_p4  dz=+4.0  dNLL=2.7615  (14.0 s)
+  a2_m1  dz=-1.0  dNLL=0.6604  (13.5 s)
+  a2_m2  dz=-2.0  dNLL=2.8066  (13.8 s)
+  a3_p1  dz=+1.0  dNLL=0.5463  (13.5 s)
+  a3_p2  dz=+2.0  dNLL=2.0826  (13.4 s)
+  a3_p3  dz=+3.0  dNLL=4.5909  (12.7 s)
+  a3_m1  dz=-1.0  dNLL=0.4738  (13.1 s)
+  a3_m2  dz=-2.0  dNLL=2.0044  (13.6 s)
+  a3_m3  dz=-3.0  dNLL=4.6039  (13.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.149 (from 3 pts)  σ⁻=1.282 (from 3 pts)  asym=0.90
+  axis 2:  σ⁺=1.628 (from 4 pts)  σ⁻=0.846 (from 2 pts)  asym=1.93
+  axis 3:  σ⁺=0.988 (from 3 pts)  σ⁻=0.991 (from 3 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3253.1229  (14.8 s)
+  a1_p1  dz=+1.0  dNLL=0.4707  (12.8 s)
+  a1_p2  dz=+2.0  dNLL=1.7037  (12.9 s)
+  a1_p3  dz=+3.0  dNLL=3.3151  (12.9 s)
+  a1_m1  dz=-1.0  dNLL=0.4773  (12.7 s)
+  a1_m2  dz=-2.0  dNLL=1.5750  (12.6 s)
+  a1_m3  dz=-3.0  dNLL=2.5614  (12.8 s)
+  a2_p1  dz=+1.0  dNLL=0.3714  (13.0 s)
+  a2_p2  dz=+2.0  dNLL=1.1597  (12.9 s)
+  a2_p3  dz=+3.0  dNLL=1.9509  (12.8 s)
+  a2_p4  dz=+4.0  dNLL=2.7615  (13.1 s)
+  a2_m1  dz=-1.0  dNLL=0.6604  (13.0 s)
+  a2_m2  dz=-2.0  dNLL=2.8066  (12.7 s)
+  a3_p1  dz=+1.0  dNLL=0.5463  (12.7 s)
+  a3_p2  dz=+2.0  dNLL=2.0826  (12.4 s)
+  a3_p3  dz=+3.0  dNLL=4.5909  (12.5 s)
+  a3_m1  dz=-1.0  dNLL=0.4738  (13.0 s)
+  a3_m2  dz=-2.0  dNLL=2.0044  (13.2 s)
+  a3_m3  dz=-3.0  dNLL=4.6039  (14.9 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.149 (from 3 pts)  σ⁻=1.282 (from 3 pts)  asym=0.90
+  axis 2:  σ⁺=1.628 (from 4 pts)  σ⁻=0.846 (from 2 pts)  asym=1.93
+  axis 3:  σ⁺=0.988 (from 3 pts)  σ⁻=0.991 (from 3 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:30:09 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.16 & -1.33 & -1.27 & -1.06 & -1.00 \\ 
+  urb & 1.69 & 1.45 & 1.53 & 1.86 & 1.93 \\ 
+  access & -0.06 & -0.17 & -0.13 & 0.00 & 0.03 \\ 
+  elev & -0.01 & -0.07 & -0.05 & 0.03 & 0.05 \\ 
+  distRiversLakes & 0.01 & -0.06 & -0.04 & 0.06 & 0.09 \\ 
+  popValsNorm & 0.15 & -0.07 & -0.00 & 0.29 & 0.35 \\ 
+  sigmaSq & 0.31 & 0.00 & 0.01 & 0.72 & 1.73 \\ 
+  phi & 0.46 & 0.01 & 0.06 & 0.92 & 0.98 \\ 
+  sigmaEpsSq & 2.15 & 1.95 & 2.00 & 2.31 & 2.38 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 2] M_D_BYM2  fit=0.3 gauss=1.2 inla=9.5 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:31:41 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.70 & -0.90 & -0.82 & -0.58 & -0.52 \\ 
+  urb & 0.95 & 0.65 & 0.75 & 1.15 & 1.25 \\ 
+  access & 0.02 & -0.08 & -0.05 & 0.09 & 0.13 \\ 
+  elev & 0.07 & 0.00 & 0.02 & 0.11 & 0.14 \\ 
+  distRiversLakes & -0.06 & -0.13 & -0.10 & -0.01 & 0.02 \\ 
+  popValsNorm & 0.17 & -0.06 & 0.01 & 0.33 & 0.41 \\ 
+  sigmaSq & 0.70 & 0.08 & 0.14 & 1.47 & 2.67 \\ 
+  phi & 0.39 & 0.03 & 0.06 & 0.81 & 0.92 \\ 
+  sigmaEpsSq & 1.96 & 1.75 & 1.82 & 2.11 & 2.20 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3381.3224  (15.2 s)
+  a1_p1  dz=+1.0  dNLL=0.4751  (13.1 s)
+  a1_p2  dz=+2.0  dNLL=1.7243  (13.1 s)
+  a1_p3  dz=+3.0  dNLL=3.3641  (12.9 s)
+  a1_m1  dz=-1.0  dNLL=0.4760  (13.0 s)
+  a1_m2  dz=-2.0  dNLL=1.5487  (13.3 s)
+  a1_m3  dz=-3.0  dNLL=2.5744  (13.3 s)
+  a2_p1  dz=+1.0  dNLL=0.3435  (13.0 s)
+  a2_p2  dz=+2.0  dNLL=0.9606  (13.0 s)
+  a2_p3  dz=+3.0  dNLL=1.2177  (14.3 s)
+  a2_p4  dz=+4.0  dNLL=1.7051  (13.2 s)
+  a2_m1  dz=-1.0  dNLL=0.4811  (13.3 s)
+  a2_m2  dz=-2.0  dNLL=1.5542  (13.1 s)
+  a2_m3  dz=-3.0  dNLL=2.9834  (12.8 s)
+  a3_p1  dz=+1.0  dNLL=0.4352  (12.7 s)
+  a3_p2  dz=+2.0  dNLL=1.8859  (13.2 s)
+  a3_p3  dz=+3.0  dNLL=4.3133  (13.1 s)
+  a3_m1  dz=-1.0  dNLL=0.5727  (13.6 s)
+  a3_m2  dz=-2.0  dNLL=2.1704  (13.8 s)
+  a3_m3  dz=-3.0  dNLL=4.8338  (13.8 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.141 (from 3 pts)  σ⁻=1.281 (from 3 pts)  asym=0.89
+  axis 2:  σ⁺=2.043 (from 4 pts)  σ⁻=1.209 (from 3 pts)  asym=1.69
+  axis 3:  σ⁺=1.023 (from 3 pts)  σ⁻=0.964 (from 3 pts)  asym=1.06
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3381.3224  (14.8 s)
+  a1_p1  dz=+1.0  dNLL=0.4751  (13.0 s)
+  a1_p2  dz=+2.0  dNLL=1.7243  (13.1 s)
+  a1_p3  dz=+3.0  dNLL=3.3641  (12.9 s)
+  a1_m1  dz=-1.0  dNLL=0.4760  (13.0 s)
+  a1_m2  dz=-2.0  dNLL=1.5487  (13.4 s)
+  a1_m3  dz=-3.0  dNLL=2.5744  (13.0 s)
+  a2_p1  dz=+1.0  dNLL=0.3435  (12.9 s)
+  a2_p2  dz=+2.0  dNLL=0.9606  (13.4 s)
+  a2_p3  dz=+3.0  dNLL=1.2177  (15.0 s)
+  a2_p4  dz=+4.0  dNLL=1.7051  (14.1 s)
+  a2_m1  dz=-1.0  dNLL=0.4811  (12.9 s)
+  a2_m2  dz=-2.0  dNLL=1.5542  (13.6 s)
+  a2_m3  dz=-3.0  dNLL=2.9834  (13.4 s)
+  a3_p1  dz=+1.0  dNLL=0.4352  (13.4 s)
+  a3_p2  dz=+2.0  dNLL=1.8859  (13.2 s)
+  a3_p3  dz=+3.0  dNLL=4.3133  (12.9 s)
+  a3_m1  dz=-1.0  dNLL=0.5727  (13.1 s)
+  a3_m2  dz=-2.0  dNLL=2.1704  (13.1 s)
+  a3_m3  dz=-3.0  dNLL=4.8338  (13.4 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.141 (from 3 pts)  σ⁻=1.281 (from 3 pts)  asym=0.89
+  axis 2:  σ⁺=2.043 (from 4 pts)  σ⁻=1.209 (from 3 pts)  asym=1.69
+  axis 3:  σ⁺=1.023 (from 3 pts)  σ⁻=0.964 (from 3 pts)  asym=1.06
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:41:46 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.70 & -0.91 & -0.82 & -0.58 & -0.52 \\ 
+  urb & 0.95 & 0.66 & 0.76 & 1.15 & 1.26 \\ 
+  access & 0.02 & -0.08 & -0.04 & 0.09 & 0.13 \\ 
+  elev & 0.07 & -0.01 & 0.02 & 0.11 & 0.13 \\ 
+  distRiversLakes & -0.06 & -0.13 & -0.10 & -0.01 & 0.01 \\ 
+  popValsNorm & 0.17 & -0.08 & 0.01 & 0.33 & 0.41 \\ 
+  sigmaSq & 0.74 & 0.01 & 0.04 & 1.68 & 3.64 \\ 
+  phi & 0.42 & 0.01 & 0.04 & 0.88 & 0.97 \\ 
+  sigmaEpsSq & 1.96 & 1.75 & 1.82 & 2.10 & 2.17 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 3] M_D_BYM2  fit=0.3 gauss=1.2 inla=10.1 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:43:12 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.67 & -0.89 & -0.82 & -0.53 & -0.45 \\ 
+  urb & 1.24 & 0.91 & 1.02 & 1.47 & 1.58 \\ 
+  access & 0.05 & -0.05 & -0.02 & 0.11 & 0.14 \\ 
+  elev & 0.04 & -0.04 & -0.02 & 0.10 & 0.12 \\ 
+  distRiversLakes & -0.03 & -0.10 & -0.08 & 0.02 & 0.04 \\ 
+  popValsNorm & 0.14 & -0.08 & -0.01 & 0.29 & 0.38 \\ 
+  sigmaSq & 2.66 & 0.08 & 0.21 & 5.94 & 14.28 \\ 
+  phi & 0.50 & 0.03 & 0.09 & 0.90 & 0.97 \\ 
+  sigmaEpsSq & 1.73 & 1.52 & 1.59 & 1.88 & 1.96 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3344.3075  (13.0 s)
+  a1_p1  dz=+1.0  dNLL=0.1692  (13.1 s)
+  a1_p2  dz=+2.0  dNLL=1.2876  (13.0 s)
+  a1_p3  dz=+3.0  dNLL=2.9453  (13.1 s)
+  a1_m1  dz=-1.0  dNLL=0.7789  (12.9 s)
+  a1_m2  dz=-2.0  dNLL=1.8924  (13.1 s)
+  a1_m3  dz=-3.0  dNLL=2.5365  (13.0 s)
+  a2_p1  dz=+1.0  dNLL=-0.0885  (13.0 s)
+  a2_p2  dz=+2.0  dNLL=0.2133  (12.9 s)
+  a2_p3  dz=+3.0  dNLL=0.9024  (13.1 s)
+  a2_p4  dz=+4.0  dNLL=1.7935  (13.3 s)
+  a2_m1  dz=-1.0  dNLL=0.5563  (13.4 s)
+  a2_m2  dz=-2.0  dNLL=2.8617  (15.4 s)
+  a3_p1  dz=+1.0  dNLL=0.9085  (13.0 s)
+  a3_p2  dz=+2.0  dNLL=3.0866  (14.0 s)
+  a3_m1  dz=-1.0  dNLL=0.4314  (13.5 s)
+  a3_m2  dz=-2.0  dNLL=2.1528  (15.0 s)
+  a3_m3  dz=-3.0  dNLL=4.8311  (14.9 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.241 (from 3 pts)  σ⁻=1.254 (from 3 pts)  asym=0.99
+  axis 2:  σ⁺=2.165 (from 4 pts)  σ⁻=0.842 (from 2 pts)  asym=2.57
+  axis 3:  σ⁺=0.801 (from 2 pts)  σ⁻=0.966 (from 3 pts)  asym=0.83
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3344.3075  (13.3 s)
+  a1_p1  dz=+1.0  dNLL=0.1692  (12.9 s)
+  a1_p2  dz=+2.0  dNLL=1.2876  (13.0 s)
+  a1_p3  dz=+3.0  dNLL=2.9453  (13.2 s)
+  a1_m1  dz=-1.0  dNLL=0.7789  (13.1 s)
+  a1_m2  dz=-2.0  dNLL=1.8924  (13.3 s)
+  a1_m3  dz=-3.0  dNLL=2.5365  (13.2 s)
+  a2_p1  dz=+1.0  dNLL=-0.0885  (13.7 s)
+  a2_p2  dz=+2.0  dNLL=0.2133  (12.8 s)
+  a2_p3  dz=+3.0  dNLL=0.9024  (13.3 s)
+  a2_p4  dz=+4.0  dNLL=1.7935  (13.1 s)
+  a2_m1  dz=-1.0  dNLL=0.5563  (13.1 s)
+  a2_m2  dz=-2.0  dNLL=2.8617  (15.9 s)
+  a3_p1  dz=+1.0  dNLL=0.9085  (13.1 s)
+  a3_p2  dz=+2.0  dNLL=3.0866  (14.2 s)
+  a3_m1  dz=-1.0  dNLL=0.4314  (13.0 s)
+  a3_m2  dz=-2.0  dNLL=2.1528  (14.6 s)
+  a3_m3  dz=-3.0  dNLL=4.8311  (14.8 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.241 (from 3 pts)  σ⁻=1.254 (from 3 pts)  asym=0.99
+  axis 2:  σ⁺=2.165 (from 4 pts)  σ⁻=0.842 (from 2 pts)  asym=2.57
+  axis 3:  σ⁺=0.801 (from 2 pts)  σ⁻=0.966 (from 3 pts)  asym=0.83
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:52:28 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.67 & -0.89 & -0.81 & -0.53 & -0.47 \\ 
+  urb & 1.24 & 0.92 & 1.04 & 1.45 & 1.56 \\ 
+  access & 0.05 & -0.06 & -0.02 & 0.11 & 0.15 \\ 
+  elev & 0.04 & -0.04 & -0.02 & 0.10 & 0.12 \\ 
+  distRiversLakes & -0.03 & -0.10 & -0.08 & 0.02 & 0.04 \\ 
+  popValsNorm & 0.15 & -0.08 & 0.00 & 0.30 & 0.36 \\ 
+  sigmaSq & 1.15 & 0.00 & 0.02 & 2.85 & 6.86 \\ 
+  phi & 0.51 & 0.02 & 0.06 & 0.95 & 0.99 \\ 
+  sigmaEpsSq & 1.78 & 1.58 & 1.64 & 1.92 & 2.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 4] M_D_BYM2  fit=0.2 gauss=1.2 inla=9.3 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 01:53:55 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.80 & -0.96 & -0.90 & -0.69 & -0.63 \\ 
+  urb & 1.57 & 1.31 & 1.41 & 1.73 & 1.82 \\ 
+  access & 0.08 & -0.03 & 0.00 & 0.15 & 0.19 \\ 
+  elev & 0.04 & -0.06 & -0.02 & 0.10 & 0.13 \\ 
+  distRiversLakes & -0.03 & -0.12 & -0.09 & 0.02 & 0.06 \\ 
+  popValsNorm & 0.04 & -0.19 & -0.11 & 0.20 & 0.28 \\ 
+  sigmaSq & 0.47 & 0.00 & 0.02 & 1.10 & 2.92 \\ 
+  phi & 0.42 & 0.02 & 0.06 & 0.84 & 0.94 \\ 
+  sigmaEpsSq & 1.80 & 1.59 & 1.67 & 1.95 & 2.01 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3312.4934  (12.0 s)
+  a1_p1  dz=+1.0  dNLL=0.4815  (12.2 s)
+  a1_p2  dz=+2.0  dNLL=1.7442  (12.1 s)
+  a1_p3  dz=+3.0  dNLL=3.4330  (12.3 s)
+  a1_m1  dz=-1.0  dNLL=0.4776  (12.3 s)
+  a1_m2  dz=-2.0  dNLL=1.7031  (12.3 s)
+  a1_m3  dz=-3.0  dNLL=3.1096  (12.5 s)
+  a2_p1  dz=+1.0  dNLL=0.3861  (12.0 s)
+  a2_p2  dz=+2.0  dNLL=1.2147  (11.8 s)
+  a2_p3  dz=+3.0  dNLL=2.2506  (12.0 s)
+  a2_p4  dz=+4.0  dNLL=3.3892  (12.0 s)
+  a2_m1  dz=-1.0  dNLL=0.6058  (12.3 s)
+  a2_m2  dz=-2.0  dNLL=2.2871  (12.4 s)
+  a2_m3  dz=-3.0  dNLL=6.7640  (13.1 s)
+  a3_p1  dz=+1.0  dNLL=0.8135  (12.4 s)
+  a3_p2  dz=+2.0  dNLL=2.6175  (12.3 s)
+  a3_m1  dz=-1.0  dNLL=0.3026  (12.7 s)
+  a3_m2  dz=-2.0  dNLL=1.8143  (13.2 s)
+  a3_m3  dz=-3.0  dNLL=4.3191  (13.3 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.130 (from 3 pts)  σ⁻=1.179 (from 3 pts)  asym=0.96
+  axis 2:  σ⁺=1.490 (from 4 pts)  σ⁻=0.833 (from 3 pts)  asym=1.79
+  axis 3:  σ⁺=0.868 (from 2 pts)  σ⁻=1.027 (from 3 pts)  asym=0.84
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3312.4934  (12.0 s)
+  a1_p1  dz=+1.0  dNLL=0.4815  (12.0 s)
+  a1_p2  dz=+2.0  dNLL=1.7442  (12.0 s)
+  a1_p3  dz=+3.0  dNLL=3.4330  (12.4 s)
+  a1_m1  dz=-1.0  dNLL=0.4776  (12.3 s)
+  a1_m2  dz=-2.0  dNLL=1.7031  (12.5 s)
+  a1_m3  dz=-3.0  dNLL=3.1096  (12.8 s)
+  a2_p1  dz=+1.0  dNLL=0.3861  (12.2 s)
+  a2_p2  dz=+2.0  dNLL=1.2147  (12.3 s)
+  a2_p3  dz=+3.0  dNLL=2.2506  (12.1 s)
+  a2_p4  dz=+4.0  dNLL=3.3892  (12.1 s)
+  a2_m1  dz=-1.0  dNLL=0.6058  (12.4 s)
+  a2_m2  dz=-2.0  dNLL=2.2871  (13.1 s)
+  a2_m3  dz=-3.0  dNLL=6.7640  (13.3 s)
+  a3_p1  dz=+1.0  dNLL=0.8135  (12.4 s)
+  a3_p2  dz=+2.0  dNLL=2.6175  (12.8 s)
+  a3_m1  dz=-1.0  dNLL=0.3026  (12.3 s)
+  a3_m2  dz=-2.0  dNLL=1.8143  (13.0 s)
+  a3_m3  dz=-3.0  dNLL=4.3191  (12.9 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.130 (from 3 pts)  σ⁻=1.179 (from 3 pts)  asym=0.96
+  axis 2:  σ⁺=1.490 (from 4 pts)  σ⁻=0.833 (from 3 pts)  asym=1.79
+  axis 3:  σ⁺=0.868 (from 2 pts)  σ⁻=1.027 (from 3 pts)  asym=0.84
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:02:54 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.80 & -0.97 & -0.91 & -0.68 & -0.62 \\ 
+  urb & 1.56 & 1.32 & 1.40 & 1.73 & 1.80 \\ 
+  access & 0.08 & -0.03 & 0.01 & 0.16 & 0.19 \\ 
+  elev & 0.04 & -0.05 & -0.02 & 0.10 & 0.13 \\ 
+  distRiversLakes & -0.03 & -0.13 & -0.09 & 0.03 & 0.06 \\ 
+  popValsNorm & 0.05 & -0.19 & -0.11 & 0.22 & 0.29 \\ 
+  sigmaSq & 0.33 & 0.00 & 0.00 & 0.68 & 2.33 \\ 
+  phi & 0.48 & 0.02 & 0.06 & 0.93 & 0.98 \\ 
+  sigmaEpsSq & 1.82 & 1.62 & 1.69 & 1.96 & 2.02 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 5] M_D_BYM2  fit=0.3 gauss=1.1 inla=9.0 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+    scoreArea(g) err:  error in evaluating the argument 'x' in selecting a method for function 't': 'Sigma' is not positive definite 
+Warning in inlaStyleDraws(res, NDRAWS = NDRAWS, deltaZ = 1, deltaPi = 2.5,  :
+  hyper covariance non-PD; clamping to |eigenvalues|
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3323.5064  (13.6 s)
+  a1_p1  dz=+1.0  dNLL=1.0476  (12.4 s)
+  a1_p2  dz=+2.0  dNLL=5.1109  (12.5 s)
+  a1_m1  dz=-1.0  dNLL=2.1140  (13.5 s)
+  a1_m2  dz=-2.0  dNLL=7.1084  (13.4 s)
+  a2_p1  dz=+1.0  dNLL=0.7859  (12.3 s)
+  a2_p2  dz=+2.0  dNLL=3.1497  (12.4 s)
+  a2_m1  dz=-1.0  dNLL=0.5050  (12.4 s)
+  a2_m2  dz=-2.0  dNLL=3.9652  (13.4 s)
+  a3_p1  dz=+1.0  dNLL=3.2095  (12.3 s)
+  a3_m1  dz=-1.0  dNLL=5.4805  (13.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=0.629 (from 2 pts)  σ⁻=0.527 (from 2 pts)  asym=1.19
+  axis 2:  σ⁺=0.797 (from 2 pts)  σ⁻=0.721 (from 2 pts)  asym=1.11
+  axis 3:  σ⁺=0.395 (from 1 pts)  σ⁻=0.302 (from 1 pts)  asym=1.31
+    scoreArea(i) err:  error in evaluating the argument 'x' in selecting a method for function 't': 'Sigma' is not positive definite 
+    [spde sim 6] M_D_BYM2  fit=0.2 gauss=0.5 inla=2.8 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+Warning in .local(A, ...) :
+  CHOLMOD warning 'matrix not positive definite' at file 'Supernodal/t_cholmod_super_numeric_worker.c', line 1114
+    scoreArea(g) err:  error in evaluating the argument 'x' in selecting a method for function 't': 'Sigma' is not positive definite 
+Warning in inlaStyleDraws(res, NDRAWS = NDRAWS, deltaZ = 1, deltaPi = 2.5,  :
+  hyper covariance non-PD; clamping to |eigenvalues|
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3317.3370  (14.0 s)
+  a1_p1  dz=+1.0  dNLL=0.0864  (12.2 s)
+  a1_p2  dz=+2.0  dNLL=1.0264  (12.1 s)
+  a1_p3  dz=+3.0  dNLL=2.4442  (12.5 s)
+  a1_p4  dz=+4.0  dNLL=4.0100  (12.7 s)
+  a1_m1  dz=-1.0  dNLL=0.8509  (12.4 s)
+  a1_m2  dz=-2.0  dNLL=2.1005  (12.5 s)
+  a1_m3  dz=-3.0  dNLL=2.9601  (12.1 s)
+  a2_p1  dz=+1.0  dNLL=0.6137  (12.2 s)
+  a2_p2  dz=+2.0  dNLL=2.2193  (12.5 s)
+  a2_p3  dz=+3.0  dNLL=4.7981  (12.8 s)
+  a2_m1  dz=-1.0  dNLL=0.3918  (12.2 s)
+  a2_m2  dz=-2.0  dNLL=1.7999  (12.4 s)
+  a2_m3  dz=-3.0  dNLL=4.2337  (12.2 s)
+  a3_p1  dz=+1.0  dNLL=2.4416  (12.5 s)
+  a3_p2  dz=+2.0  dNLL=7.8301  (12.3 s)
+  a3_m1  dz=-1.0  dNLL=36.2973  (15.0 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.400 (from 4 pts)  σ⁻=1.168 (from 3 pts)  asym=1.20
+  axis 2:  σ⁺=0.964 (from 3 pts)  σ⁻=1.036 (from 3 pts)  asym=0.93
+  axis 3:  σ⁺=0.502 (from 2 pts)  σ⁻=0.117 (from 1 pts)  asym=4.28
+    scoreArea(i) err:  error in evaluating the argument 'x' in selecting a method for function 't': 'Sigma' is not positive definite 
+    [spde sim 7] M_D_BYM2  fit=0.2 gauss=0.4 inla=4.0 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:12:30 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.02 & -1.18 & -1.14 & -0.92 & -0.85 \\ 
+  urb & 1.18 & 0.96 & 1.03 & 1.32 & 1.39 \\ 
+  access & 0.13 & 0.01 & 0.05 & 0.21 & 0.24 \\ 
+  elev & 0.02 & -0.05 & -0.03 & 0.08 & 0.10 \\ 
+  distRiversLakes & 0.01 & -0.07 & -0.04 & 0.06 & 0.07 \\ 
+  popValsNorm & 0.47 & 0.24 & 0.33 & 0.61 & 0.69 \\ 
+  sigmaSq & 3.20 & 0.05 & 0.13 & 6.22 & 18.45 \\ 
+  phi & 0.50 & 0.03 & 0.10 & 0.90 & 0.96 \\ 
+  sigmaEpsSq & 1.77 & 1.58 & 1.64 & 1.91 & 1.99 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3325.6182  (12.6 s)
+  a1_p1  dz=+1.0  dNLL=0.0347  (12.5 s)
+  a1_p2  dz=+2.0  dNLL=1.0587  (12.5 s)
+  a1_p3  dz=+3.0  dNLL=2.6868  (13.0 s)
+  a1_m1  dz=-1.0  dNLL=0.9276  (12.5 s)
+  a1_m2  dz=-2.0  dNLL=2.3435  (12.5 s)
+  a1_m3  dz=-3.0  dNLL=3.5438  (12.5 s)
+  a2_p1  dz=+1.0  dNLL=0.2321  (12.4 s)
+  a2_p2  dz=+2.0  dNLL=0.9982  (12.8 s)
+  a2_p3  dz=+3.0  dNLL=1.9189  (12.4 s)
+  a2_p4  dz=+4.0  dNLL=2.9265  (12.6 s)
+  a2_m1  dz=-1.0  dNLL=0.8334  (12.3 s)
+  a2_m2  dz=-2.0  dNLL=3.5603  (12.9 s)
+  a3_p1  dz=+1.0  dNLL=0.4823  (12.4 s)
+  a3_p2  dz=+2.0  dNLL=2.0031  (13.0 s)
+  a3_p3  dz=+3.0  dNLL=4.5625  (12.5 s)
+  a3_m1  dz=-1.0  dNLL=0.5397  (13.0 s)
+  a3_m2  dz=-2.0  dNLL=2.1015  (13.7 s)
+  a3_m3  dz=-3.0  dNLL=4.7090  (13.4 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.312 (from 3 pts)  σ⁻=1.078 (from 3 pts)  asym=1.22
+  axis 2:  σ⁺=1.610 (from 4 pts)  σ⁻=0.751 (from 2 pts)  asym=2.14
+  axis 3:  σ⁺=0.994 (from 3 pts)  σ⁻=0.977 (from 3 pts)  asym=1.02
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3325.6182  (12.7 s)
+  a1_p1  dz=+1.0  dNLL=0.0347  (12.4 s)
+  a1_p2  dz=+2.0  dNLL=1.0587  (12.4 s)
+  a1_p3  dz=+3.0  dNLL=2.6868  (12.4 s)
+  a1_m1  dz=-1.0  dNLL=0.9276  (12.2 s)
+  a1_m2  dz=-2.0  dNLL=2.3435  (12.4 s)
+  a1_m3  dz=-3.0  dNLL=3.5438  (12.4 s)
+  a2_p1  dz=+1.0  dNLL=0.2321  (12.2 s)
+  a2_p2  dz=+2.0  dNLL=0.9982  (12.3 s)
+  a2_p3  dz=+3.0  dNLL=1.9189  (12.5 s)
+  a2_p4  dz=+4.0  dNLL=2.9265  (12.9 s)
+  a2_m1  dz=-1.0  dNLL=0.8334  (12.4 s)
+  a2_m2  dz=-2.0  dNLL=3.5603  (12.6 s)
+  a3_p1  dz=+1.0  dNLL=0.4823  (12.3 s)
+  a3_p2  dz=+2.0  dNLL=2.0031  (12.4 s)
+  a3_p3  dz=+3.0  dNLL=4.5625  (12.2 s)
+  a3_m1  dz=-1.0  dNLL=0.5397  (12.3 s)
+  a3_m2  dz=-2.0  dNLL=2.1015  (12.6 s)
+  a3_m3  dz=-3.0  dNLL=4.7090  (12.6 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.312 (from 3 pts)  σ⁻=1.078 (from 3 pts)  asym=1.22
+  axis 2:  σ⁺=1.610 (from 4 pts)  σ⁻=0.751 (from 2 pts)  asym=2.14
+  axis 3:  σ⁺=0.994 (from 3 pts)  σ⁻=0.977 (from 3 pts)  asym=1.02
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:21:35 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -1.02 & -1.19 & -1.13 & -0.91 & -0.86 \\ 
+  urb & 1.18 & 0.96 & 1.04 & 1.32 & 1.38 \\ 
+  access & 0.13 & 0.02 & 0.05 & 0.20 & 0.25 \\ 
+  elev & 0.02 & -0.05 & -0.03 & 0.07 & 0.10 \\ 
+  distRiversLakes & 0.01 & -0.06 & -0.04 & 0.06 & 0.08 \\ 
+  popValsNorm & 0.47 & 0.24 & 0.34 & 0.60 & 0.68 \\ 
+  sigmaSq & 1.26 & 0.01 & 0.03 & 2.98 & 9.18 \\ 
+  phi & 0.51 & 0.01 & 0.05 & 0.94 & 0.98 \\ 
+  sigmaEpsSq & 1.77 & 1.58 & 1.63 & 1.90 & 1.98 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 8] M_D_BYM2  fit=0.2 gauss=1.1 inla=9.1 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:22:56 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.81 & -0.99 & -0.94 & -0.69 & -0.65 \\ 
+  urb & 1.28 & 1.06 & 1.14 & 1.41 & 1.48 \\ 
+  access & 0.01 & -0.12 & -0.08 & 0.10 & 0.15 \\ 
+  elev & 0.02 & -0.06 & -0.03 & 0.08 & 0.11 \\ 
+  distRiversLakes & -0.07 & -0.16 & -0.12 & -0.01 & 0.02 \\ 
+  popValsNorm & 0.15 & -0.09 & -0.01 & 0.32 & 0.39 \\ 
+  sigmaSq & 2.10 & 0.09 & 0.23 & 4.73 & 9.24 \\ 
+  phi & 0.49 & 0.04 & 0.10 & 0.90 & 0.97 \\ 
+  sigmaEpsSq & 1.84 & 1.64 & 1.71 & 1.97 & 2.05 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3327.2747  (13.8 s)
+  a1_p1  dz=+1.0  dNLL=0.1684  (12.2 s)
+  a1_p2  dz=+2.0  dNLL=1.2242  (12.1 s)
+  a1_p3  dz=+3.0  dNLL=2.7712  (12.1 s)
+  a1_m1  dz=-1.0  dNLL=0.7757  (12.1 s)
+  a1_m2  dz=-2.0  dNLL=1.9402  (12.2 s)
+  a1_m3  dz=-3.0  dNLL=2.6808  (12.2 s)
+  a2_p1  dz=+1.0  dNLL=-0.4860  (12.3 s)
+  a2_p2  dz=+2.0  dNLL=-0.4589  (13.2 s)
+  a2_p3  dz=+3.0  dNLL=0.0237  (13.0 s)
+  a2_p4  dz=+4.0  dNLL=0.6045  (12.5 s)
+  a2_m1  dz=-1.0  dNLL=1.4139  (12.4 s)
+  a2_m2  dz=-2.0  dNLL=3.7129  (12.6 s)
+  a3_p1  dz=+1.0  dNLL=0.5649  (12.2 s)
+  a3_p2  dz=+2.0  dNLL=2.0577  (12.2 s)
+  a3_p3  dz=+3.0  dNLL=4.3996  (12.5 s)
+  a3_m1  dz=-1.0  dNLL=0.4280  (12.5 s)
+  a3_m2  dz=-2.0  dNLL=1.9045  (12.1 s)
+  a3_m3  dz=-3.0  dNLL=4.4888  (13.5 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.278 (from 3 pts)  σ⁻=1.225 (from 3 pts)  asym=1.04
+  axis 2:  σ⁺=4.129 (from 4 pts)  σ⁻=0.723 (from 2 pts)  asym=5.71
+  axis 3:  σ⁺=1.006 (from 3 pts)  σ⁻=1.006 (from 3 pts)  asym=1.00
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3327.2747  (13.9 s)
+  a1_p1  dz=+1.0  dNLL=0.1684  (12.5 s)
+  a1_p2  dz=+2.0  dNLL=1.2242  (12.4 s)
+  a1_p3  dz=+3.0  dNLL=2.7712  (12.3 s)
+  a1_m1  dz=-1.0  dNLL=0.7757  (12.1 s)
+  a1_m2  dz=-2.0  dNLL=1.9402  (12.2 s)
+  a1_m3  dz=-3.0  dNLL=2.6808  (12.5 s)
+  a2_p1  dz=+1.0  dNLL=-0.4860  (12.6 s)
+  a2_p2  dz=+2.0  dNLL=-0.4589  (13.2 s)
+  a2_p3  dz=+3.0  dNLL=0.0237  (12.9 s)
+  a2_p4  dz=+4.0  dNLL=0.6045  (12.6 s)
+  a2_m1  dz=-1.0  dNLL=1.4139  (13.4 s)
+  a2_m2  dz=-2.0  dNLL=3.7129  (13.0 s)
+  a3_p1  dz=+1.0  dNLL=0.5649  (12.2 s)
+  a3_p2  dz=+2.0  dNLL=2.0577  (12.3 s)
+  a3_p3  dz=+3.0  dNLL=4.3996  (12.3 s)
+  a3_m1  dz=-1.0  dNLL=0.4280  (12.3 s)
+  a3_m2  dz=-2.0  dNLL=1.9045  (12.3 s)
+  a3_m3  dz=-3.0  dNLL=4.4888  (12.3 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.278 (from 3 pts)  σ⁻=1.225 (from 3 pts)  asym=1.04
+  axis 2:  σ⁺=4.129 (from 4 pts)  σ⁻=0.723 (from 2 pts)  asym=5.71
+  axis 3:  σ⁺=1.006 (from 3 pts)  σ⁻=1.006 (from 3 pts)  asym=1.00
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:32:00 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.82 & -1.01 & -0.94 & -0.70 & -0.64 \\ 
+  urb & 1.28 & 1.06 & 1.13 & 1.43 & 1.49 \\ 
+  access & 0.02 & -0.13 & -0.08 & 0.11 & 0.16 \\ 
+  elev & 0.03 & -0.06 & -0.03 & 0.09 & 0.11 \\ 
+  distRiversLakes & -0.07 & -0.15 & -0.12 & -0.01 & 0.01 \\ 
+  popValsNorm & 0.16 & -0.08 & -0.01 & 0.32 & 0.41 \\ 
+  sigmaSq & 0.50 & 0.00 & 0.00 & 1.46 & 3.29 \\ 
+  phi & 0.51 & 0.01 & 0.06 & 0.96 & 0.99 \\ 
+  sigmaEpsSq & 1.85 & 1.64 & 1.71 & 1.99 & 2.07 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 9] M_D_BYM2  fit=0.2 gauss=1.1 inla=9.1 min
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(tempQ, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "dyn.unload(dynlib('code/'))"
+[1] "dyn.unload(dynlib('code/'))"
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:33:22 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.97 & -1.16 & -1.09 & -0.84 & -0.77 \\ 
+  urb & 1.90 & 1.65 & 1.74 & 2.06 & 2.14 \\ 
+  access & -0.06 & -0.18 & -0.14 & 0.02 & 0.06 \\ 
+  elev & 0.01 & -0.06 & -0.03 & 0.05 & 0.08 \\ 
+  distRiversLakes & -0.03 & -0.11 & -0.08 & 0.01 & 0.04 \\ 
+  popValsNorm & -0.09 & -0.31 & -0.23 & 0.05 & 0.13 \\ 
+  sigmaSq & 7.25 & 0.01 & 0.07 & 12.74 & 47.96 \\ 
+  phi & 0.49 & 0.04 & 0.11 & 0.88 & 0.96 \\ 
+  sigmaEpsSq & 1.80 & 1.60 & 1.67 & 1.95 & 2.02 \\ 
+   \hline
+\end{tabular}
+\end{table}
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3241.5514  (12.7 s)
+  a1_p1  dz=+1.0  dNLL=0.5768  (12.3 s)
+  a1_p2  dz=+2.0  dNLL=1.5431  (12.5 s)
+  a1_p3  dz=+3.0  dNLL=2.5464  (13.1 s)
+  a1_m1  dz=-1.0  dNLL=1.6389  (12.6 s)
+  a1_m2  dz=-2.0  dNLL=7.6906  (12.3 s)
+  a2_p1  dz=+1.0  dNLL=0.0847  (12.1 s)
+  a2_p2  dz=+2.0  dNLL=1.0771  (12.2 s)
+  a2_p3  dz=+3.0  dNLL=2.5755  (12.2 s)
+  a2_m1  dz=-1.0  dNLL=0.8416  (12.4 s)
+  a2_m2  dz=-2.0  dNLL=1.9892  (12.4 s)
+  a2_m3  dz=-3.0  dNLL=2.7152  (12.4 s)
+  a3_p1  dz=+1.0  dNLL=0.4005  (12.2 s)
+  a3_p2  dz=+2.0  dNLL=1.8320  (12.4 s)
+  a3_p3  dz=+3.0  dNLL=4.3990  (12.9 s)
+  a3_m1  dz=-1.0  dNLL=0.5774  (12.2 s)
+  a3_m2  dz=-2.0  dNLL=2.1657  (12.3 s)
+  a3_m3  dz=-3.0  dNLL=4.7985  (12.9 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.285 (from 3 pts)  σ⁻=0.512 (from 2 pts)  asym=2.51
+  axis 2:  σ⁺=1.333 (from 3 pts)  σ⁻=1.214 (from 3 pts)  asym=1.10
+  axis 3:  σ⁺=1.018 (from 3 pts)  σ⁻=0.967 (from 3 pts)  asym=1.05
+[inla] axial walk: deltaZ=1.0 deltaPi=2.5 maxSteps=4
+  centre   NLL=3241.5514  (12.8 s)
+  a1_p1  dz=+1.0  dNLL=0.5768  (12.4 s)
+  a1_p2  dz=+2.0  dNLL=1.5431  (12.4 s)
+  a1_p3  dz=+3.0  dNLL=2.5464  (12.3 s)
+  a1_m1  dz=-1.0  dNLL=1.6389  (12.5 s)
+  a1_m2  dz=-2.0  dNLL=7.6906  (12.8 s)
+  a2_p1  dz=+1.0  dNLL=0.0847  (12.2 s)
+  a2_p2  dz=+2.0  dNLL=1.0771  (12.4 s)
+  a2_p3  dz=+3.0  dNLL=2.5755  (12.3 s)
+  a2_m1  dz=-1.0  dNLL=0.8416  (12.7 s)
+  a2_m2  dz=-2.0  dNLL=1.9892  (12.2 s)
+  a2_m3  dz=-3.0  dNLL=2.7152  (12.7 s)
+  a3_p1  dz=+1.0  dNLL=0.4005  (12.3 s)
+  a3_p2  dz=+2.0  dNLL=1.8320  (12.4 s)
+  a3_p3  dz=+3.0  dNLL=4.3990  (12.4 s)
+  a3_m1  dz=-1.0  dNLL=0.5774  (12.0 s)
+  a3_m2  dz=-2.0  dNLL=2.1657  (12.5 s)
+  a3_m3  dz=-3.0  dNLL=4.7985  (12.4 s)
+[inla] per-axis skew-normal scales (eigen-coordinates):
+  axis 1:  σ⁺=1.285 (from 3 pts)  σ⁻=0.512 (from 2 pts)  asym=2.51
+  axis 2:  σ⁺=1.333 (from 3 pts)  σ⁻=1.214 (from 3 pts)  asym=1.10
+  axis 3:  σ⁺=1.018 (from 3 pts)  σ⁻=0.967 (from 3 pts)  asym=1.05
+% latex table generated in R 4.4.3 by xtable 1.8-4 package
+% Thu May 28 02:41:55 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & Est & Q0.025 & Q0.1 & Q0.9 & Q0.975 \\ 
+  \hline
+(Int) & -0.96 & -1.14 & -1.08 & -0.84 & -0.78 \\ 
+  urb & 1.89 & 1.66 & 1.73 & 2.05 & 2.13 \\ 
+  access & -0.07 & -0.18 & -0.15 & 0.01 & 0.06 \\ 
+  elev & 0.01 & -0.06 & -0.03 & 0.06 & 0.08 \\ 
+  distRiversLakes & -0.03 & -0.11 & -0.08 & 0.02 & 0.04 \\ 
+  popValsNorm & -0.10 & -0.31 & -0.24 & 0.04 & 0.12 \\ 
+  sigmaSq & 1.04 & 0.00 & 0.02 & 2.45 & 6.83 \\ 
+  phi & 0.49 & 0.01 & 0.05 & 0.93 & 0.98 \\ 
+  sigmaEpsSq & 1.80 & 1.60 & 1.68 & 1.94 & 2.01 \\ 
+   \hline
+\end{tabular}
+\end{table}
+    [spde sim 10] M_D_BYM2  fit=0.2 gauss=1.1 inla=8.6 min

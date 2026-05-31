@@ -46,14 +46,47 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   areasTo = tempAreasTo[areasToI]
   
   # simulate populations and surveys
-  print("Simulating populations and surveys...")
-  surveysDHS = list()
+  outFile = "savedOutput/simStudy1/simPopsSurveys_SPDE.RData"
+
+  # Default initial state (fresh run); may be overridden by checkpoint resume.
+  surveysDHS  = list()
   surveysMICS = list()
-  subareaPops = list()
-  areaPops = list()
-  stratumPops = list()
+  subareaPops = NULL
+  areaPops    = NULL
+  stratumPops = NULL
+  startI = 1
+
+  # Try to resume from a compatible checkpoint (same seed, <= nsim sims saved).
+  if(file.exists(outFile)) {
+    chk = new.env()
+    try(load(outFile, envir = chk), silent = TRUE)
+    canResume <- exists("surveysDHS",      envir = chk) &&
+                 exists(".rngStateAtStart", envir = chk) &&
+                 exists(".seedUsed",       envir = chk) &&
+                 isTRUE(chk$.seedUsed == seed) &&
+                 length(chk$surveysDHS) <= nsim
+    if(canResume) {
+      surveysDHS  <- chk$surveysDHS
+      surveysMICS <- chk$surveysMICS
+      subareaPops <- chk$subareaPops
+      areaPops    <- chk$areaPops
+      stratumPops <- chk$stratumPops
+      startI      <- length(surveysDHS) + 1
+      if(startI > nsim) {
+        print(paste0("All ", nsim, " sims already complete in ", outFile, "; skipping."))
+        return(invisible(NULL))
+      }
+      assign(".Random.seed", chk$.rngStateAtStart, envir = .GlobalEnv)
+      print(paste0("Resuming SPDE sims from ", startI, "/", nsim,
+                   " (", startI - 1, " already in ", outFile, ")"))
+    } else {
+      print("Existing checkpoint is incompatible (different seed or no metadata); starting fresh.")
+    }
+  }
+
+  print("Simulating populations and surveys...")
   startT = proc.time()[3]
-  for(i in 1:nsim) {
+  for(i in startI:nsim) {
     # simulate population at pixel, EA levels 
     print(paste0("Simulating population ", i, "/", nsim))
 
@@ -74,17 +107,17 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
                                      stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=FALSE)
     
     # append population information
-    if(i == 1) {
+    if(is.null(subareaPops)) {
       subareaPops = simPop$subareaPop$aggregationResults$pFineScalePrevalence
       areaPops = simPop$areaPop$aggregationResults$pFineScalePrevalence
       stratumPops = stratPop$aggregationResults$pFineScalePrevalence
     } else {
       # cbind the new pop info to the full set of populations
-      subareaPops = cbind(subareaPops, 
+      subareaPops = cbind(subareaPops,
                           simPop$subareaPop$aggregationResults$pFineScalePrevalence)
-      areaPops = cbind(areaPops, 
+      areaPops = cbind(areaPops,
                        simPop$areaPop$aggregationResults$pFineScalePrevalence)
-      stratumPops = cbind(stratumPops, 
+      stratumPops = cbind(stratumPops,
                           stratPop$aggregationResults$pFineScalePrevalence)
     }
     
@@ -133,42 +166,26 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     # concatenate results
     surveysDHS = c(surveysDHS, survDHS)
     surveysMICS = c(surveysMICS, survMICS)
-    
-    if(FALSE) {
-      pixelIs = c(survDHS[[1]]$pixelIs, survMICS[[1]]$pixelIs)
-      pPops = normPop[pixelIs]
-      urbs = c(survDHS[[1]]$urban, survMICS[[1]]$urban)
-      binMat = cbind(c(survDHS[[1]]$Z, survMICS[[1]]$Z), 
-                     c(survDHS[[1]]$N, survMICS[[1]]$N) - c(survDHS[[1]]$Z, survMICS[[1]]$Z))
-      summary(glm(binMat ~ urbs + pPops, family=binomial()))
-      summary(lm(simPop$logitRiskDraws ~ popMat$urban + normPop))
-      head(fitMd(survDHS[[1]], survMICS[[1]])$TMBobj$env$last.par, 10)
-      
-      pixelIs = c(surveysDHS[[100]]$pixelIs, surveysMICS[[100]]$pixelIs)
-      pPops = normPop[pixelIs]
-      urbs = c(surveysDHS[[100]]$urban, surveysMICS[[100]]$urban)
-      binMat = cbind(c(surveysDHS[[100]]$Z, surveysMICS[[100]]$Z), 
-                     c(surveysDHS[[100]]$N, surveysMICS[[100]]$N) - c(surveysDHS[[100]]$Z, surveysMICS[[100]]$Z))
-      summary(glm(binMat ~ urbs + pPops, family=binomial()))
-      summary(lm(simPop$logitRiskDraws ~ popMat$urban + normPop))
-      head(fitMd(surveysDHS[[100]], surveysMICS[[100]])$TMBobj$env$last.par, 10)
-    }
-    
+
+    # Save checkpoint atomically (tmpfile + rename) so a crash mid-save can't
+    # leave a corrupt outFile. Stored metadata lets the next call resume.
+    .rngStateAtStart <- get(".Random.seed", envir = .GlobalEnv)
+    .seedUsed        <- seed
+    .nsimRequested   <- nsim
+    tmpFile <- paste0(outFile, ".tmp")
+    save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS,
+         .rngStateAtStart, .seedUsed, .nsimRequested,
+         file = tmpFile)
+    file.rename(tmpFile, outFile)
+
     # estimate time left and print
     thisT = proc.time()[3]
-    timePerIter = (thisT - startT)/i
+    timePerIter = (thisT - startT)/(i - startI + 1)
     timeLeft = timePerIter * (nsim - i)
-    
+
     print(paste0("estimated time remaining: ", (timeLeft/60)/24, " hours"))
   }
-  
-  # get area names
-  
-  
-  browser()
-  save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS, 
-       file="savedOutput/simStudy1/simPopsSurveys.RData")
-  
+
   invisible(NULL)
 }
 
@@ -818,14 +835,47 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
   }
   
   # Call simPopBYM2 one simulation at a time (matching simData1 structure)
-  print("Simulating populations and surveys...")
-  surveysDHS = list()
+  outFile = "savedOutput/simStudy1/simPopsSurveys_BYM2.RData"
+
+  # Default initial state (fresh run); may be overridden by checkpoint resume.
+  surveysDHS  = list()
   surveysMICS = list()
-  subareaPops = list()
-  areaPops = list()
-  stratumPops = list()
+  subareaPops = NULL
+  areaPops    = NULL
+  stratumPops = NULL
+  startI = 1
+
+  # Try to resume from a compatible checkpoint (same seed, <= nsim sims saved).
+  if(file.exists(outFile)) {
+    chk = new.env()
+    try(load(outFile, envir = chk), silent = TRUE)
+    canResume <- exists("surveysDHS",      envir = chk) &&
+                 exists(".rngStateAtStart", envir = chk) &&
+                 exists(".seedUsed",       envir = chk) &&
+                 isTRUE(chk$.seedUsed == seed) &&
+                 length(chk$surveysDHS) <= nsim
+    if(canResume) {
+      surveysDHS  <- chk$surveysDHS
+      surveysMICS <- chk$surveysMICS
+      subareaPops <- chk$subareaPops
+      areaPops    <- chk$areaPops
+      stratumPops <- chk$stratumPops
+      startI      <- length(surveysDHS) + 1
+      if(startI > nsim) {
+        print(paste0("All ", nsim, " sims already complete in ", outFile, "; skipping."))
+        return(invisible(NULL))
+      }
+      assign(".Random.seed", chk$.rngStateAtStart, envir = .GlobalEnv)
+      print(paste0("Resuming BYM2 sims from ", startI, "/", nsim,
+                   " (", startI - 1, " already in ", outFile, ")"))
+    } else {
+      print("Existing checkpoint is incompatible (different seed or no metadata); starting fresh.")
+    }
+  }
+
+  print("Simulating populations and surveys...")
   startT = proc.time()[3]
-  for(i in 1:nsim) {
+  for(i in startI:nsim) {
     # simulate population at pixel, EA levels 
     print(paste0("Simulating population ", i, "/", nsim))
     
@@ -847,54 +897,62 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
                                      stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=FALSE)
     
     # append population information
-    if(i == 1) {
+    if(is.null(subareaPops)) {
       subareaPops = simPop$subareaPop$aggregationResults$pFineScalePrevalence
       areaPops = simPop$areaPop$aggregationResults$pFineScalePrevalence
       stratumPops = stratPop$aggregationResults$pFineScalePrevalence
     } else {
       # cbind the new pop info to the full set of populations
-      subareaPops = cbind(subareaPops, 
+      subareaPops = cbind(subareaPops,
                           simPop$subareaPop$aggregationResults$pFineScalePrevalence)
-      areaPops = cbind(areaPops, 
+      areaPops = cbind(areaPops,
                        simPop$areaPop$aggregationResults$pFineScalePrevalence)
-      stratumPops = cbind(stratumPops, 
+      stratumPops = cbind(stratumPops,
                           stratPop$aggregationResults$pFineScalePrevalence)
     }
-    
+
     # generate surveys
     print(paste0("Generating surveys for population ", i, "/", nsim))
     # get EA level population information for population i
     thisEApop = simPop$eaPop$eaDatList[1]
-    
+
     # get associated HH level population information
     thisHHpop = SUMMER::getHHpop(thisEApop, fixPopPerHH=fixPopPerHH)
-    
+
     # sample DHS survey for this population
     survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=25, clustpaList=list(clustpaDHSed))
-    
+
     # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
     tempClustpa = clustpaMICSed
     names(tempClustpa)[1] = "area"
-    
+
     thisHHpop[[1]]$area = adm2ToStratumMICS(thisHHpop[[1]]$subarea)
-    
+
     survMICS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=16, clustpaList=list(tempClustpa))
-    
+
     # concatenate results
     surveysDHS = c(surveysDHS, survDHS)
     surveysMICS = c(surveysMICS, survMICS)
-    
+
+    # Save checkpoint atomically (tmpfile + rename) so a crash mid-save can't
+    # leave a corrupt outFile. Stored metadata lets the next call resume.
+    .rngStateAtStart <- get(".Random.seed", envir = .GlobalEnv)
+    .seedUsed        <- seed
+    .nsimRequested   <- nsim
+    tmpFile <- paste0(outFile, ".tmp")
+    save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS,
+         .rngStateAtStart, .seedUsed, .nsimRequested,
+         file = tmpFile)
+    file.rename(tmpFile, outFile)
+
     # estimate time left and print
     thisT = proc.time()[3]
-    timePerIter = (thisT - startT)/i
+    timePerIter = (thisT - startT)/(i - startI + 1)
     timeLeft = timePerIter * (nsim - i)
-    
+
     print(paste0("estimated time remaining: ", (timeLeft/60)/24, " hours"))
   }
-  
-  save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS, 
-       file="savedOutput/simStudy1/simPopsSurveys_BYM2.RData")
-  
+
   invisible(NULL)
 }
 
