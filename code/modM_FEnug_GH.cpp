@@ -1,9 +1,39 @@
-// FE + nugget model — nuggets integrated out via Gauss-Hermite quadrature
-// Generic beta vector (works with any number of covariates)
-// Optionally includes IID spatial random effects (map out u_spatial for FE-only)
+// ============================================================================
+// modM_FEnug_GH.cpp  —  Fixed-effects + nugget model with Gauss-Hermite
+// integration of the nugget. NO BYM2 spatial structure (an IID spatial effect
+// `u_spatial` can be included by leaving `log_tau` un-mapped, or removed by
+// mapping it out via `map = list(log_tau = factor(NA), u_spatial = ...)`).
 //
-// For FE-only (u_spatial + log_tau mapped out): zero random effects, pure optimization
-// For IID: u_spatial as random effects in inner Newton
+// MODEL
+// -----
+//   y_i | n_i, p_i        ~ Binomial(n_i, p_i)
+//   logit p_i              = alpha + x_i^T beta [+ u_{a(i)}] + eps_i
+//   u_a                    ~ iid N(0, 1/tau)        (IID area effect; optional)
+//   eps_i                  ~ N(0, 1/tau_eps)        (cluster-level nugget)
+//
+// Like the BYM2 GH templates, the cluster nugget eps_i is integrated out by
+// Q-point Gauss-Hermite quadrature so the inner random effects passed to
+// Laplace are (alpha, beta [, u_spatial]) only.
+//
+// SHARED OPTIMISATIONS — see modM_BYM2_GH_v2.cpp's header for full notes:
+//   * INLINE binomial likelihood (not dbinom_robust):
+//       log_binom_iqk = lchoose(n_i,y_i) + y_i*eta - n_i*logspace_add(0, eta)
+//     We add lchoose inside this loop (rather than factoring out as DATA) for
+//     clarity here — it's also constant w.r.t. params and gets the same AD
+//     treatment either way.
+//   * logspace_add(0, eta) = log(1 + exp(eta)) — stable log-of-1-plus-exp,
+//     binomial log-normaliser. Computed as max(0, eta) + log1p(exp(-|eta|))
+//     to avoid overflow at large positive eta.
+//   * Gauss-Hermite change of variables eps = sqrt(2)*sigma_eps*z gives the
+//     standard nodes/weights form; (1/sqrt(pi)) is the Jacobian.
+//   * logSumExp over Q nodes for the final per-obs log-likelihood.
+//
+// Differences from the BYM2 templates:
+//   * No BYM2 (w, u) decomposition, no sum-to-zero quadratic form.
+//   * Spatial effect (if present) is iid, prior dnorm(u, 0, sigma_u).
+//   * lchoose is added inside the K-loop rather than factored to DATA — same
+//     AD-tape footprint either way since lchoose is constant.
+// ============================================================================
 
 #include <TMB.hpp>
 #include <Eigen/Sparse>
@@ -141,17 +171,23 @@ Type objective_function<Type>::operator() ()
     vector<Type> log_terms(Q);
 
     for(int q = 0; q < Q; q++) {
-      // Weighted sum over integration points for this GH node
+      // Sum over integration points k for this GH node, weighted by w_ik.
       Type mix_lik = Type(0.0);
       for(int k = 0; k < KUrb; k++) {
         Type w_ik = wUrbanMICS(i, k);
         if(w_ik > Type(0.0)) {
-          Type eta = base_eta_urb(i, k) + eps_gh(q);
-          // Inline binomial: lchoose + y*eta - n*log(1+exp(eta))
+          Type eta = base_eta_urb(i, k) + eps_gh(q);   // logit(p_iqk)
+          // INLINE binomial log-likelihood:
+          //   log_binom = lchoose(n,y) + y*eta - n*log(1+exp(eta))
+          // logspace_add(0, eta) = log(1+exp(eta)) — stable for any eta
+          // (avoids overflow at large positive eta). See header notes for
+          // why we don't call dbinom_robust here.
           Type log_lik_k = lchoose_urban(i) + y_i * eta - n_i * logspace_add(Type(0.0), eta);
           mix_lik += w_ik * exp(log_lik_k);
         }
       }
+      // Underflow guard: if all log_lik_k are very negative, mix_lik can
+      // round to 0 and log(0) = -Inf would poison the AD tape.
       mix_lik = CppAD::CondExpGt(mix_lik, tiny, mix_lik, tiny);
       log_terms(q) = log(gh_weights(q)) + log(mix_lik);
       if(q == 0 || asDouble(log_terms(q)) > asDouble(max_log_term))

@@ -26,6 +26,36 @@
     else        list(nFE = 16L, nBYM2 = 16L, label = paste("cluster:", running))
 }
 
+# Compile any missing TMB templates serially up front. Prevents a race where
+# multiple callr workers hit compile() on the same .cpp simultaneously and
+# corrupt each other's .o/.so writes (a known cause of silent FE-worker death
+# on the cluster).
+.precompileTemplates <- function() {
+    templates <- c("modM_BYM2_GH_v2", "modD_BYM2_GH_v2", "modMDM_BYM2_GH_v2",
+                   "modM_FEnug_GH",   "modM_DSepRepar",  "modM_DSep")
+    needed <- character(0)
+    for(t in templates) {
+        if(!any(file.exists(paste0("code/", t, c(".o", ".so", ".dll")))))
+            needed <- c(needed, t)
+    }
+    if(length(needed) == 0) {
+        cat("[precompile] all TMB templates already built\n")
+        return(invisible(NULL))
+    }
+    cat(sprintf("[precompile] %d template(s) missing; building serially: %s\n",
+                length(needed), paste(needed, collapse = ", ")))
+    for(t in needed) {
+        src <- paste0("code/", t, ".cpp")
+        if(!file.exists(src)) {
+            warning("[precompile] source missing: ", src)
+            next
+        }
+        t0 <- proc.time()[3]
+        TMB::compile(src, framework = "TMBad", safebounds = FALSE)
+        cat(sprintf("[precompile] %s built in %.1f s\n", t, proc.time()[3]-t0))
+    }
+}
+
 # Phase runner: schedule the given `models` across `nWorkers` callr children.
 .runPhase <- function(phaseName, models, model, nsim, simIdxList,
                       outDir, nWorkers,
@@ -107,10 +137,35 @@
         )
     })
     for(w in workers) w$wait()
-    cat(sprintf("[%s] phase done.\n", phaseName))
+
+    # Audit worker exit statuses so silent crashes don't go unnoticed.
+    badWorkers <- integer(0)
+    for(wi in seq_along(workers)) {
+        ec <- tryCatch(workers[[wi]]$get_exit_status(),
+                       error = function(e) NA_integer_)
+        if(is.na(ec) || ec != 0L) {
+            badWorkers <- c(badWorkers, wi)
+            cat(sprintf("[%s] worker %d exited with status %s\n",
+                        phaseName, wi, as.character(ec)))
+        }
+    }
+    # Audit on-disk completion vs scheduled count.
+    nDone <- sum(sapply(tasks, function(t) file.exists(t$outFile)))
+    if(nDone < length(tasks)) {
+        cat(sprintf("[%s] WARNING: %d / %d scheduled tasks left no score file on disk\n",
+                    phaseName, length(tasks) - nDone, length(tasks)))
+        cat(sprintf("[%s] check code/scoreFull_%s_w*.log for errors.\n",
+                    phaseName, phaseName))
+    }
+    cat(sprintf("[%s] phase done (%d / %d wrote files; %d worker(s) exited non-zero).\n",
+                phaseName, nDone, length(tasks), length(badWorkers)))
 }
 
-# Collate per-(sim, model) score files into a single summary table and save.
+# Collate per-(sim, model) score files into summary tables and save.
+# Prints, in order:
+#   * area-level prevalence scores (one row per model)
+#   * fixed-effect / covariate scores (one block per model; rows = parameters)
+#   * hyperparameter scores (one block per model that has them)
 .collateScoresFull <- function(model, nsim, outDir, allModels) {
     if(!exists("MODELS")) {
         # scoreSimStudy.R defines helpers we re-use here
@@ -119,14 +174,45 @@
     tag <- toupper(model)
     modelData <- setNames(lapply(allModels, .loadModelScores,
                                  outDir = outDir, nsim = nsim), allModels)
+
+    # ── Area-level (one row per model) ─────────────────────────────────────
     areaTab <- .buildAggTable(lapply(modelData,
                                      function(d) .avgScoreList(d$Area)))
     cat(sprintf("\n----- [%s] Area-level scores (mean across sims) -----\n", tag))
     if(!is.null(areaTab)) print(areaTab, row.names = FALSE, digits = 4)
+
+    # ── Fixed-effect / covariate scores (one block per model) ──────────────
+    cat(sprintf("\n----- [%s] Fixed-effect / covariate scores (mean across sims) -----\n", tag))
+    feNames <- names(TRUE_FE)
+    feTabs  <- list()                  # cache for the save below
+    for(m in allModels) {
+        a <- .avgScoreList(modelData[[m]]$FE)
+        if(is.null(a)) next
+        if(nrow(a) == length(feNames)) rownames(a) <- feNames
+        cat(sprintf("\n[%s]  (n = %d sims)\n", m, length(modelData[[m]]$FE)))
+        print(round(a, 4))
+        feTabs[[m]] <- a
+    }
+
+    # ── Hyperparameter scores (only models that estimate them) ─────────────
+    cat(sprintf("\n----- [%s] Hyperparameter scores (mean across sims) -----\n", tag))
+    hypTabs <- list()
+    anyHyper <- FALSE
+    for(m in allModels) {
+        a <- .avgScoreList(modelData[[m]]$Hyper)
+        if(is.null(a)) next
+        anyHyper <- TRUE
+        cat(sprintf("\n[%s]\n", m))
+        print(round(a, 4))
+        hypTabs[[m]] <- a
+    }
+    if(!anyHyper) cat("(no models produced hyperparameter scores)\n")
+
     summaryFile <- file.path(outDir, "scoresSummary.RData")
-    save(areaTab, modelData, file = summaryFile)
-    cat(sprintf("[%s] summary saved to %s\n", tag, summaryFile))
-    invisible(list(areaTab = areaTab, modelData = modelData))
+    save(areaTab, feTabs, hypTabs, modelData, file = summaryFile)
+    cat(sprintf("\n[%s] summary saved to %s\n", tag, summaryFile))
+    invisible(list(areaTab = areaTab, feTabs = feTabs,
+                   hypTabs = hypTabs, modelData = modelData))
 }
 
 # ============================================================================
@@ -155,6 +241,11 @@ scoreSimStudyFull <- function(model = c("bym2","spde"),
     cat(sprintf("\n================ scoreSimStudyFull (%s) ================\n", tag))
     cat(sprintf("Platform: %s\n", caps$label))
     cat(sprintf("Worker caps: FE = %d, BYM2 = %d\n", caps$nFE, caps$nBYM2))
+
+    # Precompile any missing TMB templates serially before any callr worker
+    # launches, so parallel workers can dyn.load existing .so/.dll files
+    # without racing on compile().
+    .precompileTemplates()
     cat(sprintf("nsim = %d  (simIdx %d..%d)\n",
                 length(simIdxList), min(simIdxList), max(simIdxList)))
     cat(sprintf("Output dir: %s\n", outDir))

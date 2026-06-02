@@ -1,7 +1,26 @@
-// DHS-only BYM2 constrained (2n-2) + GH nuggets — OPTIMIZED v2
-// Same structure as modM_BYM2_GH_v2.cpp but for DHS data
-// DHS uses AprojUrbanDHS/AprojRuralDHS (nObs x nArea) to project spatial effects
-// DHS integration points: 11 urban, 16 rural (fewer than MICS 100)
+// ============================================================================
+// modD_BYM2_GH_v2.cpp  —  DHS-only BYM2 with Gauss-Hermite nugget integration.
+//
+// Same model class and same optimisations as modM_BYM2_GH_v2.cpp; see that
+// file's header for full details on:
+//   * the BYM2 (w, u) parameterisation and sum-to-zero constraints
+//   * why we use an inline binomial likelihood instead of dbinom_robust
+//   * what logspace_add(0, eta) = log(1 + exp(eta)) means and why it matters
+//   * the GH change of variables eps -> sqrt(2)*sigma_eps*z and logSumExp
+//
+// What's different here:
+//   * Data comes from DHS clusters, not MICS households.
+//   * DHS clusters carry POSITIONAL UNCERTAINTY (the published coordinate is
+//     jittered up to 2 km urban / 10 km rural / extra "deeper" rural). We
+//     integrate over the true location via K integration points per cluster
+//     (typically K = 16 urban, 21 rural) with weights wUrbanDHS / wRuralDHS.
+//   * Because the true location is uncertain, the spatial BYM2 effect at the
+//     true location is also a mixture over areas. We use Aproj* (nObs x nArea
+//     dense projection matrix) to map the area-level effect w_bym2 to
+//     obs-level proj_*, instead of the area-index lookup used by MICS.
+//   * Number of integration points per cluster is smaller than MICS's K=100
+//     (jittering uncertainty is much smaller than a stratum polygon).
+// ============================================================================
 
 #include <TMB.hpp>
 #include <Eigen/Sparse>
@@ -194,7 +213,9 @@ Type objective_function<Type>::operator() ()
     }
   }
 
-  // ── Urban: nUrb x Q matrix of log(GH-weighted mixture lik) ──
+  // ── Urban: for each (obs i, GH node q), compute log(sum_k w_ik * binom_ikq)
+  //          then logSumExp over q. See modM_BYM2_GH_v2.cpp for full notes
+  //          on the inline binomial and logspace_add.
   matrix<Type> logMixUrb(nUrb, Q);
 
   for(int q = 0; q < Q; q++) {
@@ -205,11 +226,13 @@ Type objective_function<Type>::operator() ()
 
       for(int k = 0; k < KUrb; k++) {
         Type w_ik = wUrbanDHS(i, k);
-        Type eta = base_eta_urb(i, k) + eps_gh(q);
+        Type eta = base_eta_urb(i, k) + eps_gh(q);          // logit(p_ikq)
+        // Inline binomial:  y*eta - n*log(1 + exp(eta))
+        // logspace_add(0, eta) = log(1 + exp(eta)), stable for any eta.
         Type log_binom = yi * eta - ni * logspace_add(Type(0), eta);
-        mix_lik += w_ik * exp(log_binom);
+        mix_lik += w_ik * exp(log_binom);                   // sum over int pts
       }
-
+      // lchoose added once per obs (DATA, not on AD tape).
       logMixUrb(i, q) = log_gh_w(q) + lchoose_urban(i) + log(mix_lik);
     }
   }
@@ -226,7 +249,7 @@ Type objective_function<Type>::operator() ()
     jnll -= log_inv_sqrt_pi + max_val + log(sum_exp);
   }
 
-  // ── Rural ──
+  // ── Rural: same structure as Urban above. ──
   matrix<Type> logMixRur(nRur, Q);
 
   for(int q = 0; q < Q; q++) {

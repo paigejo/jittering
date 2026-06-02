@@ -1,4 +1,28 @@
-// BYM2 constrained (2n-2) + GH nuggets for MDM (MICS + DHS) — OPTIMIZED v2 style
+// ============================================================================
+// modMDM_BYM2_GH_v2.cpp  —  MICS + DHS data fusion with a shared BYM2 spatial
+// effect and Gauss-Hermite nugget integration.
+//
+// This is the joint version of the two single-source templates: it takes both
+// MICS and DHS data (with their respective integration-point schemes) and
+// fits one shared BYM2 (w, u) plus one shared nugget variance to both. See
+// modM_BYM2_GH_v2.cpp for the canonical comments on:
+//   * BYM2 (w, u) parameterisation, sum-to-zero, density derivation
+//   * inline binomial (y*eta - n*logspace_add(0, eta)) and why we don't use
+//     dbinom_robust
+//   * logspace_add(0, eta) = log(1 + exp(eta)), the stable log(1+exp) form
+//   * Gauss-Hermite change of variables, logSumExp over Q nodes
+//
+// What's different here:
+//   * Both data sources contribute additive likelihood terms — MICS uses
+//     areaidxloc lookup (effectively K_MICS = 100 integration points drawn
+//     from the stratum × urban polygon), DHS uses its smaller K integration
+//     points (~16-21) from the jittering disc.
+//   * One BYM2 effect, one nugget variance, one alpha+beta shared across
+//     both sources. The shared alpha is the cross-source identifiability
+//     anchor; if you need source-specific intercepts, see modMDM_BYM2_GH_comm.
+//   * Computational footprint is ~2× the single-source templates because
+//     both inner data loops run, but the BYM2 GMRF density is computed once.
+// ============================================================================
 
 #include <TMB.hpp>
 #include <Eigen/Sparse>
@@ -171,6 +195,16 @@ Type objective_function<Type>::operator() ()
   }
   Type log_inv_sqrt_pi = -Type(0.5) * log(M_PI);
 
+  // add_dataset: a generic lambda that runs the GH-integrated log-likelihood
+  // for one data block (MICS Urban, MICS Rural, DHS Urban, or DHS Rural).
+  // Each block:
+  //   * builds base_eta_{i,k} = alpha + Xbeta + w_bym2[area_i] once
+  //   * for each (i, GH node q) sums the inline binomial likelihood over the
+  //     K integration points with weights w(i, k), guarding against underflow
+  //   * logSumExp over Q nodes to integrate out the cluster nugget eps_i
+  // See the canonical comments in modM_BYM2_GH_v2.cpp for full notes on the
+  // inline binomial (y*eta - n*logspace_add(0, eta)) and why we don't use
+  // dbinom_robust.
   auto add_dataset = [&](int nObs, int Kint,
                          const vector<Type>& y,
                          const vector<Type>& n,
