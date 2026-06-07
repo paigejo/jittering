@@ -34,6 +34,26 @@ MODELS <- c("Md_FE",  "Md",
             "M_D_FE", "M_M_FE",  "M_DM_FE",
             "M_D_BYM2", "M_M_BYM2", "M_DM_BYM2")
 
+# Pick the area-level truth vector to score against. predGrid() produces
+# pixel-level smooth (nugget-integrated) risk aggregated to area, so the
+# consistent default is the smooth-risk truth field stored by the updated
+# simData1*. Falls back to fine-scale prevalence (the historical default)
+# if the simulated populations file doesn't carry the new smooth-risk field
+# yet — useful for old simPopsSurveys_*.RData caches.
+.pickAreaTruth <- function(simEnv, truthQuantity = c("smoothRisk", "fineScalePrevalence")) {
+    truthQuantity <- match.arg(truthQuantity)
+    if(truthQuantity == "smoothRisk") {
+        if(!is.null(simEnv$areaPops_smoothRisk)) {
+            return(simEnv$areaPops_smoothRisk)
+        }
+        warning("[scoreSimStudy] truthQuantity = \"smoothRisk\" requested but ",
+                "simEnv$areaPops_smoothRisk is NULL — falling back to ",
+                "fineScalePrevalence. Re-simulate with the updated simData1* ",
+                "to produce smooth-risk truths.")
+    }
+    simEnv$areaPops
+}
+
 # ---- model fitting dispatch -------------------------------------------------
 # Md / Md_FE collapse positional uncertainty to K=1 (cluster-center only).
 .makeMdInputs <- function(inputsMDM) {
@@ -264,9 +284,11 @@ scoreSimStudy <- function(model, nsim = 10, simIdxList = seq_len(nsim),
                           KMICS = 100, KDHSu = 16, KDHSr = 21,
                           Qgh = 10, NDRAWS = 1000,
                           COVS = c("urban","access","elev","distRiversLakes","normPop"),
-                          regenerate = FALSE) {
-    model <- match.arg(model, c("spde","bym2"))
-    tag   <- toupper(model)
+                          regenerate = FALSE,
+                          truthQuantity = c("smoothRisk","fineScalePrevalence")) {
+    model         <- match.arg(model, c("spde","bym2"))
+    truthQuantity <- match.arg(truthQuantity)
+    tag           <- toupper(model)
 
     # Load model-tagged simulated populations + MICS int pts into a local env.
     simEnv <- new.env(parent = environment())
@@ -276,9 +298,10 @@ scoreSimStudy <- function(model, nsim = 10, simIdxList = seq_len(nsim),
 
     surveysDHS  <- simEnv$surveysDHS
     surveysMICS <- simEnv$surveysMICS
-    areaPops    <- simEnv$areaPops
+    areaPops    <- .pickAreaTruth(simEnv, truthQuantity)
     intPtsMICS  <- micsEnv$intPtsMICS
     stopifnot(length(surveysDHS) >= nsim)
+    cat(sprintf("[%s] truthQuantity = \"%s\"\n", tag, truthQuantity))
 
     outDir <- sprintf("savedOutput/simStudy1/scores/%s", tag)
     if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
@@ -356,11 +379,14 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
                                   KMICS = 100, KDHSu = 16, KDHSr = 21,
                                   Qgh = 10, NDRAWS = 1000,
                                   COVS = c("urban","access","elev","distRiversLakes","normPop"),
-                                  regenerate = FALSE) {
+                                  regenerate = FALSE,
+                                  truthQuantity = c("smoothRisk","fineScalePrevalence")) {
     if(!requireNamespace("callr", quietly = TRUE))
         stop("scoreSimStudyParallel requires the `callr` package")
-    model <- match.arg(model, c("spde","bym2"))
-    tag   <- toupper(model)
+    model         <- match.arg(model, c("spde","bym2"))
+    truthQuantity <- match.arg(truthQuantity)
+    tag           <- toupper(model)
+    cat(sprintf("[%s] truthQuantity = \"%s\"\n", tag, truthQuantity))
 
     outDir <- sprintf("savedOutput/simStudy1/scores/%s", tag)
     if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
@@ -414,7 +440,7 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
                              sprintf("scoreWorker_%s_w%d.log", tag, w))
         callr::r_bg(
             func = function(taskChunk, model, KMICS, KDHSu, KDHSr,
-                            Qgh, NDRAWS, COVS, codeDir) {
+                            Qgh, NDRAWS, COVS, codeDir, truthQuantity) {
                 setwd(codeDir)
                 source("setup.R")
                 source("code/modFED.R")
@@ -434,13 +460,14 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
                                 regenerate = FALSE, envir = simEnv)
                 micsEnv <- new.env()
                 load("savedOutput/global/intPtsMICS_100.RData", envir = micsEnv)
-                truths <- modelTruths(model)
+                truths   <- modelTruths(model)
+                areaPops <- .pickAreaTruth(simEnv, truthQuantity)
 
                 for(t in taskChunk) {
                     .scoreOneFit(t$simIdx, t$modName, t$outFile,
                                  simEnv$surveysDHS, simEnv$surveysMICS,
                                  micsEnv$intPtsMICS, model, truths,
-                                 simEnv$areaPops,
+                                 areaPops,
                                  KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS)
                 }
             },
@@ -448,7 +475,8 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
                         model     = model,
                         KMICS = KMICS, KDHSu = KDHSu, KDHSr = KDHSr,
                         Qgh = Qgh, NDRAWS = NDRAWS, COVS = COVS,
-                        codeDir = codeDir),
+                        codeDir = codeDir,
+                        truthQuantity = truthQuantity),
             stdout = logPath,
             stderr = "2>&1"
         )

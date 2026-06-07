@@ -1021,14 +1021,34 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     popMat = popMat[popMat$area == predAtArea,]
   }
   
-  # load covariates at prediction locations
+  # load covariates at prediction locations. predGridInputs.RData (built by
+  # code/buildPredGridInputs.R) caches Xmat/popValsNorm for the default
+  # popMat=popMatNGAThresh case so we skip terra::extract on every fit. The
+  # cached cbind(lon,lat) must match popMat row-for-row; otherwise we fall
+  # back to live extraction. Cache becomes a no-op when predAtArea is set
+  # (popMat gets subsetted) — we live-extract in that path.
   LLcoords = cbind(popMat$lon, popMat$lat)
-  Xmat = getDesignMat(LLcoords, normalized)
-  
-  out = load("savedOutput/global/popMeanSDCal.RData")
-  popMean = popMeanCalThresh
-  popSD = popSDCalThresh
-  popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+  cacheFile = "savedOutput/global/predGridInputs.RData"
+  useCache  = is.null(predAtArea) && file.exists(cacheFile)
+  if(useCache) {
+    out = load(cacheFile)
+    cachedOK = identical(predGridPopMatNrow, nrow(popMat)) &&
+               identical(dim(predGridLLcoords), dim(LLcoords)) &&
+               isTRUE(all.equal(predGridLLcoords, LLcoords, check.attributes = FALSE))
+    if(cachedOK) {
+      Xmat        = if(normalized) predGridXmat else predGridXmatRaw
+      popValsNorm = predGridPopValsN
+    } else {
+      useCache = FALSE
+    }
+  }
+  if(!useCache) {
+    Xmat = getDesignMat(LLcoords, normalized)
+    out = load("savedOutput/global/popMeanSDCal.RData")
+    popMean = popMeanCalThresh
+    popSD = popSDCalThresh
+    popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+  }
   Xmat = cbind(Xmat[,3:6], popValsNorm)
   tempNames = colnames(Xmat)
   includeI = colnames(Xmat) %in% includedCovs
@@ -1690,14 +1710,29 @@ predGridINLA = function(mod, popMat=popMatNGAThresh,
   }
   
   if(includeBeta) {
-    # load covariates at prediction locations
+    # load covariates at prediction locations (cache-aware; see predGrid)
     LLcoords = cbind(popMat$lon, popMat$lat)
-    Xmat = getDesignMat(LLcoords, normalized)
-    
-    out = load("savedOutput/global/popMeanSDCal.RData")
-    popMean = popMeanCalThresh
-    popSD = popSDCalThresh
-    popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+    cacheFile = "savedOutput/global/predGridInputs.RData"
+    useCache  = file.exists(cacheFile)
+    if(useCache) {
+      out = load(cacheFile)
+      cachedOK = identical(predGridPopMatNrow, nrow(popMat)) &&
+                 identical(dim(predGridLLcoords), dim(LLcoords)) &&
+                 isTRUE(all.equal(predGridLLcoords, LLcoords, check.attributes = FALSE))
+      if(cachedOK) {
+        Xmat        = if(normalized) predGridXmat else predGridXmatRaw
+        popValsNorm = predGridPopValsN
+      } else {
+        useCache = FALSE
+      }
+    }
+    if(!useCache) {
+      Xmat = getDesignMat(LLcoords, normalized)
+      out = load("savedOutput/global/popMeanSDCal.RData")
+      popMean = popMeanCalThresh
+      popSD = popSDCalThresh
+      popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+    }
     Xmat = cbind(Xmat[,3:6], popValsNorm)
     tempNames = colnames(Xmat)
     includeI = colnames(Xmat) %in% includedCovs

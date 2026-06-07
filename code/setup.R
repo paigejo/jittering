@@ -143,13 +143,11 @@ source("code/modFED.R")
 source("code/modFEMD.R")
 source("code/modIID_GH.R")
 source("code/makeInputsTMB.R")
-source("code/modMdSep.R")               # fitMd (cluster-collapsed BYM2)
-source("code/testInfrastructure.R")     # simulateSurveys, buildSimDhsIntPts, prepareSims
-source("code/inlaStyleDraws.R")         # posteriorDraws, inlaStyleDraws
-source("code/scoreSimStudy.R")          # scoreSimStudy, scoreSimStudyParallel
-source("code/scoreSimStudyFull.R")      # scoreSimStudyFull, scoreSimStudyFullBoth
-if(file.exists("code/scoreInlaCompare.R"))
-  source("code/scoreInlaCompare.R")     # scoreInlaCompare (Gauss vs INLA comparison test)
+source("code/testInfrastructure.R")
+source("code/modMdSep.R")
+source("code/inlaStyleDraws.R")
+source("code/scoreSimStudy.R")
+source("code/scoreSimStudyFull.R")
 
 ## load in global variables made from the following script: 
 if(FALSE) {

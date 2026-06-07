@@ -56,6 +56,15 @@ simulateSurveys <- function(model, nsim = 1, seed = 123, regenerate = FALSE,
     if(!needsRun) {
         cat("[sim] loading cached ", outFile, " (>=", nsim, " sims complete)\n", sep = "")
     } else {
+        # On regenerate=TRUE we must wipe the existing checkpoint, otherwise
+        # simData1* sees the cached "all nsim complete" file and returns without
+        # doing anything — so the new fields (e.g. *_smoothRisk) never get
+        # written. Rename to .bak so it can be recovered if needed.
+        if(regenerate && file.exists(outFile)) {
+            bak <- paste0(outFile, ".bak")
+            cat("[sim] regenerate=TRUE: moving existing ", outFile, " -> ", bak, "\n", sep = "")
+            file.rename(outFile, bak)
+        }
         cat("[sim] generating/resuming ", outFile,
             " (nsim=", nsim, ", seed=", seed, ")\n", sep = "")
         .silenceBrowser()

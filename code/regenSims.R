@@ -1,0 +1,6 @@
+source("setup.R")
+cat(sprintf("\n--- %s | BYM2 regenerate ---\n", format(Sys.time())))
+simulateSurveys("bym2", nsim = 100, seed = 123, regenerate = TRUE)
+cat(sprintf("\n--- %s | SPDE regenerate ---\n", format(Sys.time())))
+simulateSurveys("spde", nsim = 100, seed = 123, regenerate = TRUE)
+cat(sprintf("\n--- %s | All done ---\n", format(Sys.time())))

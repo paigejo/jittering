@@ -54,6 +54,9 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
   subareaPops = NULL
   areaPops    = NULL
   stratumPops = NULL
+  subareaPops_smoothRisk = NULL
+  areaPops_smoothRisk    = NULL
+  stratumPops_smoothRisk = NULL
   startI = 1
 
   # Try to resume from a compatible checkpoint (same seed, <= nsim sims saved).
@@ -71,6 +74,10 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
       subareaPops <- chk$subareaPops
       areaPops    <- chk$areaPops
       stratumPops <- chk$stratumPops
+      # Smooth-risk fields may not exist in older checkpoints; restore if present.
+      if(exists("subareaPops_smoothRisk", envir = chk)) subareaPops_smoothRisk <- chk$subareaPops_smoothRisk
+      if(exists("areaPops_smoothRisk",    envir = chk)) areaPops_smoothRisk    <- chk$areaPops_smoothRisk
+      if(exists("stratumPops_smoothRisk", envir = chk)) stratumPops_smoothRisk <- chk$stratumPops_smoothRisk
       startI      <- length(surveysDHS) + 1
       if(startI > nsim) {
         print(paste0("All ", nsim, " sims already complete in ", outFile, "; skipping."))
@@ -90,35 +97,47 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     # simulate population at pixel, EA levels 
     print(paste0("Simulating population ", i, "/", nsim))
 
-    simPop = 
-      SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat, 
-                         poppsub=poppsub, spdeMesh=mesh, 
-                         margVar=margVar, sigmaEpsilon=sigmaEpsilon, effRange=effRange, 
-                         gamma=gamma, beta0=beta0, seed=NULL, nHHSampled=nHHSampled, 
-                         stratifyByUrban=TRUE, subareaLevel=TRUE, offset=offset, 
-                         doFineScaleRisk=FALSE, doSmoothRisk=FALSE, min1PerSubarea=TRUE, 
+    simPop =
+      SUMMER::simPopSPDE(nsim=1, easpa=easpaDat, popMat=popMat, targetPopMat=targetPopMat,
+                         poppsub=poppsub, spdeMesh=mesh,
+                         margVar=margVar, sigmaEpsilon=sigmaEpsilon, effRange=effRange,
+                         gamma=gamma, beta0=beta0, seed=NULL, nHHSampled=nHHSampled,
+                         stratifyByUrban=TRUE, subareaLevel=TRUE, offset=offset,
+                         doFineScaleRisk=FALSE, doSmoothRisk=TRUE, min1PerSubarea=TRUE,
                          verbose=FALSE
       )
-    
+
     # calculate stratum level population information
-    stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop, 
-                                     areasFrom=areasFrom, 
-                                     areasTo=areasTo, 
-                                     stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=FALSE)
-    
-    # append population information
+    stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop,
+                                     areasFrom=areasFrom,
+                                     areasTo=areasTo,
+                                     stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=TRUE)
+
+    # append population information.  We store BOTH the fine-scale prevalence
+    # (binomial-realised Z_EA / N_EA, the historical truth used for scoring)
+    # AND the smooth (pixel-level expected) risk, since predGrid() produces
+    # smooth risk predictions and the consistent comparison is at that level.
     if(is.null(subareaPops)) {
-      subareaPops = simPop$subareaPop$aggregationResults$pFineScalePrevalence
-      areaPops = simPop$areaPop$aggregationResults$pFineScalePrevalence
-      stratumPops = stratPop$aggregationResults$pFineScalePrevalence
+      subareaPops      = simPop$subareaPop$aggregationResults$pFineScalePrevalence
+      areaPops         = simPop$areaPop$aggregationResults$pFineScalePrevalence
+      stratumPops      = stratPop$aggregationResults$pFineScalePrevalence
+      subareaPops_smoothRisk = simPop$subareaPop$aggregationResults$pSmoothRisk
+      areaPops_smoothRisk    = simPop$areaPop$aggregationResults$pSmoothRisk
+      stratumPops_smoothRisk = stratPop$aggregationResults$pSmoothRisk
     } else {
       # cbind the new pop info to the full set of populations
       subareaPops = cbind(subareaPops,
                           simPop$subareaPop$aggregationResults$pFineScalePrevalence)
-      areaPops = cbind(areaPops,
-                       simPop$areaPop$aggregationResults$pFineScalePrevalence)
+      areaPops    = cbind(areaPops,
+                          simPop$areaPop$aggregationResults$pFineScalePrevalence)
       stratumPops = cbind(stratumPops,
                           stratPop$aggregationResults$pFineScalePrevalence)
+      subareaPops_smoothRisk = cbind(subareaPops_smoothRisk,
+                                     simPop$subareaPop$aggregationResults$pSmoothRisk)
+      areaPops_smoothRisk    = cbind(areaPops_smoothRisk,
+                                     simPop$areaPop$aggregationResults$pSmoothRisk)
+      stratumPops_smoothRisk = cbind(stratumPops_smoothRisk,
+                                     stratPop$aggregationResults$pSmoothRisk)
     }
     
     # generate surveys
@@ -173,7 +192,9 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     .seedUsed        <- seed
     .nsimRequested   <- nsim
     tmpFile <- paste0(outFile, ".tmp")
-    save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS,
+    save(subareaPops, areaPops, stratumPops,
+         subareaPops_smoothRisk, areaPops_smoothRisk, stratumPops_smoothRisk,
+         surveysDHS, surveysMICS,
          .rngStateAtStart, .seedUsed, .nsimRequested,
          file = tmpFile)
     file.rename(tmpFile, outFile)
@@ -843,6 +864,9 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
   subareaPops = NULL
   areaPops    = NULL
   stratumPops = NULL
+  subareaPops_smoothRisk = NULL
+  areaPops_smoothRisk    = NULL
+  stratumPops_smoothRisk = NULL
   startI = 1
 
   # Try to resume from a compatible checkpoint (same seed, <= nsim sims saved).
@@ -860,6 +884,10 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
       subareaPops <- chk$subareaPops
       areaPops    <- chk$areaPops
       stratumPops <- chk$stratumPops
+      # Smooth-risk fields may not exist in older checkpoints; restore if present.
+      if(exists("subareaPops_smoothRisk", envir = chk)) subareaPops_smoothRisk <- chk$subareaPops_smoothRisk
+      if(exists("areaPops_smoothRisk",    envir = chk)) areaPops_smoothRisk    <- chk$areaPops_smoothRisk
+      if(exists("stratumPops_smoothRisk", envir = chk)) stratumPops_smoothRisk <- chk$stratumPops_smoothRisk
       startI      <- length(surveysDHS) + 1
       if(startI > nsim) {
         print(paste0("All ", nsim, " sims already complete in ", outFile, "; skipping."))
@@ -887,28 +915,40 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
                         beta0=beta0, seed=NULL,
                         nHHSampled=nHHDHS, stratifyByUrban=TRUE,
                         subareaLevel=TRUE, doFineScaleRisk=FALSE,
-                        doSmoothRisk=FALSE, doSmoothRiskLogisticApprox=FALSE,
+                        doSmoothRisk=TRUE, doSmoothRiskLogisticApprox=FALSE,
                         min1PerSubarea=TRUE, offset=offset, verbose=FALSE)
-    
+
     # calculate stratum level population information
-    stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop, 
-                                     areasFrom=areasFrom, 
-                                     areasTo=areasTo, 
-                                     stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=FALSE)
-    
-    # append population information
+    stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop,
+                                     areasFrom=areasFrom,
+                                     areasTo=areasTo,
+                                     stratifyByUrban=TRUE, doFineScaleRisk=FALSE, doSmoothRisk=TRUE)
+
+    # append population information.  We store BOTH the fine-scale prevalence
+    # (binomial-realised Z_EA / N_EA, the historical truth used for scoring)
+    # AND the smooth (pixel-level expected) risk, since predGrid() produces
+    # smooth risk predictions and the consistent comparison is at that level.
     if(is.null(subareaPops)) {
-      subareaPops = simPop$subareaPop$aggregationResults$pFineScalePrevalence
-      areaPops = simPop$areaPop$aggregationResults$pFineScalePrevalence
-      stratumPops = stratPop$aggregationResults$pFineScalePrevalence
+      subareaPops      = simPop$subareaPop$aggregationResults$pFineScalePrevalence
+      areaPops         = simPop$areaPop$aggregationResults$pFineScalePrevalence
+      stratumPops      = stratPop$aggregationResults$pFineScalePrevalence
+      subareaPops_smoothRisk = simPop$subareaPop$aggregationResults$pSmoothRisk
+      areaPops_smoothRisk    = simPop$areaPop$aggregationResults$pSmoothRisk
+      stratumPops_smoothRisk = stratPop$aggregationResults$pSmoothRisk
     } else {
       # cbind the new pop info to the full set of populations
       subareaPops = cbind(subareaPops,
                           simPop$subareaPop$aggregationResults$pFineScalePrevalence)
-      areaPops = cbind(areaPops,
-                       simPop$areaPop$aggregationResults$pFineScalePrevalence)
+      areaPops    = cbind(areaPops,
+                          simPop$areaPop$aggregationResults$pFineScalePrevalence)
       stratumPops = cbind(stratumPops,
                           stratPop$aggregationResults$pFineScalePrevalence)
+      subareaPops_smoothRisk = cbind(subareaPops_smoothRisk,
+                                     simPop$subareaPop$aggregationResults$pSmoothRisk)
+      areaPops_smoothRisk    = cbind(areaPops_smoothRisk,
+                                     simPop$areaPop$aggregationResults$pSmoothRisk)
+      stratumPops_smoothRisk = cbind(stratumPops_smoothRisk,
+                                     stratPop$aggregationResults$pSmoothRisk)
     }
 
     # generate surveys
@@ -940,7 +980,9 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
     .seedUsed        <- seed
     .nsimRequested   <- nsim
     tmpFile <- paste0(outFile, ".tmp")
-    save(subareaPops, areaPops, stratumPops, surveysDHS, surveysMICS,
+    save(subareaPops, areaPops, stratumPops,
+         subareaPops_smoothRisk, areaPops_smoothRisk, stratumPops_smoothRisk,
+         surveysDHS, surveysMICS,
          .rngStateAtStart, .seedUsed, .nsimRequested,
          file = tmpFile)
     file.rename(tmpFile, outFile)

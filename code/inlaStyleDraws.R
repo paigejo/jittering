@@ -98,18 +98,74 @@
 # is ~25× faster and indistinguishable when it works, and the INLA path is
 # robust when it doesn't.
 # ============================================================================
+# Per-name agreement check between draw-implied SDs and sdreport's reported
+# SDs. Two independent TMB code paths: if their per-name SDs agree, the
+# draw matrix is correctly labelled (and per-name disagreement localizes any
+# permutation bug). Returns the diagnostic table invisibly and warns on any
+# large mismatch (default tolerance scales as relSE / sqrt(NDRAWS)).
+.checkDrawLabels <- function(draws, res, relTol = 8) {
+    SD <- res$TMBsd
+    if(!inherits(SD, "sdreport")) return(invisible(NULL))
+    # Path B: per-name SEs via summary(SD) — keyed by user-declared names.
+    summTab <- tryCatch(summary(SD, "report"), error = function(e) NULL)
+    if(is.null(summTab) || nrow(summTab) == 0)
+        summTab <- tryCatch(summary(SD), error = function(e) NULL)
+    if(is.null(summTab) || nrow(summTab) == 0) return(invisible(NULL))
+    sePaths <- summTab[, "Std. Error"]
+    seNames <- rownames(summTab)
+    # Path A: marginal SDs from the draws (keyed by rownames(draws), the
+    # names we attached when sampling).
+    drawSDs   <- apply(draws, 1, sd)
+    drawNames <- rownames(draws)
+    # Per-name compare on the intersection.
+    common <- intersect(drawNames, seNames)
+    if(length(common) == 0) {
+        warning(".checkDrawLabels: no shared names between draws and sdreport summary")
+        return(invisible(NULL))
+    }
+    tab <- data.frame(
+        name      = common,
+        sd_draws  = drawSDs[common],
+        sd_report = sePaths[common],
+        diff      = drawSDs[common] - sePaths[common],
+        relDiff   = (drawSDs[common] - sePaths[common]) /
+                    pmax(abs(sePaths[common]), 1e-12),
+        stringsAsFactors = FALSE
+    )
+    # Expected MC SE on sd of N draws is sd / sqrt(2*(N-1)). Flag when
+    # observed |relDiff| > relTol * 1/sqrt(2*(N-1)).
+    NDRAWS <- ncol(draws)
+    relTolEff <- relTol / sqrt(2 * max(NDRAWS - 1, 1))
+    bad <- which(abs(tab$relDiff) > relTolEff)
+    if(length(bad) > 0) {
+        warning(sprintf(
+            ".checkDrawLabels: %d/%d parameters disagree beyond %.3f*MC-SE:\n%s",
+            length(bad), nrow(tab), relTol,
+            paste0("  [", tab$name[bad], "] draws=", round(tab$sd_draws[bad], 5),
+                   " report=", round(tab$sd_report[bad], 5),
+                   " relDiff=", round(tab$relDiff[bad], 3), collapse = "\n")))
+    }
+    invisible(tab)
+}
+
 posteriorDraws <- function(res, NDRAWS = 1000, useInla = "auto", ...) {
     mode <- if(identical(useInla, "auto"))           "auto"
             else if(isTRUE(useInla)  || identical(useInla, "yes")) "inla"
             else if(isFALSE(useInla) || identical(useInla, "no"))  "gauss"
             else stop("posteriorDraws: useInla must be one of \"auto\", TRUE/\"yes\", or FALSE/\"no\"")
 
-    if(mode == "inla")
-        return(inlaStyleDraws(res, NDRAWS = NDRAWS, ...))
+    if(mode == "inla") {
+        out <- inlaStyleDraws(res, NDRAWS = NDRAWS, ...)
+        .checkDrawLabels(out, res)
+        return(out)
+    }
 
-    if(mode == "gauss")
-        return(.gaussianPosteriorDraws(res, NDRAWS = NDRAWS,
-                                       requireJoint = TRUE))
+    if(mode == "gauss") {
+        out <- .gaussianPosteriorDraws(res, NDRAWS = NDRAWS,
+                                       requireJoint = TRUE)
+        .checkDrawLabels(out, res)
+        return(out)
+    }
 
     # auto: try Gaussian (with strict jointPrecision Cholesky); on failure
     # fall back to INLA-style and emit a one-line note so the choice is
@@ -121,8 +177,9 @@ posteriorDraws <- function(res, NDRAWS = 1000, useInla = "auto", ...) {
                     "); falling back to INLA-style.")
             NULL
         })
-    if(!is.null(out)) return(out)
-    inlaStyleDraws(res, NDRAWS = NDRAWS, ...)
+    if(is.null(out)) out <- inlaStyleDraws(res, NDRAWS = NDRAWS, ...)
+    .checkDrawLabels(out, res)
+    out
 }
 
 # Joint-Gaussian draws. When `requireJoint = TRUE`, errors out if the
@@ -140,6 +197,33 @@ posteriorDraws <- function(res, NDRAWS = 1000, useInla = "auto", ...) {
                       error = function(e) e)
         if(!inherits(L, "error")) {
             mode  <- c(SD$par.fixed, SD$par.random)
+            # Defensive: TMB's sdreport sometimes reorders parameters internally
+            # such that the row/col labels of jointPrecision don't match
+            # names(c(par.fixed, par.random)). If we draw and assume the
+            # canonical order without checking, we'd get mis-labelled draws
+            # (right marginals attached to the wrong parameter). Verify here.
+            jpNames <- rownames(SD$jointPrecision)
+            if(!is.null(jpNames)) {
+                if(length(jpNames) != length(mode) || !all(jpNames == names(mode))) {
+                    # Reorder Q to match c(par.fixed, par.random) before drawing.
+                    perm  <- match(names(mode), jpNames)
+                    if(anyNA(perm))
+                        stop(".gaussianPosteriorDraws: names(c(par.fixed, par.random)) ",
+                             "not all found in rownames(jointPrecision); cannot reorder ",
+                             "safely. Missing: ",
+                             paste(names(mode)[is.na(perm)], collapse = ", "))
+                    warning(".gaussianPosteriorDraws: jointPrecision label order ",
+                            "differs from c(par.fixed, par.random); reordering. ",
+                            "First mismatch at idx ",
+                            which(jpNames != names(mode))[1])
+                    Qr <- SD$jointPrecision[perm, perm]
+                    L  <- tryCatch(Matrix::Cholesky(Qr, LDL = FALSE, super = NA),
+                                   error = function(e) e)
+                    if(inherits(L, "error"))
+                        stop("Cholesky of reordered jointPrecision failed: ",
+                             conditionMessage(L))
+                }
+            }
             z     <- matrix(rnorm(length(mode) * NDRAWS), nrow = length(mode))
             shift <- Matrix::solve(L, z, system = "Lt")
             shift <- Matrix::solve(L, shift, system = "Pt")

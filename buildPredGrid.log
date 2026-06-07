@@ -1,0 +1,136 @@
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+
+=== 2026-06-07 18:29:25 | precomputing predGrid inputs ===
+nrow(popMatNGAThresh) = 36564
+getDesignMat(normalized=TRUE)  : 31.7 sec
+getDesignMat(normalized=FALSE) : 35.5 sec
+Saved savedOutput/global/predGridInputs.RData  (2.9 MB)
+
+=== 2026-06-07 18:30:33 | done ===

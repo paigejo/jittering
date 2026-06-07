@@ -60,7 +60,7 @@
 .runPhase <- function(phaseName, models, model, nsim, simIdxList,
                       outDir, nWorkers,
                       KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS,
-                      regenerate, useInla) {
+                      regenerate, useInla, truthQuantity) {
     if(!requireNamespace("callr", quietly = TRUE))
         stop("scoreSimStudyFull needs the `callr` package")
 
@@ -102,7 +102,7 @@
                                               phaseName, w))
         callr::r_bg(
             func = function(taskChunk, model, KMICS, KDHSu, KDHSr,
-                            Qgh, NDRAWS, COVS, useInla, codeDir) {
+                            Qgh, NDRAWS, COVS, useInla, codeDir, truthQuantity) {
                 setwd(codeDir)
                 source("setup.R")
                 source("code/modFED.R");   source("code/modFEM.R")
@@ -120,19 +120,21 @@
                                 regenerate = FALSE, envir = simEnv)
                 micsEnv <- new.env()
                 load("savedOutput/global/intPtsMICS_100.RData", envir = micsEnv)
-                truths <- modelTruths(model)
+                truths   <- modelTruths(model)
+                areaPops <- .pickAreaTruth(simEnv, truthQuantity)
                 for(t in taskChunk) {
                     .scoreOneFit(t$simIdx, t$modName, t$outFile,
                                  simEnv$surveysDHS, simEnv$surveysMICS,
                                  micsEnv$intPtsMICS, model, truths,
-                                 simEnv$areaPops,
+                                 areaPops,
                                  KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS)
                 }
             },
             args = list(taskChunk = chunks[[w]], model = model,
                         KMICS = KMICS, KDHSu = KDHSu, KDHSr = KDHSr,
                         Qgh = Qgh, NDRAWS = NDRAWS, COVS = COVS,
-                        useInla = useInla, codeDir = codeDir),
+                        useInla = useInla, codeDir = codeDir,
+                        truthQuantity = truthQuantity),
             stdout = logPath, stderr = "2>&1"
         )
     })
@@ -223,12 +225,14 @@ scoreSimStudyFull <- function(model = c("bym2","spde"),
                               simIdxList = seq_len(nsim),
                               regenerate = FALSE,
                               useInla = "auto",
+                              truthQuantity = c("smoothRisk","fineScalePrevalence"),
                               outBase = "savedOutput/simStudy1/scores_full",
                               KMICS = 100, KDHSu = 16, KDHSr = 21,
                               Qgh = 10, NDRAWS = 1000,
                               COVS = c("urban","access","elev","distRiversLakes","normPop")) {
-    model <- match.arg(model)
-    tag   <- toupper(model)
+    model         <- match.arg(model)
+    truthQuantity <- match.arg(truthQuantity)
+    tag           <- toupper(model)
 
     FE_MODELS   <- c("Md_FE", "M_D_FE", "M_M_FE", "M_DM_FE")
     BYM2_MODELS <- c("Md", "M_D_BYM2", "M_M_BYM2", "M_DM_BYM2")
@@ -249,19 +253,19 @@ scoreSimStudyFull <- function(model = c("bym2","spde"),
     cat(sprintf("nsim = %d  (simIdx %d..%d)\n",
                 length(simIdxList), min(simIdxList), max(simIdxList)))
     cat(sprintf("Output dir: %s\n", outDir))
-    cat(sprintf("useInla = %s   regenerate = %s\n",
-                deparse(useInla), as.character(regenerate)))
+    cat(sprintf("useInla = %s   regenerate = %s   truthQuantity = \"%s\"\n",
+                deparse(useInla), as.character(regenerate), truthQuantity))
     t0 <- proc.time()[3]
 
     # Phase 1: FE-only models (light, parallelise widely)
     cat(sprintf("\n--- Phase 1: FE-only models (nWorkers = %d) ---\n", caps$nFE))
     .runPhase("FE", FE_MODELS, model, nsim, simIdxList, outDir, caps$nFE,
-              KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla)
+              KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla, truthQuantity)
 
     # Phase 2: BYM2 models (heavy; restrict workers)
     cat(sprintf("\n--- Phase 2: BYM2 / Md models (nWorkers = %d) ---\n", caps$nBYM2))
     .runPhase("BYM2", BYM2_MODELS, model, nsim, simIdxList, outDir, caps$nBYM2,
-              KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla)
+              KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla, truthQuantity)
 
     # Phase 3: collate
     cat("\n--- Phase 3: collating per-sim scores ---\n")
