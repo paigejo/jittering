@@ -1,2 +1,2779 @@
-'BYM2' is not recognized as an internal or external command,
-operable program or batch file.
+Spam version 2.11-3 (2026-01-05) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object is masked from 'package:Matrix':
+
+    det
+
+The following objects are masked from 'package:base':
+
+    backsolve, forwardsolve
+
+Loading required package: viridisLite
+
+Try help(fields) to get started.
+Loading required package: spam64
+Loading required package: fftwtools
+
+Attaching package: 'xtable'
+
+The following object is masked from 'package:spam':
+
+    display
+
+Loading required package: coda
+Loading required package: MASS
+
+Attaching package: 'MASS'
+
+The following objects are masked from 'package:raster':
+
+    area, select
+
+##
+## Markov Chain Monte Carlo Package (MCMCpack)
+## Copyright (C) 2003-2026 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park
+##
+## Support provided by the U.S. National Science Foundation
+## (Grants SES-0350646 and SES-0350613)
+##
+
+Attaching package: 'MCMCpack'
+
+The following objects are masked from 'package:invgamma':
+
+    dinvgamma, rinvgamma
+
+This is INLA_25.03.13 built 2025-03-12 21:15:52 UTC.
+ - See www.r-inla.org/contact-us for how to get help.
+ - List available models/likelihoods/etc with inla.list.models()
+ - Use inla.doc(<NAME>) to access documentation
+
+Attaching package: 'INLA'
+
+The following object is masked from 'package:spam':
+
+    Oral
+
+
+Attaching package: 'data.table'
+
+The following object is masked from 'package:raster':
+
+    shift
+
+Loading required package: grid
+Loading required package: survival
+
+Attaching package: 'survival'
+
+The following objects are masked from 'package:sampling':
+
+    cluster, strata
+
+
+Attaching package: 'survey'
+
+The following object is masked from 'package:raster':
+
+    cv
+
+The following object is masked from 'package:graphics':
+
+    dotchart
+
+SUMMER version 1.4.1
+  See latest changes with 'news(package = 'SUMMER')'
+Loading required package: TraMineR
+
+TraMineR stable version 2.2-11 (Built: 2025-03-22)
+Website: http://traminer.unige.ch
+Please type 'citation("TraMineR")' for citation information.
+
+Loading required package: cluster
+This is WeightedCluster stable version 1.8-1 (Built: 2025-03-22)
+
+To access available manuals and short tutorials, please run:
+   vignette("WeightedCluster") ## For the complete manual in English
+   vignette(package="WeightedCluster") ## To list available documentation
+
+To cite WeightedCluster in publications please use or references in the help pages:
+Studer, Matthias (2013). WeightedCluster Library Manual: A practical
+   guide to creating typologies of trajectories in the social sciences
+   with R. LIVES Working Papers, 24. doi:
+   10.12682/lives.2296-1658.2013.24
+Loading required package: foreign
+
+Attaching package: 'shapefiles'
+
+The following objects are masked from 'package:foreign':
+
+    read.dbf, write.dbf
+
+Loading required package: usethis
+
+Attaching package: 'colorspace'
+
+The following object is masked from 'package:raster':
+
+    RGB
+
+Loading required package: Rcpp
+Warning in CPL_crs_from_input(x) :
+  GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+
+--- 2026-06-07 20:43:41 | BYM2 regenerate ---
+[sim] regenerate=TRUE: moving existing savedOutput/simStudy1/simPopsSurveys_BYM2.RData -> savedOutput/simStudy1/simPopsSurveys_BYM2.RData.bak
+[sim] generating/resuming savedOutput/simStudy1/simPopsSurveys_BYM2.RData (nsim=100, seed=123)
+[1] "Constructing offset based on covariates..."
+[1] "Simulating populations and surveys..."
+[1] "Simulating population 1/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 1/100"
+[1] "estimated time remaining: 7.2276875 hours"
+[1] "Simulating population 2/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 2/100"
+[1] "estimated time remaining: 6.9733125 hours"
+[1] "Simulating population 3/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 3/100"
+[1] "estimated time remaining: 6.86432175925926 hours"
+[1] "Simulating population 4/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 4/100"
+[1] "estimated time remaining: 6.66616666666667 hours"
+[1] "Simulating population 5/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 5/100"
+[1] "estimated time remaining: 6.58825 hours"
+[1] "Simulating population 6/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 6/100"
+[1] "estimated time remaining: 6.64397222222222 hours"
+[1] "Simulating population 7/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 7/100"
+[1] "estimated time remaining: 6.75403273809524 hours"
+[1] "Simulating population 8/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 8/100"
+[1] "estimated time remaining: 6.79586111111111 hours"
+[1] "Simulating population 9/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 9/100"
+[1] "estimated time remaining: 7.15964969135802 hours"
+[1] "Simulating population 10/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 10/100"
+[1] "estimated time remaining: 7.43675 hours"
+[1] "Simulating population 11/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 11/100"
+[1] "estimated time remaining: 7.63461553030303 hours"
+[1] "Simulating population 12/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 12/100"
+[1] "estimated time remaining: 7.82930092592592 hours"
+[1] "Simulating population 13/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 13/100"
+[1] "estimated time remaining: 7.90742628205128 hours"
+[1] "Simulating population 14/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 14/100"
+[1] "estimated time remaining: 7.94706547619048 hours"
+[1] "Simulating population 15/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 15/100"
+[1] "estimated time remaining: 7.96426388888889 hours"
+[1] "Simulating population 16/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 16/100"
+[1] "estimated time remaining: 7.944234375 hours"
+[1] "Simulating population 17/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 17/100"
+[1] "estimated time remaining: 7.95440400326797 hours"
+[1] "Simulating population 18/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 18/100"
+[1] "estimated time remaining: 7.90170601851852 hours"
+[1] "Simulating population 19/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 19/100"
+[1] "estimated time remaining: 7.84980592105263 hours"
+[1] "Simulating population 20/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 20/100"
+[1] "estimated time remaining: 7.77469444444445 hours"
+[1] "Simulating population 21/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 21/100"
+[1] "estimated time remaining: 7.70811673280423 hours"
+[1] "Simulating population 22/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 22/100"
+[1] "estimated time remaining: 7.62696212121212 hours"
+[1] "Simulating population 23/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 23/100"
+[1] "estimated time remaining: 7.56441304347826 hours"
+[1] "Simulating population 24/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 24/100"
+[1] "estimated time remaining: 7.50060185185185 hours"
+[1] "Simulating population 25/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 25/100"
+[1] "estimated time remaining: 7.42777083333333 hours"
+[1] "Simulating population 26/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 26/100"
+[1] "estimated time remaining: 7.35305822649573 hours"
+[1] "Simulating population 27/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 27/100"
+[1] "estimated time remaining: 7.26028935185185 hours"
+[1] "Simulating population 28/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 28/100"
+[1] "estimated time remaining: 7.17151785714286 hours"
+[1] "Simulating population 29/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 29/100"
+[1] "estimated time remaining: 7.0899688697318 hours"
+[1] "Simulating population 30/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 30/100"
+[1] "estimated time remaining: 7.00256018518519 hours"
+[1] "Simulating population 31/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing..........
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 31/100"
+[1] "estimated time remaining: 6.91097446236559 hours"
+[1] "Simulating population 32/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 32/100"
+[1] "estimated time remaining: 6.82055642361111 hours"
+[1] "Simulating population 33/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 33/100"
+[1] "estimated time remaining: 6.73630576599327 hours"
+[1] "Simulating population 34/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 34/100"
+[1] "estimated time remaining: 6.64858333333333 hours"
+[1] "Simulating population 35/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 35/100"
+[1] "estimated time remaining: 6.55798412698413 hours"
+[1] "Simulating population 36/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 36/100"
+[1] "estimated time remaining: 6.45706172839506 hours"
+[1] "Simulating population 37/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 37/100"
+[1] "estimated time remaining: 6.35973648648649 hours"
+[1] "Simulating population 38/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 38/100"
+[1] "estimated time remaining: 6.26454934210526 hours"
+[1] "Simulating population 39/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 39/100"
+[1] "estimated time remaining: 6.16284650997151 hours"
+[1] "Simulating population 40/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 40/100"
+[1] "estimated time remaining: 6.07235416666667 hours"
+[1] "Simulating population 41/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 41/100"
+[1] "estimated time remaining: 5.97236094173442 hours"
+[1] "Simulating population 42/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 42/100"
+[1] "estimated time remaining: 5.8742166005291 hours"
+[1] "Simulating population 43/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 43/100"
+[1] "estimated time remaining: 5.77345009689923 hours"
+[1] "Simulating population 44/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 44/100"
+[1] "estimated time remaining: 5.67381818181818 hours"
+[1] "Simulating population 45/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 45/100"
+[1] "estimated time remaining: 5.57305324074074 hours"
+[1] "Simulating population 46/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 46/100"
+[1] "estimated time remaining: 5.47551358695652 hours"
+[1] "Simulating population 47/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 47/100"
+[1] "estimated time remaining: 5.37914760638298 hours"
+[1] "Simulating population 48/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 48/100"
+[1] "estimated time remaining: 5.27750347222222 hours"
+[1] "Simulating population 49/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 49/100"
+[1] "estimated time remaining: 5.17430272108844 hours"
+[1] "Simulating population 50/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 50/100"
+[1] "estimated time remaining: 5.04499305555555 hours"
+[1] "Simulating population 51/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 51/100"
+[1] "estimated time remaining: 4.91786124727669 hours"
+[1] "Simulating population 52/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 52/100"
+[1] "estimated time remaining: 4.79621794871795 hours"
+[1] "Simulating population 53/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 53/100"
+[1] "estimated time remaining: 4.6736179245283 hours"
+[1] "Simulating population 54/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 54/100"
+[1] "estimated time remaining: 4.55283461934156 hours"
+[1] "Simulating population 55/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 55/100"
+[1] "estimated time remaining: 4.43289204545455 hours"
+[1] "Simulating population 56/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 56/100"
+[1] "estimated time remaining: 4.31915327380952 hours"
+[1] "Simulating population 57/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 57/100"
+[1] "estimated time remaining: 4.20392056530214 hours"
+[1] "Simulating population 58/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Bauchi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 58/100"
+[1] "estimated time remaining: 4.09074568965517 hours"
+[1] "Simulating population 59/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 59/100"
+[1] "estimated time remaining: 3.97696139359699 hours"
+[1] "Simulating population 60/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 60/100"
+[1] "estimated time remaining: 3.86355092592593 hours"
+[1] "Simulating population 61/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 61/100"
+[1] "estimated time remaining: 3.75196516393443 hours"
+[1] "Simulating population 62/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 62/100"
+[1] "estimated time remaining: 3.64155600358423 hours"
+[1] "Simulating population 63/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 63/100"
+[1] "estimated time remaining: 3.5308530643739 hours"
+[1] "Simulating population 64/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 64/100"
+[1] "estimated time remaining: 3.42228125 hours"
+[1] "Simulating population 65/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 65/100"
+[1] "estimated time remaining: 3.31872168803419 hours"
+[1] "Simulating population 66/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 66/100"
+[1] "estimated time remaining: 3.21198400673401 hours"
+[1] "Simulating population 67/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 67/100"
+[1] "estimated time remaining: 3.10639521144279 hours"
+[1] "Simulating population 68/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 68/100"
+[1] "estimated time remaining: 3.00287254901961 hours"
+[1] "Simulating population 69/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 69/100"
+[1] "estimated time remaining: 2.90046869967794 hours"
+[1] "Simulating population 70/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 70/100"
+[1] "estimated time remaining: 2.79852380952381 hours"
+[1] "Simulating population 71/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 71/100"
+[1] "estimated time remaining: 2.69808920187793 hours"
+[1] "Simulating population 72/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 72/100"
+[1] "estimated time remaining: 2.59877430555556 hours"
+[1] "Simulating population 73/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 73/100"
+[1] "estimated time remaining: 2.49833732876712 hours"
+[1] "Simulating population 74/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 74/100"
+[1] "estimated time remaining: 2.4001615990991 hours"
+[1] "Simulating population 75/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 75/100"
+[1] "estimated time remaining: 2.30255787037037 hours"
+[1] "Simulating population 76/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 76/100"
+[1] "estimated time remaining: 2.20452412280702 hours"
+[1] "Simulating population 77/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 77/100"
+[1] "estimated time remaining: 2.10766747835498 hours"
+[1] "Simulating population 78/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 78/100"
+[1] "estimated time remaining: 2.01137232905983 hours"
+[1] "Simulating population 79/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 79/100"
+[1] "estimated time remaining: 1.91596387130802 hours"
+[1] "Simulating population 80/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 80/100"
+[1] "estimated time remaining: 1.82084027777778 hours"
+[1] "Simulating population 81/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 81/100"
+[1] "estimated time remaining: 1.72668689986283 hours"
+[1] "Simulating population 82/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 82/100"
+[1] "estimated time remaining: 1.63304725609756 hours"
+[1] "Simulating population 83/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 83/100"
+[1] "estimated time remaining: 1.53833358433735 hours"
+[1] "Simulating population 84/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 84/100"
+[1] "estimated time remaining: 1.44471560846561 hours"
+[1] "Simulating population 85/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 85/100"
+[1] "estimated time remaining: 1.35229044117647 hours"
+[1] "Simulating population 86/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 86/100"
+[1] "estimated time remaining: 1.25980894702842 hours"
+[1] "Simulating population 87/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 87/100"
+[1] "estimated time remaining: 1.16831585249042 hours"
+[1] "Simulating population 88/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 88/100"
+[1] "estimated time remaining: 1.07652556818182 hours"
+[1] "Simulating population 89/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 89/100"
+[1] "estimated time remaining: 0.985124843945069 hours"
+[1] "Simulating population 90/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 90/100"
+[1] "estimated time remaining: 0.894229938271605 hours"
+[1] "Simulating population 91/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 91/100"
+[1] "estimated time remaining: 0.803817307692308 hours"
+[1] "Simulating population 92/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 92/100"
+[1] "estimated time remaining: 0.714606884057971 hours"
+[1] "Simulating population 93/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 93/100"
+[1] "estimated time remaining: 0.624272252090801 hours"
+[1] "Simulating population 94/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 94/100"
+[1] "estimated time remaining: 0.534373226950355 hours"
+[1] "Simulating population 95/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 95/100"
+[1] "estimated time remaining: 0.444307383040936 hours"
+[1] "Simulating population 96/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 96/100"
+[1] "estimated time remaining: 0.354937210648148 hours"
+[1] "Simulating population 97/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 97/100"
+[1] "estimated time remaining: 0.265849226804124 hours"
+[1] "Simulating population 98/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 98/100"
+[1] "estimated time remaining: 0.177107993197279 hours"
+[1] "Simulating population 99/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 99/100"
+[1] "estimated time remaining: 0.0884603675645342 hours"
+[1] "Simulating population 100/100"
+Warning in Matrix.DeprecatedCoerce(cd1, cd2) :
+  'as(<dgTMatrix>, "dgCMatrix")' is deprecated.
+Use 'as(., "CsparseMatrix")' instead.
+See help("Deprecated") and help("Matrix-deprecated").
+Warning in eigen.spam(Q, symmetric = TRUE) : 
+ The eigenvalues are calculated with the function 'eigen' from the base package.
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 100/100"
+[1] "estimated time remaining: 0 hours"
+[sim] done in 212.5 min
+
+--- 2026-06-08 00:16:03 | SPDE regenerate ---
+[sim] regenerate=TRUE: moving existing savedOutput/simStudy1/simPopsSurveys_SPDE.RData -> savedOutput/simStudy1/simPopsSurveys_SPDE.RData.bak
+[sim] generating/resuming savedOutput/simStudy1/simPopsSurveys_SPDE.RData (nsim=100, seed=123)
+[1] "Constructing offset based on covariates..."
+[1] "Simulating populations and surveys..."
+[1] "Simulating population 1/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 1/100"
+[1] "estimated time remaining: 8.17712500000003 hours"
+[1] "Simulating population 2/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 2/100"
+[1] "estimated time remaining: 7.42009722222227 hours"
+[1] "Simulating population 3/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 3/100"
+[1] "estimated time remaining: 7.40298611111113 hours"
+[1] "Simulating population 4/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 4/100"
+[1] "estimated time remaining: 7.49633333333334 hours"
+[1] "Simulating population 5/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 5/100"
+[1] "estimated time remaining: 7.39984027777778 hours"
+[1] "Simulating population 6/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 6/100"
+[1] "estimated time remaining: 7.30088425925927 hours"
+[1] "Simulating population 7/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 7/100"
+[1] "estimated time remaining: 7.21063690476191 hours"
+[1] "Simulating population 8/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 8/100"
+[1] "estimated time remaining: 7.10787847222223 hours"
+[1] "Simulating population 9/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 9/100"
+[1] "estimated time remaining: 6.99120138888889 hours"
+[1] "Simulating population 10/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 10/100"
+[1] "estimated time remaining: 6.89043750000001 hours"
+[1] "Simulating population 11/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 11/100"
+[1] "estimated time remaining: 6.81069128787879 hours"
+[1] "Simulating population 12/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Jigawa may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 12/100"
+[1] "estimated time remaining: 6.74687037037037 hours"
+[1] "Simulating population 13/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 13/100"
+[1] "estimated time remaining: 6.63849038461538 hours"
+[1] "Simulating population 14/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 14/100"
+[1] "estimated time remaining: 6.54363591269842 hours"
+[1] "Simulating population 15/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 15/100"
+[1] "estimated time remaining: 6.46999537037038 hours"
+[1] "Simulating population 16/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 16/100"
+[1] "estimated time remaining: 6.36369270833334 hours"
+[1] "Simulating population 17/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 17/100"
+[1] "estimated time remaining: 6.28687704248366 hours"
+[1] "Simulating population 18/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 18/100"
+[1] "estimated time remaining: 6.20485648148148 hours"
+[1] "Simulating population 19/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 19/100"
+[1] "estimated time remaining: 6.17459210526316 hours"
+[1] "Simulating population 20/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 20/100"
+[1] "estimated time remaining: 6.09613888888889 hours"
+[1] "Simulating population 21/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 21/100"
+[1] "estimated time remaining: 6.00627281746032 hours"
+[1] "Simulating population 22/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 22/100"
+[1] "estimated time remaining: 5.92433143939394 hours"
+[1] "Simulating population 23/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 23/100"
+[1] "estimated time remaining: 5.90621618357488 hours"
+[1] "Simulating population 24/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 24/100"
+[1] "estimated time remaining: 5.83605671296296 hours"
+[1] "Simulating population 25/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 25/100"
+[1] "estimated time remaining: 5.75670833333334 hours"
+[1] "Simulating population 26/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Osun may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 26/100"
+[1] "estimated time remaining: 5.67884775641026 hours"
+[1] "Simulating population 27/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 27/100"
+[1] "estimated time remaining: 5.59507073045268 hours"
+[1] "Simulating population 28/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 28/100"
+[1] "estimated time remaining: 5.51333928571429 hours"
+[1] "Simulating population 29/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 29/100"
+[1] "estimated time remaining: 5.42554932950192 hours"
+[1] "Simulating population 30/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 30/100"
+[1] "estimated time remaining: 5.34853472222223 hours"
+[1] "Simulating population 31/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 31/100"
+[1] "estimated time remaining: 5.2661498655914 hours"
+[1] "Simulating population 32/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 32/100"
+[1] "estimated time remaining: 5.17924479166667 hours"
+[1] "Simulating population 33/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 33/100"
+[1] "estimated time remaining: 5.09871127946128 hours"
+[1] "Simulating population 34/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 34/100"
+[1] "estimated time remaining: 5.0185612745098 hours"
+[1] "Simulating population 35/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 35/100"
+[1] "estimated time remaining: 4.94755753968254 hours"
+[1] "Simulating population 36/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 36/100"
+[1] "estimated time remaining: 4.87664197530864 hours"
+[1] "Simulating population 37/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 37/100"
+[1] "estimated time remaining: 4.79745945945946 hours"
+[1] "Simulating population 38/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 38/100"
+[1] "estimated time remaining: 4.72097368421053 hours"
+[1] "Simulating population 39/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 39/100"
+[1] "estimated time remaining: 4.65092414529914 hours"
+[1] "Simulating population 40/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 40/100"
+[1] "estimated time remaining: 4.57130208333333 hours"
+[1] "Simulating population 41/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 41/100"
+[1] "estimated time remaining: 4.49139498644987 hours"
+[1] "Simulating population 42/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 42/100"
+[1] "estimated time remaining: 4.4151541005291 hours"
+[1] "Simulating population 43/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 43/100"
+[1] "estimated time remaining: 4.33596753875969 hours"
+[1] "Simulating population 44/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 44/100"
+[1] "estimated time remaining: 4.26442297979798 hours"
+[1] "Simulating population 45/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 45/100"
+[1] "estimated time remaining: 4.18853858024691 hours"
+[1] "Simulating population 46/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 46/100"
+[1] "estimated time remaining: 4.11560054347826 hours"
+[1] "Simulating population 47/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 47/100"
+[1] "estimated time remaining: 4.04431190898345 hours"
+[1] "Simulating population 48/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Bauchi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 48/100"
+[1] "estimated time remaining: 3.9621712962963 hours"
+[1] "Simulating population 49/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 49/100"
+[1] "estimated time remaining: 3.88423256802721 hours"
+[1] "Simulating population 50/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 50/100"
+[1] "estimated time remaining: 3.80618055555556 hours"
+[1] "Simulating population 51/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 51/100"
+[1] "estimated time remaining: 3.72843695533769 hours"
+[1] "Simulating population 52/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 52/100"
+[1] "estimated time remaining: 3.6533141025641 hours"
+[1] "Simulating population 53/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 53/100"
+[1] "estimated time remaining: 3.5831464884696 hours"
+[1] "Simulating population 54/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 54/100"
+[1] "estimated time remaining: 3.50171450617284 hours"
+[1] "Simulating population 55/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 55/100"
+[1] "estimated time remaining: 3.42913636363636 hours"
+[1] "Simulating population 56/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 56/100"
+[1] "estimated time remaining: 3.35244097222222 hours"
+[1] "Simulating population 57/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 57/100"
+[1] "estimated time remaining: 3.28119127680312 hours"
+[1] "Simulating population 58/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 58/100"
+[1] "estimated time remaining: 3.20469252873563 hours"
+[1] "Simulating population 59/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 59/100"
+[1] "estimated time remaining: 3.13063665254237 hours"
+[1] "Simulating population 60/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 60/100"
+[1] "estimated time remaining: 3.05493055555556 hours"
+[1] "Simulating population 61/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 61/100"
+[1] "estimated time remaining: 2.97656489071038 hours"
+[1] "Simulating population 62/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 62/100"
+[1] "estimated time remaining: 2.90010483870968 hours"
+[1] "Simulating population 63/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 63/100"
+[1] "estimated time remaining: 2.82410085978836 hours"
+[1] "Simulating population 64/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 64/100"
+[1] "estimated time remaining: 2.7510078125 hours"
+[1] "Simulating population 65/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 65/100"
+[1] "estimated time remaining: 2.67422435897436 hours"
+[1] "Simulating population 66/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 66/100"
+[1] "estimated time remaining: 2.5971470959596 hours"
+[1] "Simulating population 67/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 67/100"
+[1] "estimated time remaining: 2.52167133084577 hours"
+[1] "Simulating population 68/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 68/100"
+[1] "estimated time remaining: 2.45346078431373 hours"
+[1] "Simulating population 69/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 69/100"
+[1] "estimated time remaining: 2.38225140901771 hours"
+[1] "Simulating population 70/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 70/100"
+[1] "estimated time remaining: 2.30870833333333 hours"
+[1] "Simulating population 71/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 71/100"
+[1] "estimated time remaining: 2.23228804773083 hours"
+[1] "Simulating population 72/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 72/100"
+[1] "estimated time remaining: 2.15564351851852 hours"
+[1] "Simulating population 73/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 73/100"
+[1] "estimated time remaining: 2.07849914383562 hours"
+[1] "Simulating population 74/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 74/100"
+[1] "estimated time remaining: 2.00293205705706 hours"
+[1] "Simulating population 75/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 75/100"
+[1] "estimated time remaining: 1.92626157407407 hours"
+[1] "Simulating population 76/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 76/100"
+[1] "estimated time remaining: 1.84976973684211 hours"
+[1] "Simulating population 77/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 77/100"
+[1] "estimated time remaining: 1.77306601731602 hours"
+[1] "Simulating population 78/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 78/100"
+[1] "estimated time remaining: 1.69602528490029 hours"
+[1] "Simulating population 79/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 79/100"
+[1] "estimated time remaining: 1.61879061181435 hours"
+[1] "Simulating population 80/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 80/100"
+[1] "estimated time remaining: 1.54241493055556 hours"
+[1] "Simulating population 81/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 81/100"
+[1] "estimated time remaining: 1.46527563443073 hours"
+[1] "Simulating population 82/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 82/100"
+[1] "estimated time remaining: 1.38839786585366 hours"
+[1] "Simulating population 83/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 83/100"
+[1] "estimated time remaining: 1.31118758366801 hours"
+[1] "Simulating population 84/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 84/100"
+[1] "estimated time remaining: 1.23510846560847 hours"
+[1] "Simulating population 85/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 85/100"
+[1] "estimated time remaining: 1.15803676470588 hours"
+[1] "Simulating population 86/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 86/100"
+[1] "estimated time remaining: 1.08181427648579 hours"
+[1] "Simulating population 87/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing.....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 87/100"
+[1] "estimated time remaining: 1.00549002234994 hours"
+[1] "Simulating population 88/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 88/100"
+[1] "estimated time remaining: 0.929003787878788 hours"
+[1] "Simulating population 89/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kebbi may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 89/100"
+[1] "estimated time remaining: 0.852147237827715 hours"
+[1] "Simulating population 90/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 90/100"
+[1] "estimated time remaining: 0.775827160493827 hours"
+[1] "Simulating population 91/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 91/100"
+[1] "estimated time remaining: 0.698456730769231 hours"
+[1] "Simulating population 92/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 92/100"
+[1] "estimated time remaining: 0.621376811594203 hours"
+[1] "Simulating population 93/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 93/100"
+[1] "estimated time remaining: 0.543767025089606 hours"
+[1] "Simulating population 94/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Kano may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 94/100"
+[1] "estimated time remaining: 0.466471187943263 hours"
+[1] "Simulating population 95/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 95/100"
+[1] "estimated time remaining: 0.389450292397661 hours"
+[1] "Simulating population 96/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 96/100"
+[1] "estimated time remaining: 0.311312789351852 hours"
+[1] "Simulating population 97/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Plateau may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 97/100"
+[1] "estimated time remaining: 0.233448024054983 hours"
+[1] "Simulating population 98/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Sokoto may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 98/100"
+[1] "estimated time remaining: 0.155617063492064 hours"
+[1] "Simulating population 99/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 99/100"
+[1] "estimated time remaining: 0.0778915544332211 hours"
+[1] "Simulating population 100/100"
+Warning in INLA::inla.qsample(nsim, Q, seed = inla.seed) :
+  Since 'seed!=0', parallel model is disabled and serial model is selected
+[1] "Using SPDE model to simulate EA and pixel level populations"
+[1] "drawing EAs"
+no samples accepted this round out of 1.1 total. Redrawing....
+Warning in FUN(X[[i]], ...) :
+  area Ekiti may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+no samples accepted this round out of 1.1 total. Redrawing...
+Warning in FUN(X[[i]], ...) :
+  area Yobe may have subareas with low (but nonzero) urban or rural populations. Consider thresholding those populations to zero for more efficient sampling.
+[1] "simulating EA level risks, numerators, and denominators"
+[1] "Generating surveys for population 100/100"
+[1] "estimated time remaining: 0 hours"
+[sim] done in 188.0 min
+
+--- 2026-06-08 03:24:00 | All done ---
