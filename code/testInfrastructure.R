@@ -45,7 +45,7 @@ canonDhsNames <- function(m) {
 # Returns the names loaded (surveysDHS, surveysMICS, areaPops, subareaPops, ...),
 # injected directly into the caller's environment for downstream convenience.
 simulateSurveys <- function(model, nsim = 1, seed = 123, regenerate = FALSE,
-                            envir = parent.frame()) {
+                            envir = parent.frame(), bym2ArgsTMB = NULL) {
     model   <- match.arg(model, c("spde", "bym2"))
     outFile <- .simPopsFile(model)
 
@@ -69,7 +69,8 @@ simulateSurveys <- function(model, nsim = 1, seed = 123, regenerate = FALSE,
             " (nsim=", nsim, ", seed=", seed, ")\n", sep = "")
         .silenceBrowser()
         t0 <- proc.time()[3]
-        if(model == "bym2") simData1BYM2(nsim = nsim, seed = seed)
+        if(model == "bym2") simData1BYM2(nsim = nsim, seed = seed,
+                                         bym2ArgsTMB = bym2ArgsTMB)
         else                simData1    (nsim = nsim, seed = seed)
         cat(sprintf("[sim] done in %.1f min\n", (proc.time()[3] - t0)/60))
     }

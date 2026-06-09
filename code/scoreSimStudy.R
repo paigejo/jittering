@@ -213,16 +213,24 @@ MODELS <- c("Md_FE",  "Md",
 # ---- aggregation helpers ---------------------------------------------------
 .loadModelScores <- function(modName, outDir, nsim) {
     out <- list(FE = list(), Hyper = list(), Area = list(),
-                fitTimes = numeric(0), scoreTimes = numeric(0))
+                fitTimes = numeric(0), scoreTimes = numeric(0),
+                simIdx = integer(0))   # parallel index into FE/Hyper/Area
     for(simIdx in seq_len(nsim)) {
         f <- sprintf("%s/scores_%s_sim%d.RData", outDir, modName, simIdx)
         if(!file.exists(f)) next
         e <- new.env(); load(f, envir = e)
-        out$FE   [[length(out$FE)    + 1]] <- e$scoresFE
-        out$Hyper[[length(out$Hyper) + 1]] <- if(exists("scoresHyper", envir = e)) e$scoresHyper else NULL
-        out$Area [[length(out$Area)  + 1]] <- e$scoresArea
+        out$FE    [[length(out$FE)    + 1]] <- e$scoresFE
+        out$Hyper [[length(out$Hyper) + 1]] <- if(exists("scoresHyper", envir = e)) e$scoresHyper else NULL
+        out$Area  [[length(out$Area)  + 1]] <- e$scoresArea
+        out$simIdx <- c(out$simIdx, simIdx)
         if(exists("fitTime",   envir = e)) out$fitTimes   <- c(out$fitTimes,   e$fitTime)
         if(exists("scoreTime", envir = e)) out$scoreTimes <- c(out$scoreTimes, e$scoreTime)
+    }
+    # Also attach the simIdx as element names on each per-sim list so callers
+    # can do modelData[[m]]$FE[[as.character(simIdx)]] safely.
+    if(length(out$simIdx) > 0) {
+        nms <- as.character(out$simIdx)
+        names(out$FE) <- names(out$Hyper) <- names(out$Area) <- nms
     }
     out
 }
@@ -307,6 +315,16 @@ scoreSimStudy <- function(model, nsim = 10, simIdxList = seq_len(nsim),
     if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
     truths <- modelTruths(model)
 
+    if(isTRUE(regenerate)) {
+        nRemoved <- 0
+        for(m in MODELS) for(simIdx in simIdxList) {
+            f <- sprintf("%s/scores_%s_sim%d.RData", outDir, m, simIdx)
+            if(file.exists(f)) { file.remove(f); nRemoved <- nRemoved + 1 }
+        }
+        cat(sprintf("[regenerate=TRUE] Removed %d existing score files from %s/\n",
+                    nRemoved, outDir))
+    }
+
     for(simIdx in simIdxList) {
         cat(sprintf("\n##### [%s] sim %d #####\n", tag, simIdx))
         for(modName in MODELS) {
@@ -361,10 +379,9 @@ scoreSimStudy <- function(model, nsim = 10, simIdxList = seq_len(nsim),
     }
     if(length(timeRows) > 0) print(do.call(rbind, timeRows), row.names = FALSE)
 
-    save(areaTab, modelData,
-         file = file.path(outDir, "scoresSummary.RData"))
-    cat(sprintf("\n[%s] Aggregated tables saved to: %s\n", tag,
-                file.path(outDir, "scoresSummary.RData")))
+    summaryFile <- file.path(outDir, sprintf("scoresSummary_%s.RData", tag))
+    save(areaTab, modelData, file = summaryFile)
+    cat(sprintf("\n[%s] Aggregated tables saved to: %s\n", tag, summaryFile))
 
     invisible(list(areaTab = areaTab, modelData = modelData))
 }
@@ -390,6 +407,25 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
 
     outDir <- sprintf("savedOutput/simStudy1/scores/%s", tag)
     if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
+
+    if(isTRUE(regenerate)) {
+        nRemoved <- 0
+        for(m in MODELS) for(simIdx in seq_len(nsim)) {
+            f <- sprintf("%s/scores_%s_sim%d.RData", outDir, m, simIdx)
+            if(file.exists(f)) { file.remove(f); nRemoved <- nRemoved + 1 }
+        }
+        logsDir <- file.path(dirname(outDir), "logs")
+        oldLogs <- character(0)
+        if(dir.exists(logsDir)) {
+            oldLogs <- list.files(
+                logsDir,
+                pattern = sprintf("^scoreWorker_%s_w[0-9]+\\.log$", tag),
+                full.names = TRUE)
+            if(length(oldLogs) > 0) file.remove(oldLogs)
+        }
+        cat(sprintf("[regenerate=TRUE] Removed %d score files and %d worker logs.\n",
+                    nRemoved, length(oldLogs)))
+    }
 
     # Estimated minutes per task type (empirical from earlier timing study,
     # adjusted for NDRAWS=1000). Used for LPT load balancing.
@@ -434,9 +470,12 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
 
     parentDir <- getwd()                       # jittering project root
     codeDir   <- file.path(parentDir, "code")
+    # Logs go under scores/logs/, not code/, with generative tag in the name.
+    logsDir   <- file.path(dirname(outDir), "logs")
+    if(!dir.exists(logsDir)) dir.create(logsDir, recursive = TRUE)
 
     workers <- lapply(seq_len(nW), function(w) {
-        logPath <- file.path(codeDir,
+        logPath <- file.path(logsDir,
                              sprintf("scoreWorker_%s_w%d.log", tag, w))
         callr::r_bg(
             func = function(taskChunk, model, KMICS, KDHSu, KDHSr,
@@ -489,6 +528,7 @@ scoreSimStudyParallel <- function(model, nsim = 10, nWorkers = 4,
     areaTab   <- .buildAggTable(lapply(modelData, function(d) .avgScoreList(d$Area)))
     cat(sprintf("\n----- [%s] Area-level scores (mean across sims) -----\n", tag))
     if(!is.null(areaTab)) print(areaTab, row.names = FALSE, digits = 4)
-    save(areaTab, modelData, file = file.path(outDir, "scoresSummary.RData"))
+    save(areaTab, modelData,
+         file = file.path(outDir, sprintf("scoresSummary_%s.RData", tag)))
     invisible(list(areaTab = areaTab, modelData = modelData))
 }

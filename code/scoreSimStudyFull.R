@@ -22,8 +22,16 @@
     inf <- sessionInfo()
     running <- if(is.null(inf$running)) "" else inf$running
     isLocal <- grepl("macOS|mac OS|Windows|darwin", running, ignore.case = TRUE)
-    if(isLocal) list(nFE = 8L,  nBYM2 = 1L, label = paste("local:",   running))
-    else        list(nFE = 16L, nBYM2 = 16L, label = paste("cluster:", running))
+    # nBYM2 is for the LIGHT BYM2 models (Md, M_D_BYM2, M_M_BYM2 — single data
+    # source each, ~1-2 GB transient per fit). nMDM_BYM2 is for the HEAVY
+    # combined M_DM_BYM2 fit which uses DHS + MICS + BYM2 + Laplace and peaks
+    # at ~10 GB transient; we run it in a dedicated phase with far fewer
+    # workers to avoid OOM-kills (every BYM2 worker that got SIGKILL'd in the
+    # June-07 run died on an M_DM_BYM2 fit).
+    if(isLocal) list(nFE = 8L,  nBYM2 = 1L, nMDM_BYM2 = 1L,
+                     label = paste("local:",   running))
+    else        list(nFE = 16L, nBYM2 = 12L, nMDM_BYM2 = 4L,
+                     label = paste("cluster:", running))
 }
 
 # Compile any missing TMB templates serially up front. Prevents a race where
@@ -97,9 +105,14 @@
                 phaseName, length(tasks), nW, max(loads)))
 
     parentDir <- getwd(); codeDir <- file.path(parentDir, "code")
+    # Logs go under scores_full/logs/ (shared across generative models, with
+    # the generative tag in the filename) instead of dumping into code/.
+    logsDir <- file.path(dirname(outDir), "logs")
+    if(!dir.exists(logsDir)) dir.create(logsDir, recursive = TRUE)
+    tag <- toupper(model)
     workers <- lapply(seq_len(nW), function(w) {
-        logPath <- file.path(codeDir, sprintf("scoreFull_%s_w%d.log",
-                                              phaseName, w))
+        logPath <- file.path(logsDir, sprintf("scoreFull_%s_%s_w%d.log",
+                                              tag, phaseName, w))
         callr::r_bg(
             func = function(taskChunk, model, KMICS, KDHSu, KDHSr,
                             Qgh, NDRAWS, COVS, useInla, codeDir, truthQuantity) {
@@ -156,8 +169,8 @@
     if(nDone < length(tasks)) {
         cat(sprintf("[%s] WARNING: %d / %d scheduled tasks left no score file on disk\n",
                     phaseName, length(tasks) - nDone, length(tasks)))
-        cat(sprintf("[%s] check code/scoreFull_%s_w*.log for errors.\n",
-                    phaseName, phaseName))
+        cat(sprintf("[%s] check %s/scoreFull_%s_%s_w*.log for errors.\n",
+                    phaseName, logsDir, tag, phaseName))
     }
     cat(sprintf("[%s] phase done (%d / %d wrote files; %d worker(s) exited non-zero).\n",
                 phaseName, nDone, length(tasks), length(badWorkers)))
@@ -210,7 +223,7 @@
     }
     if(!anyHyper) cat("(no models produced hyperparameter scores)\n")
 
-    summaryFile <- file.path(outDir, "scoresSummary.RData")
+    summaryFile <- file.path(outDir, sprintf("scoresSummary_%s.RData", tag))
     save(areaTab, feTabs, hypTabs, modelData, file = summaryFile)
     cat(sprintf("\n[%s] summary saved to %s\n", tag, summaryFile))
     invisible(list(areaTab = areaTab, feTabs = feTabs,
@@ -234,17 +247,54 @@ scoreSimStudyFull <- function(model = c("bym2","spde"),
     truthQuantity <- match.arg(truthQuantity)
     tag           <- toupper(model)
 
-    FE_MODELS   <- c("Md_FE", "M_D_FE", "M_M_FE", "M_DM_FE")
-    BYM2_MODELS <- c("Md", "M_D_BYM2", "M_M_BYM2", "M_DM_BYM2")
-    ALL_MODELS  <- c(FE_MODELS, BYM2_MODELS)
+    FE_MODELS        <- c("Md_FE", "M_D_FE", "M_M_FE", "M_DM_FE")
+    # Split BYM2 into LIGHT (single data source — ~1-2 GB transient) and
+    # HEAVY (combined DHS+MICS+BYM2 — ~10 GB transient). They go in separate
+    # phases so the heavy one runs with a small nWorkers and doesn't OOM-kill
+    # the lighter workers via shared-RAM pressure.
+    BYM2_LIGHT       <- c("Md", "M_D_BYM2", "M_M_BYM2")
+    BYM2_HEAVY       <- c("M_DM_BYM2")
+    ALL_MODELS       <- c(FE_MODELS, BYM2_LIGHT, BYM2_HEAVY)
 
     outDir <- file.path(outBase, tag)
     if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
 
+    # If the caller asked for a full regeneration, wipe any pre-existing score
+    # files for the (model, simIdx) cells we're about to score AND the per-
+    # phase worker log files. Without this, OOM-killed workers from a previous
+    # run would leave behind stale score files that .runPhase would skip
+    # (regenerate is checked per-file, so a partial outFile from before could
+    # survive even with regenerate=TRUE if the current fit fails) and ambiguous
+    # log files mixing this run's output with a previous run's. Doing both
+    # up-front guarantees a clean slate.
+    if(isTRUE(regenerate)) {
+        nRemoved <- 0
+        for(m in c(FE_MODELS, BYM2_LIGHT, BYM2_HEAVY)) {
+            for(simIdx in simIdxList) {
+                f <- sprintf("%s/scores_%s_sim%d.RData", outDir, m, simIdx)
+                if(file.exists(f)) {
+                    file.remove(f); nRemoved <- nRemoved + 1
+                }
+            }
+        }
+        logsDir <- file.path(dirname(outDir), "logs")
+        oldLogs <- character(0)
+        if(dir.exists(logsDir)) {
+            oldLogs <- list.files(
+                logsDir,
+                pattern = sprintf("^scoreFull_%s_(FE|BYM2|MDM_BYM2)_w[0-9]+\\.log$", tag),
+                full.names = TRUE)
+            if(length(oldLogs) > 0) file.remove(oldLogs)
+        }
+        cat(sprintf("[regenerate=TRUE] Removed %d score files from %s/ and %d worker logs from %s/\n",
+                    nRemoved, outDir, length(oldLogs), logsDir))
+    }
+
     caps <- .detectWorkerCaps()
     cat(sprintf("\n================ scoreSimStudyFull (%s) ================\n", tag))
     cat(sprintf("Platform: %s\n", caps$label))
-    cat(sprintf("Worker caps: FE = %d, BYM2 = %d\n", caps$nFE, caps$nBYM2))
+    cat(sprintf("Worker caps: FE = %d, BYM2 light = %d, BYM2 heavy (M_DM) = %d\n",
+                caps$nFE, caps$nBYM2, caps$nMDM_BYM2))
 
     # Precompile any missing TMB templates serially before any callr worker
     # launches, so parallel workers can dyn.load existing .so/.dll files
@@ -262,13 +312,20 @@ scoreSimStudyFull <- function(model = c("bym2","spde"),
     .runPhase("FE", FE_MODELS, model, nsim, simIdxList, outDir, caps$nFE,
               KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla, truthQuantity)
 
-    # Phase 2: BYM2 models (heavy; restrict workers)
-    cat(sprintf("\n--- Phase 2: BYM2 / Md models (nWorkers = %d) ---\n", caps$nBYM2))
-    .runPhase("BYM2", BYM2_MODELS, model, nsim, simIdxList, outDir, caps$nBYM2,
+    # Phase 2: LIGHT BYM2 models (single data source, modest memory)
+    cat(sprintf("\n--- Phase 2: BYM2 light models %s (nWorkers = %d) ---\n",
+                paste(BYM2_LIGHT, collapse=","), caps$nBYM2))
+    .runPhase("BYM2", BYM2_LIGHT, model, nsim, simIdxList, outDir, caps$nBYM2,
               KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla, truthQuantity)
 
-    # Phase 3: collate
-    cat("\n--- Phase 3: collating per-sim scores ---\n")
+    # Phase 3: HEAVY BYM2 model (M_DM_BYM2 alone — ~10 GB per worker peak)
+    cat(sprintf("\n--- Phase 3: BYM2 heavy M_DM_BYM2 (nWorkers = %d) ---\n",
+                caps$nMDM_BYM2))
+    .runPhase("MDM_BYM2", BYM2_HEAVY, model, nsim, simIdxList, outDir, caps$nMDM_BYM2,
+              KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS, regenerate, useInla, truthQuantity)
+
+    # Phase 4: collate
+    cat("\n--- Phase 4: collating per-sim scores ---\n")
     .collateScoresFull(model, nsim, outDir, ALL_MODELS)
 
     cat(sprintf("\nTotal walltime: %.1f hours\n", (proc.time()[3] - t0) / 3600))

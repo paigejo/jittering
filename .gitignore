@@ -1,5 +1,6 @@
 figures
 savedOutput/global/*
+savedOutput/simStudy1/*
 data/*
 documents
 .Rproj.user
@@ -12,3 +13,5 @@ code/*.so
 code/*.dll
 *.md
 *.txt
+Rplots.pdf
+*.log

@@ -645,32 +645,54 @@ simPopBYM2 = function(nsim=1, easpa, popMat, targetPopMat, poppsub,
                       doFineScaleRisk=FALSE, doSmoothRisk=FALSE,
                       doSmoothRiskLogisticApprox=FALSE,
                       min1PerSubarea=TRUE, offset=NULL, verbose=TRUE,
-                      constr=TRUE, scale.model=TRUE) {
-  
+                      constr=TRUE, scale.model=TRUE,
+                      bym2ArgsTMB=NULL) {
+  # bym2ArgsTMB: optional list with $Q, $V, $gammaTildesm1 (as returned by
+  # prepareBYM2argumentsForTMB). When supplied, we re-use it instead of
+  # calling makeQBesag + eigen.spam from scratch, guaranteeing that the
+  # simulator's Q, V, and eigenvalues are bit-identical to what TMB consumes.
+  # This eliminates a class of cross-platform discrepancies (different LAPACK
+  # versions can produce eigendecompositions that differ in sign / ordering /
+  # last-bit precision, and QinvSumsNorm computed from V * diag * V^T is
+  # particularly sensitive to such drift).
+
   if (!is.null(seed)) {
     set.seed(seed)
     if (inla.seed < 0) {
       stop("seed specified, but not inla.seed. Set inla.seed to a positive integer to ensure reproducibility")
     }
   }
-  
+
   pixelCoords = cbind(popMat$east, popMat$north)
-  
-  # Build scaled Besag precision matrix and eigendecomposition
-  if (verbose) print("Building BYM2 precision matrix and eigendecomposition...")
-  Q = makeQBesag(graphObj, constr=constr, scale.model=scale.model, matrixType="spam")
-  nGraphAreas = nrow(Q)
-  
-  # Eigendecomposition of Q
-  eigQ = eigen.spam(Q, symmetric=TRUE)
-  gammas = eigQ$values
-  V = eigQ$vectors  # nAreas x nAreas eigenvector matrix
-  
-  # Compute gammaTildes and gammaTildesm1
-  tol = 1e-8
-  gammaTildes = 1/gammas
-  gammaTildes[abs(gammas) < tol] = 0
-  gammaTildesm1 = gammaTildes - 1
+
+  if (is.null(bym2ArgsTMB)) {
+    # Build scaled Besag precision matrix and eigendecomposition
+    if (verbose) print("Building BYM2 precision matrix and eigendecomposition...")
+    Q = makeQBesag(graphObj, constr=constr, scale.model=scale.model, matrixType="spam")
+    nGraphAreas = nrow(Q)
+
+    # Eigendecomposition of Q
+    eigQ = eigen.spam(Q, symmetric=TRUE)
+    gammas = eigQ$values
+    V = eigQ$vectors  # nAreas x nAreas eigenvector matrix
+
+    # Compute gammaTildes and gammaTildesm1
+    tol = 1e-8
+    gammaTildes = 1/gammas
+    gammaTildes[abs(gammas) < tol] = 0
+    gammaTildesm1 = gammaTildes - 1
+  } else {
+    if (verbose) print("Re-using supplied bym2ArgsTMB (Q, V, gammaTildesm1)...")
+    Q             = bym2ArgsTMB$Q
+    V             = bym2ArgsTMB$V
+    gammaTildesm1 = bym2ArgsTMB$gammaTildesm1
+    gammaTildes   = gammaTildesm1 + 1
+    nGraphAreas   = nrow(Q)
+    tol           = 1e-8
+    # Reconstruct gammas (eigenvalues of Q) from gammaTildes = 1/gammas (with
+    # 0 for the null-space mode). Non-finite -> 0 means zero eigenvalue here.
+    gammas        = ifelse(abs(gammaTildes) > tol, 1 / gammaTildes, 0)
+  }
   
   # Compute marginal variances in eigenbasis for BYM2
   # Var_i = (1/tau) * (1 + phi * gammaTildesm1_i)
@@ -679,6 +701,19 @@ simPopBYM2 = function(nsim=1, easpa, popMat, targetPopMat, poppsub,
   eigenVars = (1/tau) * (1 + phi * gammaTildesm1)
   # For the zero eigenvalue(s), gammaTildesm1 = -1, so eigenVars = (1/tau)*(1-phi)
   eigenVars[eigenVars < 0] = 0  # safety: shouldn't happen for valid phi in [0,1]
+  # ENFORCE SUM-TO-ZERO on the BYM2 effect to match the TMB template:
+  # TMB samples w_bym2 / u_bym2 on the (n-1)-dim free subspace orthogonal
+  # to (1,...,1); see modMDM_BYM2_GH_v2.cpp lines 122-133. The simulator
+  # had previously included the constant-mode contribution at variance
+  # (1/tau)*(1-phi), which made simulated Epsilon_bym2 lie OUTSIDE the
+  # sum-to-zero subspace TMB lives in. The constant got absorbed into alpha
+  # and introduced sim-to-sim FE bias of SD ~ sqrt((1-phi)/(tau*n)).
+  # Zeroing out the zero-mode eigenvariance below puts the simulator in
+  # exactly the same subspace as TMB.
+  zeroModeIdx = which(abs(gammas) < tol)
+  if (length(zeroModeIdx) > 0) {
+    eigenVars[zeroModeIdx] = 0
+  }
   eigenSDs = sqrt(eigenVars)
   
   if (verbose) {
@@ -794,7 +829,7 @@ simPopBYM2 = function(nsim=1, easpa, popMat, targetPopMat, poppsub,
 # By default uses admFinalMat (41 MICS stratum level areas) and popMat$stratumMICS.
 # Pass graphObj and areaCol to use a different graph/area level.
 simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
-                        sigmaEpsilon=sqrt(1.5), 
+                        sigmaEpsilon=sqrt(1.5),
                         beta0=-1.25, gamma=1, betaRest=c(0, 0, 0, .5),
                         easpaDat=easpaNGAed,
                         popMat=popMatNGAThresh,
@@ -803,7 +838,8 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
                         graphObj=NULL, areaCol="stratumMICS",
                         nHHMICS=16, nHHDHS=25, seed=123,
                         useThreshPopMat=TRUE, fixPopPerHH=NULL,
-                        eaSampleStrat="pps", regenPop=FALSE) {
+                        eaSampleStrat="pps", regenPop=FALSE,
+                        bym2ArgsTMB=NULL) {
   
   set.seed(seed)
   
@@ -916,7 +952,8 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
                         nHHSampled=nHHDHS, stratifyByUrban=TRUE,
                         subareaLevel=TRUE, doFineScaleRisk=FALSE,
                         doSmoothRisk=TRUE, doSmoothRiskLogisticApprox=FALSE,
-                        min1PerSubarea=TRUE, offset=offset, verbose=FALSE)
+                        min1PerSubarea=TRUE, offset=offset, verbose=FALSE,
+                        bym2ArgsTMB=bym2ArgsTMB)
 
     # calculate stratum level population information
     stratPop = SUMMER::areaPopToArea(areaLevelPop=simPop$subareaPop,
