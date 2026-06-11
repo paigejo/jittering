@@ -219,18 +219,24 @@ MODELS <- c("Md_FE",  "Md",
         f <- sprintf("%s/scores_%s_sim%d.RData", outDir, modName, simIdx)
         if(!file.exists(f)) next
         e <- new.env(); load(f, envir = e)
-        out$FE    [[length(out$FE)    + 1]] <- e$scoresFE
-        out$Hyper [[length(out$Hyper) + 1]] <- if(exists("scoresHyper", envir = e)) e$scoresHyper else NULL
-        out$Area  [[length(out$Area)  + 1]] <- e$scoresArea
+        # Use c(list, list(x)) form so NULL elements are properly retained.
+        # x[[length(x)+1]] <- NULL silently DROPS the slot (R quirk).
+        out$FE    <- c(out$FE,    list(if(exists("scoresFE",    envir=e)) e$scoresFE    else NULL))
+        out$Hyper <- c(out$Hyper, list(if(exists("scoresHyper", envir=e)) e$scoresHyper else NULL))
+        out$Area  <- c(out$Area,  list(if(exists("scoresArea",  envir=e)) e$scoresArea  else NULL))
         out$simIdx <- c(out$simIdx, simIdx)
         if(exists("fitTime",   envir = e)) out$fitTimes   <- c(out$fitTimes,   e$fitTime)
         if(exists("scoreTime", envir = e)) out$scoreTimes <- c(out$scoreTimes, e$scoreTime)
     }
-    # Also attach the simIdx as element names on each per-sim list so callers
-    # can do modelData[[m]]$FE[[as.character(simIdx)]] safely.
+    # Attach simIdx as element names so callers can do
+    # modelData[[m]]$FE[[as.character(simIdx)]]. Defensive: only name lists
+    # whose length actually matches simIdx in case anything below the append
+    # path went sideways.
     if(length(out$simIdx) > 0) {
         nms <- as.character(out$simIdx)
-        names(out$FE) <- names(out$Hyper) <- names(out$Area) <- nms
+        if(length(out$FE)    == length(nms)) names(out$FE)    <- nms
+        if(length(out$Hyper) == length(nms)) names(out$Hyper) <- nms
+        if(length(out$Area)  == length(nms)) names(out$Area)  <- nms
     }
     out
 }

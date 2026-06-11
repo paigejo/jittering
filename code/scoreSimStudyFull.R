@@ -30,7 +30,11 @@
     # June-07 run died on an M_DM_BYM2 fit).
     if(isLocal) list(nFE = 8L,  nBYM2 = 1L, nMDM_BYM2 = 1L,
                      label = paste("local:",   running))
-    else        list(nFE = 16L, nBYM2 = 12L, nMDM_BYM2 = 4L,
+    # 2026-06-09 run with 12/4 still OOM-killed ~5 workers on syvert1
+    # (Ubuntu 24.04, presumably ~64 GB RAM). Tightening to 8/2 leaves more
+    # headroom; can raise back up once we confirm per-worker peak RAM with
+    # `ps -o rss --pid <worker_pid>` during a live run.
+    else        list(nFE = 16L, nBYM2 = 8L, nMDM_BYM2 = 2L,
                      label = paste("cluster:", running))
 }
 
