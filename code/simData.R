@@ -8,11 +8,21 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
                     useThreshPopMat=TRUE, fixPopPerHH=NULL, 
                     eaSampleStrat="pps", regenPop=FALSE) {
   set.seed(seed)
-  
-  # make sure everything is ordered nicely
-  popMat = popMat[order(popMat$subarea),]
+
+  # make sure everything is ordered nicely. CRITICAL: targetPopMat must be
+  # permuted with the SAME row order as popMat — SUMMER's simPop machinery
+  # assumes the two are row-parallel (it weights pixel-level smooth risk by
+  # targetPopMat$pop). Sorting only popMat misaligned 99.6% of rows and
+  # silently flattened the smooth-risk truth weights to ~equal weighting
+  # (~0.30 instead of ~0.47 nationally) — the source of the +0.11 areal
+  # "bias" of (correct) predictions against the (corrupted) truth.
+  stopifnot(nrow(targetPopMat) == nrow(popMat))
+  .perm = order(popMat$subarea)
+  popMat = popMat[.perm,]
+  targetPopMat = targetPopMat[.perm,]
+  stopifnot(all(popMat$subarea == targetPopMat$subarea))
   poppsub = poppsub[order(poppsub$subarea),]
-  
+
   # construct logit offset vector based on covariates in betaRest
   # first get the design matrix
   print("Constructing offset based on covariates...")
@@ -843,10 +853,16 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
   
   set.seed(seed)
   
-  # make sure everything is ordered nicely
-  popMat = popMat[order(popMat$subarea),]
+  # make sure everything is ordered nicely. CRITICAL: targetPopMat must be
+  # permuted with the SAME row order as popMat — see the matching comment in
+  # simData1. Sorting only popMat misaligned the smooth-risk truth weights.
+  stopifnot(nrow(targetPopMat) == nrow(popMat))
+  .perm = order(popMat$subarea)
+  popMat = popMat[.perm,]
+  targetPopMat = targetPopMat[.perm,]
+  stopifnot(all(popMat$subarea == targetPopMat$subarea))
   poppsub = poppsub[order(poppsub$subarea),]
-  
+
   # construct logit offset vector based on covariates in betaRest
   print("Constructing offset based on covariates...")
   LLcoords = cbind(popMat$lon, popMat$lat)
@@ -880,7 +896,21 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
     out = load("savedOutput/global/admFinalMat.RData")
     graphObj = admFinalMat
   }
-  
+
+  # By default, build the BYM2 arguments via the SAME constructor the fitting
+  # functions use (prepareBYM2argumentsForTMB with u=0.5, alpha=1/3,
+  # constr=TRUE, scale.model=TRUE — see modM_*Sep.R). This makes the
+  # simulator's Q / eigenvectors / gammaTildes structurally identical to what
+  # TMB consumes, rather than rebuilt independently via makeQBesag +
+  # eigen.spam (which can differ in eigenvector sign/order across LAPACK
+  # versions and is a known cross-platform reproducibility hazard, especially
+  # for QinvSumsNorm). Callers can still override by passing bym2ArgsTMB.
+  if (is.null(bym2ArgsTMB)) {
+    bym2ArgsTMB = prepareBYM2argumentsForTMB(graphObj, u = 0.5, alpha = 1/3,
+                                             constr = TRUE, scale.model = TRUE,
+                                             matrixType = "TsparseMatrix")
+  }
+
   # ensure areaCol exists in popMat; add stratumMICS if needed
   if (!(areaCol %in% names(popMat))) {
     if (areaCol == "stratumMICS") {

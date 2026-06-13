@@ -131,6 +131,20 @@
                 source("code/inlaStyleDraws.R")
                 source("code/scoreSimStudy.R")
 
+                # Peak resident memory (VmHWM) so far for THIS worker process,
+                # in GB. /proc/self/status is Linux-only; returns NA elsewhere.
+                # VmHWM is the kernel's high-water mark and includes TMB's C++
+                # allocations that R's gc() never sees, so it's the right
+                # number for setting worker caps against the (per-user cgroup)
+                # memory budget.
+                .peakRSSGB <- function() {
+                    f <- "/proc/self/status"
+                    if(!file.exists(f)) return(NA_real_)
+                    ln <- grep("^VmHWM:", readLines(f), value = TRUE)
+                    if(length(ln) == 0) return(NA_real_)
+                    as.numeric(sub("\\D+(\\d+)\\s*kB", "\\1", ln)) / 1024 / 1024
+                }
+
                 simEnv <- new.env()
                 simulateSurveys(model,
                                 nsim = max(sapply(taskChunk, `[[`, "simIdx")),
@@ -145,7 +159,10 @@
                                  micsEnv$intPtsMICS, model, truths,
                                  areaPops,
                                  KMICS, KDHSu, KDHSr, Qgh, NDRAWS, COVS)
+                    cat(sprintf("    [%s sim %d] peak RSS so far: %.2f GB\n",
+                                t$modName, t$simIdx, .peakRSSGB()))
                 }
+                cat(sprintf("[worker DONE] final peak RSS: %.2f GB\n", .peakRSSGB()))
             },
             args = list(taskChunk = chunks[[w]], model = model,
                         KMICS = KMICS, KDHSu = KDHSu, KDHSr = KDHSr,

@@ -993,9 +993,27 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   # get parameters
   finalRepar = !("alpha" %in% names(obj$env$last.par))
   if(!is.null(SD0)) {
-    alpha = SD0$par.fixed[1]
-    beta = SD0$par.fixed[which(names(SD0$par.fixed) == "beta")]
-    parnames = names(SD0$par.fixed)
+    # Extract alpha/beta BY NAME, searching par.fixed first and falling back
+    # to par.random (the GH-template BYM2 fits declare alpha/beta as random
+    # effects under the Laplace, so they live in par.random; FE-only fits
+    # keep them in par.fixed but NOT in position 1 — par.fixed[1] is
+    # log_tauEps there). The old positional `alpha = SD0$par.fixed[1]`
+    # silently grabbed log_tauEps (~ -0.4) instead of alpha (~ -1.25) for
+    # every FE fit, lifting all grid predictions by ~ +0.85 logit (~ +0.11
+    # on the probability scale) — and broke BYM2-model predictions outright.
+    .pickPar = function(nm) {
+      iF = which(names(SD0$par.fixed) == nm)
+      if(length(iF) > 0) return(as.numeric(SD0$par.fixed[iF]))
+      iR = which(names(SD0$par.random) == nm)
+      if(length(iR) > 0) return(as.numeric(SD0$par.random[iR]))
+      numeric(0)
+    }
+    alpha = .pickPar("alpha")
+    if(length(alpha) == 0 && !finalRepar)
+      stop("predGrid: could not find 'alpha' in par.fixed or par.random")
+    if(length(alpha) == 0) alpha = 0  # repar fits absorb alpha into w_bym2Star
+    beta = .pickPar("beta")
+    parnames = c(names(SD0$par.fixed), names(SD0$par.random))
     hasNugget = ("log_tauEps" %in% parnames) || ("log_tauEpsUrb" %in% parnames) || ("log_tauEpsUDHS" %in% parnames)
     URclust = "log_tauEpsUrb" %in% parnames
     varClust = "log_tauEpsUDHS" %in% parnames
@@ -1087,6 +1105,13 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   sigmaEpsSqRMICS_tmb_draws = NULL
   sigmaEpsSqUDHS_tmb_draws = NULL
   sigmaEpsSqRDHS_tmb_draws = NULL
+  # FE-only (no spatial effect) prediction path: draws from cov.fixed.
+  # This block must run ONLY for noSpatialFE fits — the spatial models take
+  # the posteriorDraws-based block further down. The enclosing if() had been
+  # lost, so every spatial fit crashed in here (empty beta_tmb_draws ->
+  # non-conformable Xmat %*% beta) before reaching its proper path, and
+  # .scoreArea's silent tryCatch hid it.
+  if(noSpatialFE) {
     if(is.null(SD0$cov.fixed)) {
       stop("FE prediction needs SD0$cov.fixed to propagate fixed-effect uncertainty.")
     }
@@ -1191,9 +1216,15 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       predsMICS = rowMeans(probDrawsMICS)
       quantsMICS = apply(probDrawsMICS, 1, quantile, probs=quantiles, na.rm=TRUE)
     }
+  } # end if(noSpatialFE)
   sigmaSq_tmb_draws = NULL
   phi_tmb_draws = NULL
-  predsMICS = quantsMICS = NULL
+  # Spatial fits get predsMICS/quantsMICS from their own block below; only
+  # reset for them (resetting unconditionally would discard the FE path's
+  # just-computed MICS predictions).
+  if(!noSpatialFE) {
+    predsMICS = quantsMICS = NULL
+  }
   if(SD0$pdHess && !noSpatialFE) {
     # Single dispatch — Gaussian and INLA-style both live in inlaStyleDraws.R.
     # useInla="auto" (default): try Gaussian; fall back to INLA if the
@@ -1237,9 +1268,16 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
       epsilon_tmb_draws <- rbind(wFree, matrix(wn, nrow=1))
       # alpha is explicit in this parameterization
       alpha_tmb_draws <- matrix(t.draws[parnames == 'alpha',], nrow = 1)
-    } else if(!sep) {
+    } else if(any(parnames == 'Epsilon_bym2')) {
+      # old non-separated parameterization
       epsilon_tmb_draws  <- t.draws[parnames == 'Epsilon_bym2',]
-    } else {
+    } else if(any(parnames == 'w_bym2Star')) {
+      # separated "Star" parameterization (modM_DSep / modM_DSepRepar — the
+      # Md family). Autodetected from draw rownames rather than relying on
+      # the caller passing sep=TRUE: .scoreArea always calls with the default
+      # sep=FALSE, which used to route these fits into the Epsilon_bym2
+      # branch above, select zero rows, and die on a non-conformable
+      # multiply downstream.
       wStar  <- t.draws[parnames == 'w_bym2Star',]
       uStar  <- t.draws[parnames == 'u_bym2Star',] # uStar is unit var scaled
       
@@ -1270,17 +1308,24 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         # adjust Epsilon = w for the constraint on u
         epsilon_tmb_draws = wStar - reduceU
       } else {
-        # get how much u reduced by sum to zero constraint to u, then scale
+        # get how much u reduced by sum to zero constraint to u, then scale.
+        # phi/sigmaSq draws are stored as 1 x nsim matrices; flatten with c()
+        # so the products stay plain nsim-vectors (a 1 x nsim STATS argument
+        # makes sweep() warn about dim mismatch).
         uMeans = colMeans(uStar)
-        uMeansScaled = uMeans * sqrt(phi_tmb_draws*sigmaSq_tmb_draws)
-        
+        uMeansScaled = uMeans * c(sqrt(phi_tmb_draws*sigmaSq_tmb_draws))
+
         # adjust Epsilon = w for the constraint on u
         epsilon_tmb_draws = sweep(wStar, 2, uMeansScaled)
-        
+
         # under this reparameterization, the intercept is the mean of u (scaled)
-        alpha_tmb_draws = uMeansScaled
+        alpha_tmb_draws = matrix(uMeansScaled, nrow=1)
       }
-      
+
+    } else {
+      stop("predGrid: no spatial random effect found among posterior draw rownames ",
+           "(looked for w_bym2Free, Epsilon_bym2, w_bym2Star). Found: ",
+           paste(unique(parnames), collapse=", "))
     }
     
     includeBeta = any(parnames == "beta")

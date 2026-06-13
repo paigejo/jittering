@@ -187,10 +187,18 @@ MODELS <- c("Md_FE",  "Md",
 .scoreArea <- function(res, areaPops, simIdx, NDRAWS) {
     if(!inherits(res$TMBsd, "sdreport")) return(NULL)
 
+    # NOTE: do NOT silently swallow predGrid failures. The silent
+    # `error = function(e) NULL` here hid the fact that predGrid errored on
+    # every BYM2-family fit (Star/GH parameterizations) for the entire sim
+    # study, so those models never had areal scores and nobody noticed.
     grid <- tryCatch(
         predGrid(res$TMBsd, popMat=popMatNGAThresh, nsim=NDRAWS,
-                 obj=res$TMBobj, admLevel="stratMICS"),
-        error = function(e) NULL)
+                 obj=res$TMBobj, admLevel="stratMICS", res=res),
+        error = function(e) {
+            cat("    [.scoreArea sim ", simIdx, "] predGrid ERROR: ",
+                conditionMessage(e), "\n", sep="")
+            NULL
+        })
     if(is.null(grid)) return(NULL)
 
     agg    <- predArea(grid, areaVarName="area", orderedAreas=adm1@data$NAME_1)
