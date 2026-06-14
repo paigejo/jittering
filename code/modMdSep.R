@@ -392,7 +392,7 @@ fitMd_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
         }
         sdTime = system.time(
           SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
-                               bias.correct = TRUE,
+                               bias.correct = FALSE,
                                bias.correct.control = list(sd = TRUE))
         )[3]
         # SD0

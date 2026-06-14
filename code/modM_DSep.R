@@ -534,7 +534,7 @@ fitMD_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
         print("getting standard errors...")
         sdTime = system.time(
           SD0 <- TMB::sdreport(testObj, getJointPrecision=TRUE,
-                               bias.correct = TRUE,
+                               bias.correct = FALSE,
                                bias.correct.control = list(sd = TRUE))
         )[3]
         # SD0
@@ -758,7 +758,7 @@ fit_fe = fitFED(datDHS=datDHS, inputsMDM=inputsMDM,
       if(getSDs) {
         sdTime = system.time({
           SD0 <- try(TMB::sdreport(obj, getJointPrecision=TRUE,
-                                   bias.correct=TRUE,
+                                   bias.correct = FALSE,
                                    bias.correct.control=list(sd=TRUE)), silent=TRUE)
         })[3]
         if(inherits(SD0, "try-error")) SD0 = NULL

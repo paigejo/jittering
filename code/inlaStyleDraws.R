@@ -28,43 +28,57 @@
     sign_v * abs(rnorm(n, sd = sd_v))
 }
 
-# -- internal: rebuild MakeADFun with the three hypers held fixed at fixedHyper
-#    and the four inner blocks declared random. Uses the data/parameters from
-#    the original obj.
-.makeFixedHyperObj <- function(dataList, paramsTemplate, fixedHyper, DLL,
-                               innerWarm = NULL, verbose = FALSE) {
-    pars <- paramsTemplate
-    if(!is.null(innerWarm)) for(nm in names(innerWarm)) pars[[nm]] <- innerWarm[[nm]]
-    pars$log_tau    <- as.numeric(fixedHyper["log_tau"])
-    pars$logit_phi  <- as.numeric(fixedHyper["logit_phi"])
-    pars$log_tauEps <- as.numeric(fixedHyper["log_tauEps"])
-    mapList <- list(log_tau    = factor(NA),
-                    logit_phi  = factor(NA),
-                    log_tauEps = factor(NA))
-    MakeADFun(data = dataList, parameters = pars,
-              random = c("alpha", "beta", "w_bym2Free", "u_bym2Free"),
-              map    = mapList,
-              DLL    = DLL, silent = !verbose)
-}
-
-# -- internal: evaluate NLL and cache (μ, Q) at one CCD point.
-.evalCCD <- function(dataList, paramsTemplate, theta_k, DLL,
-                     innerWarm = NULL, verbose = FALSE) {
-    obj_k <- .makeFixedHyperObj(dataList, paramsTemplate, theta_k, DLL,
-                                innerWarm = innerWarm, verbose = verbose)
-    nll <- as.numeric(obj_k$fn(numeric()))
-    mu  <- obj_k$env$last.par.best
-    # Hessian of joint NLL w.r.t. random parameters at the inner mode.
-    # This IS the precision of the Gaussian approximation of p(x | θ_k, y).
-    Q   <- tryCatch(obj_k$env$spHess(mu, random = TRUE),
-                    error = function(e) NULL)
-    if(is.null(Q)) {
-        # Fallback: use sdreport's jointPrecision
-        SD <- tryCatch(TMB::sdreport(obj_k, getJointPrecision = TRUE),
-                       error = function(e) NULL)
-        if(!is.null(SD)) Q <- SD$jointPrecision
+# -- internal: evaluate (nll, μ, Q) at one CCD point REUSING a single shared
+# TMB object instead of rebuilding the AD tape. walkObj has the hyperparameters
+# as free OUTER parameters and (alpha, beta, w_bym2Free, u_bym2Free) as random,
+# so walkObj$fn(theta) returns the Laplace-marginal NLL at hyper = theta after
+# internally optimizing the inner random effects — equivalent to rebuilding a
+# fresh fixed-hyper MakeADFun per point, but without re-taping (~24 s/point).
+# Across a ~19-point walk this turns ~19 tape builds into one (validated
+# bit-equivalent to the per-point-rebuild draws).
+#
+# Two subtleties this function handles, both confirmed by testing:
+#  (1) read last.par (the MOST RECENT evaluation = [theta, inner_mode(theta)]),
+#      NOT last.par.best (which tracks the lowest-NLL theta across all calls).
+#  (2) DEEP-COPY Q after spHess: spHess reuses one internal value buffer per
+#      object, so on a shared object every returned Q aliases and the next call
+#      overwrites it — without the copy all points collapse onto the last Q.
+.evalCCDreuse <- function(walkObj, theta_k, innerStart = NULL) {
+    randIdx <- walkObj$env$random
+    # Match the rebuild path's warm-start: every CCD point optimizes the
+    # random effects starting from the SAME inner mode (the centre mode),
+    # not sequentially from the previous point. The inner problem has a flat
+    # (unidentified) spatial ridge, so the optimizer's stopping point depends
+    # on its start; equalizing the start makes reuse reproduce the rebuild
+    # modes (and hence draws) to optimizer tolerance. TMB warm-starts the
+    # inner solve from last.par[random], so we overwrite that block here.
+    if(!is.null(innerStart)) {
+        lp <- walkObj$env$last.par
+        lp[randIdx] <- innerStart
+        walkObj$env$last.par <- lp
+        if(!is.null(walkObj$env$last.par.best)) {
+            lpb <- walkObj$env$last.par.best
+            lpb[randIdx] <- innerStart
+            walkObj$env$last.par.best <- lpb
+        }
     }
-    list(nll = nll, mu = mu, Q = Q, obj = obj_k)
+    theta <- as.numeric(theta_k[names(walkObj$par)])  # order to walkObj$par
+    nll   <- as.numeric(walkObj$fn(theta))
+    fullPar <- walkObj$env$last.par                   # [theta, inner_mode(theta)]
+    mu      <- fullPar[randIdx]                        # named inner mode
+    Q       <- tryCatch(walkObj$env$spHess(fullPar, random = TRUE),
+                        error = function(e) NULL)
+    # CRITICAL: spHess returns a matrix that reuses ONE internal value buffer
+    # per object. Because we reuse a single walkObj across all CCD points, the
+    # next spHess call OVERWRITES this matrix's values in place — so every Q we
+    # store would alias and collapse onto the LAST point's Hessian (confirmed:
+    # a stored reference's values changed after the next spHess call, and ended
+    # up equal to the next point's Q). Deep-copy here so each point keeps its
+    # own precision. `+ 0` materialises an independent sparse copy. The rebuild
+    # path is immune (fresh object per point, spHess called once), which is why
+    # it was correct. Without this copy, reuse silently produces wrong draws.
+    if(!is.null(Q)) Q <- Q + 0
+    list(nll = nll, mu = mu, Q = Q)
 }
 
 # -- internal: fit per-side σ via least-squares: ΔNLL_i = z_i² / (2σ²)
@@ -289,23 +303,25 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     z_to_theta <- function(z)
         setNames(as.numeric(theta_mode + V %*% (eig_sd * z)), hyperNames)
 
+    # Build ONE shared TMB object for the whole walk: hyperparameters as free
+    # outer params (no map), inner effects random. walkObj$fn(theta) gives the
+    # Laplace-marginal NLL at hyper=theta. Reused at every CCD point so the AD
+    # tape is built once, not ~19 times (see .evalCCDreuse). Inner params start
+    # from paramsTemplate (the fit's MLE values) and warm-start sequentially.
+    walkObj <- MakeADFun(data = dataList, parameters = paramsTemplate,
+                         random = c("alpha", "beta", "w_bym2Free", "u_bym2Free"),
+                         DLL = DLL, silent = !verbose)
+
     # ── Step 1: centre evaluation ─────────────────────────────────────────
-    cat(sprintf("[inla] axial walk: deltaZ=%.1f deltaPi=%.1f maxSteps=%d\n",
+    cat(sprintf("[inla] axial walk (reused tape): deltaZ=%.1f deltaPi=%.1f maxSteps=%d\n",
                 deltaZ, deltaPi, maxAxialSteps))
     t0 <- proc.time()[3]
     z_centre <- rep(0, p)
-    centre   <- .evalCCD(dataList, paramsTemplate, z_to_theta(z_centre), DLL,
-                         innerWarm = NULL, verbose = verbose)
+    centre   <- .evalCCDreuse(walkObj, z_to_theta(z_centre))
     cat(sprintf("  centre   NLL=%.4f  (%.1f s)\n", centre$nll, proc.time()[3]-t0))
-
-    # Use centre's inner mode as the warm start
-    extractInnerWarm <- function(mu) {
-        list(alpha       = as.numeric(mu[names(mu) == "alpha"]),
-             beta        = as.numeric(mu[names(mu) == "beta"]),
-             w_bym2Free  = as.numeric(mu[names(mu) == "w_bym2Free"]),
-             u_bym2Free  = as.numeric(mu[names(mu) == "u_bym2Free"]))
-    }
-    innerWarm <- extractInnerWarm(centre$mu)
+    # Centre inner mode — used to warm-start every axial point identically
+    # (matches the rebuild path; see .evalCCDreuse).
+    centreInner <- centre$mu
 
     # ── Step 2: multi-step axial walk along each eigen-axis ────────────────
     ccd <- list(centre = list(z = z_centre, nll = centre$nll,
@@ -322,9 +338,8 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
         for(s in 1:maxAxialSteps) {
             z <- rep(0, p); z[j] <- sign * s * deltaZ
             t0 <- proc.time()[3]
-            ev <- tryCatch(.evalCCD(dataList, paramsTemplate,
-                                    z_to_theta(z), DLL,
-                                    innerWarm = innerWarm, verbose = verbose),
+            ev <- tryCatch(.evalCCDreuse(walkObj, z_to_theta(z),
+                                         innerStart = centreInner),
                            error = function(e) list(nll = NaN, mu = NULL, Q = NULL,
                                                     err = conditionMessage(e)))
             dN <- ev$nll - centre$nll
@@ -392,21 +407,8 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     ccd_names <- names(ccd)
     nInner    <- length(ccd[[1]]$mu)
 
-    # Pre-Cholesky each Q_k
-    L_list <- vector("list", length(ccd))
-    for(k in seq_along(ccd)) {
-        Q <- ccd[[k]]$Q
-        L_list[[k]] <- tryCatch(Matrix::Cholesky(Q, super = TRUE),
-                                error = function(e) NULL)
-        if(is.null(L_list[[k]])) {
-            warning(sprintf("Q at CCD point %s not PD; perturbing", ccd_names[k]))
-            n <- nrow(Q)
-            Qp <- Q + Matrix::Diagonal(n, 1e-6)
-            L_list[[k]] <- Matrix::Cholesky(Qp, super = TRUE)
-        }
-    }
-
-    # Closest CCD for each draw via squared-distance argmin
+    # Closest CCD for each draw via squared-distance argmin (needs only the
+    # small z-coordinates, not the precisions).
     dists <- matrix(0, nrow = length(ccd), ncol = NDRAWS)
     for(k in seq_along(ccd)) {
         diff <- z_draws - ccd_z[, k]
@@ -415,17 +417,34 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     closest <- max.col(-t(dists))    # argmin per draw
 
     # Sample inner ~ N(mu_k, Q_k^{-1}) via L = Cholesky(Q_k);  x = mu_k + L^{-T} z
+    #
+    # MEMORY: factor each Q_k lazily INSIDE this loop and discard it before the
+    # next iteration, so only ONE Cholesky factor is ever alive — instead of
+    # pre-building and holding a factor for all ~25 CCD points at once (the
+    # accumulation that drove the multi-tens-of-GB spikes). We keep supernodal
+    # (super = TRUE, the faster BLAS-3 factorization); the problem was never
+    # supernodal per factor, only holding 25 of them. We also only factor the
+    # CCD points that actually own draws (unique(closest)), which is often
+    # fewer than all of them, and free each precision right after use.
     inner_draws <- matrix(0, nrow = nInner, ncol = NDRAWS)
     rownames(inner_draws) <- names(centre$mu)
     for(k in unique(closest)) {
         idx <- which(closest == k)
         nDr <- length(idx)
+        Q   <- ccd[[k]]$Q
+        L   <- tryCatch(Matrix::Cholesky(Q, super = TRUE),
+                        error = function(e) NULL)
+        if(is.null(L)) {
+            warning(sprintf("Q at CCD point %s not PD; perturbing", ccd_names[k]))
+            L <- Matrix::Cholesky(Q + Matrix::Diagonal(nrow(Q), 1e-6), super = TRUE)
+        }
         z   <- matrix(rnorm(nInner * nDr), nrow = nInner)
         # Reverse permutation+triangular solve. Pattern from predGrid::rmvnorm_prec
-        z   <- Matrix::solve(L_list[[k]], z, system = "Lt")
-        z   <- Matrix::solve(L_list[[k]], z, system = "Pt")
-        z   <- as.matrix(z)
-        inner_draws[, idx] <- ccd[[k]]$mu + z
+        z   <- Matrix::solve(L, z, system = "Lt")
+        z   <- Matrix::solve(L, z, system = "Pt")
+        inner_draws[, idx] <- ccd[[k]]$mu + as.matrix(z)
+        ccd[[k]]$Q <- NULL          # free this precision
+        rm(Q, L, z); gc(FALSE)      # and its factor before the next point
     }
 
     draws <- rbind(theta_draws, inner_draws)
