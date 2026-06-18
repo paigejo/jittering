@@ -4,7 +4,7 @@
 # code paths agree on what variable lives at what name — labels canonical.
 # If not, the warning() in .checkDrawLabels prints the offending names.
 
-source("setup.R")
+source("code/setup.R")
 options(warn = 1)  # print warnings as they happen, not at end
 
 cat(sprintf("\n=== %s | label-check on Md_FE sim1 ===\n", format(Sys.time())))

@@ -22,19 +22,14 @@
     inf <- sessionInfo()
     running <- if(is.null(inf$running)) "" else inf$running
     isLocal <- grepl("macOS|mac OS|Windows|darwin", running, ignore.case = TRUE)
-    # nBYM2 is for the LIGHT BYM2 models (Md, M_D_BYM2, M_M_BYM2 — single data
-    # source each, ~1-2 GB transient per fit). nMDM_BYM2 is for the HEAVY
-    # combined M_DM_BYM2 fit which uses DHS + MICS + BYM2 + Laplace and peaks
-    # at ~10 GB transient; we run it in a dedicated phase with far fewer
-    # workers to avoid OOM-kills (every BYM2 worker that got SIGKILL'd in the
-    # June-07 run died on an M_DM_BYM2 fit).
+    # nBYM2 = LIGHT BYM2 models (Md, M_D_BYM2, M_M_BYM2); nMDM_BYM2 = HEAVY
+    # combined M_DM_BYM2. The OOM-kills that forced the old 8/2 caps were the
+    # INLA-fallback tape pile-up (since fixed: reuse one tape + spHess copy).
+    # The 2026-06-15 run held under ~6 GB/process even during M_DM_BYM2, so on
+    # syvert1 (755 GB) we can run all phases at 16 workers with large headroom.
     if(isLocal) list(nFE = 8L,  nBYM2 = 1L, nMDM_BYM2 = 1L,
                      label = paste("local:",   running))
-    # 2026-06-09 run with 12/4 still OOM-killed ~5 workers on syvert1
-    # (Ubuntu 24.04, presumably ~64 GB RAM). Tightening to 8/2 leaves more
-    # headroom; can raise back up once we confirm per-worker peak RAM with
-    # `ps -o rss --pid <worker_pid>` during a live run.
-    else        list(nFE = 16L, nBYM2 = 8L, nMDM_BYM2 = 2L,
+    else        list(nFE = 16L, nBYM2 = 16L, nMDM_BYM2 = 16L,
                      label = paste("cluster:", running))
 }
 

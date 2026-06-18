@@ -691,8 +691,12 @@ fitMD_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       data_gh = list(
         y_iUrbanDHS=ysUrbDHS, y_iRuralDHS=ysRurDHS,
         n_iUrbanDHS=nsUrbDHS, n_iRuralDHS=nsRurDHS,
-        AprojUrbanDHS=t(makeApointToArea(intPtsDHS$areasUrban, admFinal$NAME_FINAL)),
-        AprojRuralDHS=t(makeApointToArea(intPtsDHS$areasRural, admFinal$NAME_FINAL)),
+        # intPtsDHS$areasUrban/Rural hold adm2 (subarea) names; the BYM2 field is
+        # on strata (admFinal$NAME_FINAL). Convert adm2 -> stratum first, exactly
+        # as the M_DM path does in makeInputsTMB.R, or every DHS row gets an
+        # all-zero projection and the spatial effect never enters the likelihood.
+        AprojUrbanDHS=t(makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL)),
+        AprojRuralDHS=t(makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL)),
         X_betaUrbanDHS=XUrbDHS,
         X_betaRuralDHS=XRurDHS,
         wUrbanDHS=intPtsDHS$wUrban, wRuralDHS=intPtsDHS$wRural,

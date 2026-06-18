@@ -1,6 +1,184 @@
 # simulate data from an SPDE model for simulation study 1
 
-simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5), 
+# Add DHS-style positional jittering to a sampled cluster survey (output of
+# SUMMER::sampleClusterSurveys). Each cluster's PUBLISHED location is displaced
+# from its TRUE location by a uniform direction (0..2pi) and uniform radius
+# (0..maxDist), with maxDist = 2km (urban) or 5km w.p. 0.99 / 10km w.p. 0.01
+# (rural), per the DHS geomasking scheme (see dataFusionGeomasking.tex). Jitter
+# must NOT cross the boundary of the area in `adminMap` containing the true
+# location (default Admin2); this is enforced by rejection sampling. Coordinates
+# are easting/northing in km, while `adminMap` is lon/lat, so a projection
+# function `proj` (default projNigeria) maps between them.
+#
+# Efficiency: only true locations within maxDist of their own area boundary can
+# ever produce a rejected jitter (cf. the DHS integration-point weight code,
+# which zeroes cross-border points). We compute distance-to-boundary once
+# (dist2Line on the point's own polygon) and rejection-sample ONLY those points;
+# all others are jittered in a single accepted draw.
+#
+# Returns the survey with east/north/lon/lat replaced by the jittered (published)
+# values and eastTrue/northTrue/lonTrue/latTrue holding the originals. The
+# responses (Z, N, pFineScale*) are unchanged — they were generated at the true
+# location; only the observed coordinates are anonymized.
+addJitterToDHS = function(survey, adminMap=adm2Full, proj=projNigeria,
+                          areaNameVar="NAME_2", areaCol="subarea", urbanCol="urban",
+                          eastCol="east", northCol="north",
+                          gridRes=5, maxItr=1000, verbose=FALSE) {
+  # Jitter DHS published coords away from the true (pixel-center) location while
+  # keeping them inside the cluster's NOMINAL area (the claimed `areaCol`, an
+  # adm2/NAME_2 label) -- the SAME area the integration points and the model's
+  # areal effect use. We deliberately do NOT re-derive the area from over(truePt):
+  # a true center can fall in a different polygon than its claimed label (snapping
+  # near borders), and constraining to that geographic neighbor would associate
+  # the cluster with the wrong areal effect.
+  #   - true point INSIDE its nominal polygon (the rule): jitter uniformly in
+  #     angle/radius (urban 2km; rural 5km w.p. .99, 10km w.p. .01), rejection-
+  #     sampling so the draw stays in the nominal polygon.
+  #   - true point OUTSIDE its nominal polygon (snapping artifact): OPTION 2 --
+  #     set the published location to the closest point inside the nominal area
+  #     (project onto its border, nudge just inside). Guarantees in-area without
+  #     ever assigning a wrong area, and bounded by the snapping error.
+  # gridRes: popMat cell size (km); only caps the inward search for option 2.
+  require(geosphere)
+  n = nrow(survey)
+  east = survey[[eastCol]]; north = survey[[northCol]]
+  urban = as.logical(survey[[urbanCol]])
+  nomArea = as.character(survey[[areaCol]])
+  nomID = match(nomArea, as.character(adminMap[[areaNameVar]]))
+  if(anyNA(nomID))
+    stop(sprintf("addJitterToDHS: %d clusters have a nominal %s not found in adminMap$%s",
+                 sum(is.na(nomID)), areaCol, areaNameVar))
+
+  # per-cluster max jitter distance; sample the rural 99/1 (5km/10km) up front
+  maxDist = ifelse(urban, 2, ifelse(runif(n) < 0.99, 5, 10))
+
+  trueLL = proj(cbind(east, north), inverse=TRUE)
+  spLL   = SpatialPoints(trueLL, adminMap@proj4string)
+  adminPolys = as.SpatialPolygons.PolygonsList(adminMap@polygons, adminMap@proj4string)
+
+  # is each true point inside its OWN nominal polygon?
+  ovName = as.character(over(spLL, adminMap, returnList=FALSE)[[areaNameVar]])
+  inNom  = !is.na(ovName) & (ovName == nomArea)
+  # distance (km) from each true point to its nominal polygon (border)
+  distNom = sapply(seq_len(n), function(i) dist2Line(spLL[i], adminPolys[nomID[i]])[1]) / 1000
+
+  jE = east; jN = north
+
+  # ---- points INSIDE their nominal polygon ----
+  # "free" = at least maxDist inside the border: a single draw can never cross.
+  freeMask = inNom & (distNom >= maxDist)
+  free = which(freeMask)
+  if(length(free)) {
+    th = runif(length(free), 0, 2*pi); r = runif(length(free), 0, maxDist[free])
+    jE[free] = east[free] + r*cos(th); jN[free] = north[free] + r*sin(th)
+  }
+  # inside-but-near-border: rejection-sample within the nominal polygon (always
+  # feasible -- the true point itself is inside, so small radii are accepted).
+  need = inNom & !freeMask
+  for(it in seq_len(maxItr)) {
+    idx = which(need); if(!length(idx)) break
+    th = runif(length(idx), 0, 2*pi); r = runif(length(idx), 0, maxDist[idx])
+    ce = east[idx] + r*cos(th); cn = north[idx] + r*sin(th)
+    a  = as.character(over(SpatialPoints(proj(cbind(ce, cn), inverse=TRUE),
+                                         adminMap@proj4string), adminMap)[[areaNameVar]])
+    ok = !is.na(a) & (a == nomArea[idx])
+    jE[idx[ok]] = ce[ok]; jN[idx[ok]] = cn[ok]; need[idx[ok]] = FALSE
+    if(verbose) cat(sprintf("  [jitter] iter %d: %d near-border points remaining\n", it, sum(need)))
+  }
+  if(any(need))
+    warning(sprintf("addJitterToDHS: %d in-area clusters not accepted within %d iters; kept true location",
+                    sum(need), maxItr))
+
+  # ---- points OUTSIDE their nominal polygon: OPTION 2 (closest in-area point) ----
+  outIdx = which(!inNom)
+  nKeptTrue = 0L
+  for(i in outIdx) {
+    d2l = dist2Line(spLL[i], adminPolys[nomID[i]])   # [1]=dist(m) [2]=lon [3]=lat of nearest border pt
+    bEN = proj(matrix(c(d2l[2], d2l[3]), nrow=1))    # nearest border point in east/north
+    bE = bEN[1]; bN = bEN[2]
+    # inward direction = from the (outside) true point toward the border point;
+    # continuing past the border point steps INTO the nominal polygon.
+    dE = bE - east[i]; dN = bN - north[i]; len = sqrt(dE^2 + dN^2)
+    placed = FALSE
+    if(len > 1e-9) {
+      ux = dE/len; uy = dN/len
+      step = 0.05; cap = maxDist[i] + sqrt(2)*gridRes
+      while(step <= cap) {
+        ce = bE + step*ux; cn = bN + step*uy
+        a = as.character(over(SpatialPoints(proj(cbind(ce, cn), inverse=TRUE),
+                                            adminMap@proj4string), adminMap)[[areaNameVar]])
+        if(!is.na(a) && a == nomArea[i]) { jE[i] = ce; jN[i] = cn; placed = TRUE; break }
+        step = step * 2
+      }
+    }
+    if(!placed) { jE[i] = east[i]; jN[i] = north[i]; nKeptTrue = nKeptTrue + 1L }  # fallback: keep true loc
+  }
+  if(nKeptTrue)
+    warning(sprintf("addJitterToDHS: %d outside-nominal clusters could not be projected in-area; kept true location",
+                    nKeptTrue))
+
+  survey$eastTrue = east; survey$northTrue = north
+  survey[[eastCol]] = jE; survey[[northCol]] = jN
+  if(all(c("lon","lat") %in% names(survey))) {
+    newLL = proj(cbind(jE, jN), inverse=TRUE)
+    survey$lonTrue = survey$lon; survey$latTrue = survey$lat
+    survey$lon = newLL[,1]; survey$lat = newLL[,2]
+  }
+  attr(survey, "nOutsideNominal") = length(outIdx)
+  attr(survey, "nKeptTrue") = nKeptTrue
+  survey
+}
+
+# Replace each sampled cluster's pixel-CENTER coordinate with a uniform draw
+# WITHIN its pixel, so the generated "true" locations are continuous (matching
+# the continuous uniform-true-location assumption the jitter/integration model
+# makes) rather than snapped to 5km grid centers. The only consistency guard is
+# that each draw stays attributed to the SAME pixel it was sampled from (its
+# nearest popMat pixel == survey$pixelIs); that pixel's claimed area/field are
+# what generated the response, so they remain the ones the location maps to. We
+# do NOT require the draw (or center) to fall in the pixel's claimed Admin2
+# polygon -- the claimed label stands regardless of the geographic over(). The
+# nearest-pixel test uses the grid: pre-filter popMat to pixels within one grid
+# step in east AND north, then take the min-distance pixel among those.
+# Coordinates are east/north km. Run BEFORE addJitterToDHS.
+sampleTrueWithinPixel = function(survey, popMat, proj=projNigeria, maxItr=1000, verbose=FALSE) {
+  if(is.null(survey$pixelIs)) stop("sampleTrueWithinPixel: survey lacks $pixelIs")
+  if(is.null(popMat$lon) || is.null(popMat$lat))
+    stop("sampleTrueWithinPixel: popMat needs lon/lat (the grid is regular in lon/lat, not east/north)")
+  plon = popMat$lon; plat = popMat$lat; pe = popMat$east; pn = popMat$north
+  pixI = survey$pixelIs
+  lon0 = plon[pixI]; lat0 = plat[pixI]
+  # cell half-widths in the NATIVE lon/lat grid (median consecutive spacing is
+  # robust to projection irregularity and to grid gaps; min() is not).
+  dlon = median(diff(sort(unique(round(plon, 6)))))
+  dlat = median(diff(sort(unique(round(plat, 6)))))
+  hLon = dlon/2; hLat = dlat/2
+  n = nrow(survey); tLon = lon0; tLat = lat0; need = rep(TRUE, n)
+  for(it in seq_len(maxItr)) {
+    idx = which(need); if(!length(idx)) break
+    clon = lon0[idx] + runif(length(idx), -hLon, hLon)
+    clat = lat0[idx] + runif(length(idx), -hLat, hLat)
+    en = proj(cbind(clon, clat))                 # lon/lat -> east/north (km)
+    ce = en[,1]; cn = en[,2]
+    # nearest popMat pixel (by east/north km distance) == attributed pixel;
+    # pre-filter to one cell step in lon AND lat so the min-dist scan is tiny.
+    nearOK = vapply(seq_along(idx), function(k) {
+      nb = which(abs(plon - clon[k]) < dlon & abs(plat - clat[k]) < dlat)
+      nb[which.min((pe[nb]-ce[k])^2 + (pn[nb]-cn[k])^2)] == pixI[idx[k]]
+    }, logical(1))
+    tLon[idx[nearOK]] = clon[nearOK]; tLat[idx[nearOK]] = clat[nearOK]
+    need[idx[nearOK]] = FALSE
+    if(verbose) cat(sprintf("  [withinPixel] iter %d: %d remaining\n", it, sum(need)))
+  }
+  if(any(need))
+    warning(sprintf("sampleTrueWithinPixel: %d clusters kept at pixel center (rejection cap)", sum(need)))
+  en = proj(cbind(tLon, tLat))                   # final true locations -> east/north
+  survey[["east"]] = en[,1]; survey[["north"]] = en[,2]
+  survey$lon = tLon; survey$lat = tLat
+  survey
+}
+
+simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
                     beta0=-1.25, gamma=1, betaRest=c(0, 0, 0, .5), 
                     mesh=getSPDEMesh(), easpaDat=easpaNGAed, 
                     popMat=popMatNGAThresh, targetPopMat=popMatNGAedThresh, 
@@ -160,6 +338,11 @@ simData1 = function(nsim=100, margVar=.5, effRange=200, sigmaEpsilon=sqrt(1.5),
     
     # sample DHS survey for this population
     survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=nHHDHS, clustpaList=list(clustpaDHSed))
+    # Anonymize DHS cluster coordinates by jittering (true -> published) within
+    # Admin2; responses (generated at the true location) are unchanged.
+    # (sampleTrueWithinPixel for continuous within-pixel true locations is a
+    # PARKED long-term faithfulness item -- not applied here; see memory.)
+    survDHS[[1]] = addJitterToDHS(survDHS[[1]])
     
     # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
     tempClustpa = clustpaMICSed
@@ -738,15 +921,29 @@ simPopBYM2 = function(nsim=1, easpa, popMat, targetPopMat, poppsub,
                 paste(names(popMat), collapse=", ")))
   }
   pixelAreas = popMat[[areaCol]]
-  uniqueGraphAreas = sort(unique(pixelAreas))
-  nUniqueGraphAreas = length(uniqueGraphAreas)
-  
+  # CRITICAL: Epsilon_bym2 = V %*% (...) is in the GRAPH's vertex order (the
+  # row/col order of graphObj / Q, preserved by V's eigendecomposition). Pixels
+  # MUST be mapped to that same order. Using sort(unique(pixelAreas))
+  # (alphabetical) silently SCRAMBLED the field whenever the graph order is not
+  # alphabetical (it isn't -- NAME_FINAL is in polygon order): each area then
+  # received a DIFFERENT area's effect, destroying the spatial structure
+  # (geographic Moran ~0.29 -> ~0.06) and collapsing fitted phi. Map in graph order.
+  graphOrder = colnames(graphObj)
+  if (is.null(graphOrder)) graphOrder = colnames(as.matrix(Q))
+  if (is.null(graphOrder)) graphOrder = rownames(as.matrix(Q))
+  if (is.null(graphOrder))
+    stop("simPopBYM2: cannot determine graph vertex order (graphObj/Q unnamed); ",
+         "field-to-area alignment would be ambiguous")
+  nUniqueGraphAreas = length(unique(pixelAreas))
   if (nUniqueGraphAreas != nGraphAreas) {
     stop(paste0("Number of unique values in popMat$", areaCol, " (", nUniqueGraphAreas,
                 ") doesn't match graph dimension (", nGraphAreas, ")"))
   }
-  if (verbose) print(paste0("  BYM2 at level '", areaCol, "': ", nGraphAreas, " areas"))
-  pixelAreaIdx = match(pixelAreas, uniqueGraphAreas)
+  if (verbose) print(paste0("  BYM2 at level '", areaCol, "': ", nGraphAreas, " areas (graph order)"))
+  pixelAreaIdx = match(pixelAreas, graphOrder)
+  if (anyNA(pixelAreaIdx))
+    stop("simPopBYM2: some popMat[[areaCol]] values are absent from the graph's ",
+         "area names; cannot align the BYM2 field to pixels")
   
   # Simulate BYM2 spatial effects for each simulation
   # For each sim: z ~ N(0,I), then Epsilon_bym2 = V %*% diag(eigenSDs) %*% z
@@ -1028,6 +1225,11 @@ simData1BYM2 = function(nsim=100, sigmaBYM2=sqrt(0.5), phi=0.8,
 
     # sample DHS survey for this population
     survDHS = SUMMER::sampleClusterSurveys(1, thisHHpop, HHperClust=25, clustpaList=list(clustpaDHSed))
+    # Anonymize DHS cluster coordinates by jittering (true -> published) within
+    # Admin2; responses (generated at the true location) are unchanged.
+    # (sampleTrueWithinPixel for continuous within-pixel true locations is a
+    # PARKED long-term faithfulness item -- not applied here; see memory.)
+    survDHS[[1]] = addJitterToDHS(survDHS[[1]])
 
     # now sample the MICS survey. Do some gymnastics to make sure it works for MICS strata
     tempClustpa = clustpaMICSed

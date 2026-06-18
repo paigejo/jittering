@@ -7,7 +7,7 @@
 # re-score should agree with the cluster file to within RNG noise on the
 # 1000 posterior draws.
 
-source("setup.R")
+source("code/setup.R")
 options(error = recover)
 
 cat(sprintf("\n=== %s | START re-score M_DM_BYM2 sim1 ===\n", format(Sys.time())))
