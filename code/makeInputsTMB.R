@@ -262,19 +262,33 @@ makeInputsMDM = function(datDHS=ed, datMICS=edMICS, intPtsMICS=NULL, intPtsDHS=N
        ysUrbDHS=ysUrbDHS, ysRurDHS=ysRurDHS, nsUrbDHS=nsUrbDHS, nsRurDHS=nsRurDHS)
 }
 
-makeInputsMdm = function(inputsMDM) {
-  
-  # set weights to be put entirely on a random integration point.
-  inputsMDM$intPtsDHS$wUrban[,-1] = 0
-  inputsMDM$intPtsDHS$wUrban[,1] = 1
-  inputsMDM$intPtsDHS$wRural[,-1] = 0
-  inputsMDM$intPtsDHS$wRural[,1] = 1
-  
-  inputsMDM$intPtsMICS$wUrban[,-1] = 0
-  inputsMDM$intPtsMICS$wUrban[,1] = 1
-  inputsMDM$intPtsMICS$wRural[,-1] = 0
-  inputsMDM$intPtsMICS$wRural[,1] = 1
-  
+makeInputsMdm = function(inputsMDM, seed=NULL) {
+  # M_dm: positional uncertainty NOT accounted for in either survey.
+  #  - DHS: the observed (reported) location is assumed true -> all weight on the
+  #    cluster centre (integration point 1, radius 0). This MATCHES the M_d model.
+  #  - MICS: a SINGLE location is drawn per cluster from within its stratum with
+  #    probability proportional to population density, and assumed true. The MICS
+  #    integration weights already encode that pop-density prior over the K
+  #    candidate points, so we sample ONE point per cluster with prob proportional
+  #    to its integration weight and put all the mass there.
+  if(!is.null(seed)) set.seed(seed)
+
+  inputsMDM$intPtsDHS$wUrban[,-1] = 0; inputsMDM$intPtsDHS$wUrban[,1] = 1
+  inputsMDM$intPtsDHS$wRural[,-1] = 0; inputsMDM$intPtsDHS$wRural[,1] = 1
+
+  sampleOnePerRow = function(W) {
+    K = ncol(W)
+    out = matrix(0, nrow(W), K)
+    for(i in seq_len(nrow(W))) {
+      w = W[i, ]; s = sum(w)
+      k = if(s > 0) sample.int(K, 1, prob = w) else 1L
+      out[i, k] = 1
+    }
+    out
+  }
+  inputsMDM$intPtsMICS$wUrban = sampleOnePerRow(inputsMDM$intPtsMICS$wUrban)
+  inputsMDM$intPtsMICS$wRural = sampleOnePerRow(inputsMDM$intPtsMICS$wRural)
+
   inputsMDM
 }
 

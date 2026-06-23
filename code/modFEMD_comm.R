@@ -19,6 +19,10 @@ fitFEMD_comm = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
                         pc.iidPrec=list(u=1, alpha=0.5),
                         pc.expPrec=list(u=1, alpha=0.5),
                         pc.sigmaComm=list(u=1, alpha=0.1),
+                        commIntercept=0L, commSlope=1L,  # default = original (indep intercept, comm slope)
+                        initParams=NULL,                 # optional named overrides of initial params (multi-start)
+                        fixSigmaComm=NULL,               # if set: pin sigma_comm at this value (forces alpha_M~alpha, beta_M~beta when both comm flags on) -> nesting/bug check
+                        marginalizeFE=TRUE,              # TRUE: alpha/beta(/_M) Laplace-marginalized (random); FALSE: fixed outer params (sim-study style)
                         covariates=NULL,
                         fixedEffectsOnly=TRUE,
                         maxit=1000, Qgh=25, getSDs=TRUE, verbose=FALSE,
@@ -101,6 +105,8 @@ fitFEMD_comm = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     tr=bym2Args$tr, gammaTildesm1=bym2Args$gammaTildesm1,
     lambdaPhi=bym2Args$lambda, lambdaTau=lambdaTau, lambdaTauEps=lambdaTauEps,
     lambdaSigmaComm=lambdaSigmaComm,
+    commIntercept=as.integer(commIntercept),
+    commSlope=as.integer(commSlope),
     uniformPhiPrior=as.integer(FALSE),
     options=0
   )
@@ -118,7 +124,10 @@ fitFEMD_comm = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
     beta_M=c(initBeta1, rep(0, nBeta - 1)),
     w_bym2Free=rep(0, nFree), u_bym2Free=rep(0, nFree)
   )
+  # optional multi-start: override any of the above init values by name
+  if(!is.null(initParams)) for(nm in names(initParams)) params[[nm]] = initParams[[nm]]
 
+  feRand = c("alpha", "alpha_M", "beta", "beta_M")  # the fixed effects
   if(fixedEffectsOnly) {
     mapList = list(
       w_bym2Free = factor(rep(NA, nFree)),
@@ -126,10 +135,25 @@ fitFEMD_comm = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       log_tau    = factor(NA),
       logit_phi  = factor(NA)
     )
-    randList = c("alpha", "alpha_M", "beta", "beta_M")
+    randList = feRand
   } else {
     mapList = list()
-    randList = c("alpha", "alpha_M", "beta", "beta_M", "w_bym2Free", "u_bym2Free")
+    randList = c(feRand, "w_bym2Free", "u_bym2Free")
+  }
+  # marginalizeFE=FALSE: treat alpha/beta(/_M) as FIXED outer params (drop from
+  # random=) instead of Laplace-marginalizing them -> matches the sim-study
+  # standard fits. Lets us test fixed-vs-marginalized cleanly on the same template.
+  if(!marginalizeFE) randList = setdiff(randList, feRand)
+  # sigma_comm is only identified if at least one commensurate prior uses it.
+  # Fully non-commensurate (both flags 0): fix log_sigma_comm out of the optimization.
+  if(commIntercept == 0L && commSlope == 0L) {
+    mapList$log_sigma_comm = factor(NA)
+  }
+  # nesting/bug check: pin sigma_comm at a tiny value so the commensurate prior
+  # forces alpha_M~alpha and beta_M~beta -> should reproduce the standard model.
+  if(!is.null(fixSigmaComm)) {
+    params$log_sigma_comm = log(fixSigmaComm)
+    mapList$log_sigma_comm = factor(NA)
   }
 
   unloadDynlibs()

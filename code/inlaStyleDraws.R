@@ -264,7 +264,7 @@ posteriorDraws <- function(res, NDRAWS = 1000, useInla = "auto", ...) {
 # ============================================================================
 inlaStyleDraws <- function(res, NDRAWS = 1000,
                             deltaZ = 1.0, deltaPi = 2.5, maxAxialSteps = 4,
-                            hyperNames = c("log_tau","logit_phi","log_tauEps"),
+                            hyperNames = NULL,
                             verbose = FALSE) {
     SD <- res$TMBsd
     if(!inherits(SD, "sdreport"))
@@ -278,10 +278,20 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     parRandom  <- SD$par.random
     covFixed   <- SD$cov.fixed
     parNames   <- names(parFixed)
+    # The hyperparameters are the outer (fixed) params that are NOT fixed effects.
+    # Default to whatever the fit actually has (works for FE-only {log_tauEps},
+    # BYM2 {log_tau,logit_phi,log_tauEps}, commensurate {+log_sigma_comm}, etc.)
+    # rather than assuming a fixed BYM2 hyper set.
+    if(is.null(hyperNames))
+        hyperNames <- setdiff(unique(parNames), c("alpha","alpha_M","beta","beta_M"))
     hyperIdx   <- which(parNames %in% hyperNames)
-    if(length(hyperIdx) != length(hyperNames))
+    if(length(hyperIdx) == 0)
+        stop("inlaStyleDraws: no hyperparameters found in par.fixed (have: ",
+             paste(unique(parNames), collapse = ", "), ")")
+    missingHN <- setdiff(hyperNames, parNames)
+    if(length(missingHN))
         stop("Could not find all hyperNames in par.fixed: missing ",
-             paste(setdiff(hyperNames, parNames), collapse = ", "))
+             paste(missingHN, collapse = ", "))
     innerFEIdx <- setdiff(seq_along(parNames), hyperIdx)
     feNames    <- parNames[innerFEIdx]
 
@@ -308,9 +318,22 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     # Laplace-marginal NLL at hyper=theta. Reused at every CCD point so the AD
     # tape is built once, not ~19 times (see .evalCCDreuse). Inner params start
     # from paramsTemplate (the fit's MLE values) and warm-start sequentially.
-    walkObj <- MakeADFun(data = dataList, parameters = paramsTemplate,
-                         random = c("alpha", "beta", "w_bym2Free", "u_bym2Free"),
-                         DLL = DLL, silent = !verbose)
+    # Reuse the ORIGINAL fitted object as the walk object. It already has exactly
+    # the right random-effect set, map, and a built AD tape, so walkObj$fn(theta)
+    # gives the Laplace-marginal NLL at hyper=theta. The previous code rebuilt with
+    # a HARDCODED BYM2 random set (and no map), which dropped real REs (alpha_M,
+    # beta_M) and/or reintroduced mapped-out ones (a spurious spatial field for
+    # FE-only fits) -> corrupted inner mode -> wrong conditional means.
+    walkObj <- obj
+    # .evalCCDreuse warm-starts by overwriting walkObj$env$last.par(.best) at each
+    # config, which mutates the fitted object's inner state. Save and restore it on
+    # exit so res$TMBobj is left at its MLE (a later predGrid/report reads last.par).
+    .savedLP  <- walkObj$env$last.par
+    .savedLPB <- if(!is.null(walkObj$env$last.par.best)) walkObj$env$last.par.best else NULL
+    on.exit({
+        walkObj$env$last.par <- .savedLP
+        if(!is.null(.savedLPB)) walkObj$env$last.par.best <- .savedLPB
+    }, add = TRUE)
 
     # ── Step 1: centre evaluation ─────────────────────────────────────────
     cat(sprintf("[inla] axial walk (reused tape): deltaZ=%.1f deltaPi=%.1f maxSteps=%d\n",

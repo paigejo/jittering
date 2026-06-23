@@ -2,6 +2,6 @@
 source("setup.R")
 options(error = recover)
 
-scoreSimStudyFullBoth(nsim = 100, regenerate = FALSE, useInla = "auto")
+scoreSimStudyFullBoth(nsim = 100, regenerate = TRUE, useInla = "auto")
 
 cat("\nDone.\n")

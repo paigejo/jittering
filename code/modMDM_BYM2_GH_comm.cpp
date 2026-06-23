@@ -74,6 +74,8 @@ Type objective_function<Type>::operator() ()
   DATA_SCALAR( lambdaTau );
   DATA_SCALAR( lambdaTauEps );
   DATA_SCALAR( lambdaSigmaComm );  // PC prior rate on sigma_comm
+  DATA_INTEGER( commIntercept );   // 1: (alpha_M - alpha) ~ N(0, sigma_comm^2); 0: alpha_M independent
+  DATA_INTEGER( commSlope );       // 1: (beta_M - beta) ~ N(0, sigma_comm^2);   0: beta_M independent
   DATA_SCALAR( options );
 
   // Outer hyperparameters
@@ -168,17 +170,24 @@ Type objective_function<Type>::operator() ()
     jnll -= lexpDensity + ljacobian;
   }
 
-  // Independent priors on alpha and alpha_M (no commensurate shrinkage on intercepts)
-  jnll -= dnorm(alpha,   alpha_pri(0), alpha_pri(1), true);
-  jnll -= dnorm(alpha_M, alpha_pri(0), alpha_pri(1), true);
+  // Base prior on the DHS-side intercept; alpha_M either commensurate or independent.
+  jnll -= dnorm(alpha, alpha_pri(0), alpha_pri(1), true);
+  if(commIntercept) {
+    jnll -= dnorm(alpha_M - alpha, Type(0.0), sigma_comm, true);   // commensurate intercept
+  } else {
+    jnll -= dnorm(alpha_M, alpha_pri(0), alpha_pri(1), true);      // independent intercept
+  }
 
-  // Base prior on beta (DHS-side); beta_M's marginal prior is determined by beta + commensurate
+  // Base prior on beta (DHS-side); beta_M either commensurate or independent.
   for(int i = 0; i < nBeta; i++) {
     jnll -= dnorm(beta(i), beta_pri(0), beta_pri(1), true);
   }
-  // Commensurate prior: (beta_M - beta) ~ N(0, sigma_comm^2)
-  for(int i = 0; i < nBeta; i++) {
-    jnll -= dnorm(beta_M(i) - beta(i), Type(0.0), sigma_comm, true);
+  if(commSlope) {
+    for(int i = 0; i < nBeta; i++)
+      jnll -= dnorm(beta_M(i) - beta(i), Type(0.0), sigma_comm, true);  // commensurate slopes
+  } else {
+    for(int i = 0; i < nBeta; i++)
+      jnll -= dnorm(beta_M(i), beta_pri(0), beta_pri(1), true);         // independent slopes
   }
 
   // Linear predictors using survey-specific alpha and beta
