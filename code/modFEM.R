@@ -120,11 +120,8 @@ fitFEM = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
 
     if(getSDs) {
       sdTime = system.time({
-        SD0 <- try(TMB::sdreport(obj, getJointPrecision=TRUE,
-                                 bias.correct = FALSE,
-                                 bias.correct.control=list(sd=TRUE)), silent=TRUE)
+        SD0 <- robustSdreport(obj, biasCorrect=FALSE, verbose=verbose)
       })[3]
-      if(inherits(SD0, "try-error")) SD0 = NULL
     }
   } else {
     if(!requireNamespace("tmbstan", quietly=TRUE)) {

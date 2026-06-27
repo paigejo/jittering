@@ -149,37 +149,43 @@ get.est<-function(glm.ob, signifs=c(.95)) {
 region.time.HTDat<-function(dataobj, svydesign, area, nationalEstimate, signifs=.95) {
   
   if(!nationalEstimate) {
-    thisArea=area
-    tmp<-subset(svydesign, (area==thisArea))
-    
-    tt2 <- tryCatch(glmob<-svyglm(y~1,
-                                  design=tmp,family=quasibinomial, maxit=50), 
-                    error=function(e) e, warning=function(w) w)
+    thisArea = area
+    tmp <- subset(svydesign, (area == thisArea))
   } else {
     thisUrban = area == 1
-    tmp<-subset(svydesign, (urban==thisUrban))
-    tt2 <- tryCatch(glmob<-svyglm(y~1,
-                                  design=tmp,family=quasibinomial, maxit=50), 
-                    error=function(e) e, warning=function(w) w)
+    tmp <- subset(svydesign, (urban == thisUrban))
   }
-  
-  if(is(tt2, "warning")){
-    if(grepl("agegroups", tt2)){
-      res <- get.est(glmob, signifs=signifs)
-      res = c(res, 2)
-    } else {
-      res = c(rep(NA, 5), 3)
-    }
-    return(res)
+
+  # NA placeholder width must match get.est()'s output: est, var, logit.est,
+  # logit.var (4) + lower/upper (2*length(signifs)); the converge code is appended
+  # after. (Previously hardcoded to 5, which crashed defineSurvey's row assignment
+  # for length(signifs) != 0.5.)
+  nNA <- 4 + 2 * length(signifs)
+
+  # Fit svyglm with warnings MUFFLED (so the fit completes and glmob is captured)
+  # while recording any warning text. Newer survey/stats versions emit a spurious
+  # "NAs introduced by coercion" warning during svyglm even when the fit is fine;
+  # the old code discarded any non-"agegroups" warning as NA, which silently turned
+  # every direct estimate (e.g. all MICS areas) into NA. We instead keep the
+  # estimate whenever the model fits and is finite, returning NA only on a genuine
+  # error or a non-finite fit. converge: 0 = clean, 2 = fit but warned, 1 = error,
+  # 3 = non-finite estimate.
+  warnMsg <- NULL
+  glmob <- tryCatch(
+    withCallingHandlers(
+      svyglm(y ~ 1, design = tmp, family = quasibinomial, maxit = 50),
+      warning = function(cond) {
+        warnMsg <<- c(warnMsg, conditionMessage(cond)); invokeRestart("muffleWarning")
+      }),
+    error = function(e) e)
+  if(is(glmob, "error")) {
+    return(c(rep(NA, nNA), 1))
   }
-  if(is(tt2,"error")){
-    res = c(rep(NA, 5), 1)
-    return(res)
-  } else {
-    res <- get.est(glmob, signifs=signifs)
-    res = c(res, 0)
-    return(res)
+  res <- get.est(glmob, signifs = signifs)
+  if(any(!is.finite(res[1:4]))) {
+    return(c(rep(NA, nNA), 3))
   }
+  c(res, if(is.null(warnMsg)) 0 else 2)
 }
 
 defineSurvey <- function(dat_obj, stratVar, useSamplingWeights=TRUE, nationalEstimate=FALSE, 

@@ -1,50 +1,58 @@
-# Run the existing getScores() (from code/scores.R) over all per-fold preds files
-# produced by runValidationFE.R, for every FE-family model. Standalone driver:
-# safe to run after the SLURM array completes (or partially — it skips missing
-# preds files).
+# Aggregate validation scores produced by the runValidationFE.sbatch array, over
+# all VALMODELS and BOTH validation types. Standalone: safe to run after the
+# array completes (or partially — missing files are skipped). Reuses the exact
+# tag / file-name convention of runValFoldFE & runValArealFE (validationModels.R),
+# so this only collates; the per-fold scores were already computed at run time.
 #
-# Output: savedOutput/validation/folds/scores<tag>_fold<N>.RData per fold, plus a
-# combined CSV summary at savedOutput/validation/scoreSummary_FE.csv.
+# Output:
+#   savedOutput/validation/scoreSummary_FE_cluster.csv   (cluster-level, per fold)
+#   savedOutput/validation/scoreSummary_FE_areal.csv     (areal, per direct-est type)
 
 source("setup.R")
 options(error=traceback)
-source("code/validation.R")           # for getScores (via scores.R sourced from setup)
-source("code/validationCommon.R")
+source("code/validation.R")           # getScores deps
+source("code/getDirectEsts.R")
+source("code/validationCommon.R")     # scoreTagFold, ...
+source("code/validationModels.R")     # VALMODELS, valModelValid
 
-models = c("M_D", "M_M", "M_DM", "M_DM_comm")
+foldDir  = "savedOutput/validation/folds"
+arealDir = "savedOutput/validation/areal"
 
-for(m in models) {
-    cat("[scoreValidationFE] scoring", m, "...\n")
-    scoreAllFoldsFE(m)
+# ---- cluster-level: pool each model's predsJob_* files -> DHS/MICS/combined ----
+# .scoreModelCluster gathers all of a model's per-job held-out predictions (DHS
+# folds 1..10 + MICS folds 1..10, or the collapsed predict-all job) and scores
+# per-survey + the denominator-weighted combined (weights = cluster size n).
+clRows = list()
+for(m in VALMODELS) {
+    sc = .scoreModelCluster(m, foldDir = foldDir)
+    if(!is.null(sc)) clRows[[length(clRows)+1]] = sc
 }
-
-# Aggregate into a single summary table.
-rows = list()
-foldDir = "savedOutput/validation/folds"
-for(m in models) {
-    for(j in 1:20) {
-        side = if(j <= 10) "DHS" else "MICS"
-        tag = paste0(m, ifelse(side == "DHS", "_dhsFold", "_micsFold"),
-                     ifelse(side == "DHS", j, j - 10))
-        scoreFile = file.path(foldDir, paste0("scores", tag, "_fold", j, ".RData"))
-        if(!file.exists(scoreFile)) next
-        e = new.env(); load(scoreFile, envir=e)
-        if(!is.null(e$scores)) {
-            df = as.data.frame(e$scores)
-            df$model = m
-            df$side  = side
-            df$fold  = j
-            df$tag   = tag
-            rows[[length(rows)+1]] = df
-        }
-    }
-}
-
-if(length(rows) > 0) {
-    summary = do.call(rbind, rows)
-    write.csv(summary, file="savedOutput/validation/scoreSummary_FE.csv", row.names=FALSE)
-    cat("\nSummary written to savedOutput/validation/scoreSummary_FE.csv (",
-        nrow(summary), " rows)\n")
+if(length(clRows)) {
+    cl = do.call(rbind, clRows)                      # already one row per (model, side)
+    write.csv(cl, file="savedOutput/validation/scoreSummary_FE_cluster.csv", row.names=FALSE)
+    cat("[scoreValidationFE] cluster summary:", nrow(cl), "rows ->",
+        "savedOutput/validation/scoreSummary_FE_cluster.csv\n")
+    metrics = intersect(c("CRPS","MSE","IntervalScore80","Coverage80","Width80"), names(cl))
+    cl = cl[order(match(cl$side, c("combined","DHS","MICS")), match(cl$model, VALMODELS)), ]
+    print(cl[, c("model","side", metrics)], row.names=FALSE, digits=4)   # combined = headline
 } else {
-    cat("\nNo score files found yet — re-run after the SLURM array completes.\n")
+    cat("[scoreValidationFE] no cluster score files found yet.\n")
+}
+
+# ---- areal: one row per (model, direct-est type) --------------------------------
+arRows = list()
+for(m in VALMODELS) {
+    f = file.path(arealDir, paste0("areal_", m, "_areal_fold6-10.RData"))
+    if(!file.exists(f)) next
+    e = new.env(); load(f, envir=e)
+    if(!is.null(e$scores)) arRows[[length(arRows)+1]] = e$scores
+}
+if(length(arRows)) {
+    ar = do.call(rbind, arRows)
+    write.csv(ar, file="savedOutput/validation/scoreSummary_FE_areal.csv", row.names=FALSE)
+    cat("\n[scoreValidationFE] areal summary:", nrow(ar), "rows ->",
+        "savedOutput/validation/scoreSummary_FE_areal.csv\n")
+    print(ar[ar$directEst=="combined", c("model","Bias","MSE","CRPS","Coverage80")], row.names=FALSE)
+} else {
+    cat("\n[scoreValidationFE] no areal score files found yet.\n")
 }

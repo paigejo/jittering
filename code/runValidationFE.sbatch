@@ -3,19 +3,23 @@
 #SBATCH --partition CPUQ
 #SBATCH --ntasks 1
 #SBATCH --time 0-12:00
-#SBATCH --mem-per-cpu=8000
+#SBATCH --mem-per-cpu=16000
 #SBATCH -o runValidationFE_%A_%a.out
 #SBATCH -e runValidationFE_%A_%a.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=john.paige@ntnu.no
 #SBATCH --account=share-ie-imf
 
-# Job array indexing:
-#   i = 1..4  : models  M_D, M_M, M_DM, M_DM_comm
-#   j = 1..20 : folds   1..10 = DHS held-out folds; 11..20 = MICS held-out folds
-#   index    = (i-1)*20 + j   (decoded by getJobIndices in code/validationCommon.R)
-# Total array size = 4 * 20 = 80; jobs whose (model, side) combination is invalid
-# (M_D + MICS fold, M_M + DHS fold) exit cleanly without doing work.
+# Job array indexing (decodeValJob over .buildValJobList; models = VALMODELS:
+#   Md, M_D, M_dm, M_DM, M_M). 20-fold CV (10 DHS + 10 MICS held-out folds) for
+#   every model, collapsed for single-dataset models (the unused survey -> one
+#   "predict-all" job, since its folds share a fit). Each cluster job fits once
+#   and predicts ONE survey's held-out clusters (incl. cross-survey for the
+#   single-dataset models). Per model: Md/M_D/M_M = 11 cluster jobs, M_dm/M_DM =
+#   20 -> 73 cluster jobs; + 5 areal (leave-out folds 6:10) = 78 total.
+# Concurrency capped at 16 (see .sh). Areal jobs run predGrid -> higher mem.
+# Per-survey + denominator-weighted combined scores are assembled at collation
+# time (scoreValidationFE.R -> .scoreModelCluster).
 
 module load R/4.2.1-foss-2022a
 module load GDAL/3.5.0-foss-2022a

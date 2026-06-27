@@ -1236,8 +1236,23 @@ logitNormMeanGrouped = function(muSigmaMat, logisticApproximation=TRUE, splineAp
   }
 }
 
-# Approximates logitNormMean at a single value of sigma and many mus using spline 
-# on a logit scale. npts determines number of values of mu in the range of mu 
+# Vectorized E[expit(mu + sigma*Z)], Z ~ N(0,1), via fixed-grid Gaussian
+# quadrature over the standard-normal nugget. Matches the adaptive integrate()
+# path in logitNormMean to ~1e-10 for sigma up to ~1.5, but is fully vectorized
+# over `mus` (one matrix op, no per-element integrate()) — the dominant cost in
+# predGrid's per-pixel/knot logit-normal-mean evaluation. nNodes=200 over +/-8 SD
+# is machine-accurate for the prevalence ranges here.
+logitNormMeanGH = function(mus, sigma, nNodes=200) {
+  if(length(mus) == 0) return(numeric(0))
+  if(is.na(sigma))     return(rep(NA_real_, length(mus)))
+  if(sigma == 0)       return(expit(mus))
+  z <- seq(-8, 8, length.out=nNodes); w <- dnorm(z); w <- w / sum(w)
+  M <- outer(as.numeric(mus), sigma * z, "+")     # length(mus) x nNodes
+  as.numeric(plogis(M) %*% w)
+}
+
+# Approximates logitNormMean at a single value of sigma and many mus using spline
+# on a logit scale. npts determines number of values of mu in the range of mu
 # over which the monotonic spline function is generated.
 # Note: Uses a monotonic cubic spline. See ?splinefun for method="Hyman", and:
 # Hyman, J. M. (1983). Accurate monotonicity preserving cubic interpolation. 
@@ -1283,9 +1298,12 @@ logitNormMeanSplineApprox = function(mus, sigma, npts=250, ...) {
   }
   
   
-  muSigmaMat = cbind(seqMus, sigma)
-  vals = logit(logitNormMean(muSigmaMat, logisticApproximation=FALSE, splineApproximation=FALSE))
-  
+  # Spline knot values: vectorized Gaussian quadrature instead of npts adaptive
+  # integrate() calls (matches integrate to ~1e-10, ~vectorized -> the big speedup
+  # for predGrid). The result feeds a monotone spline, so any ~1e-10 knot diff is
+  # immaterial.
+  vals = logit(logitNormMeanGH(seqMus, sigma))
+
   spFun = splinefun(seqMus, vals)
   
   outVals = expit(spFun(mus))
@@ -1415,6 +1433,39 @@ getCustomScaleTicks = function(usr, scaleFun=sqrt, nint=5, log=FALSE) {
 }
 
 # i: either the first index of the two input parameters, or the job index if rev==TRUE
+# robustSdreport: TMB::sdreport with a retry ladder. getJointPrecision=TRUE plus
+# bias.correct is the most failure-prone form (the full joint Hessian can be
+# singular / non-PD, e.g. the commensurate model near a sigma_comm boundary),
+# and a hard failure there leaves SD0=NULL — which blocks BOTH Gaussian AND
+# INLA-style draws (inlaStyleDraws needs SD$cov.fixed too). We progressively drop
+# the fragile options so we salvage a usable sdreport whenever possible:
+#   1. getJointPrecision=TRUE,  bias.correct as requested  (best: enables full
+#      joint draws)
+#   2. getJointPrecision=TRUE,  bias.correct=FALSE
+#   3. getJointPrecision=FALSE                              (cov.fixed only; still
+#      enough for INLA-style draws and fixed-effect Gaussian draws)
+# Returns the first valid sdreport, or NULL if all attempts error.
+robustSdreport = function(obj, biasCorrect=FALSE, verbose=FALSE) {
+  attempts = list(
+    list(getJointPrecision=TRUE,  bias.correct=isTRUE(biasCorrect)),
+    list(getJointPrecision=TRUE,  bias.correct=FALSE),
+    list(getJointPrecision=FALSE, bias.correct=FALSE))
+  for(a in attempts) {
+    args = c(list(obj), a)
+    if(isTRUE(a$bias.correct)) args$bias.correct.control = list(sd=TRUE)
+    SD = try(do.call(TMB::sdreport, args), silent=!verbose)
+    if(inherits(SD, "sdreport")) {
+      if(verbose) cat("[robustSdreport] ok with ",
+                      paste(names(a), unlist(a), sep="=", collapse=", "), "\n", sep="")
+      return(SD)
+    }
+    if(verbose) cat("[robustSdreport] failed with ",
+                    paste(names(a), unlist(a), sep="=", collapse=", "), "\n", sep="")
+  }
+  if(verbose) cat("[robustSdreport] all sdreport attempts failed; returning NULL\n")
+  NULL
+}
+
 # j: the second index of the two input parameters
 # maxJ: maximum of j for each i if rev==FALSE (can be a vector of length maxI)
 # rev: if TRUE, performs inverse operation of if rev==FALSE given the job index i

@@ -1030,24 +1030,22 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
   }
   includeBeta = !is.null(beta) && length(beta) > 0
   
-  if(!is.null(predAtArea)) {
-    # if(admLevel == "stratMICS") {
-    #   popMat = popMat[popMat$stratumMICS == predAtArea,]
-    # } else {
-    #   popMat = popMat[popMat$subarea == predAtArea,]
-    # }
-    popMat = popMat[popMat$area == predAtArea,]
-  }
-  
+  # If predicting a single area, remember its rows in the FULL popMat so we can
+  # row-subset the (full-grid) cached design matrix instead of live-extracting
+  # covariates for just that area. terra::extract (getDesignMat) has a large
+  # FIXED overhead (~40s) independent of pixel count, which dominates per-area
+  # areal CV; reusing the cache makes predAtArea calls effectively free.
+  areaRows = if(!is.null(predAtArea)) which(popMat$area == predAtArea) else seq_len(nrow(popMat))
+
   # load covariates at prediction locations. predGridInputs.RData (built by
-  # code/buildPredGridInputs.R) caches Xmat/popValsNorm for the default
-  # popMat=popMatNGAThresh case so we skip terra::extract on every fit. The
-  # cached cbind(lon,lat) must match popMat row-for-row; otherwise we fall
-  # back to live extraction. Cache becomes a no-op when predAtArea is set
-  # (popMat gets subsetted) — we live-extract in that path.
+  # code/buildPredGridInputs.R) caches Xmat/popValsNorm for the FULL
+  # popMat=popMatNGAThresh grid so we skip terra::extract. The cache is keyed to
+  # the full grid's cbind(lon,lat); validate against that, then subset to the
+  # requested area. Fall back to live extraction only if the cache is absent or
+  # doesn't match the popMat passed in.
   LLcoords = cbind(popMat$lon, popMat$lat)
   cacheFile = "savedOutput/global/predGridInputs.RData"
-  useCache  = is.null(predAtArea) && file.exists(cacheFile)
+  useCache  = file.exists(cacheFile)
   if(useCache) {
     out = load(cacheFile)
     cachedOK = identical(predGridPopMatNrow, nrow(popMat)) &&
@@ -1066,6 +1064,13 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     popMean = popMeanCalThresh
     popSD = popSDCalThresh
     popValsNorm = (log1p(Xmat[,2]) - popMean) * (1/popSD)
+  }
+  # subset everything to the requested area (rows of the full grid)
+  if(!is.null(predAtArea)) {
+    popMat      = popMat[areaRows, , drop=FALSE]
+    Xmat        = Xmat[areaRows, , drop=FALSE]
+    popValsNorm = popValsNorm[areaRows]
+    LLcoords    = LLcoords[areaRows, , drop=FALSE]
   }
   Xmat = cbind(Xmat[,3:6], popValsNorm)
   tempNames = colnames(Xmat)

@@ -204,31 +204,31 @@ predFEclusters = function(fitRes, outOfSample,
     side = match.arg(side)
     SD = fitRes$TMBsd
     if(!inherits(SD, "sdreport")) {
-        stop("fitRes$TMBsd is not a TMB sdreport — cannot draw from joint posterior")
+        stop("fitRes$TMBsd is not a TMB sdreport — cannot draw from posterior")
     }
 
-    obj = fitRes$TMBobj
-    # Build a posterior-draw matrix for ALL parameters by name. Fixed-effect-only
-    # models (no random effects) have SD$cov.fixed but no jointPrecision; full models
-    # have SD$jointPrecision. Use whichever exists.
+    # Posterior parameter draws (params x nsim, rownames = parameter names),
+    # reusing the reviewed draw machinery in inlaStyleDraws.R (sourced via setup.R):
+    #   - jointPrecision present  -> posteriorDraws(useInla="auto"): joint Gaussian
+    #     draws when the jointPrecision Cholesky succeeds, else automatic INLA-style
+    #     fall-back when the joint Hessian is non-PD (e.g. the commensurate model
+    #     near a sigma_comm boundary) -- same robustness as the BYM2/predGrid path.
+    #   - no jointPrecision but the model HAS random effects (e.g. commensurate with
+    #     marginalised FEs, when sdreport only succeeded at getJointPrecision=FALSE)
+    #     -> INLA-style draws (cov.fixed alone can't supply the random alpha/beta).
+    #   - no jointPrecision and no random effects (pure FE) -> cov.fixed Gaussian
+    #     draws (the historical FE path).
     if(!is.null(SD$jointPrecision)) {
-        parMode = c(SD$par.fixed, SD$par.random)
-        L = Matrix::Cholesky(SD$jointPrecision, LDL=FALSE, super=NA)
-        z = matrix(rnorm(length(parMode)*nsim), nrow=length(parMode), ncol=nsim)
-        sol = Matrix::solve(L, z, system="Lt")
-        parDraws = as.matrix(sol) + parMode
+        parDraws = posteriorDraws(fitRes, NDRAWS=nsim, useInla="auto")
+    } else if(length(SD$par.random) > 0) {
+        parDraws = inlaStyleDraws(fitRes, NDRAWS=nsim)
     } else {
-        parMode = SD$par.fixed
-        Sigma   = SD$cov.fixed
-        # Cholesky of covariance for MVN sampling.
-        Lc = chol(Sigma)
-        z  = matrix(rnorm(length(parMode)*nsim), nrow=length(parMode), ncol=nsim)
-        parDraws = parMode + t(Lc) %*% z
+        parDraws = .gaussianPosteriorDraws(fitRes, NDRAWS=nsim, requireJoint=FALSE)
     }
+    nm = rownames(parDraws)
 
     # Pick the right rows for alpha and beta by name. The commensurate model has
     # both "alpha"/"alpha_M" and "beta"/"beta_M"; standard models have just "alpha"/"beta".
-    nm = names(parMode)
     if(side == "DHS" || !("alpha_M" %in% nm)) {
         alphaName = "alpha";   betaName = "beta"
     } else {
