@@ -200,7 +200,7 @@ subsetMDMInputs = function(fullInp, dhsKeep, micsKeep) {
 #                  commensurate fusion model (for the standard models there is only one).
 predFEclusters = function(fitRes, outOfSample,
                           nObsUrb, nObsRur, nsim=10000,
-                          side=c("DHS", "MICS")) {
+                          side=c("DHS", "MICS"), areaidx=NULL) {
     side = match.arg(side)
     SD = fitRes$TMBsd
     if(!inherits(SD, "sdreport")) {
@@ -241,13 +241,30 @@ predFEclusters = function(fitRes, outOfSample,
     logTauEpsDraw = parDraws[logTauEpsRow, , drop=TRUE]
     sigmaEpsDraw  = exp(-0.5 * logTauEpsDraw)
 
+    # BYM2 spatial field, if this is a BYM2 fit (w_bym2Free in the draws) and the
+    # held-out clusters' area indices were supplied. The GH templates apply the
+    # field PER CLUSTER at its nominal area (base_eta = alpha + Xbeta +
+    # w_bym2[areaidx(i)]; constant over a cluster's jitter points), so we add a
+    # per-cluster field term alongside alpha. Field is reconstructed exactly as
+    # predGrid does: w_bym2 = c(w_bym2Free, -sum(w_bym2Free)) over the nAreas areas.
+    # areaidx is 0-based (C++ index), so +1 for R. FE fits (no w_bym2Free) skip this.
+    fieldFor = function(idx0) NULL
+    if("w_bym2Free" %in% nm && !is.null(areaidx)) {
+        wFree = parDraws[which(nm == "w_bym2Free"), , drop=FALSE]   # (nAreas-1) x nsim
+        bym2Field = rbind(wFree, -colSums(wFree))                   # nAreas x nsim
+        fieldFor = function(idx0) {
+            if(length(idx0) == 0) return(matrix(0, nrow=0, ncol=nsim))
+            bym2Field[idx0 + 1L, , drop=FALSE]                      # nObs x nsim (per cluster)
+        }
+    }
+
     XUrb = as.matrix(outOfSample$covsUrb)   # nObsUrb*KU x p
     XRur = as.matrix(outOfSample$covsRur)   # nObsRur*KR x p
     wUrb = as.matrix(outOfSample$wUrban)    # nObsUrb x KU
     wRur = as.matrix(outOfSample$wRural)    # nObsRur x KR
     KU = ncol(wUrb); KR = ncol(wRur)
 
-    drawClusterPreds = function(X, w, nObs, K) {
+    drawClusterPreds = function(X, w, nObs, K, fieldMat) {
         if(nObs == 0) return(matrix(0, nrow=0, ncol=nsim))
         # X is nObs*K x p with X-row index = nObs*(k-1) + i  (1-indexed k, i)
         # X %*% beta yields a length nObs*K vector per draw.
@@ -257,6 +274,7 @@ predFEclusters = function(fitRes, outOfSample,
         eps = matrix(rnorm(nObs * nsim), nrow=nObs, ncol=nsim) *
               matrix(rep(sigmaEpsDraw, each=nObs), nrow=nObs, ncol=nsim)
         alphaMat = matrix(alphaDraws, nrow=nObs, ncol=nsim, byrow=TRUE)
+        if(!is.null(fieldMat) && nrow(fieldMat) == nObs) alphaMat = alphaMat + fieldMat  # + per-cluster BYM2 field
 
         out = matrix(0, nrow=nObs, ncol=nsim)
         for(k in 1:K) {
@@ -267,8 +285,10 @@ predFEclusters = function(fitRes, outOfSample,
         out
     }
 
-    probDrawsUrb = drawClusterPreds(XUrb, wUrb, nObsUrb, KU)
-    probDrawsRur = drawClusterPreds(XRur, wRur, nObsRur, KR)
+    idxUrb = if(is.null(areaidx)) integer(0) else areaidx$urb
+    idxRur = if(is.null(areaidx)) integer(0) else areaidx$rur
+    probDrawsUrb = drawClusterPreds(XUrb, wUrb, nObsUrb, KU, fieldFor(idxUrb))
+    probDrawsRur = drawClusterPreds(XRur, wRur, nObsRur, KR, fieldFor(idxRur))
 
     list(probDrawsUrb=probDrawsUrb, probDrawsRur=probDrawsRur,
          predsUrb=if(nObsUrb > 0) rowMeans(probDrawsUrb) else numeric(0),

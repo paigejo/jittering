@@ -98,6 +98,37 @@ fitValModelFE <- function(model, fullInp, inSampleInp,
     stop("fitValModelFE: unknown model ", model))
 }
 
+# Fit one BYM2-family model (spatial field + nugget) on already-subset inputs --
+# the spatial analogue of fitValModelFE, dispatching to the application's BYM2
+# fitters (fitMd/fitMD/fitMDM/fitMM). Same positional treatment as the FE path
+# (Md observed coords; M_dm DHS centre + MICS single point). fitMd has no jitter
+# integration (observed coords) so takes no Qgh; the others integrate over jitter.
+fitValModelBYM2 <- function(model, fullInp, inSampleInp,
+                            KMICS = fullInp$KMICS, KDHSu = fullInp$KDHSurb,
+                            KDHSr = fullInp$KDHSrur, Qgh = 10, verbose = FALSE) {
+  dD <- fullInp$datDHS; dM <- fullInp$datMICS
+  inp <- applyPositionalTreatment(inSampleInp, model)
+  switch(model,
+    Md   = fitMd (datDHS=dD, datMICS=dM, inputsMDM=inp, KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                  getSDs=TRUE, verbose=verbose),
+    M_D  = fitMD (datDHS=dD, datMICS=dM, inputsMDM=inp, KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                  Qgh=Qgh, getSDs=TRUE, verbose=verbose),
+    M_dm = fitMDM(datDHS=dD, datMICS=dM, inputsMDM=inp, KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                  Qgh=Qgh, getSDs=TRUE, verbose=verbose),
+    M_DM = fitMDM(datDHS=dD, datMICS=dM, inputsMDM=inp, KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                  Qgh=Qgh, getSDs=TRUE, verbose=verbose),
+    M_M  = fitMM (datDHS=dD, datMICS=dM, inputsMDM=inp, KMICS=KMICS, KDHSurb=KDHSu, KDHSrur=KDHSr,
+                  Qgh=Qgh, getSDs=TRUE, verbose=verbose),
+    stop("fitValModelBYM2: unknown model ", model))
+}
+
+# Pick the fitter for a family ("FE" or "BYM2").
+fitValModelFamily <- function(model, fullInp, inSampleInp, family = c("FE","BYM2"), ...) {
+  family <- match.arg(family)
+  if(family == "FE") fitValModelFE(model, fullInp, inSampleInp, ...)
+  else               fitValModelBYM2(model, fullInp, inSampleInp, ...)
+}
+
 # Per-fold CLUSTER-level validation for one (model, fold, side). Subsets to
 # in-sample (fold held out), fits, predicts the held-out clusters conditional on
 # their observed locations, scores. fold: 1..10. side: "DHS" or "MICS".
@@ -180,8 +211,9 @@ runValFoldFE <- function(model, fold, side, fullInp,
 # fold of a model into per-survey and denominator-weighted combined scores.
 runValJobCluster <- function(model, predictSurvey, fold, fullInp,
                              outDir = "savedOutput/validation/folds",
-                             nsim = 10000, KMICS = fullInp$KMICS,
+                             nsim = 10000, family = c("FE","BYM2"), KMICS = fullInp$KMICS,
                              KDHSu = fullInp$KDHSurb, KDHSr = fullInp$KDHSrur, Qgh = 10) {
+  family <- match.arg(family)
   if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
   nDHS <- nrow(fullInp$datDHS); nMICS <- nrow(fullInp$datMICS)
   uD <- .usesDHS(model); uM <- .usesMICS(model)
@@ -196,7 +228,7 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   }
   inSamp <- subsetMDMInputs(fullInp, dhsKeep, micsKeep)
   t0 <- proc.time()[3]
-  fitRes <- fitValModelFE(model, fullInp, inSamp, KMICS=KMICS, KDHSu=KDHSu, KDHSr=KDHSr, Qgh=Qgh)
+  fitRes <- fitValModelFamily(model, fullInp, inSamp, family=family, KMICS=KMICS, KDHSu=KDHSu, KDHSr=KDHSr, Qgh=Qgh)
   totalTime <- proc.time()[3] - t0
 
   # held-out set: fold k of predictSurvey if fit-used, else ALL of predictSurvey.
@@ -212,7 +244,12 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
              else                       (if(model %in% c("Md","M_dm")) "M_dm" else "M_DM")
   heldT <- applyPositionalTreatment(held, treatAs)
   z  <- .heldOOS(heldT, predictSurvey)
-  pd <- predFEclusters(fitRes, z$oos, z$nUrb, z$nRur, nsim = nsim, side = "DHS")
+  # held-out clusters' nominal area indices (0-based) for the BYM2 field term.
+  areaidx <- if(predictSurvey == "DHS")
+    list(urb=heldT$areaidxlocUrbanDHS,  rur=heldT$areaidxlocRuralDHS)
+  else
+    list(urb=heldT$areaidxlocUrbanMICS, rur=heldT$areaidxlocRuralMICS)
+  pd <- predFEclusters(fitRes, z$oos, z$nUrb, z$nRur, nsim = nsim, side = "DHS", areaidx = areaidx)
   preds <- list(probDrawsUrb=pd$probDrawsUrb, probDrawsRur=pd$probDrawsRur,
                 yUrb=z$yU, nUrb=z$nU, yRur=z$yR, nRur=z$nR,
                 predictSurvey=predictSurvey)
@@ -370,4 +407,68 @@ runValArealFE <- function(model, fullInp,
   save(de, estMat, areas, scores, fitTimes, totalTime, tag,
        file = file.path(outDir, paste0("areal_", tag, ".RData")))
   scores
+}
+
+# ONE area of the per-area leave-half-out areal validation (the parallelizable
+# unit, so the ~37 areas of a model spread across workers instead of one long
+# looping job). Holds out THIS area's leftOutFolds clusters, fits on everything
+# else, predicts just this area (predGrid predAtArea), and saves the area's
+# posterior prevalence draws. areaIdx indexes the canonical area order
+# (arealDirectEsts()$combined$area) so scoreModelAreal can reassemble estMat.
+runValArealOneArea <- function(model, areaIdx, area, fullInp,
+                               outDir = "savedOutput/validation/areal",
+                               leftOutFolds = 6:10, nsim = 2000, popMat = popMatNGAThresh,
+                               family = c("FE","BYM2"), useInla = NULL,
+                               KMICS = fullInp$KMICS, KDHSu = fullInp$KDHSurb,
+                               KDHSr = fullInp$KDHSrur, Qgh = 10) {
+  family <- match.arg(family)
+  if(is.null(useInla)) useInla <- if(family == "BYM2") "auto" else FALSE  # Gaussian w/ INLA fallback
+  if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
+  nDHS <- nrow(fullInp$datDHS); nMICS <- nrow(fullInp$datMICS)
+  uD <- .usesDHS(model); uM <- .usesMICS(model)
+  dhsKeep  <- if(uD) !((fullInp$datDHS$area  == area) & (fullInp$datDHS$fold  %in% leftOutFolds)) else rep(FALSE, nDHS)
+  micsKeep <- if(uM) !((fullInp$datMICS$Area == area) & (fullInp$datMICS$fold %in% leftOutFolds)) else rep(FALSE, nMICS)
+  inSamp <- subsetMDMInputs(fullInp, dhsKeep, micsKeep)
+  t0 <- proc.time()[3]
+  fitRes <- fitValModelFamily(model, fullInp, inSamp, family=family, KMICS=KMICS, KDHSu=KDHSu, KDHSr=KDHSr, Qgh=Qgh)
+  # res=fitRes is required for useInla="auto"/"yes" (posteriorDraws needs the full
+  # fit: TMBobj + TMBsd). Harmless for useInla=FALSE (the FE path).
+  grid <- predGrid(fitRes$TMBsd, popMat=popMat, nsim=nsim, obj=fitRes$TMBobj, res=fitRes,
+                   admLevel="stratMICS", useInla=useInla, predAtArea=area)
+  a1 <- predArea(grid, areaVarName="area", orderedAreas=area)
+  draws <- as.matrix(a1$aggregationResults$p)[1, ]
+  fitTime <- proc.time()[3] - t0
+  tag <- sprintf("%s_area%03d", model, areaIdx)
+  save(draws, model, area, areaIdx, fitTime,
+       file = file.path(outDir, paste0("arealPred_", tag, ".RData")))
+  invisible(tag)
+}
+
+# Collate one model's per-area predictions (arealPred_<model>_areaNNN) into
+# DHS/MICS/combined areal scores. de (the per-area direct estimates) is the same
+# for every model, so pass it in once; recomputed if NULL. Areas are ordered by
+# de$combined$area to match runValArealOneArea's areaIdx.
+scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/areal",
+                            leftOutFolds = 6:10, de = NULL) {
+  if(is.null(de)) de <- arealDirectEsts(fullInp, leftOutFolds = leftOutFolds)
+  areas <- de$combined$area
+  files <- list.files(arealDir, pattern = paste0("^arealPred_", model, "_area[0-9]+\\.RData$"),
+                      full.names = TRUE)
+  if(length(files) == 0) return(NULL)
+  drawsList <- vector("list", length(areas))
+  for(f in files) { e <- new.env(); load(f, envir = e); drawsList[[e$areaIdx]] <- e$draws }
+  ncols  <- max(sapply(drawsList, function(d) if(is.null(d)) 0L else length(d)))
+  estMat <- matrix(NA_real_, nrow = length(areas), ncol = ncols)
+  for(i in seq_along(drawsList)) if(!is.null(drawsList[[i]])) estMat[i, ] <- drawsList[[i]]
+  finiteRow <- apply(estMat, 1, function(r) all(is.finite(r)))
+  scoreOne <- function(dEst, label) {
+    le <- dEst$logit.est[match(areas, dEst$area)]; lv <- dEst$logit.var[match(areas, dEst$area)]
+    ok <- is.finite(le) & is.finite(lv) & finiteRow
+    if(sum(ok) == 0) return(NULL)
+    sc <- getScoresDirectEstimates(le[ok], lv[ok], estMat = estMat[ok, , drop=FALSE], na.rm=TRUE)
+    data.frame(model=model, directEst=label, nAreas=sum(ok),
+               as.data.frame(as.list(sc)), stringsAsFactors=FALSE)
+  }
+  do.call(rbind, list(scoreOne(de$combined, "combined"),
+                      scoreOne(de$DHS, "DHS"), scoreOne(de$MICS, "MICS")))
 }
