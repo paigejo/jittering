@@ -1160,6 +1160,9 @@ intervalScore = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL,
       
       # take the quantiles of the probability draws
       CIs = apply(estMat, 1, function(ps) {quantile(ps, probs=c((1 - significance) / 2, 1 - (1 - significance) / 2), na.rm=na.rm)})
+      # apply() drops to a length-2 vector (not a 2 x 1 matrix) when estMat has a
+      # single row; restore matrix shape so CIs[1,]/CIs[2,] work.
+      if(is.null(dim(CIs))) CIs = matrix(CIs, nrow = 2)
       lower = CIs[1,]
       upper = CIs[2,]
     }

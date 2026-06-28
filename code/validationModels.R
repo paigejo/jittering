@@ -211,10 +211,14 @@ runValFoldFE <- function(model, fold, side, fullInp,
 # fold of a model into per-survey and denominator-weighted combined scores.
 runValJobCluster <- function(model, predictSurvey, fold, fullInp,
                              outDir = "savedOutput/validation/folds",
-                             nsim = 10000, family = c("FE","BYM2"), KMICS = fullInp$KMICS,
+                             nsim = 10000, family = c("FE","BYM2"), regenerate = FALSE,
+                             KMICS = fullInp$KMICS,
                              KDHSu = fullInp$KDHSurb, KDHSr = fullInp$KDHSrur, Qgh = 10) {
   family <- match.arg(family)
   if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
+  tag <- paste0(model, "_pred", predictSurvey, if(is.na(fold)) "_all" else paste0("_fold", fold))
+  outFile <- file.path(outDir, paste0("predsJob_", tag, ".RData"))
+  if(!regenerate && file.exists(outFile)) return(invisible(tag))   # skip completed job (re-collate cheaply)
   nDHS <- nrow(fullInp$datDHS); nMICS <- nrow(fullInp$datMICS)
   uD <- .usesDHS(model); uM <- .usesMICS(model)
   predIsFit <- (predictSurvey == "DHS" && uD) || (predictSurvey == "MICS" && uM)
@@ -253,9 +257,7 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   preds <- list(probDrawsUrb=pd$probDrawsUrb, probDrawsRur=pd$probDrawsRur,
                 yUrb=z$yU, nUrb=z$nU, yRur=z$yR, nRur=z$nR,
                 predictSurvey=predictSurvey)
-  tag <- paste0(model, "_pred", predictSurvey, if(is.na(fold)) "_all" else paste0("_fold", fold))
-  save(preds, model, predictSurvey, fold, totalTime,
-       file = file.path(outDir, paste0("predsJob_", tag, ".RData")))
+  save(preds, model, predictSurvey, fold, totalTime, file = outFile)   # tag/outFile set at top
   invisible(tag)
 }
 
@@ -418,12 +420,15 @@ runValArealFE <- function(model, fullInp,
 runValArealOneArea <- function(model, areaIdx, area, fullInp,
                                outDir = "savedOutput/validation/areal",
                                leftOutFolds = 6:10, nsim = 2000, popMat = popMatNGAThresh,
-                               family = c("FE","BYM2"), useInla = NULL,
+                               family = c("FE","BYM2"), useInla = NULL, regenerate = FALSE,
                                KMICS = fullInp$KMICS, KDHSu = fullInp$KDHSurb,
                                KDHSr = fullInp$KDHSrur, Qgh = 10) {
   family <- match.arg(family)
   if(is.null(useInla)) useInla <- if(family == "BYM2") "auto" else FALSE  # Gaussian w/ INLA fallback
   if(!dir.exists(outDir)) dir.create(outDir, recursive = TRUE)
+  tag <- sprintf("%s_area%03d", model, areaIdx)
+  outFile <- file.path(outDir, paste0("arealPred_", tag, ".RData"))
+  if(!regenerate && file.exists(outFile)) return(invisible(tag))   # skip completed area
   nDHS <- nrow(fullInp$datDHS); nMICS <- nrow(fullInp$datMICS)
   uD <- .usesDHS(model); uM <- .usesMICS(model)
   dhsKeep  <- if(uD) !((fullInp$datDHS$area  == area) & (fullInp$datDHS$fold  %in% leftOutFolds)) else rep(FALSE, nDHS)
@@ -438,9 +443,7 @@ runValArealOneArea <- function(model, areaIdx, area, fullInp,
   a1 <- predArea(grid, areaVarName="area", orderedAreas=area)
   draws <- as.matrix(a1$aggregationResults$p)[1, ]
   fitTime <- proc.time()[3] - t0
-  tag <- sprintf("%s_area%03d", model, areaIdx)
-  save(draws, model, area, areaIdx, fitTime,
-       file = file.path(outDir, paste0("arealPred_", tag, ".RData")))
+  save(draws, model, area, areaIdx, fitTime, file = outFile)   # tag/outFile set at top
   invisible(tag)
 }
 
