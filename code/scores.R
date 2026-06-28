@@ -624,11 +624,31 @@
 #            as a function of nearest neighbor distances
 # breaks: the number of equal spaced bins to break the scores into as a function of distance
 # NOTE: Discrete, count level credible intervals are estimated based on the input estMat along with coverage and CRPS
-getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=NULL, weights=rep(1, length(truth)), 
-                     significance=.8, distances=NULL, breaks=30, doFuzzyReject=TRUE, getAverage=TRUE, ns=NULL, 
-                     anyNAisNA=FALSE, returnNAs=FALSE, na.rm=FALSE, setInfToNA=FALSE, throwOutAllNAs=FALSE) {
-  
+getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=NULL, weights=rep(1, length(truth)),
+                     significance=.8, distances=NULL, breaks=30, doFuzzyReject=TRUE, getAverage=TRUE, ns=NULL,
+                     anyNAisNA=FALSE, returnNAs=FALSE, na.rm=FALSE, setInfToNA=FALSE, throwOutAllNAs=FALSE,
+                     addBinomVar=FALSE, .binomDone=FALSE) {
+
   weights = weights*(1/sum(weights))
+
+  # OPT-IN binomial sampling layer (addBinomVar=TRUE). When the truth is an
+  # OBSERVED proportion y/n with Binomial(ns, p) sampling noise, the predictive
+  # distribution should be of the observed proportion, yhat* ~ Binomial(ns, p)/ns,
+  # not the latent risk p in estMat. Folded in here once (.binomDone guards the
+  # NA/distance-bin recursion so it isn't applied twice). Mean is preserved (so
+  # Bias/MSE unchanged); only the spread widens -> coverage/interval/CRPS reflect
+  # finite-cluster sampling noise. Default FALSE even when ns is set (ns still
+  # drives the deltas=1/ns fuzzy-reject either way).
+  if(addBinomVar && !is.null(ns) && !is.null(estMat) && !.binomDone) {
+    nsv = round(ns); okn = is.finite(nsv) & nsv > 0
+    if(any(okn)) {
+      P  = pmin(pmax(estMat[okn, , drop=FALSE], 0), 1)
+      sz = matrix(rep(nsv[okn], times=ncol(estMat)), nrow=sum(okn))
+      estMat[okn, ] = matrix(rbinom(length(P), size=as.numeric(sz), prob=as.numeric(P)),
+                             nrow=sum(okn)) / sz
+    }
+    .binomDone = TRUE
+  }
   
   if(setInfToNA) {
     naRows = !is.finite(truth)
@@ -678,9 +698,9 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
     }
     notNA = !naRows
     if(sum(naRows) > 0) {
-      out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA], lower=lower[notNA], upper=upper[notNA], 
-                      estMat=estMat[notNA,], weights=weights[notNA], significance=significance, distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject, 
-                      getAverage=getAverage, ns=ns[notNA], anyNAisNA=anyNAisNA, na.rm=na.rm)
+      out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA], lower=lower[notNA], upper=upper[notNA],
+                      estMat=estMat[notNA,], weights=weights[notNA], significance=significance, distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject,
+                      getAverage=getAverage, ns=ns[notNA], anyNAisNA=anyNAisNA, na.rm=na.rm, addBinomVar=addBinomVar, .binomDone=.binomDone)
       if(returnNAs) {
         return(c(out, list(naRows=naRows)))
       } else {
@@ -693,11 +713,11 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
     naRows = is.na(truth)
     notNA = !naRows
     
-    out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA], 
-                    lower=lower[notNA], upper=upper[notNA], ns=ns[notNA], 
-                    estMat=estMat[notNA,], weights=weights[notNA], significance=significance, 
-                    distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject, 
-                    getAverage=getAverage, anyNAisNA=anyNAisNA, na.rm=na.rm, setInfToNA=setInfToNA)
+    out = getScores(truth=truth[notNA], est=est[notNA], var=var[notNA],
+                    lower=lower[notNA], upper=upper[notNA], ns=ns[notNA],
+                    estMat=estMat[notNA,], weights=weights[notNA], significance=significance,
+                    distances=distances, breaks=breaks, doFuzzyReject=doFuzzyReject,
+                    getAverage=getAverage, anyNAisNA=anyNAisNA, na.rm=na.rm, setInfToNA=setInfToNA, addBinomVar=addBinomVar, .binomDone=.binomDone)
     if(returnNAs) {
       return(c(out, list(naRows=naRows)))
     } else {
@@ -725,10 +745,10 @@ getScores = function(truth, est=NULL, var=NULL, lower=NULL, upper=NULL, estMat=N
       newEstMat = NULL
       if(!is.null(estMat))
         newEstMat = matrix(estMat[thisDatI,], ncol=ncol(estMat))
-      getScores(truth=truth[thisDatI], est=est[thisDatI], var=var[thisDatI], 
-                lower=lower[thisDatI], upper=upper[thisDatI], ns=ns[thisDatI], 
-                estMat=newEstMat, weights=weights[thisDatI], significance=significance, 
-                doFuzzyReject=doFuzzyReject, anyNAisNA=anyNAisNA, na.rm=na.rm)
+      getScores(truth=truth[thisDatI], est=est[thisDatI], var=var[thisDatI],
+                lower=lower[thisDatI], upper=upper[thisDatI], ns=ns[thisDatI],
+                estMat=newEstMat, weights=weights[thisDatI], significance=significance,
+                doFuzzyReject=doFuzzyReject, anyNAisNA=anyNAisNA, na.rm=na.rm, addBinomVar=addBinomVar, .binomDone=.binomDone)
     }
     
     # calculate scores for each bin individually

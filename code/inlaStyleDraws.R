@@ -451,22 +451,52 @@ inlaStyleDraws <- function(res, NDRAWS = 1000,
     # fewer than all of them, and free each precision right after use.
     inner_draws <- matrix(0, nrow = nInner, ncol = NDRAWS)
     rownames(inner_draws) <- names(centre$mu)
-    for(k in unique(closest)) {
-        idx <- which(closest == k)
-        nDr <- length(idx)
-        Q   <- ccd[[k]]$Q
-        L   <- tryCatch(Matrix::Cholesky(Q, super = TRUE),
-                        error = function(e) NULL)
+
+    # A CCD point whose inner evaluation failed carries a NULL/invalid Q (and mu)
+    # yet can still be the nearest point for some draws — Cholesky(NULL) then
+    # throws "'n' must be a non-negative integer", killing the whole draw set
+    # (this broke the auto-fallback for non-PD leave-half-out fits, e.g.
+    # M_D/Delta). For each such point, redirect its draws to the NEAREST VALID
+    # CCD point in eigen-coordinates; ties broken by highest density (lowest nll).
+    validQ <- vapply(ccd, function(cc)
+        !(is.null(cc$Q) || is.null(dim(cc$Q)) || nrow(cc$Q) < 1L || any(!is.finite(cc$mu))),
+        logical(1))
+    if(!any(validQ))
+        stop("inlaStyleDraws: no CCD config point has a valid inner precision; ",
+             "fit is degenerate (non-PD inner Hessian everywhere) — cannot draw.")
+    ccd_nll <- vapply(ccd, function(cc) if(is.null(cc$nll)) Inf else cc$nll, numeric(1))
+    .srcOf <- function(k) {
+        if(validQ[k]) return(k)
+        cand <- which(validQ)
+        d2   <- colSums((ccd_z[, cand, drop = FALSE] - ccd_z[, k])^2)
+        best <- cand[d2 == min(d2)]              # nearest valid point(s)
+        best[which.min(ccd_nll[best])]           # tie-break: highest density (lowest nll)
+    }
+    usedK   <- unique(closest)
+    srcForK <- vapply(usedK, .srcOf, integer(1))
+    for(i in which(usedK != srcForK))
+        warning(sprintf("inlaStyleDraws: CCD point %s has invalid inner precision; ",
+                        "using nearest valid point %s", ccd_names[usedK[i]], ccd_names[srcForK[i]]))
+
+    # Factor each unique SOURCE config once (memory: one factor alive at a time),
+    # serving all draws routed to it.
+    for(src in unique(srcForK)) {
+        ksHere <- usedK[srcForK == src]
+        idx    <- which(closest %in% ksHere)
+        nDr    <- length(idx)
+        Q      <- ccd[[src]]$Q
+        muK    <- ccd[[src]]$mu
+        L   <- tryCatch(Matrix::Cholesky(Q, super = TRUE), error = function(e) NULL)
         if(is.null(L)) {
-            warning(sprintf("Q at CCD point %s not PD; perturbing", ccd_names[k]))
+            warning(sprintf("Q at CCD point %s not PD; perturbing", ccd_names[src]))
             L <- Matrix::Cholesky(Q + Matrix::Diagonal(nrow(Q), 1e-6), super = TRUE)
         }
         z   <- matrix(rnorm(nInner * nDr), nrow = nInner)
         # Reverse permutation+triangular solve. Pattern from predGrid::rmvnorm_prec
         z   <- Matrix::solve(L, z, system = "Lt")
         z   <- Matrix::solve(L, z, system = "Pt")
-        inner_draws[, idx] <- ccd[[k]]$mu + as.matrix(z)
-        ccd[[k]]$Q <- NULL          # free this precision
+        inner_draws[, idx] <- muK + as.matrix(z)
+        ccd[[src]]$Q <- NULL        # free this precision
         rm(Q, L, z); gc(FALSE)      # and its factor before the next point
     }
 

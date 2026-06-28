@@ -288,7 +288,7 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   scoreSet <- function(a) {
     if(is.null(a$truth) || length(a$truth) == 0) return(NULL)
     getScores(truth=a$truth, estMat=a$draws, weights=a$n, significance=significance,
-              doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE, ns=a$n)
+              doFuzzyReject=TRUE, getAverage=TRUE, na.rm=TRUE, ns=a$n, addBinomVar=TRUE)
   }
   mk <- function(s, side) if(is.null(s)) NULL else
     data.frame(model=model, side=side, as.data.frame(as.list(s)), stringsAsFactors=FALSE)

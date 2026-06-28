@@ -1215,6 +1215,15 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         }
       }
     }
+    # Guard: a degenerate posterior draw set (single column -> probDraws is a
+    # vector) means the fit's jointPrecision is non-PD AND the INLA-style
+    # fallback could not produce valid draws for this fit (e.g. some leave-half-
+    # out areal fits). Fail cleanly+informatively instead of the cryptic
+    # rowMeans "must be an array of at least two dimensions" error, so callers
+    # (runValArealOneArea) catch it and drop+log the area rather than crashing.
+    if(is.null(dim(probDraws)) || NCOL(probDraws) < 2L)
+      stop("predGrid: degenerate posterior draws (non-PD jointPrecision and INLA ",
+           "fallback both failed for this fit); cannot produce predictions.")
     preds = rowMeans(probDraws)
     quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
     if(!is.null(probDrawsMICS)) {
@@ -1244,6 +1253,14 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     t.draws <- posteriorDraws(resForDraws, NDRAWS = nsim, useInla = useInla,
                               deltaZ = inlaDeltaZ, deltaPi = inlaDeltaPi,
                               maxAxialSteps = inlaMaxAxialSteps)
+    # Degenerate draw set (single column / no dim) => the fit's jointPrecision is
+    # non-PD AND the INLA-style fallback could not produce valid draws (some
+    # leave-half-out areal fits, e.g. M_D/Delta). Fail cleanly+informatively here
+    # at the source so callers (runValArealOneArea) catch it and drop+log the
+    # area, instead of a cryptic rowMeans crash further downstream.
+    if(is.null(dim(t.draws)) || NCOL(t.draws) < 2L)
+      stop("predGrid: degenerate posterior draws (non-PD jointPrecision and INLA ",
+           "fallback both failed for this fit); cannot produce predictions.")
     parnames <- rownames(t.draws)
     noSpatial = !any(c("w_bym2Free", "Epsilon_bym2", "w_bym2Star") %in% parnames)
     
@@ -1557,7 +1574,14 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
         lines(inMat[orderI,1], probDrawsReg[orderI], col="green")
       }
     }
-    
+    # Guard (posteriorDraws/auto branch): degenerate single-column draws mean the
+    # fit's jointPrecision is non-PD AND the INLA-style fallback failed to produce
+    # valid draws (e.g. some leave-half-out areal fits, M_D/Delta). Fail cleanly+
+    # informatively so callers catch it and drop+log the area instead of the
+    # cryptic rowMeans "must be an array of at least two dimensions" crash.
+    if(is.null(dim(probDraws)) || NCOL(probDraws) < 2L)
+      stop("predGrid: degenerate posterior draws (non-PD jointPrecision and INLA ",
+           "fallback both failed for this fit); cannot produce predictions.")
     preds = rowMeans(probDraws)
     quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
     if(!is.null(probDrawsMICS)) {
@@ -1673,6 +1697,9 @@ predGrid = function(SD0=NULL, popMat=popMatNGAThresh,
     sigmaEpsSqUDHS_tmb_draws  = NULL; sigmaEpsSqRDHS_tmb_draws  = NULL
     if(!hasNugget) sigmaEpsSq_tmb_draws = NULL
 
+    if(is.null(dim(probDraws)) || NCOL(probDraws) < 2L)
+      stop("predGrid: degenerate posterior draws (non-PD jointPrecision and INLA ",
+           "fallback both failed for this fit); cannot produce predictions.")
     preds  <- rowMeans(probDraws)
     quants <- if(nDrawSamples > 1) apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE) else NULL
   }
@@ -1855,7 +1882,10 @@ predGridINLA = function(mod, popMat=popMatNGAThresh,
     plot(inMat[orderI,1], probDrawsSp[orderI], type="l", col="purple")
     lines(inMat[orderI,1], probDrawsReg[orderI], col="green")
   }
-  
+
+  if(is.null(dim(probDraws)) || NCOL(probDraws) < 2L)
+    stop("predGrid: degenerate posterior draws (non-PD jointPrecision and INLA ",
+         "fallback both failed for this fit); cannot produce predictions.")
   preds = rowMeans(probDraws)
   quants = apply(probDraws, 1, quantile, probs=quantiles, na.rm=TRUE)
   
