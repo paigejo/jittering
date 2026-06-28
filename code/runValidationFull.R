@@ -66,14 +66,19 @@
           source("code/validationCommon.R"); source("code/validationModels.R")
         })
         load("savedOutput/validation/fullMDMInputs_FE.RData")          # fullInp
+        # Per-task error isolation: a single failing fit must NOT kill the worker
+        # and lose the rest of its chunk (that silently dropped ~30% of areas).
         for(t in taskChunk) {
-          if(t$kind == "cluster")
-            runValJobCluster(t$model, t$predict, t$fold, fullInp, outDir = foldDir,
-                             nsim = nsim, family = t$family)
-          else
-            runValArealOneArea(t$model, t$areaIdx, t$area, fullInp, outDir = arealDir,
-                               leftOutFolds = leftOutFolds, nsim = arealNsim, family = t$family)
-          cat(sprintf("    [%s] done %s\n", t$kind, t$tag))
+          res <- tryCatch({
+            if(t$kind == "cluster")
+              runValJobCluster(t$model, t$predict, t$fold, fullInp, outDir = foldDir,
+                               nsim = nsim, family = t$family)
+            else
+              runValArealOneArea(t$model, t$areaIdx, t$area, fullInp, outDir = arealDir,
+                                 leftOutFolds = leftOutFolds, nsim = arealNsim, family = t$family)
+            "ok"
+          }, error = function(e) paste("ERR:", conditionMessage(e)))
+          cat(sprintf("    [%s] %-26s %s\n", t$kind, t$tag, res))
         }
         TRUE
       },

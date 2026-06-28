@@ -234,28 +234,52 @@ predFEclusters = function(fitRes, outOfSample,
     } else {
         alphaName = "alpha_M"; betaName = "beta_M"
     }
-    alphaDraws    = parDraws[which(nm == alphaName), , drop=TRUE]
     betaRows      = which(nm == betaName)
     betaDraws     = parDraws[betaRows, , drop=FALSE]            # p x nsim
     logTauEpsRow  = which(nm == "log_tauEps")
     logTauEpsDraw = parDraws[logTauEpsRow, , drop=TRUE]
     sigmaEpsDraw  = exp(-0.5 * logTauEpsDraw)
 
-    # BYM2 spatial field, if this is a BYM2 fit (w_bym2Free in the draws) and the
-    # held-out clusters' area indices were supplied. The GH templates apply the
-    # field PER CLUSTER at its nominal area (base_eta = alpha + Xbeta +
-    # w_bym2[areaidx(i)]; constant over a cluster's jitter points), so we add a
-    # per-cluster field term alongside alpha. Field is reconstructed exactly as
-    # predGrid does: w_bym2 = c(w_bym2Free, -sum(w_bym2Free)) over the nAreas areas.
-    # areaidx is 0-based (C++ index), so +1 for R. FE fits (no w_bym2Free) skip this.
-    fieldFor = function(idx0) NULL
-    if("w_bym2Free" %in% nm && !is.null(areaidx)) {
-        wFree = parDraws[which(nm == "w_bym2Free"), , drop=FALSE]   # (nAreas-1) x nsim
-        bym2Field = rbind(wFree, -colSums(wFree))                   # nAreas x nsim
-        fieldFor = function(idx0) {
-            if(length(idx0) == 0) return(matrix(0, nrow=0, ncol=nsim))
-            bym2Field[idx0 + 1L, , drop=FALSE]                      # nObs x nsim (per cluster)
+    # alpha + per-area BYM2 spatial field. The GH/BYM2 templates apply the field
+    # PER CLUSTER at its nominal area (base_eta = alpha + Xbeta + field[areaidx(i)],
+    # constant over a cluster's jitter points), so we add a per-cluster field term
+    # alongside alpha. Reconstruct the per-area field (nAreas x nsim) for whichever
+    # parameterization the fitter produced, exactly as predGrid (modBYM2.R) does:
+    #   - w_bym2Free (fitMD/fitMDM/fitMM GH): alpha explicit; field=c(wFree,-sum wFree)
+    #   - w_bym2Star (fitMd family, modM_DSep[Repar]): reconstruct from wStar/uStar
+    #     + phi/sigmaSq; the repar fit (no 'alpha') absorbs the intercept into the
+    #     scaled u-mean. Non-repar subtracts the sum-to-zero u correction.
+    #   - FE (none): just alpha. areaidx is 0-based -> +1 for R.
+    bym2Field = NULL
+    if("w_bym2Free" %in% nm) {
+        alphaDraws = parDraws[which(nm == alphaName), , drop=TRUE]
+        wFree      = parDraws[which(nm == "w_bym2Free"), , drop=FALSE]
+        bym2Field  = rbind(wFree, -colSums(wFree))
+    } else if("w_bym2Star" %in% nm) {
+        wStar   = parDraws[which(nm == "w_bym2Star"), , drop=FALSE]
+        uStar   = parDraws[which(nm == "u_bym2Star"), , drop=FALSE]
+        phi     = plogis(parDraws[which(nm == "logit_phi"), ])
+        sigmaSq = 1 / exp(parDraws[which(nm == "log_tau"), ])
+        if("alpha" %in% nm) {                                    # non-repar
+            if(!exists("admFinalMat")) load("savedOutput/global/admFinalMat.RData")
+            bym2Args = prepareBYM2argumentsForTMB(admFinalMat, u=0.5, alpha=2/3,
+                          constr=TRUE, scale.model=TRUE, matrixType="TsparseMatrix")
+            gammas = (bym2Args$gammaTildesm1 + 1)^(-1); gammas[(bym2Args$gammaTildesm1 + 1) == 0] = 0
+            Qinv = bym2Args$V %*% diag(gammas) %*% t(bym2Args$V)
+            QinvSumsNorm = rowSums(Qinv) / sum(Qinv)
+            bym2Field  = wStar - outer(QinvSumsNorm, c(colSums(uStar) * sqrt(phi * sigmaSq)))
+            alphaDraws = parDraws[which(nm == "alpha"), , drop=TRUE]
+        } else {                                                 # repar (fitMd default)
+            uMeansScaled = colMeans(uStar) * sqrt(phi * sigmaSq)
+            bym2Field    = sweep(wStar, 2, uMeansScaled)
+            alphaDraws   = uMeansScaled
         }
+    } else {
+        alphaDraws = parDraws[which(nm == alphaName), , drop=TRUE]   # FE
+    }
+    fieldFor = function(idx0) {
+        if(is.null(bym2Field) || is.null(areaidx) || length(idx0) == 0) return(matrix(0, nrow=0, ncol=nsim))
+        bym2Field[idx0 + 1L, , drop=FALSE]                          # nObs x nsim (per cluster)
     }
 
     XUrb = as.matrix(outOfSample$covsUrb)   # nObsUrb*KU x p
