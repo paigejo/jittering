@@ -276,6 +276,7 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   if(length(files) == 0) return(NULL)
   acc <- list(DHS=list(truth=NULL, draws=NULL, n=NULL),
               MICS=list(truth=NULL, draws=NULL, n=NULL))
+  tsec <- numeric(0)                                    # per-job fit times (seconds)
   for(f in files) {
     e <- new.env(); load(f, envir = e); p <- e$preds; s <- p$predictSurvey
     truth <- c(p$yUrb, p$yRur) / c(p$nUrb, p$nRur)
@@ -284,7 +285,9 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
     acc[[s]]$truth <- c(acc[[s]]$truth, truth)
     acc[[s]]$draws <- rbind(acc[[s]]$draws, draws)
     acc[[s]]$n     <- c(acc[[s]]$n, n)
+    if(!is.null(e$totalTime)) tsec <- c(tsec, e$totalTime)
   }
+  tmin <- if(length(tsec)) mean(tsec, na.rm=TRUE)/60 else NA_real_   # mean fit time (minutes)
   scoreSet <- function(a) {
     if(is.null(a$truth) || length(a$truth) == 0) return(NULL)
     getScores(truth=a$truth, estMat=a$draws, weights=a$n, significance=significance,
@@ -292,13 +295,26 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   }
   mk <- function(s, side) if(is.null(s)) NULL else
     data.frame(model=model, side=side, as.data.frame(as.list(s)), stringsAsFactors=FALSE)
-  comb <- if(is.null(acc$DHS$truth) || is.null(acc$MICS$truth)) NULL else
-    scoreSet(list(truth=c(acc$DHS$truth, acc$MICS$truth),
-                  draws=rbind(acc$DHS$draws, acc$MICS$draws),
-                  n=c(acc$DHS$n, acc$MICS$n)))
-  do.call(rbind, list(mk(scoreSet(acc$DHS), "DHS"),
-                      mk(scoreSet(acc$MICS), "MICS"),
-                      mk(comb, "combined")))
+  rowD <- mk(scoreSet(acc$DHS),  "DHS")
+  rowM <- mk(scoreSet(acc$MICS), "MICS")
+  # Combined = denominator-weighted average of the DHS and MICS score rows
+  # (weights = total cluster denominator per survey). Computed directly from the
+  # two per-survey rows -- NOT by re-pooling and re-scoring all clusters -- so the
+  # combined score is GUARANTEED to lie between the DHS and MICS scores (never
+  # above the max). Re-pooling could exceed the max because addBinomVar and the
+  # fuzzy-reject coverage draw fresh randomness independently of the per-survey
+  # calls, breaking the exact weighted-average identity.
+  rowC <- NULL
+  if(!is.null(rowD) && !is.null(rowM)) {
+    wD <- sum(acc$DHS$n); wM <- sum(acc$MICS$n)
+    rowC <- rowD; rowC$side <- "combined"
+    numCols <- setdiff(names(rowD), c("model", "side"))
+    rowC[numCols] <- (wD * rowD[numCols] + wM * rowM[numCols]) / (wD + wM)
+  } else if(!is.null(rowD)) { rowC <- rowD; rowC$side <- "combined" }
+    else if(!is.null(rowM)) { rowC <- rowM; rowC$side <- "combined" }
+  # mean per-fit fit time (minutes), a model-level quantity (same across sides)
+  for(nm in c("rowD","rowM","rowC")) if(!is.null(get(nm))) assign(nm, `[[<-`(get(nm), "Time", tmin))
+  do.call(rbind, list(rowD, rowM, rowC))
 }
 
 # Admin1 svyglm Horvitz-Thompson direct estimates from the HELD-OUT folds, per
@@ -459,7 +475,10 @@ scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/a
                       full.names = TRUE)
   if(length(files) == 0) return(NULL)
   drawsList <- vector("list", length(areas))
-  for(f in files) { e <- new.env(); load(f, envir = e); drawsList[[e$areaIdx]] <- e$draws }
+  tsec <- numeric(0)                                    # per-area fit times (seconds)
+  for(f in files) { e <- new.env(); load(f, envir = e); drawsList[[e$areaIdx]] <- e$draws
+                    if(!is.null(e$fitTime)) tsec <- c(tsec, e$fitTime) }
+  tmin <- if(length(tsec)) mean(tsec, na.rm=TRUE)/60 else NA_real_   # mean fit time (minutes)
   ncols  <- max(sapply(drawsList, function(d) if(is.null(d)) 0L else length(d)))
   estMat <- matrix(NA_real_, nrow = length(areas), ncol = ncols)
   for(i in seq_along(drawsList)) if(!is.null(drawsList[[i]])) estMat[i, ] <- drawsList[[i]]
@@ -478,7 +497,7 @@ scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/a
     le <- matchDE(dEst, "logit.est")[okCommon]; lv <- matchDE(dEst, "logit.var")[okCommon]
     sc <- getScoresDirectEstimates(le, lv, estMat = estMat[okCommon, , drop=FALSE], na.rm=TRUE)
     data.frame(model=model, directEst=label, nAreas=sum(okCommon),
-               as.data.frame(as.list(sc)), stringsAsFactors=FALSE)
+               as.data.frame(as.list(sc)), Time=tmin, stringsAsFactors=FALSE)
   }
   do.call(rbind, list(scoreOne(de$combined, "combined"),
                       scoreOne(de$DHS, "DHS"), scoreOne(de$MICS, "MICS")))

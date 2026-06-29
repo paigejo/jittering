@@ -156,12 +156,12 @@ runValidationFull <- function(family = c("FE", "BYM2"),
   if(length(clRows)) {
     cl <- do.call(rbind, clRows); write.csv(cl, file.path(outDir, "scoreSummary_cluster.csv"), row.names=FALSE)
     cat("\n[cluster scores]\n"); print(cl[order(match(cl$side,c("combined","DHS","MICS")), match(cl$model,VALMODELS)),
-        c("model","side","Bias","CRPS","MSE","Coverage80","Width80")], row.names=FALSE, digits=4)
+        c("model","side","Bias","CRPS","MSE","Coverage80","Width80","Time")], row.names=FALSE, digits=4)
   }
   if(length(arRows)) {
     ar <- do.call(rbind, arRows); write.csv(ar, file.path(outDir, "scoreSummary_areal.csv"), row.names=FALSE)
     cat("\n[areal scores]\n"); print(ar[order(match(ar$directEst,c("combined","DHS","MICS")), match(ar$model,VALMODELS)),
-        c("model","directEst","nAreas","Bias","CRPS","MSE","Coverage80","Width80")], row.names=FALSE, digits=4)
+        c("model","directEst","nAreas","Bias","CRPS","MSE","Coverage80","Width80","Time")], row.names=FALSE, digits=4)
   }
   cat(sprintf("\nTotal wall: %.1f min. CSVs in %s/.\n", (proc.time()[3]-t0)/60, outDir))
   invisible(NULL)
