@@ -313,7 +313,9 @@ runValJobCluster <- function(model, predictSurvey, fold, fullInp,
   } else if(!is.null(rowD)) { rowC <- rowD; rowC$side <- "combined" }
     else if(!is.null(rowM)) { rowC <- rowM; rowC$side <- "combined" }
   # mean per-fit fit time (minutes), a model-level quantity (same across sides)
-  for(nm in c("rowD","rowM","rowC")) if(!is.null(get(nm))) assign(nm, `[[<-`(get(nm), "Time", tmin))
+  if(!is.null(rowD)) rowD$Time <- tmin
+  if(!is.null(rowM)) rowM$Time <- tmin
+  if(!is.null(rowC)) rowC$Time <- tmin
   do.call(rbind, list(rowD, rowM, rowC))
 }
 
