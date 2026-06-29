@@ -42,7 +42,7 @@
 # time) load balancing on each task's $est. Each worker sources the validation
 # stack once, loads fullInp, then runs its task chunk (dispatching by $kind).
 .runValPhase <- function(phaseName, tasks, nWorkers, repoRoot, logsDir,
-                         nsim, arealNsim, leftOutFolds, foldDir, arealDir) {
+                         nsim, arealNsim, leftOutFolds, foldDir, arealDir, regenerate=FALSE) {
   if(length(tasks) == 0) { cat(sprintf("[%s] no tasks.\n", phaseName)); return(invisible()) }
   if(!requireNamespace("callr", quietly = TRUE)) stop("runValidationFull needs the `callr` package")
   nW <- min(nWorkers, length(tasks))
@@ -54,7 +54,7 @@
 
   workers <- lapply(seq_len(nW), function(w) {
     callr::r_bg(
-      func = function(taskChunk, repoRoot, nsim, arealNsim, leftOutFolds, foldDir, arealDir) {
+      func = function(taskChunk, repoRoot, nsim, arealNsim, leftOutFolds, foldDir, arealDir, regenerate) {
         setwd(repoRoot)
         suppressMessages({
           source("code/setup.R")
@@ -72,10 +72,11 @@
           res <- tryCatch({
             if(t$kind == "cluster")
               runValJobCluster(t$model, t$predict, t$fold, fullInp, outDir = foldDir,
-                               nsim = nsim, family = t$family)
+                               nsim = nsim, family = t$family, regenerate = regenerate)
             else
               runValArealOneArea(t$model, t$areaIdx, t$area, fullInp, outDir = arealDir,
-                                 leftOutFolds = leftOutFolds, nsim = arealNsim, family = t$family)
+                                 leftOutFolds = leftOutFolds, nsim = arealNsim, family = t$family,
+                                 regenerate = regenerate)
             "ok"
           }, error = function(e) paste("ERR:", conditionMessage(e)))
           cat(sprintf("    [%s] %-26s %s\n", t$kind, t$tag, res))
@@ -84,7 +85,7 @@
       },
       args = list(taskChunk = chunks[[w]], repoRoot = repoRoot, nsim = nsim,
                   arealNsim = arealNsim, leftOutFolds = leftOutFolds,
-                  foldDir = foldDir, arealDir = arealDir),
+                  foldDir = foldDir, arealDir = arealDir, regenerate = regenerate),
       stdout = file.path(logsDir, sprintf("valFull_%s_w%d.log", phaseName, w)), stderr = "2>&1")
   })
   for(w in workers) w$wait()
@@ -95,7 +96,7 @@
 
 runValidationFull <- function(family = c("FE", "BYM2"),
                               nsim = 10000, arealNsim = 2000, leftOutFolds = 6:10,
-                              repoRoot = getwd(), outDir = NULL,
+                              repoRoot = getwd(), outDir = NULL, regenerate = FALSE,
                               KMICS = 100, KDHSu = 16, KDHSr = 21) {
   family <- match.arg(family)
   source("code/setup.R")
@@ -133,7 +134,7 @@ runValidationFull <- function(family = c("FE", "BYM2"),
       family=family, est=unname(estCluster[j$model]),
       tag=paste0(j$model, "_pred", j$predict, if(is.na(j$fold)) "_all" else paste0("_fold", j$fold))) }
   cat(sprintf("\n--- Phase 1: CLUSTER (%d tasks, family=%s) ---\n", length(clTasks), family))
-  .runValPhase("cluster", clTasks, caps$n, repoRoot, logsDir, nsim, arealNsim, leftOutFolds, foldDir, arealDir)
+  .runValPhase("cluster", clTasks, caps$n, repoRoot, logsDir, nsim, arealNsim, leftOutFolds, foldDir, arealDir, regenerate)
 
   # ---- Phase 2: AREAL (both families; predGrid handles the BYM2 field, useInla='auto') ----
   estAreal <- if(family=="BYM2") c(Md=60, M_D=80, M_dm=90, M_DM=180, M_M=110) else c(Md=12, M_D=18, M_dm=22, M_DM=85, M_M=50)
@@ -142,7 +143,7 @@ runValidationFull <- function(family = c("FE", "BYM2"),
     arTasks[[length(arTasks)+1]] <- list(kind="areal", model=m, areaIdx=ai, area=areas[ai],
       family=family, est=unname(estAreal[m]), tag=sprintf("%s_area%03d", m, ai))
   cat(sprintf("\n--- Phase 2: AREAL (%d tasks, family=%s) ---\n", length(arTasks), family))
-  .runValPhase("areal", arTasks, caps$n, repoRoot, logsDir, nsim, arealNsim, leftOutFolds, foldDir, arealDir)
+  .runValPhase("areal", arTasks, caps$n, repoRoot, logsDir, nsim, arealNsim, leftOutFolds, foldDir, arealDir, regenerate)
 
   # ---- Phase 3: collate ----
   cat("\n--- Phase 3: collate ---\n")

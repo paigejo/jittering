@@ -82,20 +82,20 @@ fitFED = function(datDHS=ed, inputsMDM=NULL,
   nAreas = ncol(bym2Args$Q)
   nFree = nAreas - 1
 
-  # A-projection matrices (nObs x nAreas) for spatial effect projection
-  # When BYM2 is mapped out (fixedEffectsOnly=TRUE), these multiply zero vectors
+  # Per-cluster stratum index (0-based, length nObs) for the BYM2 field lookup,
+  # matching the modD/modMDM template (areaidxloc, not a dense Aproj matrix).
+  # When BYM2 is mapped out (fixedEffectsOnly=TRUE) the field is zero regardless,
+  # but the indices must still be valid (0..nFree).
   nUrbDHS = length(ysUrbDHS)
   nRurDHS = length(ysRurDHS)
-  if(fixedEffectsOnly) {
-    AprojUrbanDHS = matrix(0, nUrbDHS, nAreas)
-    AprojRuralDHS = matrix(0, nRurDHS, nAreas)
+  if(!is.null(inputsMDM) && !is.null(inputsMDM$areaidxlocUrbanDHS)) {
+    areaidxlocUrbanDHS = as.integer(inputsMDM$areaidxlocUrbanDHS)  # already 0-based
+    areaidxlocRuralDHS = as.integer(inputsMDM$areaidxlocRuralDHS)
   } else {
     areasUrb = adm2ToStratumMICS(datDHS$subarea[datDHS$urban])
     areasRur = adm2ToStratumMICS(datDHS$subarea[!datDHS$urban])
-    AprojUrbanDHS = t(makeApointToArea(areasUrb, admFinal$NAME_FINAL))
-    AprojRuralDHS = t(makeApointToArea(areasRur, admFinal$NAME_FINAL))
-    mode(AprojUrbanDHS) = "numeric"
-    mode(AprojRuralDHS) = "numeric"
+    areaidxlocUrbanDHS = as.integer(match(areasUrb, admFinal$NAME_FINAL) - 1L)
+    areaidxlocRuralDHS = as.integer(match(areasRur, admFinal$NAME_FINAL) - 1L)
   }
 
   # Priors
@@ -132,12 +132,12 @@ fitFED = function(datDHS=ed, inputsMDM=NULL,
   data_gh = list(
     y_iUrbanDHS=ysUrbDHS, y_iRuralDHS=ysRurDHS,
     n_iUrbanDHS=nsUrbDHS, n_iRuralDHS=nsRurDHS,
-    AprojUrbanDHS=AprojUrbanDHS, AprojRuralDHS=AprojRuralDHS,
+    areaidxlocUrbanDHS=areaidxlocUrbanDHS, areaidxlocRuralDHS=areaidxlocRuralDHS,
     X_betaUrbanDHS=XUrb_D, X_betaRuralDHS=XRur_D,
     wUrbanDHS=intPtsDHS$wUrban, wRuralDHS=intPtsDHS$wRural,
     Q_bym2=bym2Args$Q,
-    lchoose_urban=lchoose(nsUrbDHS, ysUrbDHS),
-    lchoose_rural=lchoose(nsRurDHS, ysRurDHS),
+    lchoose_urban_dhs=lchoose(nsUrbDHS, ysUrbDHS),
+    lchoose_rural_dhs=lchoose(nsRurDHS, ysRurDHS),
     gh_nodes=gh$x, gh_weights=gh$w,
     alpha_pri=alpha_pri, beta_pri=beta_pri,
     tr=bym2Args$tr, gammaTildesm1=bym2Args$gammaTildesm1,

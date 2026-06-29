@@ -464,12 +464,20 @@ scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/a
   estMat <- matrix(NA_real_, nrow = length(areas), ncol = ncols)
   for(i in seq_along(drawsList)) if(!is.null(drawsList[[i]])) estMat[i, ] <- drawsList[[i]]
   finiteRow <- apply(estMat, 1, function(r) all(is.finite(r)))
+  # Score DHS / MICS / combined on a COMMON area set (areas where ALL THREE direct
+  # estimates are finite AND the model prediction is finite). Otherwise each is on
+  # a different support -- the combined direct est is finite wherever EITHER survey
+  # has data, so it covers more areas than DHS- or MICS-only, making its coverage
+  # incomparable (and able to exceed both). A common set makes them comparable, so
+  # the combined coverage falls between the two as expected.
+  matchDE <- function(dEst, col) dEst[[col]][match(areas, dEst$area)]
+  finOK   <- function(dEst) is.finite(matchDE(dEst, "logit.est")) & is.finite(matchDE(dEst, "logit.var"))
+  okCommon <- finiteRow & finOK(de$DHS) & finOK(de$MICS) & finOK(de$combined)
   scoreOne <- function(dEst, label) {
-    le <- dEst$logit.est[match(areas, dEst$area)]; lv <- dEst$logit.var[match(areas, dEst$area)]
-    ok <- is.finite(le) & is.finite(lv) & finiteRow
-    if(sum(ok) == 0) return(NULL)
-    sc <- getScoresDirectEstimates(le[ok], lv[ok], estMat = estMat[ok, , drop=FALSE], na.rm=TRUE)
-    data.frame(model=model, directEst=label, nAreas=sum(ok),
+    if(sum(okCommon) == 0) return(NULL)
+    le <- matchDE(dEst, "logit.est")[okCommon]; lv <- matchDE(dEst, "logit.var")[okCommon]
+    sc <- getScoresDirectEstimates(le, lv, estMat = estMat[okCommon, , drop=FALSE], na.rm=TRUE)
+    data.frame(model=model, directEst=label, nAreas=sum(okCommon),
                as.data.frame(as.list(sc)), stringsAsFactors=FALSE)
   }
   do.call(rbind, list(scoreOne(de$combined, "combined"),

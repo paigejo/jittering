@@ -1,25 +1,25 @@
 // ============================================================================
 // modD_BYM2_GH_v2.cpp  —  DHS-only BYM2 with Gauss-Hermite nugget integration.
 //
-// Same model class and same optimisations as modM_BYM2_GH_v2.cpp; see that
-// file's header for full details on:
-//   * the BYM2 (w, u) parameterisation and sum-to-zero constraints
-//   * why we use an inline binomial likelihood instead of dbinom_robust
-//   * what logspace_add(0, eta) = log(1 + exp(eta)) means and why it matters
-//   * the GH change of variables eps -> sqrt(2)*sigma_eps*z and logSumExp
+// This is EXACTLY modMDM_BYM2_GH_v2.cpp with the MICS data blocks removed: one
+// shared BYM2 (w, u) plus one shared nugget variance, fit to DHS data only.
+// The DHS likelihood block is byte-for-byte the DHS block of modMDM (same
+// add_dataset lambda, same areaidx field lookup, same inline binomial + GH
+// integration). See modMDM_BYM2_GH_v2.cpp / modM_BYM2_GH_v2.cpp for the
+// canonical comments on:
+//   * BYM2 (w, u) parameterisation, sum-to-zero, density derivation
+//   * the inline binomial (y*eta - n*logspace_add(0, eta)) and why we don't use
+//     dbinom_robust
+//   * logspace_add(0, eta) = log(1 + exp(eta)), the stable log(1+exp) form
+//   * the Gauss-Hermite change of variables and logSumExp over Q nodes
 //
-// What's different here:
-//   * Data comes from DHS clusters, not MICS households.
-//   * DHS clusters carry POSITIONAL UNCERTAINTY (the published coordinate is
-//     jittered up to 2 km urban / 10 km rural / extra "deeper" rural). We
-//     integrate over the true location via K integration points per cluster
-//     (typically K = 16 urban, 21 rural) with weights wUrbanDHS / wRuralDHS.
-//   * Because the true location is uncertain, the spatial BYM2 effect at the
-//     true location is also a mixture over areas. We use Aproj* (nObs x nArea
-//     dense projection matrix) to map the area-level effect w_bym2 to
-//     obs-level proj_*, instead of the area-index lookup used by MICS.
-//   * Number of integration points per cluster is smaller than MICS's K=100
-//     (jittering uncertainty is much smaller than a stratum polygon).
+// IMPORTANT (the M_D bug fix, 2026-06-29): the DHS spatial effect is applied
+// PER CLUSTER at its nominal stratum via areaidxlocUrban/RuralDHS (a DATA_IVECTOR
+// of 0-based stratum indices, length nObs), NOT via a dense Aproj projection
+// matrix. DHS jitter integration points never cross strata with nonzero weight
+// (areasUrban/Rural are per-cluster), so the area lookup is exact; and unlike
+// the old Aproj path it is correctly subsetted by subsetMDMInputs in held-out
+// fits, so the field stays aligned with the data in cross-validation.
 // ============================================================================
 
 #include <TMB.hpp>
@@ -27,12 +27,11 @@
 using namespace density;
 using Eigen::SparseMatrix;
 
-// PC prior on precision (log scale)
 template<class Type>
 Type dPCPriTau(Type logTau, Type lambda)
 {
   Type tau = exp(logTau);
-  Type ldensity = log(lambda) - log(Type(2.0)) - Type(1.5)*logTau - lambda/sqrt(tau);
+  Type ldensity = log(lambda) - log(2.0) - Type(1.5)*logTau - lambda/sqrt(tau);
   Type ljacobian = logTau;
   return ldensity + ljacobian;
 }
@@ -40,69 +39,62 @@ Type dPCPriTau(Type logTau, Type lambda)
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
-  // ── Data ──
+  // DHS data
   DATA_VECTOR( y_iUrbanDHS );
   DATA_VECTOR( y_iRuralDHS );
   DATA_VECTOR( n_iUrbanDHS );
   DATA_VECTOR( n_iRuralDHS );
-  DATA_MATRIX( AprojUrbanDHS );  // nObsUrban x nArea
-  DATA_MATRIX( AprojRuralDHS );  // nObsRural x nArea
-  DATA_MATRIX( X_betaUrbanDHS ); // (nObsUrban * K) x nBeta
+  DATA_IVECTOR(areaidxlocUrbanDHS);
+  DATA_IVECTOR(areaidxlocRuralDHS);
+  DATA_MATRIX( X_betaUrbanDHS );
   DATA_MATRIX( X_betaRuralDHS );
-  DATA_ARRAY( wUrbanDHS );       // nObsUrban x K
+  DATA_ARRAY( wUrbanDHS );
   DATA_ARRAY( wRuralDHS );
 
   DATA_SPARSE_MATRIX( Q_bym2 );
 
-  // Precomputed log-binomial-coefficient (DATA — not on AD tape)
-  DATA_VECTOR( lchoose_urban );
-  DATA_VECTOR( lchoose_rural );
+  // Precomputed log choose
+  DATA_VECTOR( lchoose_urban_dhs );
+  DATA_VECTOR( lchoose_rural_dhs );
 
-  // GH quadrature nodes/weights
+  // GH data
   DATA_VECTOR( gh_nodes );
   DATA_VECTOR( gh_weights );
 
-  // Prior parameters
+  // Priors
   DATA_VECTOR( alpha_pri );
   DATA_VECTOR( beta_pri );
-
-  // BYM2 precomputed
   DATA_SCALAR( tr );
   DATA_VECTOR( gammaTildesm1 );
-
   DATA_SCALAR( lambdaPhi );
   DATA_INTEGER( uniformPhiPrior );
   DATA_SCALAR( lambdaTau );
   DATA_SCALAR( lambdaTauEps );
-
   DATA_SCALAR( options );
 
-  // ── Parameters ──
+  // Outer
   PARAMETER( log_tau );
   PARAMETER( logit_phi );
   PARAMETER( log_tauEps );
 
+  // Inner
   PARAMETER( alpha );
   PARAMETER_VECTOR( beta );
+  PARAMETER_VECTOR( w_bym2Free );
+  PARAMETER_VECTOR( u_bym2Free );
 
-  PARAMETER_VECTOR( w_bym2Free );  // n-1
-  PARAMETER_VECTOR( u_bym2Free );  // n-1
-
-  // ── Dimensions ──
-  int nUrb = y_iUrbanDHS.size();
-  int nRur = y_iRuralDHS.size();
+  int nUrbD = y_iUrbanDHS.size();
+  int nRurD = y_iRuralDHS.size();
   int nFree = w_bym2Free.size();
   int nAreas = nFree + 1;
-  int KUrb = wUrbanDHS.cols();
-  int KRur = wRuralDHS.cols();
+  int KUrbD = wUrbanDHS.cols();
+  int KRurD = wRuralDHS.cols();
   int Q = gh_nodes.size();
 
-  // ── Transforms ──
   Type tau = exp(log_tau);
   Type phi = Type(1.0)/(Type(1.0) + exp(-logit_phi));
   Type sigmaEps = exp(Type(-0.5) * log_tauEps);
 
-  // Reconstruct full n-vectors with sum-to-zero
   vector<Type> w_bym2(nAreas);
   vector<Type> u_bym2(nAreas);
   Type wSum = Type(0.0);
@@ -118,17 +110,12 @@ Type objective_function<Type>::operator() ()
 
   Type jnll = Type(0.0);
 
-  // ═══════════════════════════════════
-  // (1) BYM2 GMRF density
-  // ═══════════════════════════════════
+  // BYM2 density
   Type quadW = (w_bym2 * w_bym2).sum() * tau / (Type(1.0) - phi);
-
   vector<Type> Qu = (Q_bym2 * u_bym2.matrix()).col(0);
   Type fac = phi / (Type(1.0) - phi);
   Type quadU = (Qu * u_bym2).sum() + fac * (u_bym2 * u_bym2).sum();
-
   Type quadWU = (u_bym2 * w_bym2).sum() * (-Type(2.0) * sqrt(phi * tau) / (Type(1.0) - phi));
-
   Type quadSum = quadW + quadU + quadWU;
 
   Type logDet = Type(0.0);
@@ -136,15 +123,13 @@ Type objective_function<Type>::operator() ()
     logDet += log(Type(1.0) + phi * gammaTildesm1(i));
   }
   Type logDetTau = Type(nFree) * log((Type(1.0) - phi) / tau);
+  Type bym2LogLik = Type(-0.5) * logDetTau + Type(-0.5) * quadSum;
+  jnll -= bym2LogLik;
 
-  jnll -= Type(-0.5) * logDetTau + Type(-0.5) * quadSum;
-
-  // ═══════════════════════════════════
-  // (2) Priors
-  // ═══════════════════════════════════
-  jnll -= log(lambdaTau) - log(Type(2.0)) - Type(1.5) * log_tau
-          - lambdaTau / sqrt(tau) + log_tau;
-
+  // Priors
+  Type logPriTau = log(lambdaTau) - log(Type(2.0)) - Type(1.5) * log_tau
+                   - lambdaTau / sqrt(tau) + log_tau;
+  jnll -= logPriTau;
   jnll -= dPCPriTau(log_tauEps, lambdaTauEps);
 
   // Prior for phi
@@ -171,117 +156,81 @@ Type objective_function<Type>::operator() ()
     jnll -= dnorm(beta(i), beta_pri(0), beta_pri(1), true);
   }
 
-  // ═══════════════════════════════════
-  // (3) GH-integrated likelihood (vectorized)
-  // ═══════════════════════════════════
+  vector<Type> fe_urb_d = X_betaUrbanDHS * beta;
+  vector<Type> fe_rur_d = X_betaRuralDHS * beta;
 
-  // Precompute fixed effects
-  vector<Type> fe_urb = (X_betaUrbanDHS * beta.matrix()).col(0);
-  vector<Type> fe_rur = (X_betaRuralDHS * beta.matrix()).col(0);
-
-  // Project spatial effects to obs via Aproj (nObs x nArea) * w_bym2 (nArea)
-  vector<Type> proj_urb = (AprojUrbanDHS * w_bym2.matrix()).col(0);
-  vector<Type> proj_rur = (AprojRuralDHS * w_bym2.matrix()).col(0);
-
-  // GH abscissae
   vector<Type> eps_gh(Q);
+  vector<Type> log_gh_w(Q);
   for(int q = 0; q < Q; q++) {
     eps_gh(q) = sqrt(Type(2.0)) * sigmaEps * gh_nodes(q);
+    log_gh_w(q) = log(gh_weights(q));
   }
   Type log_inv_sqrt_pi = -Type(0.5) * log(M_PI);
 
-  vector<Type> log_gh_w(Q);
-  for(int q = 0; q < Q; q++) {
-    log_gh_w(q) = log(gh_weights(q));
-  }
-
-  // ── Build base_eta: computed ONCE, not Q times ──
-  // DHS: fe is (nObs*K) long, indexed as fe(nObs*k + i) for obs i, intpt k
-  // proj is length nObs
-
-  matrix<Type> base_eta_urb(nUrb, KUrb);
-  for(int k = 0; k < KUrb; k++) {
-    for(int i = 0; i < nUrb; i++) {
-      base_eta_urb(i, k) = alpha + fe_urb(nUrb * k + i) + proj_urb(i);
-    }
-  }
-
-  matrix<Type> base_eta_rur(nRur, KRur);
-  for(int k = 0; k < KRur; k++) {
-    for(int i = 0; i < nRur; i++) {
-      base_eta_rur(i, k) = alpha + fe_rur(nRur * k + i) + proj_rur(i);
-    }
-  }
-
-  // ── Urban: for each (obs i, GH node q), compute log(sum_k w_ik * binom_ikq)
-  //          then logSumExp over q. See modM_BYM2_GH_v2.cpp for full notes
-  //          on the inline binomial and logspace_add.
-  matrix<Type> logMixUrb(nUrb, Q);
-
-  for(int q = 0; q < Q; q++) {
-    for(int i = 0; i < nUrb; i++) {
-      Type mix_lik = Type(0.0);
-      Type yi = y_iUrbanDHS(i);
-      Type ni = n_iUrbanDHS(i);
-
-      for(int k = 0; k < KUrb; k++) {
-        Type w_ik = wUrbanDHS(i, k);
-        Type eta = base_eta_urb(i, k) + eps_gh(q);          // logit(p_ikq)
-        // Inline binomial:  y*eta - n*log(1 + exp(eta))
-        // logspace_add(0, eta) = log(1 + exp(eta)), stable for any eta.
-        Type log_binom = yi * eta - ni * logspace_add(Type(0), eta);
-        mix_lik += w_ik * exp(log_binom);                   // sum over int pts
+  // add_dataset: identical to modMDM_BYM2_GH_v2.cpp. Runs the GH-integrated
+  // log-likelihood for one DHS data block (Urban or Rural):
+  //   * base_eta_{i,k} = alpha + Xbeta + w_bym2[area_i]  (area_i constant over k)
+  //   * for each (i, GH node q) sum the inline binomial over the K integration
+  //     points with weights w(i, k), guarding against underflow
+  //   * logSumExp over Q nodes to integrate out the cluster nugget eps_i
+  auto add_dataset = [&](int nObs, int Kint,
+                         const vector<Type>& y,
+                         const vector<Type>& n,
+                         const vector<int>& areaidx,
+                         const vector<Type>& fe,
+                         const matrix<Type>& w,
+                         const vector<Type>& lchoose_vec)
+  {
+    matrix<Type> base_eta(nObs, Kint);
+    for(int k = 0; k < Kint; k++) {
+      for(int i = 0; i < nObs; i++) {
+        base_eta(i, k) = alpha + fe(nObs * k + i) + w_bym2(areaidx(i));
       }
-      // lchoose added once per obs (DATA, not on AD tape).
-      logMixUrb(i, q) = log_gh_w(q) + lchoose_urban(i) + log(mix_lik);
     }
-  }
 
-  for(int i = 0; i < nUrb; i++) {
-    Type max_val = logMixUrb(i, 0);
-    for(int q = 1; q < Q; q++) {
-      max_val = CppAD::CondExpGt(logMixUrb(i,q), max_val, logMixUrb(i,q), max_val);
-    }
-    Type sum_exp = Type(0.0);
+    matrix<Type> logMix(nObs, Q);
     for(int q = 0; q < Q; q++) {
-      sum_exp += exp(logMixUrb(i, q) - max_val);
-    }
-    jnll -= log_inv_sqrt_pi + max_val + log(sum_exp);
-  }
-
-  // ── Rural: same structure as Urban above. ──
-  matrix<Type> logMixRur(nRur, Q);
-
-  for(int q = 0; q < Q; q++) {
-    for(int i = 0; i < nRur; i++) {
-      Type mix_lik = Type(0.0);
-      Type yi = y_iRuralDHS(i);
-      Type ni = n_iRuralDHS(i);
-
-      for(int k = 0; k < KRur; k++) {
-        Type w_ik = wRuralDHS(i, k);
-        Type eta = base_eta_rur(i, k) + eps_gh(q);
-        Type log_binom = yi * eta - ni * logspace_add(Type(0), eta);
-        mix_lik += w_ik * exp(log_binom);
+      for(int i = 0; i < nObs; i++) {
+        Type mix_lik = Type(0.0);
+        Type yi = y(i);
+        Type ni = n(i);
+        for(int k = 0; k < Kint; k++) {
+          Type w_ik = w(i, k);
+          Type eta = base_eta(i, k) + eps_gh(q);
+          Type log_binom = yi * eta - ni * logspace_add(Type(0), eta);
+          mix_lik += w_ik * exp(log_binom);
+        }
+        // Guard against mix_lik being zero or negative due to underflow/rounding
+        Type tiny = Type(1e-200);
+        if(mix_lik <= Type(0.0)) mix_lik = tiny;
+        logMix(i, q) = log_gh_w(q) + lchoose_vec(i) + log(mix_lik);
       }
-
-      logMixRur(i, q) = log_gh_w(q) + lchoose_rural(i) + log(mix_lik);
     }
-  }
 
-  for(int i = 0; i < nRur; i++) {
-    Type max_val = logMixRur(i, 0);
-    for(int q = 1; q < Q; q++) {
-      max_val = CppAD::CondExpGt(logMixRur(i,q), max_val, logMixRur(i,q), max_val);
+    for(int i = 0; i < nObs; i++) {
+      Type max_val = logMix(i, 0);
+      for(int q = 1; q < Q; q++) {
+        max_val = CppAD::CondExpGt(logMix(i,q), max_val, logMix(i,q), max_val);
+      }
+      Type sum_exp = Type(0.0);
+      for(int q = 0; q < Q; q++) {
+        sum_exp += exp(logMix(i, q) - max_val);
+      }
+      jnll -= log_inv_sqrt_pi + max_val + log(sum_exp);
     }
-    Type sum_exp = Type(0.0);
-    for(int q = 0; q < Q; q++) {
-      sum_exp += exp(logMixRur(i, q) - max_val);
-    }
-    jnll -= log_inv_sqrt_pi + max_val + log(sum_exp);
-  }
+  };
 
-  // ── Reports ──
+  // Convert DATA_ARRAY weight objects into proper matrices (nObs x Kint) before passing
+  matrix<Type> wUrbD(nUrbD, KUrbD);
+  for(int i=0;i<nUrbD;i++) for(int k=0;k<KUrbD;k++) wUrbD(i,k) = wUrbanDHS(i,k);
+  matrix<Type> wRurD(nRurD, KRurD);
+  for(int i=0;i<nRurD;i++) for(int k=0;k<KRurD;k++) wRurD(i,k) = wRuralDHS(i,k);
+
+  add_dataset(nUrbD, KUrbD, y_iUrbanDHS, n_iUrbanDHS, areaidxlocUrbanDHS,
+              fe_urb_d, wUrbD, lchoose_urban_dhs);
+  add_dataset(nRurD, KRurD, y_iRuralDHS, n_iRuralDHS, areaidxlocRuralDHS,
+              fe_rur_d, wRurD, lchoose_rural_dhs);
+
   if(options == 1) {
     ADREPORT(log_tau);
     ADREPORT(logit_phi);

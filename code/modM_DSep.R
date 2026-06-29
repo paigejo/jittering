@@ -688,21 +688,23 @@ fitMD_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
       if("int" %in% colnames(XUrbDHS)) XUrbDHS = XUrbDHS[, colnames(XUrbDHS) != "int", drop=FALSE]
       if("int" %in% colnames(XRurDHS)) XRurDHS = XRurDHS[, colnames(XRurDHS) != "int", drop=FALSE]
 
+      # M_D = M_DM minus MICS: the DHS data block is IDENTICAL to fitMDM's DHS
+      # block. The BYM2 field is applied per cluster at its nominal stratum via
+      # areaidxlocUrban/RuralDHS (0-based stratum indices, length nObs, correctly
+      # subsetted by subsetMDMInputs in held-out fits) -- NOT a dense Aproj
+      # projection matrix (the old path was not subsetted, so it misaligned the
+      # field with the data in cross-validation).
       data_gh = list(
         y_iUrbanDHS=ysUrbDHS, y_iRuralDHS=ysRurDHS,
         n_iUrbanDHS=nsUrbDHS, n_iRuralDHS=nsRurDHS,
-        # intPtsDHS$areasUrban/Rural hold adm2 (subarea) names; the BYM2 field is
-        # on strata (admFinal$NAME_FINAL). Convert adm2 -> stratum first, exactly
-        # as the M_DM path does in makeInputsTMB.R, or every DHS row gets an
-        # all-zero projection and the spatial effect never enters the likelihood.
-        AprojUrbanDHS=t(makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasUrban), admFinal$NAME_FINAL)),
-        AprojRuralDHS=t(makeApointToArea(adm2ToStratumMICS(intPtsDHS$areasRural), admFinal$NAME_FINAL)),
+        areaidxlocUrbanDHS=as.integer(areaidxlocUrbanDHS),
+        areaidxlocRuralDHS=as.integer(areaidxlocRuralDHS),
         X_betaUrbanDHS=XUrbDHS,
         X_betaRuralDHS=XRurDHS,
         wUrbanDHS=intPtsDHS$wUrban, wRuralDHS=intPtsDHS$wRural,
         Q_bym2=bym2ArgsTMB$Q,
-        lchoose_urban=lchoose(nsUrbDHS, ysUrbDHS),
-        lchoose_rural=lchoose(nsRurDHS, ysRurDHS),
+        lchoose_urban_dhs=lchoose(nsUrbDHS, ysUrbDHS),
+        lchoose_rural_dhs=lchoose(nsRurDHS, ysRurDHS),
         gh_nodes=gh$x, gh_weights=gh$w,
         alpha_pri=alpha_pri, beta_pri=beta_pri,
         tr=bym2ArgsTMB$tr, gammaTildesm1=bym2ArgsTMB$gammaTildesm1,
@@ -710,8 +712,6 @@ fitMD_old = function(datDHS=ed, datMICS=edMICS, inputsMDM=NULL,
         uniformPhiPrior=as.integer(uniform_phi_prior),
         options=0
       )
-      mode(data_gh$AprojUrbanDHS) = "numeric"
-      mode(data_gh$AprojRuralDHS) = "numeric"
 
       nAreas = ncol(bym2ArgsTMB$Q)
       nFree = nAreas - 1
