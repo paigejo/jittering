@@ -470,7 +470,8 @@ runValArealOneArea <- function(model, areaIdx, area, fullInp,
 # for every model, so pass it in once; recomputed if NULL. Areas are ordered by
 # de$combined$area to match runValArealOneArea's areaIdx.
 scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/areal",
-                            leftOutFolds = 6:10, de = NULL) {
+                            leftOutFolds = 6:10, de = NULL,
+                            significance = c(.5, .8, .9, .95)) {
   if(is.null(de)) de <- arealDirectEsts(fullInp, leftOutFolds = leftOutFolds)
   areas <- de$combined$area
   files <- list.files(arealDir, pattern = paste0("^arealPred_", model, "_area[0-9]+\\.RData$"),
@@ -497,7 +498,8 @@ scoreModelAreal <- function(model, fullInp, arealDir = "savedOutput/validation/a
   scoreOne <- function(dEst, label) {
     if(sum(okCommon) == 0) return(NULL)
     le <- matchDE(dEst, "logit.est")[okCommon]; lv <- matchDE(dEst, "logit.var")[okCommon]
-    sc <- getScoresDirectEstimates(le, lv, estMat = estMat[okCommon, , drop=FALSE], na.rm=TRUE)
+    sc <- getScoresDirectEstimates(le, lv, estMat = estMat[okCommon, , drop=FALSE],
+                                   significance = significance, na.rm=TRUE)
     data.frame(model=model, directEst=label, nAreas=sum(okCommon),
                as.data.frame(as.list(sc)), Time=tmin, stringsAsFactors=FALSE)
   }
